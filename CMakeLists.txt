@@ -1,4 +1,10 @@
-cmake_minimum_required(VERSION 3.21)
+cmake_minimum_required(VERSION 3.21...3.27)  # Aggiornare alla versione minima di CMake necessaria
+
+if (${CMAKE_VERSION} VERSION_LESS 3.21)
+    cmake_policy(VERSION ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION})
+else ()
+    cmake_policy(VERSION 3.27)
+endif ()
 
 # This template attempts to be "fetch_content"-able
 # so that it works well with tools like CPM or other
@@ -92,7 +98,7 @@ if(MSVC)
 endif()
 
 # set the startup project for the "play" button in MSVC
-set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT intro)
+set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT vandior)
 
 if(CMAKE_SKIP_INSTALL_RULES)
   return()
@@ -104,7 +110,7 @@ include(cmake/PackageProject.cmake)
 # we know we want to ship
 Vandior_package_project(
   TARGETS
-  intro
+  vandior
   Vandior_options
   Vandior_warnings
   # FIXME: this does not work! CK

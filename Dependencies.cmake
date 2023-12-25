@@ -5,19 +5,23 @@ include(cmake/CPM.cmake)
 # targets
 function(Vandior_setup_dependencies)
 
+  if (NOT TARGET glm::glm)
+    cpmaddpackage("gh:g-truc/glm#0.9.9.8")
+  endif ()
+
   # For each dependency, see if it's
   # already been provided to us by a parent project
 
-  if(NOT TARGET fmtlib::fmtlib)
-    cpmaddpackage("gh:fmtlib/fmt#9.1.0")
-  endif()
+  if (NOT TARGET fmtlib::fmtlib)
+    cpmaddpackage("gh:fmtlib/fmt#10.1.1")
+  endif ()
 
   if(NOT TARGET spdlog::spdlog)
     cpmaddpackage(
       NAME
       spdlog
       VERSION
-      1.11.0
+      1.12.0
       GITHUB_REPOSITORY
       "gabime/spdlog"
       OPTIONS
