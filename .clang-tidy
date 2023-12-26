@@ -23,6 +23,7 @@ Checks: "*,
         -readability-simplify-boolean-expr
         -concurrency-mt-unsafe
         -cppcoreguidelines-pro-bounds-pointer-arithmetic
+        -fno-keep-inline-dllexport
 "
 WarningsAsErrors: ''
 HeaderFilterRegex: ''
