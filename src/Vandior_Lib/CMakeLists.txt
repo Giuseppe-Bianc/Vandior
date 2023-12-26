@@ -1,16 +1,26 @@
 include(GenerateExportHeader)
 
 
-add_library(vandior_lib sample_library.cpp)
+add_library(vandior_lib vandior.cpp)
 
 
 
 add_library(Vandior::vandior_lib ALIAS vandior_lib)
 
-target_link_libraries(vandior_lib PRIVATE Vandior_options Vandior_warnings)
+target_link_libraries(vandior_lib PRIVATE
+        Vandior_options
+        Vandior_warnings
+        fmt::fmt
+        spdlog::spdlog)
+target_link_libraries(vandior_lib PUBLIC
+        fmt::fmt
+        spdlog::spdlog)
 
 target_include_directories(vandior_lib ${WARNING_GUARD} PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
                                                                   $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include>)
+target_include_directories(vandior_lib ${WARNING_GUARD} PRIVATE $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/_deps/fmt-src/include>
+$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/_deps/spdlog-src/include>
+)
 
 target_compile_features(vandior_lib PUBLIC cxx_std_20)
 
@@ -20,7 +30,7 @@ set_target_properties(
              CXX_VISIBILITY_PRESET hidden
              VISIBILITY_INLINES_HIDDEN YES)
 
-generate_export_header(vandior_lib EXPORT_FILE_NAME ${PROJECT_BINARY_DIR}/include/Vandior/sample_library_export.hpp)
+generate_export_header(vandior_lib EXPORT_FILE_NAME ${PROJECT_BINARY_DIR}/include/Vandior/vandior_export.hpp)
 
 if(NOT BUILD_SHARED_LIBS)
   target_compile_definitions(vandior_lib PUBLIC VANDIOR_LIB_STATIC_DEFINE)
