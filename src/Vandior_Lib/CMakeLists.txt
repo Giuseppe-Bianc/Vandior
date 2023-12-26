@@ -9,19 +9,13 @@ add_library(Vandior::vandior_lib ALIAS vandior_lib)
 
 target_link_libraries(vandior_lib PRIVATE
         Vandior_options
-        Vandior_warnings
-        fmt::fmt
-        spdlog::spdlog)
+        Vandior_warnings)
 target_link_libraries(vandior_lib PUBLIC
         fmt::fmt
         spdlog::spdlog)
 
 target_include_directories(vandior_lib ${WARNING_GUARD} PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
                                                                   $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include>)
-target_include_directories(vandior_lib ${WARNING_GUARD} PRIVATE $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/_deps/fmt-src/include>
-$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/_deps/spdlog-src/include>
-)
-
 target_compile_features(vandior_lib PUBLIC cxx_std_20)
 
 set_target_properties(
