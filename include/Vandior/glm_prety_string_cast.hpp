@@ -1,7 +1,7 @@
 #pragma once
 
+#include "Log.hpp"
 #include "glm_matld.hpp"
-#include "log.hpp"
 
 // #define PRETTY_PRINT
 

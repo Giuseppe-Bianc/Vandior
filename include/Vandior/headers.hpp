@@ -120,10 +120,10 @@ static inline constexpr const char *NEWL = &CNL;  // FreeBSD
 static inline constexpr const char *NEWL = &CNL;  // Default case
 #endif
 
-//#define SYSPAUSE()                                                                                                               \
-//    do {                                                                                                                         \
-//        LINFO("Press enter to exit...");                                                                                         \
-//        std::cin.ignore();                                                                                                       \
-//    } while(0);
+#define SYSPAUSE()                                                                                                               \
+    do {                                                                                                                         \
+        LINFO("Press enter to exit...");                                                                                         \
+        std::cin.ignore();                                                                                                       \
+    } while(0);
 
 // NOLINTEND
