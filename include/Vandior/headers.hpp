@@ -75,8 +75,8 @@ DISABLE_WARNINGS_PUSH(
 
 // clang-format on
 #include "casts.hpp"
-// #include "glm_matld.h"
-// #include "glm_prety_string_cast.h"
+#include "glm_matld.hpp"
+#include "glm_prety_string_cast.hpp"
 // Restore warning levels.
 DISABLE_WARNINGS_POP()
 

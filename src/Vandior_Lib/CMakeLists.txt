@@ -1,7 +1,8 @@
 include(GenerateExportHeader)
 
 find_package(glm REQUIRED)
-add_library(vandior_lib vandior.cpp)
+add_library(vandior_lib vandior.cpp
+        ../../include/Vandior/glm_prety_string_cast.hpp)
 
 add_library(Vandior::vandior_lib ALIAS vandior_lib)
 
