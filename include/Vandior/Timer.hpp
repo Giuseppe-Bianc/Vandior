@@ -1,13 +1,17 @@
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "cppcoreguidelines-special-member-functions
+#endif
 #pragma once
+#include "format.hpp"
 #include "headers.hpp"
+#include <Vandior/disableWarn.hpp>
 
 // On GCC < 4.8, the following define is often missing. Since
 // this library only uses sleep_for, this should be safe
 #if defined(__GNUC__) && !defined(__clang__) && __GNUC__ < 5 && __GNUC_MINOR__ < 8
 #define _GLIBCXX_USE_NANOSLEEP
 #endif
-
-#include <iostream>
 
 inline static constexpr long double MICROSENCONDSFACTOR = 1000.0L;
 inline static constexpr long double MILLISENCONDSFACTOR = 1'000'000.0L;
@@ -43,12 +47,14 @@ protected:
 
 public:
     /// Standard print function, this one is set by default
-    static std::string Simple(const std::string &title, const std::string &time) { return D_FORMAT("{}: {}", title, time); }
+    // NOLINTBEGIN
+    static std::string Simple(const std::string &title, const std::string &time) { return FORMAT("{}: {}", title, time); }
 
     static std::string Big(const std::string &title, const std::string &time) {
-        return D_FORMAT("-----------------------------------------\n| {} | Time = {}\n-----------------------------------------",
+        return FORMAT("-----------------------------------------\n| {} | Time = {}\n-----------------------------------------",
                         title, time);
     }
+    // NOLINTEND
 
     /// Standard constructor, can set title and print function
     explicit Timer(const std::string &title = "Timer", const time_print_t &time_print = Simple)
@@ -74,7 +80,7 @@ public:
             total_time = elapsed.count();
         } while(n++ < MFACTOR && total_time < target_time);
 
-        std::string out = D_FORMAT("{} for {} tries", make_time_str(total_time / static_cast<long double>(n)), std::to_string(n));
+        std::string out = FORMAT("{} for {} tries", make_time_str(total_time / static_cast<long double>(n)), std::to_string(n));
         start_ = start;
         return out;
     }
@@ -119,7 +125,7 @@ public:
     /// This prints out a time string from a time
     [[nodiscard]] inline std::string make_time_str(long double time) const {  // NOLINT(modernize-use-nodiscard)
         const auto &[titme, stime] = make_named_time(time);
-        return D_FORMAT("{:.f} {}", titme, stime);
+        return FORMAT("{:.f} {}", titme, stime);
     }
     // LCOV_EXCL_STOP
 
@@ -157,3 +163,7 @@ template <> struct fmt::formatter<Timer> : formatter<std::string_view> {
     }
 };
 DISABLE_WARNINGS_POP()
+
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif

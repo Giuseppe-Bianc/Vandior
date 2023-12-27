@@ -25,7 +25,12 @@ function(Vandior_setup_dependencies)
       GITHUB_REPOSITORY
       "gabime/spdlog"
       OPTIONS
-      "SPDLOG_FMT_EXTERNAL ON")
+            "SPDLOG_FMT_EXTERNAL ON"
+            "SPDLOG_ENABLE_PCH ON"
+            "SPDLOG_BUILD_PIC ON"
+            "SPDLOG_BUILD_WARNINGS ON"
+            "SPDLOG_SANITIZE_ADDRESS ON"
+    )
   endif()
 
   if(NOT TARGET Catch2::Catch2WithMain)

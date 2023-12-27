@@ -17,7 +17,7 @@ int main(int argc, const char *const argv[]) {
     setupSpdlog();
     try {
         AutoTimer timer{"main"};
-        CLI::App app{D_FORMAT("{} version {}", Vandior::cmake::project_name, Vandior::cmake::project_version)};
+        CLI::App app{FORMAT("{} version {}", Vandior::cmake::project_name, Vandior::cmake::project_version)};
 
         std::optional<std::string> message;
         app.add_option("-m,--message", message, "A message to print back out");
@@ -27,10 +27,11 @@ int main(int argc, const char *const argv[]) {
         CLI11_PARSE(app, argc, argv)
 
         if(show_version) {
-            fmt::print("{}\n", Vandior::cmake::project_version);
+            LINFO("{}\n", Vandior::cmake::project_version);
             return EXIT_SUCCESS;
         }
         LINFO("{}", PI);
+        LINFO("{}", glmp::to_string(glm::ldmat4{}));
 
     } catch(const std::exception &e) { spdlog::error("Unhandled exception in main: {}", e.what()); }
 }

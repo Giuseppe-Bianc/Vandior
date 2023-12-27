@@ -45,8 +45,6 @@ DISABLE_WARNINGS_PUSH(
 #endif
 #endif
 #include <filesystem>
-#include <fmt/format.h>
-#include <fmt/core.h>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -79,20 +77,6 @@ DISABLE_WARNINGS_PUSH(
 #include "glm_prety_string_cast.hpp"
 // Restore warning levels.
 DISABLE_WARNINGS_POP()
-
-// clang-format off
-#ifdef _WIN32
-#ifdef _MSC_VER
-#ifdef USE_STD_FORMAT
-#define D_FORMAT(...) std::format(__VA_ARGS__)
-#else
-#define D_FORMAT(...) fmt::format(__VA_ARGS__)
-#endif
-#endif
-#else
-#define D_FORMAT(...) fmt::format(__VA_ARGS__)
-#endif
-// clang-format on
 
 static inline constexpr long double NINFINITY = std::numeric_limits<long double>::infinity();
 static inline constexpr long double PI = std::numbers::pi_v<long double>;
