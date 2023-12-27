@@ -16,18 +16,16 @@
 // #define GLM_FORCE_PRECISION_HIGHP_INT
 // #define GLM_FORCE_PRECISION_HIGHP_UINT
 
-#include <Vandior/vandior_export.hpp>
-
 #include "disableWarn.hpp"
 // clang-format off
 DISABLE_WARNINGS_PUSH(
-        4005 4201 4459 4514 4625 4626 4820
-        6244 6285 6385 6386 26409 26415 26418
-        26429 26432 26437 26438 26440 26446 26447
-        26450 26451 26455 26457 26459 26460 26461
-        26467 26472 26473 26474 26475 26481 26482
-        26485 26490 26491 26493 26494 26495 26496
-        26497 26498 26800 26814 26818 26826)
+    4005 4201 4459 4514 4625 4626 4820
+    6244 6285 6385 6386 26409 26415 26418
+    26429 26432 26437 26438 26440 26446 26447
+    26450 26451 26455 26457 26459 26460 26461
+    26467 26472 26473 26474 26475 26481 26482
+    26485 26490 26491 26493 26494 26495 26496
+    26497 26498 26800 26814 26818 26826)
 
 #include <algorithm>
 #include <array>
@@ -47,6 +45,7 @@ DISABLE_WARNINGS_PUSH(
 #endif
 #endif
 #include <filesystem>
+#include <fmt/format.h>
 #include <fmt/core.h>
 #include <fstream>
 #include <iomanip>
@@ -75,7 +74,7 @@ DISABLE_WARNINGS_PUSH(
 #include <vector>
 
 // clang-format on
-// #include "casts.h"
+#include "casts.hpp"
 // #include "glm_matld.h"
 // #include "glm_prety_string_cast.h"
 // Restore warning levels.
@@ -95,6 +94,10 @@ DISABLE_WARNINGS_POP()
 #endif
 // clang-format on
 
+static inline constexpr long double NINFINITY = std::numeric_limits<long double>::infinity();
+static inline constexpr long double PI = std::numbers::pi_v<long double>;
+static inline constexpr long double TWO_PI = 2 * PI;
+static inline constexpr long double HALF_PI = PI / 2;
 static inline constexpr char CNL = '\n';
 static inline constexpr char CCR = '\r';
 static inline constexpr char PNT = '.';
@@ -123,8 +126,4 @@ static inline constexpr const char *NEWL = &CNL;  // Default case
 //        std::cin.ignore();                                                                                                       \
 //    } while(0);
 
-static inline constexpr long double NINFINITY = std::numeric_limits<long double>::infinity();
-static inline constexpr long double PI = std::numbers::pi_v<long double>;
-static inline constexpr long double TWO_PI = 2 * PI;
-static inline constexpr long double HALF_PI = PI / 2;
 // NOLINTEND
