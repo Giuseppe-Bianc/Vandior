@@ -199,7 +199,9 @@ jobs:
 
 
       - name: Publish to codecov
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v4
+        env:
+             CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:
           flags: ${{ runner.os }}
           name: ${{ runner.os }}-coverage
