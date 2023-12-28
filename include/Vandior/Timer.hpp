@@ -1,11 +1,7 @@
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "cppcoreguidelines-special-member-functions"
-#endif
 #pragma once
+#include "disableWarn.hpp"
 #include "format.hpp"
 #include "headers.hpp"
-#include <Vandior/disableWarn.hpp>
 
 // On GCC < 4.8, the following define is often missing. Since
 // this library only uses sleep_for, this should be safe
@@ -20,18 +16,19 @@ inline static constexpr long MFACTOR = 100;
 
 DISABLE_WARNINGS_PUSH(6005 26447 26455 26496)
 
-class Timer {
+// OLINTBEGIN(*-include-cleaner)
+class Timer {  // NOLINT(*-special-member-functions)
 protected:
     /// This is a typedef to make clocks easier to use
-    using clock = std::chrono::high_resolution_clock;
-    using times =
-        std::tuple<long double, long double, long double, long double, std::string, std::string, std::string, std::string>;
+    using clock = std::chrono::high_resolution_clock;  // NOLINT(*-include-cleaner)
+    using times = std::tuple<long double, long double, long double, long double, std::string, std::string, std::string,
+                             std::string>;
 
     /// This typedef is for points in time
-    using time_point = std::chrono::time_point<clock>;
+    using time_point = std::chrono::time_point<clock>;  // NOLINT(*-include-cleaner)
 
     /// This is the type of a printing function, you can make your own
-    using time_print_t = std::function<std::string(std::string, std::string)>;
+    using time_print_t = std::function<std::string(std::string, std::string)>;  // NOLINT(*-include-cleaner)
 
     /// This is the title of the timer
     std::string title_;
@@ -157,13 +154,10 @@ public:
     ~AutoTimer() { LINFO(to_string()); }
 };
 
-template <> struct fmt::formatter<Timer> : formatter<std::string_view> {
+template <> struct fmt::formatter<Timer> : formatter<std::string_view> { // NOLINT(*-include-cleaner)
     template <typename FormatContext> auto format(const Timer &timer, FormatContext &ctx) {
         return formatter<std::string_view>::format(timer.to_string(), ctx);
     }
 };
+// OLINTEND
 DISABLE_WARNINGS_POP()
-
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif

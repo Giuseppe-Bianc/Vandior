@@ -28,7 +28,8 @@ function(Vandior_setup_dependencies)
             "SPDLOG_FMT_EXTERNAL ON"
             "SPDLOG_ENABLE_PCH ON"
             "SPDLOG_BUILD_PIC ON"
-            "SPDLOG_BUILD_WARNINGS ON"
+            "SPDLOG_WCHAR_SUPPORT ON"
+            "SPDLOG_WCHAR_FILENAMES ON"
             "SPDLOG_SANITIZE_ADDRESS ON"
     )
   endif()

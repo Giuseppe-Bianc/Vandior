@@ -14,20 +14,22 @@ DISABLE_WARNINGS_POP()
 
 template <typename T> void print_table(std::string_view label) {
     using lim = std::numeric_limits<T>;
-    LINFO("{0:-^40}\n{1}\n{0:-^40}\n", "", label);
-    LINFO("lowest        {: .20}\n", lim::lowest());
-    LINFO("min           {: .20}\n", lim::min());
-    LINFO("max           {: .20}\n", lim::max());
-    LINFO("denorm_min    {: .20}\n", lim::denorm_min());
-    LINFO("epsilon       {: .20}\n", lim::epsilon());
-    LINFO("round_error   {: .20}\n", lim::round_error());
-    LINFO("min_exponent  {: }\n", lim::min_exponent);
-    LINFO("max_exponent  {: }\n", lim::max_exponent);
-    LINFO("quiet_NaN      {}\n", lim::quiet_NaN());
-    LINFO("digits        {: }\n", lim::digits);
-    LINFO("digits10      {: }\n", lim::digits10);
-    LINFO("+0            {: }\n", T(0));
-    LINFO("-0            {: }\n", T(-0.0));
+    LINFO("{:-^40}", "");
+    LINFO("{}", label);
+    LINFO("{:-^40}", "");
+    LINFO("lowest        {: .20}", lim::lowest());
+    LINFO("min           {: .20}", lim::min());
+    LINFO("max           {: .20}", lim::max());
+    LINFO("denorm_min    {: .20}", lim::denorm_min());
+    LINFO("epsilon       {: .20}", lim::epsilon());
+    LINFO("round_error   {: .20}", lim::round_error());
+    LINFO("min_exponent  {: }", lim::min_exponent);
+    LINFO("max_exponent  {: }", lim::max_exponent);
+    LINFO("quiet_NaN      {}", lim::quiet_NaN());
+    LINFO("digits        {: }", lim::digits);
+    LINFO("digits10      {: }", lim::digits10);
+    LINFO("+0            {: }", T(0));
+    LINFO("-0            {: }", T(-0.0));
 }
 // NOLINTNEXTLINE(bugprone-exception-escape, readability-function-cognitive-complexity)
 int main(int argc, const char *const argv[]) {
