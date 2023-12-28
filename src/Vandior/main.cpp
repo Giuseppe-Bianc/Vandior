@@ -12,6 +12,23 @@ DISABLE_WARNINGS_POP()
 // the source template at `configured_files/config.hpp.in`.
 #include <internal_use_only/config.hpp>
 
+template <typename T> void print_table(std::string_view label) {
+    using lim = std::numeric_limits<T>;
+    LINFO("{0:-^40}\n{1}\n{0:-^40}\n", "", label);
+    LINFO("lowest        {: .20}\n", lim::lowest());
+    LINFO("min           {: .20}\n", lim::min());
+    LINFO("max           {: .20}\n", lim::max());
+    LINFO("denorm_min    {: .20}\n", lim::denorm_min());
+    LINFO("epsilon       {: .20}\n", lim::epsilon());
+    LINFO("round_error   {: .20}\n", lim::round_error());
+    LINFO("min_exponent  {: }\n", lim::min_exponent);
+    LINFO("max_exponent  {: }\n", lim::max_exponent);
+    LINFO("quiet_NaN      {}\n", lim::quiet_NaN());
+    LINFO("digits        {: }\n", lim::digits);
+    LINFO("digits10      {: }\n", lim::digits10);
+    LINFO("+0            {: }\n", T(0));
+    LINFO("-0            {: }\n", T(-0.0));
+}
 // NOLINTNEXTLINE(bugprone-exception-escape, readability-function-cognitive-complexity)
 int main(int argc, const char *const argv[]) {
     setupSpdlog();
@@ -30,8 +47,10 @@ int main(int argc, const char *const argv[]) {
             LINFO("{}\n", Vandior::cmake::project_version);
             return EXIT_SUCCESS;
         }
-        LINFO("{}", PI);
-        LINFO("{}", glmp::to_string(glm::ldmat4{}));
 
-    } catch(const std::exception &e) { spdlog::error("Unhandled exception in main: {}", e.what()); }
+        print_table<float>("FLOAT");
+        print_table<double>("DOUBLE");
+        print_table<long double>("LONG DOUBLE");
+
+    } catch(const std::exception &e) { LERROR("Unhandled exception in main: {}", e.what()); }
 }

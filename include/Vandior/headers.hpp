@@ -54,7 +54,7 @@ DISABLE_WARNINGS_PUSH(
 #include <memory>
 #include <memory_resource>
 #include <numbers>
-#include <omp.h>
+//#include <omp.h>
 #include <optional>
 #include <random>
 #include <ranges>
@@ -110,4 +110,28 @@ static inline constexpr const char *NEWL = &CNL;  // Default case
         std::cin.ignore();                                                                                                       \
     } while(0);
 
+template <> struct fmt::formatter<std::filesystem::path> : formatter<std::string_view> {
+    template <typename FormatContext> auto format(const std::filesystem::path &path, FormatContext &ctx) {
+        return formatter<std::string_view>::format(path.string(), ctx);
+    }
+};
+
+template <typename T, glm::length_t L, glm::qualifier Q> struct fmt::formatter<glm::vec<L, T, Q>> : formatter<std::string_view> {
+    template <typename FormatContext> auto format(const glm::vec<L, T, Q> &vector, FormatContext &ctx) {
+        return formatter<std::string_view>::format(glmp::to_string(vector), ctx);
+    }
+};
+
+template <typename T, glm::length_t C, glm::length_t R, glm::qualifier Q>
+struct fmt::formatter<glm::mat<C, R, T, Q>> : formatter<std::string_view> {
+    template <typename FormatContext> auto format(const glm::mat<C, R, T, Q> &matrix, FormatContext &ctx) {
+        return formatter<std::string_view>::format(glmp::to_string(matrix), ctx);
+    }
+};
+
+template <typename T, glm::qualifier Q> struct fmt::formatter<glm::qua<T, Q>> : formatter<std::string_view> {
+    template <typename FormatContext> auto format(const glm::qua<T, Q> &quaternion, FormatContext &ctx) {
+        return formatter<std::string_view>::format(glmp::to_string(quaternion), ctx);
+    }
+};
 // NOLINTEND

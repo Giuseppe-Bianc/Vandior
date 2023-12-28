@@ -12,6 +12,11 @@ DISABLE_WARNINGS_PUSH(
 
 DISABLE_WARNINGS_POP()
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wuninitialized"
+#include <spdlog/details/null_mutex.h>
+#pragma GCC diagnostic pop
+
 #define LTRACE(...) SPDLOG_TRACE(__VA_ARGS__)
 #define LDEBUG(...) SPDLOG_DEBUG(__VA_ARGS__)
 #define LINFO(...) SPDLOG_INFO(__VA_ARGS__)

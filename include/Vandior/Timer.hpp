@@ -91,7 +91,7 @@ public:
     }
 
     // NOLINTBEGIN
-    [[nodiscard]] static times make_named_times(long double time) const {  // NOLINT(*-identifier-length)
+    [[nodiscard]] static times make_named_times(long double time) {  // NOLINT(*-identifier-length)
         const auto &secondsTime = time / SENCONDSFACTOR;
         const auto &millisTime = time / MILLISENCONDSFACTOR;
         const auto &microTime = time / MICROSENCONDSFACTOR;
@@ -101,7 +101,7 @@ public:
 
     [[nodiscard]] times multi_time() const { return make_named_times(make_time()); }
 
-    [[nodiscard]] static std::pair<long double, std::string> make_named_time(long double time) const {
+    [[nodiscard]] static std::pair<long double, std::string> make_named_time(long double time) {
         const auto &[ld1, ld2, ld3, ld4, str1, str2, str3, str4] = make_named_times(time);
         // Accessing values
         if(ld1 > 1) [[likely]] {  // seconds
@@ -123,7 +123,7 @@ public:
 
     // LCOV_EXCL_START
     /// This prints out a time string from a time
-    [[nodiscard]] static inline std::string make_time_str(long double time) const {  // NOLINT(modernize-use-nodiscard)
+    [[nodiscard]] static inline std::string make_time_str(long double time) {  // NOLINT(modernize-use-nodiscard)
         const auto &[titme, stime] = make_named_time(time);
         return FORMAT("{:.f} {}", titme, stime);
     }
