@@ -27,10 +27,4 @@ DISABLE_WARNINGS_POP()
 #define LWARN(...) SPDLOG_WARN(__VA_ARGS__)
 #define LERROR(...) SPDLOG_ERROR(__VA_ARGS__)
 #define LCRITICAL(...) SPDLOG_CRITICAL(__VA_ARGS__)
-
-VANDIOR_LIB_EXPORT void setupSpdlog() {
-    spdlog::set_pattern(R"(%^[%T] [%l] %v%$)");
-    const auto console = spdlog::stdout_color_mt(R"(console)");
-    spdlog::set_default_logger(console);
-}
 // NOLINTEND

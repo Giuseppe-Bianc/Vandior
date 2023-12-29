@@ -36,15 +36,30 @@ DISABLE_WARNINGS_POP()
     LINFO("+0 {: }", T(0));
     LINFO("-0 {: }", T(-0.0));
 }*/
+
+namespace {
+    void setupSpdlog() {
+        spdlog::set_pattern(R"(%^[%T] [%l] %v%$)");
+        const auto console = spdlog::stdout_color_mt(R"(console)");
+        spdlog::set_default_logger(console);
+    }
+    void timeTokenizer(Tokenizer &tokenizer, std::vector<Token> &tokens) {
+        tokens.clear();
+        AutoTimer timer("tokenizer.tokenize()");
+        tokens = tokenizer.tokenize();
+    }
+}  // namespace
+constexpr std::string_view code = "adddddddddddddddd;  asssssssssssss 2343332424";
+DISABLE_WARNINGS_PUSH(26461 26821)
 // NOLINTNEXTLINE(bugprone-exception-escape, readability-function-cognitive-complexity)
 int main(int argc, const char *const argv[]) {
     // NOLINTNEXTLINE
     setupSpdlog();
     try {
-        AutoTimer timer{"main"}; // NOLINT(*-include-cleaner)
-        CLI::App app{FORMAT("{} version {}", Vandior::cmake::project_name, Vandior::cmake::project_version)}; // NOLINT(*-include-cleaner)
+        CLI::App app{
+            FORMAT("{} version {}", Vandior::cmake::project_name, Vandior::cmake::project_version)};  // NOLINT(*-include-cleaner)
 
-        std::optional<std::string> message; // NOLINT(*-include-cleaner)
+        std::optional<std::string> message;  // NOLINT(*-include-cleaner)
         app.add_option("-m,--message", message, "A message to print back out");
         bool show_version = false;
         app.add_flag("--version", show_version, "Show version information");
@@ -53,9 +68,12 @@ int main(int argc, const char *const argv[]) {
 
         if(show_version) {
             LINFO("{}\n", Vandior::cmake::project_version);
-            return EXIT_SUCCESS; // NOLINT(*-include-cleaner)
+            return EXIT_SUCCESS;  // NOLINT(*-include-cleaner)
         }
-        Token token{TokenType::IDENTIFIER, "hello"};
-        LINFO("token {}",token);
-    } catch(const std::exception &e) { LERROR("Unhandled exception in main: {}", e.what()); } // NOLINT(*-include-cleaner)
+        Tokenizer tokenizer{code};
+        std::vector<Token> tokens;
+        timeTokenizer(tokenizer, tokens);
+        for(std::span<Token> tokenSpan(tokens); const auto &item : tokenSpan) { LINFO("{}", item); }
+    } catch(const std::exception &e) { LERROR("Unhandled exception in main: {}", e.what()); }  // NOLINT(*-include-cleaner)
 }
+DISABLE_WARNINGS_POP()

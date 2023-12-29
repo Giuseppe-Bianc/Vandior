@@ -6,6 +6,7 @@ enum class TokenType : long {
     OPERATOR,
     IDENTIFIER,
     UNKNOWN,
+    EOFT,
     // Add more types as needed
 };
 
@@ -22,6 +23,9 @@ template <> struct fmt::formatter<TokenType> : fmt::formatter<std::string_view> 
         case TokenType::IDENTIFIER:
             name = "IDENTIFIER";
             break;
+        case TokenType::EOFT:
+            name = "EOF";
+            break;
         // Add more cases as needed
         case TokenType::UNKNOWN:
             [[fallthrough]];
@@ -37,20 +41,26 @@ template <> struct fmt::formatter<TokenType> : fmt::formatter<std::string_view> 
 
 class Token {
 public:
-    Token() : _type(TokenType::UNKNOWN), _value{} {}
-    Token(TokenType type, std::string_view value) : _type(type), _value(value) {}
+    Token() noexcept : _type(TokenType::UNKNOWN), _value{}, _line{}, _column{} {}  // NOLINT(*-redundant-member-init)
+    Token(TokenType type, const std::string_view &value, std::size_t line, std::size_t column) noexcept
+      : _type(type), _value(value), _line(line), _column(column) {}
 
-    [[nodiscard]] inline TokenType getType() const { return _type; }
-
-    [[nodiscard]] inline std::string_view getValue() const { return _value; }
+    [[nodiscard]] inline TokenType getType() const noexcept { return _type; }
+    [[nodiscard]] inline std::string_view getValue() const noexcept { return _value; }
+    [[nodiscard]] inline std::size_t getLine() const noexcept { return _line; }
+    [[nodiscard]] inline std::size_t getColumn() const noexcept { return _column; }
     [[nodiscard]] std::string to_string() const;  // NOLINT(*-include-cleaner)
-    void setType(TokenType type) { _type = type; }
-    void setValue(const std::string_view &value) { _value = value; }
-    auto operator<=>(const Token&) const = default;
+    inline void setType(TokenType type) noexcept { _type = type; }
+    inline void setValue(const std::string_view &value) noexcept { _value = value; }
+    void setLine(std::size_t line) noexcept { _line = line; }
+    void setColumn(std::size_t column) noexcept { _column = column; }
+    auto operator<=>(const Token &) const = default;
 
 private:
     TokenType _type;
     std::string_view _value;
+    std::size_t _line;
+    std::size_t _column;
 };
 
 template <> struct fmt::formatter<Token> : fmt::formatter<std::string_view> {  // NOLINT(*-include-cleaner)
