@@ -1,7 +1,8 @@
 include(GenerateExportHeader)
 
 find_package(glm REQUIRED)
-add_library(vandior_lib vandior.cpp)
+add_library(vandior_lib vandior.cpp
+        Token.cpp)
 
 add_library(Vandior::vandior_lib ALIAS vandior_lib)
 

@@ -12,33 +12,39 @@ DISABLE_WARNINGS_POP()
 // the source template at `configured_files/config.hpp.in`.
 #include <internal_use_only/config.hpp>
 
-template <typename T> void print_table(std::string_view label) {
+/*template <typename T> void print_table() {
     using lim = std::numeric_limits<T>;
-    LINFO("{:-^40}", "");
-    LINFO("{}", label);
-    LINFO("{:-^40}", "");
-    LINFO("lowest        {: .20}", lim::lowest());
-    LINFO("min           {: .20}", lim::min());
-    LINFO("max           {: .20}", lim::max());
-    LINFO("denorm_min    {: .20}", lim::denorm_min());
-    LINFO("epsilon       {: .20}", lim::epsilon());
-    LINFO("round_error   {: .20}", lim::round_error());
-    LINFO("min_exponent  {: }", lim::min_exponent);
-    LINFO("max_exponent  {: }", lim::max_exponent);
-    LINFO("quiet_NaN      {}", lim::quiet_NaN());
-    LINFO("digits        {: }", lim::digits);
-    LINFO("digits10      {: }", lim::digits10);
-    LINFO("+0            {: }", T(0));
-    LINFO("-0            {: }", T(-0.0));
-}
+    LINFO("{:-^{}}", "", 50);
+    LINFO("{}", typeid(T).name());
+    LINFO("{:-^{}}", "", 50);
+    LINFO("Lowest: {: .20}", lim::lowest());
+    LINFO("Min: {: .20}", lim::min());
+    LINFO("Max: {: .20}", lim::max());
+    LINFO("Denorm min: {}", lim::denorm_min());
+    LINFO("epsilon: {: .20}", lim::epsilon());
+    LINFO("Round error: {}", lim::round_error());
+    LINFO("Mim exponent: {}", lim::min_exponent);
+    LINFO("Max exponent: {}", lim::max_exponent);
+    LINFO("Min exponent10: {}", lim::min_exponent10);
+    LINFO("Max exponent10: {}", lim::max_exponent10);
+    LINFO("Signaling NaN: {}", lim::signaling_NaN());
+    LINFO("Quiet NaN: {}", lim::quiet_NaN());
+    LINFO("Digits: {}", lim::digits);
+    LINFO("Digits10: {}", lim::digits10);
+    LINFO("Radix: {}", lim::radix);
+    LINFO("Infinity: {}", lim::infinity());
+    LINFO("+0 {: }", T(0));
+    LINFO("-0 {: }", T(-0.0));
+}*/
 // NOLINTNEXTLINE(bugprone-exception-escape, readability-function-cognitive-complexity)
 int main(int argc, const char *const argv[]) {
+    // NOLINTNEXTLINE
     setupSpdlog();
     try {
-        AutoTimer timer{"main"};
-        CLI::App app{FORMAT("{} version {}", Vandior::cmake::project_name, Vandior::cmake::project_version)};
+        AutoTimer timer{"main"}; // NOLINT(*-include-cleaner)
+        CLI::App app{FORMAT("{} version {}", Vandior::cmake::project_name, Vandior::cmake::project_version)}; // NOLINT(*-include-cleaner)
 
-        std::optional<std::string> message;
+        std::optional<std::string> message; // NOLINT(*-include-cleaner)
         app.add_option("-m,--message", message, "A message to print back out");
         bool show_version = false;
         app.add_flag("--version", show_version, "Show version information");
@@ -47,12 +53,9 @@ int main(int argc, const char *const argv[]) {
 
         if(show_version) {
             LINFO("{}\n", Vandior::cmake::project_version);
-            return EXIT_SUCCESS;
+            return EXIT_SUCCESS; // NOLINT(*-include-cleaner)
         }
-
-        print_table<float>("FLOAT");
-        print_table<double>("DOUBLE");
-        print_table<long double>("LONG DOUBLE");
-
-    } catch(const std::exception &e) { LERROR("Unhandled exception in main: {}", e.what()); }
+        Token token{TokenType::IDENTIFIER, "hello"};
+        LINFO("token {}",token);
+    } catch(const std::exception &e) { LERROR("Unhandled exception in main: {}", e.what()); } // NOLINT(*-include-cleaner)
 }
