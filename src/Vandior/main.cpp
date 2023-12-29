@@ -73,7 +73,7 @@ int main(int argc, const char *const argv[]) {
         Tokenizer tokenizer{code};
         std::vector<Token> tokens;
         timeTokenizer(tokenizer, tokens);
-        for(std::span<Token> tokenSpan(tokens); const auto &item : tokenSpan) { LINFO("{}", item); }
+        for(const auto &item : tokens) { LINFO("{}", item); }
     } catch(const std::exception &e) { LERROR("Unhandled exception in main: {}", e.what()); }  // NOLINT(*-include-cleaner)
 }
 DISABLE_WARNINGS_POP()
