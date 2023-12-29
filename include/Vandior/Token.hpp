@@ -5,6 +5,7 @@ enum class TokenType : long {
     INTEGER,
     OPERATOR,
     IDENTIFIER,
+    UNKNOWN,
     // Add more types as needed
 };
 
@@ -22,6 +23,8 @@ template <> struct fmt::formatter<TokenType> : fmt::formatter<std::string_view> 
             name = "IDENTIFIER";
             break;
         // Add more cases as needed
+        case TokenType::UNKNOWN:
+            [[fallthrough]];
         default:
             name = "UNKNOWN";
             break;
@@ -34,6 +37,7 @@ template <> struct fmt::formatter<TokenType> : fmt::formatter<std::string_view> 
 
 class Token {
 public:
+    Token() : _type(TokenType::UNKNOWN), _value{} {}
     Token(TokenType type, std::string_view value) : _type(type), _value(value) {}
 
     [[nodiscard]] inline TokenType getType() const { return _type; }
@@ -42,6 +46,7 @@ public:
     [[nodiscard]] std::string to_string() const;  // NOLINT(*-include-cleaner)
     void setType(TokenType type) { _type = type; }
     void setValue(const std::string_view &value) { _value = value; }
+    auto operator<=>(const Token&) const = default;
 
 private:
     TokenType _type;
