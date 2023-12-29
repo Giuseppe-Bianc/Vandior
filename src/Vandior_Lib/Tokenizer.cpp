@@ -75,12 +75,14 @@ std::size_t Tokenizer::findLineEnd() {
 std::string Tokenizer::getContextLine(const std::size_t &lineStart, const std::size_t &lineEnd) {
     return std::string(_input.begin() + C_L(lineStart), _input.begin() + C_L(lineEnd)).append(NEWL);
 }
-std::string Tokenizer::getHighlighting(const std::size_t &start, const std::size_t &length) const { return FORMAT("{: ^{}}{:^{}}{}", "", position - start,"^",length,NEWL); }
+std::string Tokenizer::getHighlighting(const std::size_t &start, const std::size_t &length) const {
+    return FORMAT("{: ^{}}{:^{}}{}", "", position - start, "^", length, NEWL);
+}
 std::string Tokenizer::getErrorMessage(const std::string &value, const std::string_view &errMsg, std::string contextLine,
                                        std::string highlighting) {
     std::ostringstream errorMessageStream;
     errorMessageStream << FORMAT("{} '{}' (line {}, column {}):{}", errMsg, value, line, column, NEWL);
-    errorMessageStream << "Context:" << NEWL;
+    errorMessageStream << FORMAT("Context: {}", NEWL);
     errorMessageStream << contextLine;
     errorMessageStream << highlighting;
     return errorMessageStream.str();

@@ -113,4 +113,7 @@ function(
           $<$<COMPILE_LANGUAGE:C>:${PROJECT_WARNINGS_C}>
           # Cuda warnings
           $<$<COMPILE_LANGUAGE:CUDA>:${PROJECT_WARNINGS_CUDA}>)
+  if(MSVC)
+    target_link_options(${project_name} INTERFACE "/DEBUG")
+  endif()
 endfunction()
