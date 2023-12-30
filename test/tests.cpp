@@ -55,7 +55,7 @@ TEST_CASE("default constructed token set propriety tostring", "[token]"){
 
 TEST_CASE("Tokenizer handles errors", "[Tokenizer]") {
     Tokenizer tokenizer("x@y");
-    REQUIRE_THROWS_WITH(tokenizer.tokenize(),FORMAT("Unknown Character '@' (line 1, column 2):{0}Context: {0}x@y{0} ^{0}",NEWL));
+    REQUIRE_THROWS_WITH(tokenizer.tokenize(), FORMAT("Unknown Character '@' (line 1, column 2):{0}Context: {0}x@y{0} ^{0}",CNL));
 }
 
 
