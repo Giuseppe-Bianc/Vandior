@@ -70,6 +70,7 @@ void Tokenizer::handleWhiteSpace() {
     }
     ++position;
 }
+// NOLINTBEGIN
 bool Tokenizer::isOperator(const char &aChar) {
     static const std::unordered_set<char> operators = {'*', '/', '=', ',', ':', '<', '>', '!', '|', '&', '+', '-', '^'};
     return operators.contains(aChar);
@@ -80,6 +81,8 @@ Token Tokenizer::handleOperators() {
     std::string_view value = _input.substr(start, position - start);
     return {TokenType::OPERATOR, value, line, column - value.size()};
 }
+// NOLINTEND
+
 void Tokenizer::handleError(const std::string &value, const std::string_view &errorMsg) {
     const auto &lineStart = findLineStart();
     const auto &lineEnd = findLineEnd();

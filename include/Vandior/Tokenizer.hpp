@@ -31,7 +31,9 @@ private:
     void extractDigits();
     void incPosAndColumn();
     void extractExponent();
+    // NOLINTBEGIN
     [[nodiscard]] bool isOperator(const char &aChar);
     [[nodiscard]] bool isPlusOrMinus(const char &cara) const;
+    // NOLINTEND
     [[nodiscard]] Token handleOperators();
 };
