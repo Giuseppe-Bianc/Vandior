@@ -1,7 +1,7 @@
 #include <catch2/catch_test_macros.hpp>
 
-
-#include <Vandior/vandior.hpp> // NOLINT(*-include-cleaner)
+#include <catch2/matchers/catch_matchers.hpp>
+#include <Vandior/vandior.hpp>  // NOLINT(*-include-cleaner)
 
 TEST_CASE("default constructed token", "[token]"){
     Token token{}; // NOLINT(*-include-cleaner)
@@ -52,6 +52,12 @@ TEST_CASE("default constructed token set propriety tostring", "[token]"){
     REQUIRE(token.getColumn() == 1);
     REQUIRE(token.to_string() == "(type: INTEGER, value: assss, line: 1, column: 1)");
 }
+
+TEST_CASE("Tokenizer handles errors", "[Tokenizer]") {
+    Tokenizer tokenizer("x@y");
+    REQUIRE_THROWS_WITH(tokenizer.tokenize(),FORMAT("Unknown Character '@' (line 1, column 2):{0}Context: {0}x@y{0} ^{0}",NEWL));
+}
+
 
 TEST_CASE("tokenizer emit identifier token", "[tokenizer]"){
     Tokenizer tokenizer{"a a_ a0 a000_"}; // NOLINT(*-include-cleaner)

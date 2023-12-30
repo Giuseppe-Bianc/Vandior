@@ -81,8 +81,6 @@ Token Tokenizer::handleOperators() {
     return {TokenType::OPERATOR, value, line, column - value.size()};
 }
 void Tokenizer::handleError(const std::string &value, const std::string_view &errorMsg) {
-    Timer timerError{std::string{errorMsg}};
-
     const auto &lineStart = findLineStart();
     const auto &lineEnd = findLineEnd();
 
@@ -90,7 +88,7 @@ void Tokenizer::handleError(const std::string &value, const std::string_view &er
     std::string highlighting = getHighlighting(lineStart, value.length());
     std::string errorMessage = getErrorMessage(value, errorMsg, contextLine, highlighting);
 
-    LERROR("{}{}", errorMessage, timerError);
+    throw std::runtime_error(errorMessage);
 }
 std::size_t Tokenizer::findLineStart() const {  // NOLINT(*-include-cleaner)
     std::size_t lineStart = position;
