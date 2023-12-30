@@ -54,12 +54,23 @@ TEST_CASE("default constructed token set propriety tostring", "[token]"){
 }
 
 TEST_CASE("tokenizer emit identifier token", "[tokenizer]"){
-    Tokenizer tokenizer{"a a_ a0"}; // NOLINT(*-include-cleaner)
+    Tokenizer tokenizer{"a a_ a0 a000_"}; // NOLINT(*-include-cleaner)
     std::vector<Token> tokens = tokenizer.tokenize(); // NOLINT(*-include-cleaner)
-    REQUIRE(tokens.size() == 4);
+    REQUIRE(tokens.size() == 5);
     REQUIRE(tokens[0] == Token(TokenType::IDENTIFIER, "a", 1, 1));
     REQUIRE(tokens[1] == Token(TokenType::IDENTIFIER, "a_", 1, 3));
     REQUIRE(tokens[2] == Token(TokenType::IDENTIFIER, "a0", 1, 6));
+    REQUIRE(tokens[3] == Token(TokenType::IDENTIFIER, "a000_", 1, 9));
+}
+
+TEST_CASE("tokenizer emit identifier token new line", "[tokenizer]"){
+    Tokenizer tokenizer{"a a_\na0 a000_"}; // NOLINT(*-include-cleaner)
+    std::vector<Token> tokens = tokenizer.tokenize(); // NOLINT(*-include-cleaner)
+    REQUIRE(tokens.size() == 5);
+    REQUIRE(tokens[0] == Token(TokenType::IDENTIFIER, "a", 1, 1));
+    REQUIRE(tokens[1] == Token(TokenType::IDENTIFIER, "a_", 1, 3));
+    REQUIRE(tokens[2] == Token(TokenType::IDENTIFIER, "a0", 2, 1));
+    REQUIRE(tokens[3] == Token(TokenType::IDENTIFIER, "a000_", 2, 4));
 }
 
 TEST_CASE("tokenizer emit integer token", "[tokenizer]"){
@@ -70,6 +81,16 @@ TEST_CASE("tokenizer emit integer token", "[tokenizer]"){
     REQUIRE(tokens[1] == Token(TokenType::INTEGER, "333", 1, 4));
     REQUIRE(tokens[2] == Token(TokenType::INTEGER, "550", 1, 8));
     REQUIRE(tokens[3] == Token(TokenType::INTEGER, "34000000", 1, 12));
+}
+
+TEST_CASE("tokenizer emit integer token new line", "[tokenizer]"){
+    Tokenizer tokenizer{"42 333\n550 34000000"}; // NOLINT(*-include-cleaner)
+    std::vector<Token> tokens = tokenizer.tokenize(); // NOLINT(*-include-cleaner)
+    REQUIRE(tokens.size() == 5);
+    REQUIRE(tokens[0] == Token(TokenType::INTEGER, "42", 1, 1));
+    REQUIRE(tokens[1] == Token(TokenType::INTEGER, "333", 1, 4));
+    REQUIRE(tokens[2] == Token(TokenType::INTEGER, "550", 2, 1));
+    REQUIRE(tokens[3] == Token(TokenType::INTEGER, "34000000", 2, 5));
 }
 
 
@@ -87,4 +108,23 @@ TEST_CASE("tokenizer emit double token", "[tokenizer]"){
     REQUIRE(tokens[7] == Token(TokenType::DOUBLE, "1E-1", 1, 37));
     REQUIRE(tokens[8] == Token(TokenType::DOUBLE, "1.1e-1", 1, 42));
     REQUIRE(tokens[9] == Token(TokenType::DOUBLE, "1.1E-1", 1, 49));
+}
+
+TEST_CASE("tokenizer emit operator token", "[tokenizer]"){
+    Tokenizer tokenizer{"* / = , : < > ! | & + - ^"}; // NOLINT(*-include-cleaner)
+    std::vector<Token> tokens = tokenizer.tokenize(); // NOLINT(*-include-cleaner)
+    REQUIRE(tokens.size() == 14);
+    REQUIRE(tokens[0] == Token(TokenType::OPERATOR, "*", 1, 1));
+    REQUIRE(tokens[1] == Token(TokenType::OPERATOR, "/", 1, 3));
+    REQUIRE(tokens[2] == Token(TokenType::OPERATOR, "=", 1, 5));
+    REQUIRE(tokens[3] == Token(TokenType::OPERATOR, ",", 1, 7));
+    REQUIRE(tokens[4] == Token(TokenType::OPERATOR, ":", 1, 9));
+    REQUIRE(tokens[5] == Token(TokenType::OPERATOR, "<", 1, 11));
+    REQUIRE(tokens[6] == Token(TokenType::OPERATOR, ">", 1, 13));
+    REQUIRE(tokens[7] == Token(TokenType::OPERATOR, "!", 1, 15));
+    REQUIRE(tokens[8] == Token(TokenType::OPERATOR, "|", 1, 17));
+    REQUIRE(tokens[9] == Token(TokenType::OPERATOR, "&", 1, 19));
+    REQUIRE(tokens[10] == Token(TokenType::OPERATOR, "+", 1, 21));
+    REQUIRE(tokens[11] == Token(TokenType::OPERATOR, "-", 1, 23));
+    REQUIRE(tokens[12] == Token(TokenType::OPERATOR, "^", 1, 25));
 }
