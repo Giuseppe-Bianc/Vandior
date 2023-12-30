@@ -1,14 +1,14 @@
 #pragma once
 
-#include "Vandior/Log.hpp"
-#include "Vandior/Timer.hpp"
+#include "Vandior/Log.hpp" // NOLINT(*-include-cleaner)
+#include "Vandior/Timer.hpp" // NOLINT(*-include-cleaner)
 #include "Vandior/Token.hpp"
 #include <string>
 
 class Tokenizer {
 public:
-    explicit Tokenizer(const std::string_view &input) noexcept : _input(input), _inputSize(input.size()) {}
-    [[nodiscard]] std::vector<Token> tokenize();
+    explicit Tokenizer(const std::string_view &input) noexcept : _input(input), _inputSize(input.size()) {} // NOLINT(*-include-cleaner)
+    [[nodiscard]] std::vector<Token> tokenize(); // NOLINT(*-include-cleaner)
 
 private:
     std::string_view _input;
