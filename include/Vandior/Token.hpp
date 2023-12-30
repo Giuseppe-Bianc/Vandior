@@ -3,6 +3,7 @@
 
 enum class TokenType : long {
     INTEGER,
+    DOUBLE,
     OPERATOR,
     IDENTIFIER,
     UNKNOWN,
@@ -16,6 +17,9 @@ template <> struct fmt::formatter<TokenType> : fmt::formatter<std::string_view> 
         switch(tokenType) {
         case TokenType::INTEGER:
             name = "INTEGER";
+            break;
+        case TokenType::DOUBLE:
+            name = "DOUBLE";
             break;
         case TokenType::OPERATOR:
             name = "OPERATOR";

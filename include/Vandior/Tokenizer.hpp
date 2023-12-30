@@ -22,10 +22,16 @@ private:
     [[nodiscard]] Token handleDigits();
     void handleWhiteSpace();
     void handleError(const std::string &value, const std::string_view &errorMsg);
-    [[nodiscard]] std::size_t findLineStart();
-    [[nodiscard]] std::size_t findLineEnd();
-    [[nodiscard]] std::string getContextLine(const std::size_t &lineStart, const std::size_t &lineEnd);
+    [[nodiscard]] std::size_t findLineStart() const;
+    [[nodiscard]] std::size_t findLineEnd() const;
+    [[nodiscard]] std::string getContextLine(const std::size_t &lineStart, const std::size_t &lineEnd) const;
     [[nodiscard]] std::string getHighlighting(const std::size_t &start, const std::size_t &length) const;
-    std::string getErrorMessage(const std::string &value, const std::string_view &errMsg, std::string contextLine,
-                                std::string highlighting);
+    std::string getErrorMessage(const std::string &value, const std::string_view &errMsg, const std::string & contextLine,
+                                const std::string &highlighting);
+    void extractDigits();
+    void incPosAndColumn();
+    void extractExponent();
+    [[nodiscard]] bool isOperator(const char &aChar);
+    [[nodiscard]] bool isPlusOrMinus(const char &cara) const;
+    [[nodiscard]] Token handleOperators();
 };

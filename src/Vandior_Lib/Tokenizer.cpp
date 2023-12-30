@@ -11,6 +11,8 @@ std::vector<Token> Tokenizer::tokenize() {  // NOLINT(*-include-cleaner)
         } else if(std::isspace(currentChar)) [[likely]] {
             handleWhiteSpace();
             continue;  // Continue the loop to get the next token
+        } else if(isOperator(currentChar)) [[likely]] {
+            tokens.emplace_back(handleOperators());
         } else [[unlikely]] {
             handleError(std::string(1, currentChar), "Unknown Character");
             std::exit(-1);  // Terminate the program with an error code
@@ -22,26 +24,44 @@ std::vector<Token> Tokenizer::tokenize() {  // NOLINT(*-include-cleaner)
 bool Tokenizer::positionIsInText() const noexcept { return position < _inputSize; }
 Token Tokenizer::handleAlpha() {
     const auto start = position;
-    while(positionIsInText() && (std::isalnum(_input[position]) || _input[position] == '_')) {
-        position++;
-        column++;
-    }
-    const auto end = position;
-    std::string_view value = _input.substr(start, end - start);
+    while(positionIsInText() && (std::isalnum(_input[position]) || _input[position] == '_')) { incPosAndColumn(); }
+    std::string_view value = _input.substr(start, position - start);
     return {TokenType::IDENTIFIER, value, line, column - value.size()};
 }
 Token Tokenizer::handleDigits() {
+    TokenType tokenType = TokenType::INTEGER;
     const auto start = position;
-    while(positionIsInText() && std::isdigit(_input[position])) {
-        position++;
-        column++;
+    extractDigits();
+    if(positionIsInText() && _input[position] == PNT) {
+        incPosAndColumn();
+        extractDigits();
+        if(positionIsInText() && std::toupper(_input[position]) == ECR) {
+            incPosAndColumn();
+            extractExponent();
+        }
+        tokenType = TokenType::DOUBLE;
     }
-    const auto end = position;
-    std::string_view value = _input.substr(start, end - start);
-    return {TokenType::INTEGER, value, line, column - value.size()};
+    if(positionIsInText() && std::toupper(_input[position]) == ECR) {
+        incPosAndColumn();
+        extractExponent();
+        tokenType = TokenType::DOUBLE;
+    }
+    std::string_view value = _input.substr(start, position - start);
+    return {tokenType, value, line, column - value.size()};
+}
+void Tokenizer::extractExponent() {
+    if(positionIsInText() && (isPlusOrMinus(_input[position]))) { incPosAndColumn(); }
+    extractDigits();
+}
+bool Tokenizer::isPlusOrMinus(const char &cara) const { return cara == '+' || cara == '-'; }
+void Tokenizer::extractDigits() {
+    while(positionIsInText() && isdigit(_input[position])) { incPosAndColumn(); }
+}
+void Tokenizer::incPosAndColumn() {
+    position++;
+    column++;
 }
 void Tokenizer::handleWhiteSpace() {
-    if(std::isspace(_input[position])) { position++; }
     if(_input[position] == '\n') {
         ++line;
         column = 1;
@@ -49,6 +69,16 @@ void Tokenizer::handleWhiteSpace() {
         ++column;
     }
     ++position;
+}
+bool Tokenizer::isOperator(const char &aChar) {
+    static const std::unordered_set<char> operators = {'*', '/', '=', ',', ':', '<', '>', '!', '|', '&', '+', '-', '^'};
+    return operators.contains(aChar);
+}
+Token Tokenizer::handleOperators() {
+    const auto start = position;
+    incPosAndColumn();
+    std::string_view value = _input.substr(start, position - start);
+    return {TokenType::OPERATOR, value, line, column - value.size()};
 }
 void Tokenizer::handleError(const std::string &value, const std::string_view &errorMsg) {
     Timer timerError{std::string{errorMsg}};
@@ -62,24 +92,24 @@ void Tokenizer::handleError(const std::string &value, const std::string_view &er
 
     LERROR("{}{}", errorMessage, timerError);
 }
-std::size_t Tokenizer::findLineStart() {  // NOLINT(*-include-cleaner)
+std::size_t Tokenizer::findLineStart() const {  // NOLINT(*-include-cleaner)
     std::size_t lineStart = position;
     while(lineStart > 0 && _input[lineStart - 1] != CNL) { --lineStart; }  // NOLINT(*-include-cleaner)
     return lineStart;
 }
-std::size_t Tokenizer::findLineEnd() {
+std::size_t Tokenizer::findLineEnd() const {
     std::size_t lineEnd = position;
     while(lineEnd < _inputSize && _input[lineEnd] != CNL) { ++lineEnd; }
     return lineEnd;
 }
-std::string Tokenizer::getContextLine(const std::size_t &lineStart, const std::size_t &lineEnd) {
+std::string Tokenizer::getContextLine(const std::size_t &lineStart, const std::size_t &lineEnd) const {
     return std::string(_input.begin() + C_L(lineStart), _input.begin() + C_L(lineEnd)).append(NEWL);
 }
 std::string Tokenizer::getHighlighting(const std::size_t &start, const std::size_t &length) const {
     return FORMAT("{: ^{}}{:^{}}{}", "", position - start, "^", length, NEWL);
 }
-std::string Tokenizer::getErrorMessage(const std::string &value, const std::string_view &errMsg, std::string contextLine,
-                                       std::string highlighting) {
+std::string Tokenizer::getErrorMessage(const std::string &value, const std::string_view &errMsg, const std::string &contextLine,
+                                       const std::string &highlighting) {
     std::ostringstream errorMessageStream;
     errorMessageStream << FORMAT("{} '{}' (line {}, column {}):{}", errMsg, value, line, column, NEWL);
     errorMessageStream << FORMAT("Context: {}", NEWL);

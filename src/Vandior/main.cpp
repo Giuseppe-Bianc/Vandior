@@ -49,7 +49,7 @@ namespace {
         tokens = tokenizer.tokenize();
     }
 }  // namespace
-constexpr std::string_view code = "adddddddddddddddd;  asssssssssssss 2343332424";
+constexpr std::string_view code = "42 + y + 1. + 1.0 + 1e+1 + 1E+1 + 1.1e+1 + 1.1E+1 + 1e-1 + 1E-1 + 1.1e-1 + 1.1E-1";
 DISABLE_WARNINGS_PUSH(26461 26821)
 // NOLINTNEXTLINE(bugprone-exception-escape, readability-function-cognitive-complexity)
 int main(int argc, const char *const argv[]) {
@@ -70,6 +70,7 @@ int main(int argc, const char *const argv[]) {
             LINFO("{}\n", Vandior::cmake::project_version);
             return EXIT_SUCCESS;  // NOLINT(*-include-cleaner)
         }
+        LINFO("code legt {}", code.length());
         Tokenizer tokenizer{code};
         std::vector<Token> tokens;
         timeTokenizer(tokenizer, tokens);
