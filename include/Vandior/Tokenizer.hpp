@@ -3,6 +3,7 @@
 #include "Vandior/Log.hpp" // NOLINT(*-include-cleaner)
 #include "Vandior/Timer.hpp" // NOLINT(*-include-cleaner)
 #include "Vandior/Token.hpp"
+#include "Vandior/TokenizerUtility.hpp"
 #include <string>
 
 class Tokenizer {
@@ -31,9 +32,5 @@ private:
     void extractDigits();
     void incPosAndColumn();
     void extractExponent();
-    // NOLINTBEGIN
-    [[nodiscard]] bool isOperator(const char &aChar);
-    [[nodiscard]] bool isPlusOrMinus(const char &cara) const;
-    // NOLINTEND
     [[nodiscard]] Token handleOperators();
 };

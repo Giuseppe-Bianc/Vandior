@@ -11,7 +11,7 @@ std::vector<Token> Tokenizer::tokenize() {  // NOLINT(*-include-cleaner)
         } else if(std::isspace(currentChar)) [[likely]] {
             handleWhiteSpace();
             continue;  // Continue the loop to get the next token
-        } else if(isOperator(currentChar)) [[likely]] {
+        } else if(vnd::TokenizerUtility::isOperator(currentChar)) [[likely]] {
             tokens.emplace_back(handleOperators());
         } else [[unlikely]] {
             handleError(std::string(1, currentChar), "Unknown Character");
@@ -49,10 +49,9 @@ Token Tokenizer::handleDigits() {
     return {tokenType, value, line, column - value.size()};
 }
 void Tokenizer::extractExponent() {
-    if(positionIsInText() && (isPlusOrMinus(_input[position]))) { incPosAndColumn(); }
+    if(positionIsInText() && (vnd::TokenizerUtility::isPlusOrMinus(_input[position]))) { incPosAndColumn(); }
     extractDigits();
 }
-bool Tokenizer::isPlusOrMinus(const char &cara) const { return cara == '+' || cara == '-'; }
 void Tokenizer::extractDigits() {
     while(positionIsInText() && isdigit(_input[position])) { incPosAndColumn(); }
 }
@@ -69,18 +68,13 @@ void Tokenizer::handleWhiteSpace() {
     }
     ++position;
 }
-// NOLINTBEGIN
-bool Tokenizer::isOperator(const char &aChar) {
-    static const std::unordered_set<char> operators = {'*', '/', '=', ',', ':', '<', '>', '!', '|', '&', '+', '-', '^'};
-    return operators.contains(aChar);
-}
+
 Token Tokenizer::handleOperators() {
     const auto start = position;
     incPosAndColumn();
     std::string_view value = _input.substr(start, position - start);
     return {TokenType::OPERATOR, value, line, column - value.size()};
 }
-// NOLINTEND
 
 void Tokenizer::handleError(const std::string &value, const std::string_view &errorMsg) {
     const auto &lineStart = findLineStart();
