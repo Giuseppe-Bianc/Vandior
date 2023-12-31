@@ -3,6 +3,18 @@
 #include <catch2/matchers/catch_matchers.hpp>
 #include <Vandior/vandior.hpp>  // NOLINT(*-include-cleaner)
 
+TEST_CASE("corrected format for Tokentype", "[token_type]") {
+    REQUIRE(FORMAT("{}", TokenType::INTEGER) == "INTEGER");
+    REQUIRE(FORMAT("{}", TokenType::DOUBLE) == "DOUBLE");
+    REQUIRE(FORMAT("{}", TokenType::OPERATOR) == "OPERATOR");
+    REQUIRE(FORMAT("{}", TokenType::IDENTIFIER) == "IDENTIFIER");
+    REQUIRE(FORMAT("{}", TokenType::EOFT) == "EOF");
+    REQUIRE(FORMAT("{}", TokenType::UNKNOWN) == "UNKNOWN");
+}
+
+static inline constexpr std::size_t line = 5;
+static inline constexpr std::size_t colum = 6;
+
 TEST_CASE("default constructed token", "[token]"){
     Token token{}; // NOLINT(*-include-cleaner)
     REQUIRE(token.getType() == TokenType::UNKNOWN);
@@ -51,6 +63,17 @@ TEST_CASE("default constructed token set propriety tostring", "[token]"){
     REQUIRE(token.getLine() == 1);
     REQUIRE(token.getColumn() == 1);
     REQUIRE(token.to_string() == "(type: INTEGER, value: assss, line: 1, column: 1)");
+}
+
+TEST_CASE("Token Comparison Equality", "[Token]") {
+    Token token1(TokenType::OPERATOR, "+", line,  colum);
+    Token token2(TokenType::OPERATOR, "+", line,  colum);
+    REQUIRE(token1 == token2);
+}
+TEST_CASE("Token Comparison Inequality", "[Token]") {
+    Token token1(TokenType::IDENTIFIER, "variable", line,  colum);
+    Token token2(TokenType::IDENTIFIER, "variable2", line,  colum);
+    REQUIRE(token1 != token2);
 }
 
 TEST_CASE("Tokenizer handles errors", "[Tokenizer]") {

@@ -15,7 +15,6 @@ std::vector<Token> Tokenizer::tokenize() {  // NOLINT(*-include-cleaner)
             tokens.emplace_back(handleOperators());
         } else [[unlikely]] {
             handleError(std::string(1, currentChar), "Unknown Character");
-            std::exit(-1);  // Terminate the program with an error code
         }
     }
     tokens.emplace_back(TokenType::EOFT, "", line, column);
