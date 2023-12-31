@@ -1,4 +1,5 @@
 #pragma once
+#include "Log.hpp"
 #include "disableWarn.hpp"
 #include "format.hpp"
 #include "headers.hpp"

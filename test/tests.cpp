@@ -1,7 +1,37 @@
+#include "Vandior/Timer.hpp"
 #include <catch2/catch_test_macros.hpp>
 
 #include <catch2/matchers/catch_matchers.hpp>
 #include <Vandior/vandior.hpp>  // NOLINT(*-include-cleaner)
+
+static inline constexpr const int cicles = 1000000;
+static inline constexpr const double right = 1e10;
+static inline constexpr std::size_t line = 5;
+static inline constexpr std::size_t colum = 6;
+TEST_CASE("Timer can measure function execution time", "[Timer]") {
+    SECTION("Timer measures the time correctly") {
+        Timer timer("TestTimer");
+
+        auto testFunction = []() {
+            // Code to be timed
+            // You can simulate some work here
+            [[maybe_unused]]auto iii = 0;
+            for (int i = 0; i < cicles; ++i) {
+                // Some work
+                iii++;
+            }
+            [[maybe_unused]]double min = std::min(C_D(iii), right); // NOLINT(*-avoid-magic-numbers)
+        };
+
+        // Time the function
+        std::string result = timer.time_it(testFunction);
+
+        // Check that the result is not empty (you can customize this check based on your requirements)
+        REQUIRE_FALSE(result.empty());
+    }
+
+    // Add more test cases as needed
+}
 
 TEST_CASE("corrected format for Tokentype", "[token_type]") {
     REQUIRE(FORMAT("{}", TokenType::INTEGER) == "INTEGER");
@@ -12,8 +42,6 @@ TEST_CASE("corrected format for Tokentype", "[token_type]") {
     REQUIRE(FORMAT("{}", TokenType::UNKNOWN) == "UNKNOWN");
 }
 
-static inline constexpr std::size_t line = 5;
-static inline constexpr std::size_t colum = 6;
 
 TEST_CASE("default constructed token", "[token]"){
     Token token{}; // NOLINT(*-include-cleaner)
