@@ -4,7 +4,9 @@ find_package(glm REQUIRED)
 add_library(vandior_lib vandior.cpp
         Token.cpp
         Tokenizer.cpp
-        TokenizerUtility.cpp)
+        TokenizerUtility.cpp
+        Parser.cpp
+)
 
 add_library(Vandior::vandior_lib ALIAS vandior_lib)
 

@@ -6,6 +6,8 @@
 
 static inline constexpr std::size_t line = 5;
 static inline constexpr std::size_t colum = 6;
+static inline constexpr auto lfh = 1.0;
+static inline constexpr auto rhs = 2.0;
 TEST_CASE("corrected format for Tokentype", "[token_type]") {
     REQUIRE(FORMAT("{}", TokenType::INTEGER) == "INTEGER");
     REQUIRE(FORMAT("{}", TokenType::DOUBLE) == "DOUBLE");
@@ -157,4 +159,70 @@ TEST_CASE("tokenizer emit operator token", "[tokenizer]"){
     REQUIRE(tokens[10] == Token(TokenType::OPERATOR, "+", 1, 21));
     REQUIRE(tokens[11] == Token(TokenType::OPERATOR, "-", 1, 23));
     REQUIRE(tokens[12] == Token(TokenType::OPERATOR, "^", 1, 25));
+}
+
+/*TEST_CASE("Parser emit nullptr for initial implementation", "[parser]"){
+    vnd::Parser parser("1 + 1 + 1");
+    REQUIRE(parser.parse() == nullptr);
+}*/
+
+TEST_CASE("Parser emit number node", "[parser]"){
+    vnd::Parser parser("1");
+    auto ast = parser.parse();
+    REQUIRE(ast != nullptr);
+    REQUIRE(ast->getType() == NodeType::Number);
+}
+
+TEST_CASE("Parser emit variable node", "[parser]"){
+    vnd::Parser parser("y");
+    auto ast = parser.parse();
+    REQUIRE(ast != nullptr);
+    REQUIRE(ast->getType() == NodeType::Variable);
+}
+
+TEST_CASE("Parser emit unary expression node", "[parser]") {
+    vnd::Parser parser("-x");
+    auto ast = parser.parse();
+
+    REQUIRE(ast != nullptr);
+    REQUIRE(ast->getType() == NodeType::UnaryExpression);
+
+    const auto* unaryNode = dynamic_cast<const UnaryExpressionNode*>(ast.get());
+    REQUIRE(unaryNode != nullptr);
+
+    // Check the operator and operand
+    REQUIRE(unaryNode->getOp() == "-");
+
+    const auto& operand = unaryNode->getOperand();
+    REQUIRE(operand != nullptr);
+    REQUIRE(operand->getType() == NodeType::Variable);
+
+    const auto* variableNode = dynamic_cast<const VariableNode*>(operand.get());
+    REQUIRE(variableNode != nullptr);
+    REQUIRE(variableNode->getName() == "x");
+}
+
+
+TEST_CASE("Parser emit binary expression node", "[parser]") {
+    vnd::Parser parser("1 + 2");
+    auto ast = parser.parse();
+    REQUIRE(ast != nullptr);
+    REQUIRE(ast->getType() == NodeType::BinaryExpression);
+
+    const auto* binaryNode = dynamic_cast<const BinaryExpressionNode*>(ast.get());
+    REQUIRE(binaryNode != nullptr);
+
+    // Check the operation
+    REQUIRE(binaryNode->getOp() == "+");
+
+    // Check the left and right operands
+    const auto * leftNumber = dynamic_cast<const NumberNode*>(binaryNode->getLeft().get());
+    const auto * rightNumber = dynamic_cast<const NumberNode*>(binaryNode->getRight().get());
+
+    REQUIRE(leftNumber != nullptr);
+    REQUIRE(rightNumber != nullptr);
+
+    // Check the values of left and right operands
+    REQUIRE(leftNumber->getValue() == lfh);
+    REQUIRE(rightNumber->getValue() == rhs);
 }
