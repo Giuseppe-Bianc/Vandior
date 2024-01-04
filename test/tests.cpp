@@ -7,6 +7,7 @@
 static inline constexpr std::size_t line = 5;
 static inline constexpr std::size_t colum = 6;
 static inline constexpr auto lfh = 1.0;
+static inline constexpr auto lfh2 = lfh+0.5;
 static inline constexpr auto rhs = 2.0;
 TEST_CASE("corrected format for Tokentype", "[token_type]") {
     REQUIRE(FORMAT("{}", TokenType::INTEGER) == "INTEGER");
@@ -222,6 +223,29 @@ TEST_CASE("Parser emit variable node", "[parser]"){
     REQUIRE(variable != nullptr);
     REQUIRE(variable->getName() ==  "y");
 }
+
+TEST_CASE("Parser emit number node double", "[parser]"){
+    vnd::Parser parser("1.5");
+    auto ast = parser.parse();
+    REQUIRE(ast != nullptr);
+    REQUIRE(ast->getType() == NodeType::Number);
+    const auto * number = dynamic_cast<const NumberNode*>(ast.get());
+    REQUIRE(number != nullptr);
+    REQUIRE(number->getValue()==lfh2);
+}
+
+TEST_CASE("Parser emit number node double print", "[parser]"){
+    vnd::Parser parser("1.5");
+    auto ast = parser.parse();
+    REQUIRE(ast != nullptr);
+    REQUIRE(ast->getType() == NodeType::Number);
+    const auto * number = dynamic_cast<const NumberNode*>(ast.get());
+    REQUIRE(number != nullptr);
+    REQUIRE(number->getValue()==lfh2);
+    REQUIRE(number->print() == "NUMBER(1.5)");
+}
+
+
 TEST_CASE("Parser emit variable node print", "[parser]"){
     vnd::Parser parser("y");
     auto ast = parser.parse();
