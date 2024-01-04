@@ -111,8 +111,11 @@ TEST_CASE("Tokenizer handles errors", "[Tokenizer]") {
     std::vector<Token> tokens;
     try {
         tokens = tokenizer.tokenize();
+        FAIL("Expected an exception, but none was thrown.");
     } catch(const std::exception& e) {
-        REQUIRE(e.what() == FORMAT("Unknown Character '@' (line 1, column 2):{0}Context: {0}x@y{0} ^{0}",CNL));
+        REQUIRE(e.what() == FORMAT("Unknown Character '@' (line 1, column 2):{0}Context: {0}x@y{0} ^{0}", CNL));
+    } catch(...) {
+        FAIL("Unexpected exception was thrown.");
     }
 }
 
