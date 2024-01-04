@@ -8,13 +8,13 @@ namespace vnd {
     void Parser::consumeToken() {
         if(position < tokenSize) { position++; }
     }
-    const Token &Parser::getNextToken() {  // NOLINT(*-include-cleaner)
+    /*const Token &Parser::getNextToken() {  // NOLINT(*-include-cleaner)
         if(position < tokenSize) {
             consumeToken();
             return tokens.at(position);
         }
         return tokens.back();
-    }
+    }*/
     const Token &Parser::getCurrentToken() { return tokens.at(position); }
     bool Parser::isUnaryOperator(std::string_view view) { return view == "+" || view == "-"; }
     int Parser::getOperatorPrecedence(const Token &token) {

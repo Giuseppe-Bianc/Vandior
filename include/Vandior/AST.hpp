@@ -81,8 +81,8 @@ private:
 // Number node
 class NumberNode : public ASTNode {
 public:
-    explicit NumberNode(int value) : value(C_D(value)) {}
-    explicit NumberNode(double value) : value(value) {}
+    explicit NumberNode(int _value) : value(C_D(_value)) {}
+    explicit NumberNode(double _value) : value(_value) {}
 
     NodeType getType() const override { return NodeType::Number; }
 

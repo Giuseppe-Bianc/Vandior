@@ -16,12 +16,12 @@ namespace vnd {
 
     private:
         void consumeToken();
-        const Token &getNextToken();
+        //const Token &getNextToken();
         const Token &getCurrentToken();
-        bool isUnaryOperator(std::string_view view);
-        int getOperatorPrecedence(const Token &token);
-        int convertToInt(std::string_view str);
-        double convertToDouble(std::string_view str);
+        static bool isUnaryOperator(std::string_view view);
+        static int getOperatorPrecedence(const Token &token);
+        static int convertToInt(std::string_view str);
+        static double convertToDouble(std::string_view str);
         std::unique_ptr<ASTNode> parsePrimary();
         std::unique_ptr<ASTNode> parseUnary();
         std::unique_ptr<ASTNode> parseBinary(int precedence);
