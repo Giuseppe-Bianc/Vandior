@@ -45,8 +45,8 @@ public:
 // Binary expression node
 class BinaryExpressionNode : public ASTNode {
 public:
-    BinaryExpressionNode(std::string_view op, std::unique_ptr<ASTNode> left, std::unique_ptr<ASTNode> right)
-      : op(op), left(std::move(left)), right(std::move(right)) {}
+    BinaryExpressionNode(std::string_view _op, std::unique_ptr<ASTNode> _left, std::unique_ptr<ASTNode> _right)
+      : op(_op), left(std::move(_left)), right(std::move(_right)) {}
 
     NodeType getType() const override { return NodeType::BinaryExpression; }
 
@@ -66,7 +66,7 @@ private:
 // Unary expression node
 class UnaryExpressionNode : public ASTNode {
 public:
-    UnaryExpressionNode(std::string_view op, std::unique_ptr<ASTNode> operand) : op(op), operand(std::move(operand)) {}
+    UnaryExpressionNode(std::string_view _op, std::unique_ptr<ASTNode> _operand) : op(_op), operand(std::move(_operand)) {}
 
     NodeType getType() const override { return NodeType::UnaryExpression; }
     std::string print() const override { return FORMAT("{}(op:\"{}\" operand:{})", getType(), op, operand->print()); }
@@ -81,8 +81,8 @@ private:
 // Number node
 class NumberNode : public ASTNode {
 public:
-    NumberNode(int value) : value(C_D(value)) {}
-    NumberNode(double value) : value(value) {}
+    explicit NumberNode(int value) : value(C_D(value)) {}
+    explicit NumberNode(double value) : value(value) {}
 
     NodeType getType() const override { return NodeType::Number; }
 
@@ -96,7 +96,7 @@ private:
 // Variable node
 class VariableNode : public ASTNode {
 public:
-    VariableNode(std::string_view name) : name(name) {}
+    explicit VariableNode(std::string_view _name) : name(_name) {}
 
     NodeType getType() const override { return NodeType::Variable; }
 
@@ -107,21 +107,21 @@ private:
     std::string_view name;
 };
 
-static void prettyPrint(const ASTNode &node, int indent = 0) {
+static inline void prettyPrint(const ASTNode &node, int indent = 0) {
     // Recursively print children for Binary and Unary expression nodes
-    if(const BinaryExpressionNode *binaryNode = dynamic_cast<const BinaryExpressionNode *>(&node)) {
+    if(const auto *binaryNode = dynamic_cast<const BinaryExpressionNode *>(&node)) {
         LINFO("{: ^{}}Node: (Type: {}, operation:\"{}\") ","",indent,node.getType(), binaryNode->getOp());
         LINFO("{: ^{}}Left:","",indent);
         prettyPrint(*binaryNode->getLeft(), indent + 2);
         LINFO("{: ^{}}Right:","",indent);
         prettyPrint(*binaryNode->getRight(), indent + 2);
-    } else if(const UnaryExpressionNode *unaryNode = dynamic_cast<const UnaryExpressionNode *>(&node)) {
+    } else if(const auto *unaryNode = dynamic_cast<const UnaryExpressionNode *>(&node)) {
         LINFO("{: ^{}}Node: (Type: {}, operation:\"{}\") ","",indent,node.getType(), unaryNode->getOp());
         LINFO("{: ^{}}Operand:","",indent);
         prettyPrint(*unaryNode->getOperand(), indent + 2);
-    } else if (const NumberNode *numberNode = dynamic_cast<const NumberNode*>(&node)){
+    } else if (const auto *numberNode = dynamic_cast<const NumberNode*>(&node)){
         LINFO("{: ^{}}Node: (Type: {}, value:{}) ","",indent,node.getType(), numberNode->getValue());
-    } else if(const VariableNode*variableNode = dynamic_cast<const VariableNode*>(&node)){
+    } else if(const auto*variableNode = dynamic_cast<const VariableNode*>(&node)){
         LINFO("{: ^{}}Node: (Type: {}, value:{}) ","",indent,node.getType(), variableNode->getName());
     }
 }

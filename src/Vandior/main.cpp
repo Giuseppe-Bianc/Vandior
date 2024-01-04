@@ -80,8 +80,6 @@ int main(int argc, const char *const argv[]) {
         auto ast = parser.parse();
         prettyPrint(*ast);
         LINFO("{}", timeAst);
-        auto past = std::make_unique<NumberNode>(2);
-        LINFO("{}", past->print());
     } catch(const std::exception &e) { LERROR("Unhandled exception in main: {}", e.what()); }  // NOLINT(*-include-cleaner)
 }
 DISABLE_WARNINGS_POP()
