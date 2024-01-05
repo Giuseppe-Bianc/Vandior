@@ -99,7 +99,7 @@ public:
 
     [[nodiscard]] times multi_time() const { return make_named_times(make_time()); }
 
-    [[nodiscard]] static constexpr std::pair<long double, std::string> make_named_time(long double time) {
+    [[nodiscard]] static std::pair<long double, std::string> make_named_time(long double time) {
         const auto &[ld1, ld2, ld3, ld4, str1, str2, str3, str4] = make_named_times(time);
         // Accessing values
         if(ld1 > 1) [[likely]] {  // seconds
