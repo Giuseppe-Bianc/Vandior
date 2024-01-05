@@ -89,7 +89,7 @@ public:
     }
 
     // NOLINTBEGIN
-    [[nodiscard]] constexpr static times make_named_times(long double time) {  // NOLINT(*-identifier-length)
+    [[nodiscard]] static times make_named_times(long double time) {  // NOLINT(*-identifier-length)
         const auto &secondsTime = time / SENCONDSFACTOR;
         const auto &millisTime = time / MILLISENCONDSFACTOR;
         const auto &microTime = time / MICROSENCONDSFACTOR;
