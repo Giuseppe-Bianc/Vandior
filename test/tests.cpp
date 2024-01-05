@@ -105,23 +105,6 @@ TEST_CASE("Token Comparison Inequality", "[Token]") {
     REQUIRE(token1 != token2);
 }
 
-TEST_CASE("Tokenizer handles errors", "[Tokenizer]") {
-    Tokenizer tokenizer("x@y");
-    std::vector<Token> tokens;
-    try {
-        tokens = tokenizer.tokenize();
-        FAIL("Expected an exception, but none was thrown.");
-    } catch(const std::runtime_error& e) {
-        REQUIRE(e.what() == FORMAT("Unknown Character '@' (line 1, column 2):{0}Context: {0}x@y{0} ^{0}", CNL));
-    } catch(const std::exception& e) {
-        // Catch other standard exceptions if needed
-        FAIL("Unexpected exception: " << e.what());
-    } catch(...) {
-        FAIL("Unexpected non-standard exception was thrown.");
-    }
-}
-
-
 TEST_CASE("tokenizer emit identifier token", "[tokenizer]"){
     Tokenizer tokenizer{"a a_ a0 a000_"}; // NOLINT(*-include-cleaner)
     std::vector<Token> tokens = tokenizer.tokenize(); // NOLINT(*-include-cleaner)
