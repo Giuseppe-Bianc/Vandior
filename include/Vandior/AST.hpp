@@ -55,8 +55,8 @@ public:
     }
 
     const std::string_view &getOp() const { return op; }
-    const std::unique_ptr<ASTNode> &getLeft() const { return std::move(left); }
-    const std::unique_ptr<ASTNode> &getRight() const { return std::move(right); }
+    const std::unique_ptr<ASTNode> &getLeft() const { return left; }
+    const std::unique_ptr<ASTNode> &getRight() const { return right; }
 
 private:
     std::string_view op;
@@ -71,7 +71,7 @@ public:
     NodeType getType() const override { return NodeType::UnaryExpression; }
     std::string print() const override { return FORMAT("{}(op:\"{}\" operand:{})", getType(), op, operand->print()); }
     const std::string_view &getOp() const { return op; }
-    const std::unique_ptr<ASTNode> &getOperand() const { return std::move(operand); }
+    const std::unique_ptr<ASTNode> &getOperand() const { return operand; }
 
 private:
     std::string_view op;
@@ -107,21 +107,28 @@ private:
     std::string_view name;
 };
 
-static inline void prettyPrint(const ASTNode &node, int indent = 0) {
+
+static inline constexpr void print_indent(int indent, const auto& label,const auto& value){
+    LINFO("{: ^{}}{}: {}", "", indent, label, value);
+}
+static inline constexpr void print_indent_dl(int indent, const auto& label,const auto& value, const auto& labelnl){
+    print_indent(indent, label, value);
+    LINFO("{: ^{}}{}:", "", indent, labelnl);
+}
+
+static inline constexpr void prettyPrint(const ASTNode &node, int indent = 0) {
     // Recursively print children for Binary and Unary expression nodes
-    if(const auto *binaryNode = dynamic_cast<const BinaryExpressionNode *>(&node)) {
-        LINFO("{: ^{}}Node: (Type: {}, operation:\"{}\") ","",indent,node.getType(), binaryNode->getOp());
-        LINFO("{: ^{}}Left:","",indent);
+    if(const auto * binaryNode = dynamic_cast<const BinaryExpressionNode *>(&node)) {
+        print_indent_dl(indent, "Node", FORMAT("(Type: {}, operation:\"{}\")", node.getType(), binaryNode->getOp()), "Left");
         prettyPrint(*binaryNode->getLeft(), indent + 2);
-        LINFO("{: ^{}}Right:","",indent);
+        print_indent(indent,"Right", "");
         prettyPrint(*binaryNode->getRight(), indent + 2);
-    } else if(const auto *unaryNode = dynamic_cast<const UnaryExpressionNode *>(&node)) {
-        LINFO("{: ^{}}Node: (Type: {}, operation:\"{}\") ","",indent,node.getType(), unaryNode->getOp());
-        LINFO("{: ^{}}Operand:","",indent);
+    } else if(const auto * unaryNode = dynamic_cast<const UnaryExpressionNode *>(&node)) {
+        print_indent_dl(indent, "Node", FORMAT("(Type: {}, operation:\"{}\")", node.getType(), unaryNode->getOp()), "Operand");
         prettyPrint(*unaryNode->getOperand(), indent + 2);
-    } else if (const auto *numberNode = dynamic_cast<const NumberNode*>(&node)){
-        LINFO("{: ^{}}Node: (Type: {}, value:{}) ","",indent,node.getType(), numberNode->getValue());
-    } else if(const auto*variableNode = dynamic_cast<const VariableNode*>(&node)){
-        LINFO("{: ^{}}Node: (Type: {}, value:{}) ","",indent,node.getType(), variableNode->getName());
+    } else if(const auto * numberNode = dynamic_cast<const NumberNode *>(&node)) {
+        print_indent(indent,"Node", FORMAT("(Type: {}, value:{})", node.getType(), numberNode->getValue()));
+    } else if(const auto * variableNode = dynamic_cast<const VariableNode *>(&node)) {
+        print_indent(indent,"Node", FORMAT("(Type: {}, value:{})", node.getType(), variableNode->getName()));
     }
 }

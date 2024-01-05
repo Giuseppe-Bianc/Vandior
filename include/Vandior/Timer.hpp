@@ -46,9 +46,9 @@ protected:
 public:
     /// Standard print function, this one is set by default
     // NOLINTBEGIN
-    static std::string Simple(const std::string &title, const std::string &time) { return FORMAT("{}: {}", title, time); }
+    static const std::string Simple(const std::string &title, const std::string &time) { return FORMAT("{}: {}", title, time); }
 
-    static std::string Big(const std::string &title, const std::string &time) {
+    static const std::string Big(const std::string &title, const std::string &time) {
         return FORMAT("-----------------------------------------\n| {} | Time = {}\n-----------------------------------------",
                         title, time);
     }
@@ -89,7 +89,7 @@ public:
     }
 
     // NOLINTBEGIN
-    [[nodiscard]] static times make_named_times(long double time) {  // NOLINT(*-identifier-length)
+    [[nodiscard]] constexpr static times make_named_times(long double time) {  // NOLINT(*-identifier-length)
         const auto &secondsTime = time / SENCONDSFACTOR;
         const auto &millisTime = time / MILLISENCONDSFACTOR;
         const auto &microTime = time / MICROSENCONDSFACTOR;
@@ -99,7 +99,7 @@ public:
 
     [[nodiscard]] times multi_time() const { return make_named_times(make_time()); }
 
-    [[nodiscard]] static std::pair<long double, std::string> make_named_time(long double time) {
+    [[nodiscard]] static constexpr std::pair<long double, std::string> make_named_time(long double time) {
         const auto &[ld1, ld2, ld3, ld4, str1, str2, str3, str4] = make_named_times(time);
         // Accessing values
         if(ld1 > 1) [[likely]] {  // seconds
