@@ -21,6 +21,7 @@ private:
     [[nodiscard]] bool positionIsInText() const noexcept;
     [[nodiscard]] Token handleAlpha();
     [[nodiscard]] Token handleDigits();
+    static void kewordType(const std::string_view &value, TokenType &type);
     void handleWhiteSpace();
     void handleError(const std::string &value, const std::string_view &errorMsg);
     [[nodiscard]] std::size_t findLineStart() const;
@@ -33,5 +34,4 @@ private:
     void incPosAndColumn();
     void extractExponent();
     [[nodiscard]] Token handleOperators();
-    void kewordType(const std::string_view &value, TokenType &type);
 };
