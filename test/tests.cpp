@@ -11,13 +11,17 @@ static inline constexpr auto identf = TokenType::IDENTIFIER;
 static inline constexpr auto inte =TokenType::INTEGER;
 static inline constexpr auto doub = TokenType::DOUBLE;
 static inline constexpr auto oper = TokenType::OPERATOR;
+#define REQ_FORMAT(type, string)  REQUIRE(FORMAT("{}", type) == (string)); // NOLINT(*-macro-usage)
 TEST_CASE("corrected format for Tokentype", "[token_type]") {
-    REQUIRE(FORMAT("{}", TokenType::INTEGER) == "INTEGER");
-    REQUIRE(FORMAT("{}", TokenType::DOUBLE) == "DOUBLE");
-    REQUIRE(FORMAT("{}", TokenType::OPERATOR) == "OPERATOR");
-    REQUIRE(FORMAT("{}", TokenType::IDENTIFIER) == "IDENTIFIER");
-    REQUIRE(FORMAT("{}", TokenType::EOFT) == "EOF");
-    REQUIRE(FORMAT("{}", TokenType::UNKNOWN) == "UNKNOWN");
+    using enum TokenType;
+    REQ_FORMAT(INTEGER, "INTEGER");
+    REQ_FORMAT(DOUBLE,"DOUBLE");
+    REQ_FORMAT(OPERATOR,"OPERATOR");
+    REQ_FORMAT(IDENTIFIER,"IDENTIFIER");
+    REQ_FORMAT(K_MAIN,"K_MAIN");
+    REQ_FORMAT(K_VAR, "K_VAR");
+    REQ_FORMAT(EOFT,"EOF");
+    REQ_FORMAT(UNKNOWN,"UNKNOWN");
 }
 
 

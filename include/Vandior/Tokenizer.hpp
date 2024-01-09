@@ -33,4 +33,5 @@ private:
     void incPosAndColumn();
     void extractExponent();
     [[nodiscard]] Token handleOperators();
+    void kewordType(const std::string_view &value, TokenType &type);
 };

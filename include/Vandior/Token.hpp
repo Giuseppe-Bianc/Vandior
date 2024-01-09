@@ -6,6 +6,8 @@ enum class TokenType : long {
     DOUBLE,
     OPERATOR,
     IDENTIFIER,
+    K_MAIN,
+    K_VAR,
     UNKNOWN,
     EOFT,
     // Add more types as needed
@@ -15,23 +17,30 @@ template <> struct fmt::formatter<TokenType> : fmt::formatter<std::string_view> 
     template <typename FormatContext> auto format(TokenType tokenType, FormatContext &ctx) {
         std::string_view name;
         switch(tokenType) {
-        case TokenType::INTEGER:
+            using enum TokenType;
+        case INTEGER:
             name = "INTEGER";
             break;
-        case TokenType::DOUBLE:
+        case DOUBLE:
             name = "DOUBLE";
             break;
-        case TokenType::OPERATOR:
+        case OPERATOR:
             name = "OPERATOR";
             break;
-        case TokenType::IDENTIFIER:
+        case IDENTIFIER:
             name = "IDENTIFIER";
             break;
-        case TokenType::EOFT:
+        case EOFT:
             name = "EOF";
             break;
+        case K_MAIN:
+            name = "K_MAIN";
+            break;
+        case K_VAR:
+            name = "K_VAR";
+            break;
         // Add more cases as needed
-        case TokenType::UNKNOWN:
+        case UNKNOWN:
             [[fallthrough]];
         default:
             name = "UNKNOWN";

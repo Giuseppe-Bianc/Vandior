@@ -23,9 +23,16 @@ std::vector<Token> Tokenizer::tokenize() {  // NOLINT(*-include-cleaner)
 bool Tokenizer::positionIsInText() const noexcept { return position < _inputSize; }
 Token Tokenizer::handleAlpha() {
     const auto start = position;
+    TokenType type = TokenType::IDENTIFIER;
     while(positionIsInText() && (std::isalnum(_input[position]) || _input[position] == '_')) { incPosAndColumn(); }
     std::string_view value = _input.substr(start, position - start);
-    return {TokenType::IDENTIFIER, value, line, column - value.size()};
+    kewordType(value, type);
+    return {type, value, line, column - value.size()};
+}
+void Tokenizer::kewordType(const std::string_view &value, TokenType &type) {
+    using enum TokenType;
+    if(value== "main") {type = K_MAIN;}
+    if(value== "var" || value =="const") {type=TokenType::K_VAR;}
 }
 Token Tokenizer::handleDigits() {
     TokenType tokenType = TokenType::INTEGER;
