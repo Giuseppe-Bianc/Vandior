@@ -40,6 +40,7 @@ public:
     virtual ~ASTNode() = default;
     virtual NodeType getType() const = 0;
     virtual std::string print() const = 0;
+    virtual std::string comp_print() const = 0;
 };
 
 // Binary expression node
@@ -52,6 +53,9 @@ public:
 
     std::string print() const override {
         return FORMAT("{}(op:\"{}\" left:{}, right:{})", getType(), op, left->print(), right->print());
+    }
+    std::string comp_print() const override {
+        return FORMAT("BINE(op:\"{}\" l:{}, r:{})", op, left->comp_print(), right->comp_print());
     }
 
     const std::string_view &getOp() const { return op; }
@@ -70,6 +74,7 @@ public:
 
     NodeType getType() const override { return NodeType::UnaryExpression; }
     std::string print() const override { return FORMAT("{}(op:\"{}\" operand:{})", getType(), op, operand->print()); }
+    std::string comp_print() const override { return FORMAT("UNE(op:\"{}\" opr:{})", op, operand->comp_print()); }
     const std::string_view &getOp() const { return op; }
     const std::unique_ptr<ASTNode> &getOperand() const { return operand; }
 
@@ -87,6 +92,7 @@ public:
     NodeType getType() const override { return NodeType::Number; }
 
     std::string print() const override { return FORMAT("{}({})", getType(), value); }
+    std::string comp_print() const override { return FORMAT("NUM({})", value); }
     double getValue() const { return value; }
 
 private:
@@ -101,6 +107,7 @@ public:
     NodeType getType() const override { return NodeType::Variable; }
 
     std::string print() const override { return FORMAT("{} ({})", getType(), name); }
+    std::string comp_print() const override { return FORMAT("VAR({})", name); }
     const std::string_view &getName() const { return name; }
 
 private:

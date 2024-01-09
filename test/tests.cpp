@@ -214,6 +214,17 @@ TEST_CASE("Parser emit number node print", "[parser]"){
     REQUIRE(number->print() == "NUMBER(1)");
 }
 
+TEST_CASE("Parser emit number node compat print", "[parser]"){
+    vnd::Parser parser("1");
+    auto ast = parser.parse();
+    REQUIRE(ast != nullptr);
+    REQUIRE(ast->getType() == NodeType::Number);
+    const auto * number = dynamic_cast<const NumberNode*>(ast.get());
+    REQUIRE(number != nullptr);
+    REQUIRE(number->getValue()==lfh);
+    REQUIRE(number->comp_print() == "NUM(1)");
+}
+
 TEST_CASE("Parser emit variable node", "[parser]"){
     vnd::Parser parser("y");
     auto ast = parser.parse();
@@ -245,6 +256,17 @@ TEST_CASE("Parser emit number node double print", "[parser]"){
     REQUIRE(number->print() == "NUMBER(1.5)");
 }
 
+TEST_CASE("Parser emit number node double compat print", "[parser]"){
+    vnd::Parser parser("1.5");
+    auto ast = parser.parse();
+    REQUIRE(ast != nullptr);
+    REQUIRE(ast->getType() == NodeType::Number);
+    const auto * number = dynamic_cast<const NumberNode*>(ast.get());
+    REQUIRE(number != nullptr);
+    REQUIRE(number->getValue()==lfh2);
+    REQUIRE(number->comp_print() == "NUM(1.5)");
+}
+
 
 TEST_CASE("Parser emit variable node print", "[parser]"){
     vnd::Parser parser("y");
@@ -255,6 +277,17 @@ TEST_CASE("Parser emit variable node print", "[parser]"){
     REQUIRE(variable != nullptr);
     REQUIRE(variable->getName() ==  "y");
     REQUIRE(variable->print()=="VARIABLE (y)");
+}
+
+TEST_CASE("Parser emit variable node compat print", "[parser]"){
+    vnd::Parser parser("y");
+    auto ast = parser.parse();
+    REQUIRE(ast != nullptr);
+    REQUIRE(ast->getType() == NodeType::Variable);
+    const auto * variable = dynamic_cast<const VariableNode*>(ast.get());
+    REQUIRE(variable != nullptr);
+    REQUIRE(variable->getName() ==  "y");
+    REQUIRE(variable->comp_print()=="VAR(y)");
 }
 
 TEST_CASE("Parser emit unary expression node", "[parser]") {
@@ -301,6 +334,30 @@ TEST_CASE("Parser emit unary expression node print", "[parser]") {
     REQUIRE(variableNode->getName() == "x");
     REQUIRE(unaryNode->print()== "UNARY_EXPRESION(op:\"-\" operand:VARIABLE (x))");
 }
+
+TEST_CASE("Parser emit unary expression node compat print", "[parser]") {
+    vnd::Parser parser("-x");
+    auto ast = parser.parse();
+
+    REQUIRE(ast != nullptr);
+    REQUIRE(ast->getType() == NodeType::UnaryExpression);
+
+    const auto* unaryNode = dynamic_cast<const UnaryExpressionNode*>(ast.get());
+    REQUIRE(unaryNode != nullptr);
+
+    // Check the operator and operand
+    REQUIRE(unaryNode->getOp() == "-");
+
+    const auto& operand = unaryNode->getOperand();
+    REQUIRE(operand != nullptr);
+    REQUIRE(operand->getType() == NodeType::Variable);
+
+    const auto* variableNode = dynamic_cast<const VariableNode*>(operand.get());
+    REQUIRE(variableNode != nullptr);
+    REQUIRE(variableNode->getName() == "x");
+    REQUIRE(unaryNode->comp_print()== "UNE(op:\"-\" opr:VAR(x))");
+}
+
 
 
 TEST_CASE("Parser emit binary expression node", "[parser]") {
@@ -351,4 +408,29 @@ TEST_CASE("Parser emit binary expression node print", "[parser]") {
     REQUIRE(leftNumber->getValue() == lfh);
     REQUIRE(rightNumber->getValue() == rhs);
     REQUIRE(binaryNode->print()== "BINARY_EXPRESION(op:\"+\" left:NUMBER(1), right:NUMBER(2))");
+}
+
+TEST_CASE("Parser emit binary expression node compact print", "[parser]") {
+    vnd::Parser parser("1 + 2");
+    auto ast = parser.parse();
+    REQUIRE(ast != nullptr);
+    REQUIRE(ast->getType() == NodeType::BinaryExpression);
+
+    const auto* binaryNode = dynamic_cast<const BinaryExpressionNode*>(ast.get());
+    REQUIRE(binaryNode != nullptr);
+
+    // Check the operation
+    REQUIRE(binaryNode->getOp() == "+");
+
+    // Check the left and right operands
+    const auto * leftNumber = dynamic_cast<const NumberNode*>(binaryNode->getLeft().get());
+    const auto * rightNumber = dynamic_cast<const NumberNode*>(binaryNode->getRight().get());
+
+    REQUIRE(leftNumber != nullptr);
+    REQUIRE(rightNumber != nullptr);
+
+    // Check the values of left and right operands
+    REQUIRE(leftNumber->getValue() == lfh);
+    REQUIRE(rightNumber->getValue() == rhs);
+    REQUIRE(binaryNode->comp_print() == "BINE(op:\"+\" l:NUM(1), r:NUM(2))");
 }
