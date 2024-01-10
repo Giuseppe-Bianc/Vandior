@@ -4,10 +4,15 @@
 enum class TokenType : long {
     INTEGER,
     DOUBLE,
+    BOOLEAN,
     OPERATOR,
     IDENTIFIER,
     K_MAIN,
     K_VAR,
+    K_STRUCTURE,
+    K_FOR,
+    K_FUN,
+    K_RETURN,
     UNKNOWN,
     EOFT,
     // Add more types as needed
@@ -24,6 +29,9 @@ template <> struct fmt::formatter<TokenType> : fmt::formatter<std::string_view> 
         case DOUBLE:
             name = "DOUBLE";
             break;
+        case BOOLEAN:
+            name = "BOOLEAN";
+            break;
         case OPERATOR:
             name = "OPERATOR";
             break;
@@ -38,6 +46,18 @@ template <> struct fmt::formatter<TokenType> : fmt::formatter<std::string_view> 
             break;
         case K_VAR:
             name = "K_VAR";
+            break;
+        case K_STRUCTURE:
+            name = "K_STRUCTURE";
+            break;
+        case K_FOR:
+            name = "K_FOR";
+            break;
+        case K_FUN:
+            name = "K_FUN";
+            break;
+        case K_RETURN:
+            name = "K_RETURN";
             break;
         // Add more cases as needed
         case UNKNOWN:

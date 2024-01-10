@@ -32,7 +32,12 @@ Token Tokenizer::handleAlpha() {
 void Tokenizer::kewordType(const std::string_view &value, TokenType &type) {
     using enum TokenType;
     if(value== "main") {type = K_MAIN;}
-    if(value== "var" || value =="const") {type=TokenType::K_VAR;}
+    if(value== "var" || value =="const") {type=K_VAR;}
+    if(value== "if" || value == "while") {type=K_STRUCTURE;}
+    if(value== "for") {type=K_FOR;}
+    if(value== "fun") {type=K_FUN;}
+    if(value== "return") {type=K_RETURN;}
+    if(value== "true"||value=="false") {type=TokenType::BOOLEAN;}
 }
 Token Tokenizer::handleDigits() {
     TokenType tokenType = TokenType::INTEGER;
