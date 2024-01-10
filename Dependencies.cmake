@@ -6,19 +6,19 @@ include(cmake/CPM.cmake)
 function(Vandior_setup_dependencies)
 
   if (NOT TARGET glm::glm)
-    cpmaddpackage("gh:g-truc/glm#0.9.9.8")
+    CPMAddPackage("gh:g-truc/glm#0.9.9.8")
   endif ()
 
   # For each dependency, see if it's
   # already been provided to us by a parent project
 
   if (NOT TARGET fmtlib::fmtlib)
-    cpmaddpackage("gh:fmtlib/fmt#10.1.1")
+    CPMAddPackage("gh:fmtlib/fmt#10.1.1")
   endif ()
 
   if(NOT TARGET spdlog::spdlog)
     if (WIN32)
-      cpmaddpackage(
+      CPMAddPackage(
               NAME
               spdlog
               VERSION
@@ -33,7 +33,7 @@ function(Vandior_setup_dependencies)
               "SPDLOG_WCHAR_FILENAMES ON"
               "SPDLOG_SANITIZE_ADDRESS ON")
     else ()
-      cpmaddpackage(
+      CPMAddPackage(
               NAME
               spdlog
               VERSION
@@ -50,11 +50,11 @@ function(Vandior_setup_dependencies)
   endif ()
 
   if(NOT TARGET Catch2::Catch2WithMain)
-    cpmaddpackage("gh:catchorg/Catch2@3.3.2")
+    CPMAddPackage("gh:catchorg/Catch2@3.3.2")
   endif()
 
   if(NOT TARGET CLI11::CLI11)
-    cpmaddpackage("gh:CLIUtils/CLI11@2.3.2")
+    CPMAddPackage("gh:CLIUtils/CLI11@2.3.2")
   endif()
 
 endfunction()
