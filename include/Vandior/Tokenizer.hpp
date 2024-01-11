@@ -34,4 +34,8 @@ private:
     void incPosAndColumn();
     void extractExponent();
     [[nodiscard]] Token handleOperators();
+    void extractVarLenOperator();
+    [[nodiscard]] TokenType singoleCharOp(const char &view);
+    TokenType multyCharOp(const std::string_view &view) const;
+    [[nodiscard]] Token handleBrackets();
 };

@@ -25,10 +25,16 @@ TEST_CASE("corrected format for Tokentype", "[token_type]") {
     REQ_FORMAT(K_FOR, "K_FOR");
     REQ_FORMAT(K_FUN, "K_FUN");
     REQ_FORMAT(K_RETURN, "K_RETURN");
+    REQ_FORMAT(PARENTESIS, "PARENTESIS");
+    REQ_FORMAT(SQ_PARENTESIS, "SQ_PARENTESIS");
+    REQ_FORMAT(CUR_PARENTESIS, "CUR_PARENTESIS");
+    REQ_FORMAT(OPERATION_EQUAL, "OPERATION_EQUAL");
+    REQ_FORMAT(BOOLEAN_OPERATOR, "BOOLEAN_OPERATOR");
+    REQ_FORMAT(LOGICAL_OPERATOR, "LOGICAL_OPERATOR");
+    REQ_FORMAT(UNARY_OPERATOR, "UNARY_OPERATOR");
     REQ_FORMAT(EOFT,"EOF");
     REQ_FORMAT(UNKNOWN,"UNKNOWN");
 }
-
 
 TEST_CASE("default constructed token", "[token]"){
     Token token{};
@@ -111,6 +117,7 @@ TEST_CASE("Token Comparison Equality", "[Token]") {
     Token token2(oper, "+", line,  colum);
     REQUIRE(token1 == token2);
 }
+
 TEST_CASE("Token Comparison Inequality", "[Token]") {
     Token token1(identf, "variable", line,  colum);
     Token token2(identf, "variable2", line,  colum);
@@ -157,7 +164,6 @@ TEST_CASE("tokenizer emit integer token new line", "[tokenizer]"){
     REQUIRE(tokens[3] == Token(inte, "34000000", 2, 5));
 }
 
-
 TEST_CASE("tokenizer emit double token", "[tokenizer]"){
     Tokenizer tokenizer{"1. 1.0 1e+1 1E+1 1.1e+1 1.1E+1 1e-1 1E-1 1.1e-1 1.1E-1"};
     std::vector<Token> tokens = tokenizer.tokenize();
@@ -193,10 +199,65 @@ TEST_CASE("tokenizer emit operator token", "[tokenizer]"){
     REQUIRE(tokens[12] == Token(oper, "^", 1, 25));
 }
 
-/*TEST_CASE("Parser emit nullptr for initial implementation", "[parser]"){
-    vnd::Parser parser("1 + 1 + 1");
-    REQUIRE(parser.parse() == nullptr);
-}*/
+TEST_CASE("tokenizer emit operationEqual token", "[tokenizer]"){
+    Tokenizer tokenizer{"+= -= *= /="};
+    std::vector<Token> tokens = tokenizer.tokenize();
+    REQUIRE(tokens.size() == 5);
+    REQUIRE(tokens[0] == Token(TokenType::OPERATION_EQUAL, "+=", 1, 1));
+    REQUIRE(tokens[1] == Token(TokenType::OPERATION_EQUAL, "-=", 1, 4));
+    REQUIRE(tokens[2] == Token(TokenType::OPERATION_EQUAL, "*=", 1, 7));
+    REQUIRE(tokens[3] == Token(TokenType::OPERATION_EQUAL, "/=", 1, 10));
+}
+
+TEST_CASE("tokenizer emit boolean operator token", "[tokenizer]"){
+    Tokenizer tokenizer{"== >= <= !="};
+    std::vector<Token> tokens = tokenizer.tokenize();
+    REQUIRE(tokens.size() == 5);
+    REQUIRE(tokens[0] == Token(TokenType::BOOLEAN_OPERATOR, "==", 1, 1));
+    REQUIRE(tokens[1] == Token(TokenType::BOOLEAN_OPERATOR, ">=", 1, 4));
+    REQUIRE(tokens[2] == Token(TokenType::BOOLEAN_OPERATOR, "<=", 1, 7));
+    REQUIRE(tokens[3] == Token(TokenType::BOOLEAN_OPERATOR, "!=", 1, 10));
+}
+
+TEST_CASE("tokenizer emit logical operator token", "[tokenizer]"){
+    Tokenizer tokenizer{"&& ||"};
+    std::vector<Token> tokens = tokenizer.tokenize();
+    REQUIRE(tokens.size() == 3);
+    REQUIRE(tokens[0] == Token(TokenType::LOGICAL_OPERATOR, "&&", 1, 1));
+    REQUIRE(tokens[1] == Token(TokenType::LOGICAL_OPERATOR, "||", 1, 4));
+}
+
+TEST_CASE("tokenizer emit unary operator token", "[tokenizer]"){
+    Tokenizer tokenizer{"++ --"};
+    std::vector<Token> tokens = tokenizer.tokenize();
+    REQUIRE(tokens.size() == 3);
+    REQUIRE(tokens[0] == Token(TokenType::UNARY_OPERATOR, "++", 1, 1));
+    REQUIRE(tokens[1] == Token(TokenType::UNARY_OPERATOR, "--", 1, 4));
+}
+
+TEST_CASE("tokenizer emit parenthesis token", "[tokenizer]"){
+    Tokenizer tokenizer{"( )"};
+    std::vector<Token> tokens = tokenizer.tokenize();
+    REQUIRE(tokens.size() == 3);
+    REQUIRE(tokens[0] == Token(TokenType::PARENTESIS, "(", 1, 1));
+    REQUIRE(tokens[1] == Token(TokenType::PARENTESIS, ")", 1, 3));
+}
+
+TEST_CASE("tokenizer emit square parenthesis token", "[tokenizer]"){
+    Tokenizer tokenizer{"[ ]"};
+    std::vector<Token> tokens = tokenizer.tokenize();
+    REQUIRE(tokens.size() == 3);
+    REQUIRE(tokens[0] == Token(TokenType::SQ_PARENTESIS, "[", 1, 1));
+    REQUIRE(tokens[1] == Token(TokenType::SQ_PARENTESIS, "]", 1, 3));
+}
+
+TEST_CASE("tokenizer emit square curly token", "[tokenizer]"){
+    Tokenizer tokenizer{"{ }"};
+    std::vector<Token> tokens = tokenizer.tokenize();
+    REQUIRE(tokens.size() == 3);
+    REQUIRE(tokens[0] == Token(TokenType::CUR_PARENTESIS, "{", 1, 1));
+    REQUIRE(tokens[1] == Token(TokenType::CUR_PARENTESIS, "}", 1, 3));
+}
 
 TEST_CASE("Parser emit number node", "[parser]"){
     vnd::Parser parser("1");

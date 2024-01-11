@@ -13,6 +13,8 @@ std::vector<Token> Tokenizer::tokenize() {  // NOLINT(*-include-cleaner)
             continue;  // Continue the loop to get the next token
         } else if(vnd::TokenizerUtility::isOperator(currentChar)) [[likely]] {
             tokens.emplace_back(handleOperators());
+        } else if(vnd::TokenizerUtility::isBrackets(currentChar)) [[likely]] {
+            tokens.emplace_back(handleBrackets());
         } else [[unlikely]] {
             handleError(std::string(1, currentChar), "Unknown Character");
         }
@@ -80,12 +82,62 @@ void Tokenizer::handleWhiteSpace() {
     }
     ++position;
 }
-
-Token Tokenizer::handleOperators() {
+Token Tokenizer::handleBrackets() {
     const auto start = position;
     incPosAndColumn();
     std::string_view value = _input.substr(start, position - start);
-    return {TokenType::OPERATOR, value, line, column - value.size()};
+    TokenType type{};
+    switch(value[0]) {
+    case '(':
+    case ')':
+        type= TokenType::PARENTESIS;
+        break;
+    case '[':
+    case ']':
+        type= TokenType::SQ_PARENTESIS;
+        break;
+    case '{':
+    case '}':
+        type= TokenType::CUR_PARENTESIS;
+        break;
+    default:
+        type= TokenType::UNKNOWN;
+        break;
+    }
+    return {type, value, line, column - value.size()};
+}
+void Tokenizer::extractVarLenOperator() {
+    while(positionIsInText() && vnd::TokenizerUtility::isOperator(_input[position])) { incPosAndColumn(); }
+}
+TokenType Tokenizer::singoleCharOp(const char &view) {
+    if(vnd::TokenizerUtility::isOperator(view)) {
+        return TokenType::OPERATOR;
+    }
+    return TokenType::UNKNOWN;
+}
+
+TokenType Tokenizer::multyCharOp(const std::string_view &view) const {
+    using enum TokenType;
+    if(vnd::TokenizerUtility::isOperationEqual(view)) { return OPERATION_EQUAL; }
+    if(vnd::TokenizerUtility::isBooleanOperator(view)) { return BOOLEAN_OPERATOR; }
+    if(vnd::TokenizerUtility::isLogicalOperator(view)) { return LOGICAL_OPERATOR; }
+    if(vnd::TokenizerUtility::isUnaryOperator(view)) { return UNARY_OPERATOR; }
+    return UNKNOWN;
+}
+
+Token Tokenizer::handleOperators() {
+    const auto start = position;
+    extractVarLenOperator();
+    std::string_view value = _input.substr(start, position - start);
+    TokenType type = TokenType::UNKNOWN;
+    if(!value.empty()) {
+        if(value.size() == 1) {
+            type = singoleCharOp(value[0]);
+        } else if(value.size() > 1) {
+            type = multyCharOp(value);
+        }
+    }
+    return {type, value, line, column - value.size()};
 }
 
 void Tokenizer::handleError(const std::string &value, const std::string_view &errorMsg) {
