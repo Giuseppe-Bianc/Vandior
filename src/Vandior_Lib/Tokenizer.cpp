@@ -89,14 +89,17 @@ Token Tokenizer::handleBrackets() {
     TokenType type{};
     switch(value[0]) {
     case '(':
+        [[fallthrough]];
     case ')':
         type= TokenType::PARENTESIS;
         break;
     case '[':
+        [[fallthrough]];
     case ']':
         type= TokenType::SQ_PARENTESIS;
         break;
     case '{':
+        [[fallthrough]];
     case '}':
         type= TokenType::CUR_PARENTESIS;
         break;
