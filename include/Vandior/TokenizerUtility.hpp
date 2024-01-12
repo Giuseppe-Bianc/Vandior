@@ -12,7 +12,6 @@ namespace vnd {
         [[nodiscard]] static bool isLogicalOperator(const std::string_view &value);
         [[nodiscard]] static bool isUnaryOperator(const std::string_view &value);
         [[nodiscard]] static bool isBrackets(const char &cha);
-        //[[nodiscard]] static bool isVarLenOperator(const std::string_view &value);
     };
 
 }  // namespace vnd

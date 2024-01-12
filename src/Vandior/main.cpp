@@ -12,31 +12,6 @@ DISABLE_WARNINGS_POP()
 // the source template at `configured_files/config.hpp.in`.
 #include <internal_use_only/config.hpp>
 
-/*template <typename T> void print_table() {
-    using lim = std::numeric_limits<T>;
-    LINFO("{:-^{}}", "", 50);
-    LINFO("{}", typeid(T).name());
-    LINFO("{:-^{}}", "", 50);
-    LINFO("Lowest: {: .20}", lim::lowest());
-    LINFO("Min: {: .20}", lim::min());
-    LINFO("Max: {: .20}", lim::max());
-    LINFO("Denorm min: {}", lim::denorm_min());
-    LINFO("epsilon: {: .20}", lim::epsilon());
-    LINFO("Round error: {}", lim::round_error());
-    LINFO("Mim exponent: {}", lim::min_exponent);
-    LINFO("Max exponent: {}", lim::max_exponent);
-    LINFO("Min exponent10: {}", lim::min_exponent10);
-    LINFO("Max exponent10: {}", lim::max_exponent10);
-    LINFO("Signaling NaN: {}", lim::signaling_NaN());
-    LINFO("Quiet NaN: {}", lim::quiet_NaN());
-    LINFO("Digits: {}", lim::digits);
-    LINFO("Digits10: {}", lim::digits10);
-    LINFO("Radix: {}", lim::radix);
-    LINFO("Infinity: {}", lim::infinity());
-    LINFO("+0 {: }", T(0));
-    LINFO("-0 {: }", T(-0.0));
-}*/
-
 namespace {
     void setupSpdlog() {
         spdlog::set_pattern(R"(%^[%T] [%l] %v%$)");
