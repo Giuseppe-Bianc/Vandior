@@ -364,7 +364,6 @@ TEST_CASE("Parser emit unary expression node", "[parser]") {
     REQUIRE(ast->getType() == NodeType::UnaryExpression);
 
     const auto* unaryNode = dynamic_cast<const UnaryExpressionNode*>(ast.get());
-    REQUIRE(unaryNode != nullptr);
 
     // Check the operator and operand
     REQUIRE(unaryNode->getOp() == "-");
@@ -386,7 +385,6 @@ TEST_CASE("Parser emit unary expression node print", "[parser]") {
     REQUIRE(ast->getType() == NodeType::UnaryExpression);
 
     const auto* unaryNode = dynamic_cast<const UnaryExpressionNode*>(ast.get());
-    REQUIRE(unaryNode != nullptr);
 
     // Check the operator and operand
     REQUIRE(unaryNode->getOp() == "-");
@@ -409,7 +407,6 @@ TEST_CASE("Parser emit unary expression node compat print", "[parser]") {
     REQUIRE(ast->getType() == NodeType::UnaryExpression);
 
     const auto* unaryNode = dynamic_cast<const UnaryExpressionNode*>(ast.get());
-    REQUIRE(unaryNode != nullptr);
 
     // Check the operator and operand
     REQUIRE(unaryNode->getOp() == "-");
@@ -458,7 +455,6 @@ TEST_CASE("Parser emit binary expression node print", "[parser]") {
     REQUIRE(ast->getType() == NodeType::BinaryExpression);
 
     const auto* binaryNode = dynamic_cast<const BinaryExpressionNode*>(ast.get());
-    REQUIRE(binaryNode != nullptr);
 
     // Check the operation
     REQUIRE(binaryNode->getOp() == "+");
@@ -483,7 +479,6 @@ TEST_CASE("Parser emit binary expression node compact print", "[parser]") {
     REQUIRE(ast->getType() == NodeType::BinaryExpression);
 
     const auto* binaryNode = dynamic_cast<const BinaryExpressionNode*>(ast.get());
-    REQUIRE(binaryNode != nullptr);
 
     // Check the operation
     REQUIRE(binaryNode->getOp() == "+");
