@@ -35,7 +35,7 @@ private:
     void extractExponent();
     [[nodiscard]] Token handleOperators();
     void extractVarLenOperator();
-    [[nodiscard]] TokenType singoleCharOp(const char &view);
-    TokenType multyCharOp(const std::string_view &view) const;
+    [[nodiscard]] static TokenType singoleCharOp(const char &view);
+    [[nodiscard]] static TokenType multyCharOp(const std::string_view &view);
     [[nodiscard]] Token handleBrackets();
 };

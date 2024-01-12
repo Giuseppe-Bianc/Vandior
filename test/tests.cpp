@@ -25,9 +25,12 @@ TEST_CASE("corrected format for Tokentype", "[token_type]") {
     REQ_FORMAT(K_FOR, "K_FOR");
     REQ_FORMAT(K_FUN, "K_FUN");
     REQ_FORMAT(K_RETURN, "K_RETURN");
-    REQ_FORMAT(PARENTESIS, "PARENTESIS");
-    REQ_FORMAT(SQ_PARENTESIS, "SQ_PARENTESIS");
-    REQ_FORMAT(CUR_PARENTESIS, "CUR_PARENTESIS");
+    REQ_FORMAT(OPEN_PARENTESIS, "OPEN_PARENTESIS");
+    REQ_FORMAT(OPEN_SQ_PARENTESIS, "OPEN_SQ_PARENTESIS");
+    REQ_FORMAT(OPEN_CUR_PARENTESIS, "OPEN_CUR_PARENTESIS");
+    REQ_FORMAT(CLOSE_PARENTESIS, "CLOSE_PARENTESIS");
+    REQ_FORMAT(CLOSE_SQ_PARENTESIS, "CLOSE_SQ_PARENTESIS");
+    REQ_FORMAT(CLOSE_CUR_PARENTESIS, "CLOSE_CUR_PARENTESIS");
     REQ_FORMAT(OPERATION_EQUAL, "OPERATION_EQUAL");
     REQ_FORMAT(BOOLEAN_OPERATOR, "BOOLEAN_OPERATOR");
     REQ_FORMAT(LOGICAL_OPERATOR, "LOGICAL_OPERATOR");
@@ -239,24 +242,24 @@ TEST_CASE("tokenizer emit parenthesis token", "[tokenizer]"){
     Tokenizer tokenizer{"( )"};
     std::vector<Token> tokens = tokenizer.tokenize();
     REQUIRE(tokens.size() == 3);
-    REQUIRE(tokens[0] == Token(TokenType::PARENTESIS, "(", 1, 1));
-    REQUIRE(tokens[1] == Token(TokenType::PARENTESIS, ")", 1, 3));
+    REQUIRE(tokens[0] == Token(TokenType::OPEN_PARENTESIS, "(", 1, 1));
+    REQUIRE(tokens[1] == Token(TokenType::CLOSE_PARENTESIS, ")", 1, 3));
 }
 
 TEST_CASE("tokenizer emit square parenthesis token", "[tokenizer]"){
     Tokenizer tokenizer{"[ ]"};
     std::vector<Token> tokens = tokenizer.tokenize();
     REQUIRE(tokens.size() == 3);
-    REQUIRE(tokens[0] == Token(TokenType::SQ_PARENTESIS, "[", 1, 1));
-    REQUIRE(tokens[1] == Token(TokenType::SQ_PARENTESIS, "]", 1, 3));
+    REQUIRE(tokens[0] == Token(TokenType::OPEN_SQ_PARENTESIS, "[", 1, 1));
+    REQUIRE(tokens[1] == Token(TokenType::CLOSE_SQ_PARENTESIS, "]", 1, 3));
 }
 
 TEST_CASE("tokenizer emit square curly token", "[tokenizer]"){
     Tokenizer tokenizer{"{ }"};
     std::vector<Token> tokens = tokenizer.tokenize();
     REQUIRE(tokens.size() == 3);
-    REQUIRE(tokens[0] == Token(TokenType::CUR_PARENTESIS, "{", 1, 1));
-    REQUIRE(tokens[1] == Token(TokenType::CUR_PARENTESIS, "}", 1, 3));
+    REQUIRE(tokens[0] == Token(TokenType::OPEN_CUR_PARENTESIS, "{", 1, 1));
+    REQUIRE(tokens[1] == Token(TokenType::CLOSE_CUR_PARENTESIS, "}", 1, 3));
 }
 
 TEST_CASE("Parser emit number node", "[parser]"){

@@ -89,19 +89,22 @@ Token Tokenizer::handleBrackets() {
     TokenType type{};
     switch(value[0]) {
     case '(':
-        [[fallthrough]];
+        type=TokenType::OPEN_PARENTESIS;
+        break;
     case ')':
-        type= TokenType::PARENTESIS;
+        type= TokenType::CLOSE_PARENTESIS;
         break;
     case '[':
-        [[fallthrough]];
+        type=TokenType::OPEN_SQ_PARENTESIS;
+        break;
     case ']':
-        type= TokenType::SQ_PARENTESIS;
+        type= TokenType::CLOSE_SQ_PARENTESIS;
         break;
     case '{':
-        [[fallthrough]];
+        type=TokenType::OPEN_CUR_PARENTESIS;
+        break;
     case '}':
-        type= TokenType::CUR_PARENTESIS;
+        type= TokenType::CLOSE_CUR_PARENTESIS;
         break;
     default:
         type= TokenType::UNKNOWN;
@@ -119,7 +122,7 @@ TokenType Tokenizer::singoleCharOp(const char &view) {
     return TokenType::UNKNOWN;
 }
 
-TokenType Tokenizer::multyCharOp(const std::string_view &view) const {
+TokenType Tokenizer::multyCharOp(const std::string_view &view) {
     using enum TokenType;
     if(vnd::TokenizerUtility::isOperationEqual(view)) { return OPERATION_EQUAL; }
     if(vnd::TokenizerUtility::isBooleanOperator(view)) { return BOOLEAN_OPERATOR; }

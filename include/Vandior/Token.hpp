@@ -13,9 +13,12 @@ enum class TokenType : long {
     K_FOR,
     K_FUN,
     K_RETURN,
-    PARENTESIS,
-    SQ_PARENTESIS,
-    CUR_PARENTESIS,
+    OPEN_PARENTESIS,
+    OPEN_SQ_PARENTESIS,
+    OPEN_CUR_PARENTESIS,
+    CLOSE_PARENTESIS,
+    CLOSE_SQ_PARENTESIS,
+    CLOSE_CUR_PARENTESIS,
     OPERATION_EQUAL,
     BOOLEAN_OPERATOR,
     LOGICAL_OPERATOR,
@@ -66,14 +69,23 @@ template <> struct fmt::formatter<TokenType> : fmt::formatter<std::string_view> 
         case K_RETURN:
             name = "K_RETURN";
             break;
-        case PARENTESIS:
-            name = "PARENTESIS";
+        case OPEN_PARENTESIS:
+            name = "OPEN_PARENTESIS";
             break;
-        case SQ_PARENTESIS:
-            name = "SQ_PARENTESIS";
+        case OPEN_SQ_PARENTESIS:
+            name = "OPEN_SQ_PARENTESIS";
             break;
-        case CUR_PARENTESIS:
-            name = "CUR_PARENTESIS";
+        case OPEN_CUR_PARENTESIS:
+            name = "OPEN_CUR_PARENTESIS";
+            break;
+        case CLOSE_PARENTESIS:
+            name = "CLOSE_PARENTESIS";
+            break;
+        case CLOSE_SQ_PARENTESIS:
+            name = "CLOSE_SQ_PARENTESIS";
+            break;
+        case CLOSE_CUR_PARENTESIS:
+            name = "CLOSE_CUR_PARENTESIS";
             break;
         case OPERATION_EQUAL:
             name = "OPERATION_EQUAL";
