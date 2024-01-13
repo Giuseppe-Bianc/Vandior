@@ -38,4 +38,6 @@ private:
     [[nodiscard]] static TokenType singoleCharOp(const char &view);
     [[nodiscard]] static TokenType multyCharOp(const std::string_view &view);
     [[nodiscard]] Token handleBrackets();
+    TokenType getType(const std::string_view &value) const;
+    Token handleChar();
 };

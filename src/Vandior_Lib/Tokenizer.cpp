@@ -15,6 +15,8 @@ std::vector<Token> Tokenizer::tokenize() {  // NOLINT(*-include-cleaner)
             tokens.emplace_back(handleOperators());
         } else if(vnd::TokenizerUtility::isBrackets(currentChar)) [[likely]] {
             tokens.emplace_back(handleBrackets());
+        } else if(vnd::TokenizerUtility::isApostrophe(currentChar)) [[likely]] {
+            tokens.emplace_back(handleChar());
         } else [[unlikely]] {
             handleError(std::string(1, currentChar), "Unknown Character");
         }
@@ -86,31 +88,44 @@ Token Tokenizer::handleBrackets() {
     const auto start = position;
     incPosAndColumn();
     std::string_view value = _input.substr(start, position - start);
-    TokenType type{};
-    switch(value[0]) {
-    case '(':
-        type=TokenType::OPEN_PARENTESIS;
-        break;
-    case ')':
-        type= TokenType::CLOSE_PARENTESIS;
-        break;
-    case '[':
-        type=TokenType::OPEN_SQ_PARENTESIS;
-        break;
-    case ']':
-        type= TokenType::CLOSE_SQ_PARENTESIS;
-        break;
-    case '{':
-        type=TokenType::OPEN_CUR_PARENTESIS;
-        break;
-    case '}':
-        type= TokenType::CLOSE_CUR_PARENTESIS;
-        break;
-    default:
-        type= TokenType::UNKNOWN;
-        break;
-    }
+    TokenType type = getType(value);
     return {type, value, line, column - value.size()};
+}
+
+TokenType Tokenizer::getType(const std::string_view &value) const {
+    switch(value[0]) {
+        using enum TokenType;
+    case '(':
+        return OPEN_PARENTESIS;
+    case ')':
+        return CLOSE_PARENTESIS;
+    case '[':
+        return OPEN_SQ_PARENTESIS;
+    case ']':
+        return CLOSE_SQ_PARENTESIS;
+    case '{':
+        return OPEN_CUR_PARENTESIS;
+    case '}':
+        return CLOSE_CUR_PARENTESIS;
+    default:
+        return UNKNOWN;
+    }
+}
+Token Tokenizer::handleChar() {
+    incPosAndColumn();
+    const auto start = position;
+    std::string_view value{};
+    while(!vnd::TokenizerUtility::isApostrophe(_input[position])){
+        if(position+1>_inputSize){
+            value = _input.substr(start, position - start);
+            return {TokenType::UNKNOWN, value, line, column - value.size()};
+        }
+        incPosAndColumn();
+    }
+    value = _input.substr(start, position - start);
+    const auto colum = column - value.size();
+    incPosAndColumn();
+    return {TokenType::CHAR, value, line, colum};
 }
 void Tokenizer::extractVarLenOperator() {
     while(positionIsInText() && vnd::TokenizerUtility::isOperator(_input[position])) { incPosAndColumn(); }

@@ -19,6 +19,7 @@ TEST_CASE("corrected format for Tokentype", "[token_type]") {
     REQ_FORMAT(BOOLEAN, "BOOLEAN")
     REQ_FORMAT(OPERATOR,"OPERATOR");
     REQ_FORMAT(IDENTIFIER,"IDENTIFIER");
+    REQ_FORMAT(CHAR, "CHAR");
     REQ_FORMAT(K_MAIN,"K_MAIN");
     REQ_FORMAT(K_VAR, "K_VAR");
     REQ_FORMAT(K_STRUCTURE, "K_STRUCTURE");
@@ -260,6 +261,16 @@ TEST_CASE("tokenizer emit square curly token", "[tokenizer]"){
     REQUIRE(tokens.size() == 3);
     REQUIRE(tokens[0] == Token(TokenType::OPEN_CUR_PARENTESIS, "{", 1, 1));
     REQUIRE(tokens[1] == Token(TokenType::CLOSE_CUR_PARENTESIS, "}", 1, 3));
+}
+
+TEST_CASE("tokenizer emit char token", "[tokenizer]"){
+    constexpr std::string_view code2 = "'a' '\\\\' ''";
+    Tokenizer tokenizer{code2};
+    std::vector<Token> tokens = tokenizer.tokenize();
+    REQUIRE(tokens.size() == 4);
+    REQUIRE(tokens[0] == Token(TokenType::CHAR, "a", 1, 2));
+    REQUIRE(tokens[1] == Token(TokenType::CHAR, "\\\\", 1, 6));
+    REQUIRE(tokens[2] == Token(TokenType::CHAR, "", 1, 11));
 }
 
 TEST_CASE("Parser emit number node", "[parser]"){
