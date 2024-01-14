@@ -13,6 +13,7 @@ namespace vnd {
         [[nodiscard]] static bool isUnaryOperator(const std::string_view &value) noexcept;
         [[nodiscard]] static bool isBrackets(const char &cha);
         [[nodiscard]] static bool isApostrophe(const char &cha) noexcept;
+        [[nodiscard]] static bool isQuotation(char cha) noexcept;
     };
 
 }  // namespace vnd

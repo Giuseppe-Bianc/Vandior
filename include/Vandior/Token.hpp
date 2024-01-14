@@ -8,6 +8,7 @@ enum class TokenType : long {
     OPERATOR,
     IDENTIFIER,
     CHAR,
+    STRING,
     K_MAIN,
     K_VAR,
     K_STRUCTURE,
@@ -51,6 +52,9 @@ template <> struct fmt::formatter<TokenType> : fmt::formatter<std::string_view> 
             break;
         case CHAR:
             name = "CHAR";
+            break;
+        case STRING:
+            name = "STRING";
             break;
         case EOFT:
             name = "EOF";

@@ -17,6 +17,8 @@ std::vector<Token> Tokenizer::tokenize() {  // NOLINT(*-include-cleaner)
             tokens.emplace_back(handleBrackets());
         } else if(vnd::TokenizerUtility::isApostrophe(currentChar)) [[likely]] {
             tokens.emplace_back(handleChar());
+        } else if(vnd::TokenizerUtility::isQuotation(currentChar)) [[likely]] {
+            tokens.emplace_back(handleString());
         } else [[unlikely]] {
             handleError(std::string(1, currentChar), "Unknown Character");
         }
@@ -132,6 +134,22 @@ Token Tokenizer::handleChar() {
     const auto colum = column - value.size();
     incPosAndColumn();
     return {TokenType::CHAR, value, line, colum};
+}
+Token Tokenizer::handleString() {
+    incPosAndColumn();
+    const auto start = position;
+    std::string_view value{};
+    while(!vnd::TokenizerUtility::isQuotation(_input[position])) {
+        if(position + 1 > _inputSize) {
+            value = _input.substr(start, position - start);
+            return {TokenType::UNKNOWN, value, line, column - value.size()};
+        }
+        incPosAndColumn();
+    }
+    value = _input.substr(start, position - start);
+    const auto colum = column - value.size();
+    incPosAndColumn();
+    return {TokenType::STRING, value, line, colum};
 }
 void Tokenizer::extractVarLenOperator() {
     while(positionIsInText() && vnd::TokenizerUtility::isOperator(_input[position])) { incPosAndColumn(); }

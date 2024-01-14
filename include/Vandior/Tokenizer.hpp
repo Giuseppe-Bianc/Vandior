@@ -43,4 +43,5 @@ private:
     [[nodiscard]] Token handleChar();
     [[nodiscard]] bool isalnumUnderscore(const char &cha) const noexcept;
     [[nodiscard]] bool inTextAndE() const noexcept;
+    Token handleString();
 };
