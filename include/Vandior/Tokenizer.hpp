@@ -1,15 +1,16 @@
 #pragma once
 
-#include "Vandior/Log.hpp" // NOLINT(*-include-cleaner)
-#include "Vandior/Timer.hpp" // NOLINT(*-include-cleaner)
+#include "Vandior/Log.hpp"    // NOLINT(*-include-cleaner)
+#include "Vandior/Timer.hpp"  // NOLINT(*-include-cleaner)
 #include "Vandior/Token.hpp"
 #include "Vandior/TokenizerUtility.hpp"
 #include <string>
 
 class Tokenizer {
 public:
-    explicit Tokenizer(const std::string_view &input) noexcept : _input(input), _inputSize(input.size()) {} // NOLINT(*-include-cleaner)
-    [[nodiscard]] std::vector<Token> tokenize(); // NOLINT(*-include-cleaner)
+    explicit Tokenizer(const std::string_view &input) noexcept
+      : _input(input), _inputSize(input.size()) {}  // NOLINT(*-include-cleaner)
+    [[nodiscard]] std::vector<Token> tokenize();    // NOLINT(*-include-cleaner)
 
 private:
     std::string_view _input;
@@ -21,23 +22,25 @@ private:
     [[nodiscard]] bool positionIsInText() const noexcept;
     [[nodiscard]] Token handleAlpha();
     [[nodiscard]] Token handleDigits();
-    static void kewordType(const std::string_view &value, TokenType &type);
-    void handleWhiteSpace();
+    static void kewordType(const std::string_view &value, TokenType &type) noexcept;
+    void handleWhiteSpace() noexcept;
     void handleError(const std::string &value, const std::string_view &errorMsg);
-    [[nodiscard]] std::size_t findLineStart() const;
-    [[nodiscard]] std::size_t findLineEnd() const;
+    [[nodiscard]] std::size_t findLineStart() const noexcept;
+    [[nodiscard]] std::size_t findLineEnd() const noexcept;
     [[nodiscard]] std::string getContextLine(const std::size_t &lineStart, const std::size_t &lineEnd) const;
     [[nodiscard]] std::string getHighlighting(const std::size_t &start, const std::size_t &length) const;
-    std::string getErrorMessage(const std::string &value, const std::string_view &errMsg, const std::string & contextLine,
+    std::string getErrorMessage(const std::string &value, const std::string_view &errMsg, const std::string &contextLine,
                                 const std::string &highlighting);
-    void extractDigits();
-    void incPosAndColumn();
-    void extractExponent();
+    void extractDigits() noexcept;
+    void incPosAndColumn() noexcept;
+    void extractExponent() noexcept;
     [[nodiscard]] Token handleOperators();
     void extractVarLenOperator();
     [[nodiscard]] static TokenType singoleCharOp(const char &view);
-    [[nodiscard]] static TokenType multyCharOp(const std::string_view &view);
+    [[nodiscard]] static TokenType multyCharOp(const std::string_view &view) noexcept;
     [[nodiscard]] Token handleBrackets();
-    TokenType getType(const std::string_view &value) const;
-    Token handleChar();
+    [[nodiscard]] TokenType getType(const std::string_view &value) const noexcept;
+    [[nodiscard]] Token handleChar();
+    [[nodiscard]] bool isalnumUnderscore(const char &cha) const noexcept;
+    [[nodiscard]] bool inTextAndE() const noexcept;
 };

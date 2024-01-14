@@ -15,13 +15,13 @@ namespace vnd {
         std::unique_ptr<ASTNode> parse();
 
     private:
-        void consumeToken();
-        //const Token &getNextToken();
+        void consumeToken() noexcept;
+        // const Token &getNextToken();
         const Token &getCurrentToken();
-        static bool isUnaryOperator(std::string_view view);
-        static int getOperatorPrecedence(const Token &token);
-        static int convertToInt(std::string_view str);
-        static double convertToDouble(std::string_view str);
+        static bool isUnaryOperator(std::string_view view) noexcept;
+        static int getOperatorPrecedence(const Token &token) noexcept;
+        static int convertToInt(std::string_view str) noexcept;
+        static double convertToDouble(std::string_view str) noexcept;
         std::unique_ptr<ASTNode> parsePrimary();
         std::unique_ptr<ASTNode> parseUnary();
         std::unique_ptr<ASTNode> parseBinary(int precedence);

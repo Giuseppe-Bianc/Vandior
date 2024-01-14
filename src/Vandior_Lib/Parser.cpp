@@ -5,7 +5,7 @@
 
 namespace vnd {
     std::unique_ptr<ASTNode> Parser::parse() { return parseExpression(); }
-    void Parser::consumeToken() {
+    void Parser::consumeToken() noexcept {
         if(position < tokenSize) { position++; }
     }
     /*const Token &Parser::getNextToken() {  // NOLINT(*-include-cleaner)
@@ -16,8 +16,8 @@ namespace vnd {
         return tokens.back();
     }*/
     const Token &Parser::getCurrentToken() { return tokens.at(position); }
-    bool Parser::isUnaryOperator(std::string_view view) { return view == "+" || view == "-"; }
-    int Parser::getOperatorPrecedence(const Token &token) {
+    bool Parser::isUnaryOperator(std::string_view view) noexcept { return view == "+" || view == "-"; }
+    int Parser::getOperatorPrecedence(const Token &token) noexcept {
         const auto &tokenValue = token.getValue();
         if(tokenValue == "+" || tokenValue == "-") {
             return 1;
@@ -26,7 +26,7 @@ namespace vnd {
         }
         return 0;
     }
-    int Parser::convertToInt(std::string_view str) {
+    int Parser::convertToInt(std::string_view str) noexcept {
         int result{};
         auto [ptr, ec] = std::from_chars(str.data(), str.data() + str.size(), result);
 
@@ -39,7 +39,7 @@ namespace vnd {
 
         return 0;
     }
-    double Parser::convertToDouble(std::string_view str) {
+    double Parser::convertToDouble(std::string_view str) noexcept {
         double result{};
         auto [ptr, ec] = std::from_chars(str.data(), str.data() + str.size(), result);
 
@@ -77,18 +77,19 @@ namespace vnd {
                 return nullptr;
             }
         } */
-        else {
+        else [[unlikely]] {
             // Handle error: unexpected token
             return nullptr;
         }
     }
-    std::unique_ptr<ASTNode> Parser::parseUnary() { // NOLINT(*-no-recursion)
+    std::unique_ptr<ASTNode> Parser::parseUnary() {  // NOLINT(*-no-recursion)
         const Token &currentToken = getCurrentToken();
 
         if(isUnaryOperator(currentToken.getValue())) {
             consumeToken();
             auto operand = parseUnary();
-            return std::make_unique<UnaryExpressionNode>(currentToken.getValue(), std::move(operand)); // NOLINT(*-include-cleaner)
+            return std::make_unique<UnaryExpressionNode>(currentToken.getValue(),
+                                                         std::move(operand));  // NOLINT(*-include-cleaner)
         } else {
             return parsePrimary();
         }

@@ -25,24 +25,30 @@ std::vector<Token> Tokenizer::tokenize() {  // NOLINT(*-include-cleaner)
     return tokens;
 }
 bool Tokenizer::positionIsInText() const noexcept { return position < _inputSize; }
+
+bool Tokenizer::isalnumUnderscore(const char &cha) const noexcept { return std::isalnum(C_UC(cha)) || cha == '_'; }
+
 Token Tokenizer::handleAlpha() {
     const auto start = position;
     TokenType type = TokenType::IDENTIFIER;
-    while(positionIsInText() && (std::isalnum(_input[position]) || _input[position] == '_')) { incPosAndColumn(); }
-    std::string_view value = _input.substr(start, position - start);
+    while(positionIsInText() && isalnumUnderscore(_input[position])) { incPosAndColumn(); }
+    const auto value = _input.substr(start, position - start);
     kewordType(value, type);
     return {type, value, line, column - value.size()};
 }
-void Tokenizer::kewordType(const std::string_view &value, TokenType &type) {
+void Tokenizer::kewordType(const std::string_view &value, TokenType &type) noexcept {
     using enum TokenType;
-    if(value== "main") {type = K_MAIN;}
-    if(value== "var" || value =="const") {type=K_VAR;}
-    if(value== "if" || value == "while") {type=K_STRUCTURE;}
-    if(value== "for") {type=K_FOR;}
-    if(value== "fun") {type=K_FUN;}
-    if(value== "return") {type=K_RETURN;}
-    if(value== "true"||value=="false") {type=TokenType::BOOLEAN;}
+    if(value == "main") { type = K_MAIN; }
+    if(value == "var" || value == "const") { type = K_VAR; }
+    if(value == "if" || value == "while") { type = K_STRUCTURE; }
+    if(value == "for") { type = K_FOR; }
+    if(value == "fun") { type = K_FUN; }
+    if(value == "return") { type = K_RETURN; }
+    if(value == "true" || value == "false") { type = TokenType::BOOLEAN; }
 }
+
+bool Tokenizer::inTextAndE() const noexcept { return positionIsInText() && std::toupper(_input[position]) == ECR; }
+
 Token Tokenizer::handleDigits() {
     TokenType tokenType = TokenType::INTEGER;
     const auto start = position;
@@ -50,32 +56,32 @@ Token Tokenizer::handleDigits() {
     if(positionIsInText() && _input[position] == PNT) {
         incPosAndColumn();
         extractDigits();
-        if(positionIsInText() && std::toupper(_input[position]) == ECR) {
+        if(inTextAndE()) {
             incPosAndColumn();
             extractExponent();
         }
         tokenType = TokenType::DOUBLE;
     }
-    if(positionIsInText() && std::toupper(_input[position]) == ECR) {
+    if(inTextAndE()) {
         incPosAndColumn();
         extractExponent();
         tokenType = TokenType::DOUBLE;
     }
-    std::string_view value = _input.substr(start, position - start);
+    const auto value = _input.substr(start, position - start);
     return {tokenType, value, line, column - value.size()};
 }
-void Tokenizer::extractExponent() {
-    if(positionIsInText() && (vnd::TokenizerUtility::isPlusOrMinus(_input[position]))) { incPosAndColumn(); }
+void Tokenizer::extractExponent() noexcept {
+    if(positionIsInText() && vnd::TokenizerUtility::isPlusOrMinus(_input[position])) { incPosAndColumn(); }
     extractDigits();
 }
-void Tokenizer::extractDigits() {
+void Tokenizer::extractDigits() noexcept {
     while(positionIsInText() && isdigit(_input[position])) { incPosAndColumn(); }
 }
-void Tokenizer::incPosAndColumn() {
+void Tokenizer::incPosAndColumn() noexcept {
     position++;
     column++;
 }
-void Tokenizer::handleWhiteSpace() {
+void Tokenizer::handleWhiteSpace() noexcept {
     if(_input[position] == '\n') {
         ++line;
         column = 1;
@@ -87,12 +93,12 @@ void Tokenizer::handleWhiteSpace() {
 Token Tokenizer::handleBrackets() {
     const auto start = position;
     incPosAndColumn();
-    std::string_view value = _input.substr(start, position - start);
-    TokenType type = getType(value);
+    const auto value = _input.substr(start, position - start);
+    const auto type = getType(value);
     return {type, value, line, column - value.size()};
 }
 
-TokenType Tokenizer::getType(const std::string_view &value) const {
+TokenType Tokenizer::getType(const std::string_view &value) const noexcept {
     switch(value[0]) {
         using enum TokenType;
     case '(':
@@ -115,8 +121,8 @@ Token Tokenizer::handleChar() {
     incPosAndColumn();
     const auto start = position;
     std::string_view value{};
-    while(!vnd::TokenizerUtility::isApostrophe(_input[position])){
-        if(position+1>_inputSize){
+    while(!vnd::TokenizerUtility::isApostrophe(_input[position])) {
+        if(position + 1 > _inputSize) {
             value = _input.substr(start, position - start);
             return {TokenType::UNKNOWN, value, line, column - value.size()};
         }
@@ -131,13 +137,11 @@ void Tokenizer::extractVarLenOperator() {
     while(positionIsInText() && vnd::TokenizerUtility::isOperator(_input[position])) { incPosAndColumn(); }
 }
 TokenType Tokenizer::singoleCharOp(const char &view) {
-    if(vnd::TokenizerUtility::isOperator(view)) {
-        return TokenType::OPERATOR;
-    }
+    if(vnd::TokenizerUtility::isOperator(view)) { return TokenType::OPERATOR; }
     return TokenType::UNKNOWN;
 }
 
-TokenType Tokenizer::multyCharOp(const std::string_view &view) {
+TokenType Tokenizer::multyCharOp(const std::string_view &view) noexcept {
     using enum TokenType;
     if(vnd::TokenizerUtility::isOperationEqual(view)) { return OPERATION_EQUAL; }
     if(vnd::TokenizerUtility::isBooleanOperator(view)) { return BOOLEAN_OPERATOR; }
@@ -149,7 +153,7 @@ TokenType Tokenizer::multyCharOp(const std::string_view &view) {
 Token Tokenizer::handleOperators() {
     const auto start = position;
     extractVarLenOperator();
-    std::string_view value = _input.substr(start, position - start);
+    const auto value = _input.substr(start, position - start);
     TokenType type = TokenType::UNKNOWN;
     if(!value.empty()) {
         if(value.size() == 1) {
@@ -171,12 +175,12 @@ void Tokenizer::handleError(const std::string &value, const std::string_view &er
 
     throw std::runtime_error(errorMessage);
 }
-std::size_t Tokenizer::findLineStart() const {  // NOLINT(*-include-cleaner)
+std::size_t Tokenizer::findLineStart() const noexcept {  // NOLINT(*-include-cleaner)
     std::size_t lineStart = position;
     while(lineStart > 0 && _input[lineStart - 1] != CNL) { --lineStart; }  // NOLINT(*-include-cleaner)
     return lineStart;
 }
-std::size_t Tokenizer::findLineEnd() const {
+std::size_t Tokenizer::findLineEnd() const noexcept {
     std::size_t lineEnd = position;
     while(lineEnd < _inputSize && _input[lineEnd] != CNL) { ++lineEnd; }
     return lineEnd;
