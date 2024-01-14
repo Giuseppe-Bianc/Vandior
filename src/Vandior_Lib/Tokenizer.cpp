@@ -155,7 +155,7 @@ Token Tokenizer::handleOperators() {
     extractVarLenOperator();
     const auto value = _input.substr(start, position - start);
     TokenType type = TokenType::UNKNOWN;
-    if(!value.empty()) {
+    if(!value.empty()) [[likely]] {
         if(value.size() == 1) {
             type = singoleCharOp(value[0]);
         } else if(value.size() > 1) {

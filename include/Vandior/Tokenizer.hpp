@@ -24,7 +24,7 @@ private:
     [[nodiscard]] Token handleDigits();
     static void kewordType(const std::string_view &value, TokenType &type) noexcept;
     void handleWhiteSpace() noexcept;
-    void handleError(const std::string &value, const std::string_view &errorMsg);
+    [[noreturn]] void handleError(const std::string &value, const std::string_view &errorMsg);
     [[nodiscard]] std::size_t findLineStart() const noexcept;
     [[nodiscard]] std::size_t findLineEnd() const noexcept;
     [[nodiscard]] std::string getContextLine(const std::size_t &lineStart, const std::size_t &lineEnd) const;
