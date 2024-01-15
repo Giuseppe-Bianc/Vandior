@@ -40,7 +40,7 @@ private:
     void extractExponent() noexcept;
     void handleOperators(std::vector<Token> &tokens);
     void extractVarLenOperator();
-    [[nodiscard]] static TokenType singoleCharOp(const char &view);
+    [[nodiscard]] static TokenType singoleCharOp(const char &view) noexcept;
     [[nodiscard]] static TokenType multyCharOp(const std::string_view &view) noexcept;
     [[nodiscard]] Token handleBrackets();
     [[nodiscard]] TokenType getType(const std::string_view &value) const noexcept;

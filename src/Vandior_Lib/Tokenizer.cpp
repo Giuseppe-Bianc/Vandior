@@ -89,9 +89,7 @@ Token Tokenizer::handleComment() {
 }
 Token Tokenizer::handleSingleLineComment() {
     const auto start = position;
-    while(positionIsInText() && _input[position] != CNL) {
-        incPosAndColumn();
-    }
+    while(positionIsInText() && _input[position] != CNL) { incPosAndColumn(); }
     const auto value = _input.substr(start, position - start);
     return {TokenType::COMMENT, value, line, column - value.size()};
 }
@@ -99,7 +97,7 @@ Token Tokenizer::handleMultiLineComment() {
     const auto start = position;
     const auto startColumn = column;
     while(_input[position] != '*' || _input[position + 1] != '/') {
-        if (position + 2 == _inputSize) {
+        if(position + 2 == _inputSize) {
             const auto value = _input.substr(start, position - start + 1);
             return {TokenType::UNKNOWN, value, line, startColumn};
         }
@@ -111,7 +109,7 @@ Token Tokenizer::handleMultiLineComment() {
     return {TokenType::COMMENT, value, line, startColumn};
 }
 Token Tokenizer::handleDot() {
-    auto start = position;
+    const auto start = position;
     auto type = TokenType::DOT_OPEARTOR;
     incPosAndColumn();
     if(positionIsInText() && std::isdigit(_input[position])) {
@@ -209,25 +207,27 @@ Token Tokenizer::handleString() {
 void Tokenizer::extractVarLenOperator() {
     while(positionIsInText() && vnd::TokenizerUtility::isOperator(_input[position])) { incPosAndColumn(); }
 }
-TokenType Tokenizer::singoleCharOp(const char &view) {
+TokenType Tokenizer::singoleCharOp(const char &view) noexcept {
     switch(view) {
         using enum TokenType;
-        case '-':
-            return MINUS_OPERATOR;
-        case '=':
-            return EQUAL_OPERATOR;
-        case '<':
-        case '>':
-            return BOOLEAN_OPERATOR;
-        case '!':
-            return NOT_OPERATOR;
-        case '+':
-        case '*':
-        case '/':
-        case '^':
-            return OPERATOR;
-        default:
-            return UNKNOWN;
+    case '-':
+        return MINUS_OPERATOR;
+    case '=':
+        return EQUAL_OPERATOR;
+    case '<':
+    case '>':
+        return BOOLEAN_OPERATOR;
+    case '!':
+        return NOT_OPERATOR;
+    case '+':
+    case '*':
+    case '/':
+    case '^':
+    case '|':
+    case '&':
+        return OPERATOR;
+    default:
+        return UNKNOWN;
     }
 }
 
