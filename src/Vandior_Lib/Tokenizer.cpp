@@ -155,12 +155,14 @@ void Tokenizer::extractVarLenOperator() {
     while(positionIsInText() && vnd::TokenizerUtility::isOperator(_input[position])) { incPosAndColumn(); }
 }
 TokenType Tokenizer::singoleCharOp(const char &view) {
-    if(vnd::TokenizerUtility::isOperator(view)) {
-        TokenType type = TokenType::OPERATOR;
-        if(view == '-') { type = TokenType::MINUS_OPERATOR; }
-        return type;
+    switch(view) {
+        case '-':
+            return TokenType::MINUS_OPERATOR;
+        case '=':
+            return TokenType::EQUAL_OPERATOR;
+        default:
+            return TokenType::OPERATOR;
     }
-    return TokenType::UNKNOWN;
 }
 
 TokenType Tokenizer::multyCharOp(const std::string_view &view) noexcept {

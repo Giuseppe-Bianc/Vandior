@@ -24,7 +24,7 @@ namespace {
         tokens = tokenizer.tokenize();
     }
 }  // namespace
-constexpr std::string_view code = "-42 + y - 1. / 1.0 * 1e+1 + 1E+1 + 1.1e+1 + 1.1E+1 + 1e-1 + 1E-1 + 1.1e-1 + 1.1E-1";
+constexpr std::string_view code = "a = -42 + y - 1. / 1.0 * 1e+1 + 1E+1 + 1.1e+1 + 1.1E+1 + 1e-1 + 1E-1 + 1.1e-1 + 1.1E-1";
 //constexpr std::string_view code2 = R"('a' '\\' '')";
 //constexpr std::string_view code2 = R"("a" "\\" "")";
 DISABLE_WARNINGS_PUSH(26461 26821)
