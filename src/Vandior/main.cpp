@@ -24,7 +24,7 @@ namespace {
         tokens = tokenizer.tokenize();
     }
 }  // namespace
-constexpr std::string_view code = "-42 + y + 1. + 1.0 + 1e+1 + 1E+1 + 1.1e+1 + 1.1E+1 + 1e-1 + 1E-1 + 1.1e-1 + 1.1E-1";
+constexpr std::string_view code = "-42 + y - 1. / 1.0 * 1e+1 + 1E+1 + 1.1e+1 + 1.1E+1 + 1e-1 + 1E-1 + 1.1e-1 + 1.1E-1";
 //constexpr std::string_view code2 = R"('a' '\\' '')";
 //constexpr std::string_view code2 = R"("a" "\\" "")";
 DISABLE_WARNINGS_PUSH(26461 26821)
@@ -52,11 +52,11 @@ int main(int argc, const char *const argv[]) {
         std::vector<Token> tokens;
         timeTokenizer(tokenizer, tokens);
         for(const auto &item : tokens) { LINFO("{}", item); }
-        vnd::Parser parser(code);
+        /* vnd::Parser parser(code);
         Timer timeAst("ast creation time");
         auto ast = parser.parse();
         prettyPrint(*ast);
-        LINFO("{}", timeAst);
+        LINFO("{}", timeAst);*/
     } catch(const std::exception &e) { LERROR("Unhandled exception in main: {}", e.what()); }  // NOLINT(*-include-cleaner)
 }
 DISABLE_WARNINGS_POP()
