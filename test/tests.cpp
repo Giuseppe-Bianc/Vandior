@@ -20,6 +20,7 @@ TEST_CASE("corrected format for Tokentype", "[token_type]") {
     REQ_FORMAT(OPERATOR, "OPERATOR");
     REQ_FORMAT(MINUS_OPERATOR, "MINUS_OPERATOR");
     REQ_FORMAT(EQUAL_OPERATOR, "EQUAL_OPERATOR");
+    REQ_FORMAT(DOT_OPEARTOR, "DOT_OPERATOR");
     REQ_FORMAT(IDENTIFIER,"IDENTIFIER");
     REQ_FORMAT(CHAR, "CHAR");
     REQ_FORMAT(STRING, "STRING");
@@ -176,7 +177,7 @@ TEST_CASE("tokenizer emit integer token new line", "[tokenizer]"){
 }
 
 TEST_CASE("tokenizer emit double token", "[tokenizer]"){
-    Tokenizer tokenizer{"1. 1.0 1e+1 1E+1 1.1e+1 1.1E+1 1e-1 1E-1 1.1e-1 1.1E-1"};
+    Tokenizer tokenizer{"1. 1.0 1e+1 1E+1 1.1e+1 1.1E+1 1e-1 1E-1 1.1e-1 1.1E-1 .4e12"};
     std::vector<Token> tokens = tokenizer.tokenize();
     REQUIRE(tokens.size() == 11);
     REQUIRE(tokens[0] == Token(doub, "1.", 1, 1));
@@ -189,10 +190,11 @@ TEST_CASE("tokenizer emit double token", "[tokenizer]"){
     REQUIRE(tokens[7] == Token(doub, "1E-1", 1, 37));
     REQUIRE(tokens[8] == Token(doub, "1.1e-1", 1, 42));
     REQUIRE(tokens[9] == Token(doub, "1.1E-1", 1, 49));
+    REQUIRE(tokens[9] == Token(doub, ".4e12", 1, 56));
 }
 
 TEST_CASE("tokenizer emit operator token", "[tokenizer]"){
-    Tokenizer tokenizer{"* / = , : < > ! | & + - ^"};
+    Tokenizer tokenizer{"* / = , : < > ! | & + - ^ ."};
     std::vector<Token> tokens = tokenizer.tokenize();
     REQUIRE(tokens.size() == 14);
     REQUIRE(tokens[0] == Token(oper, "*", 1, 1));
@@ -208,6 +210,7 @@ TEST_CASE("tokenizer emit operator token", "[tokenizer]"){
     REQUIRE(tokens[10] == Token(oper, "+", 1, 21));
     REQUIRE(tokens[11] == Token(oper, "-", 1, 23));
     REQUIRE(tokens[12] == Token(oper, "^", 1, 25));
+    REQUIRE(tokens[13] == Token(TokenType::NOT_OPERATOR, ".", 1, 27));
 }
 
 TEST_CASE("tokenizer emit operationEqual token", "[tokenizer]"){

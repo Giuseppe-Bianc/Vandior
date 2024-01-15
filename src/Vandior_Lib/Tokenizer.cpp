@@ -15,6 +15,8 @@ std::vector<Token> Tokenizer::tokenize() {  // NOLINT(*-include-cleaner)
             tokens.emplace_back(handleComment());
         } else if(vnd::TokenizerUtility::isOperator(currentChar)) [[likely]] {
             handleOperators(tokens);
+        } else if(vnd::TokenizerUtility::isDot(currentChar)) {
+            tokens.emplace_back(handleDot());
         } else if(vnd::TokenizerUtility::isBrackets(currentChar)) [[likely]] {
             tokens.emplace_back(handleBrackets());
         } else if(vnd::TokenizerUtility::isApostrophe(currentChar)) [[likely]] {
@@ -108,6 +110,21 @@ Token Tokenizer::handleMultiLineComment() {
     const auto value = _input.substr(start, position - start);
     return {TokenType::COMMENT, value, line, startColumn};
 }
+Token Tokenizer::handleDot() {
+    auto start = position;
+    auto type = TokenType::DOT_OPEARTOR;
+    incPosAndColumn();
+    if(positionIsInText() && std::isdigit(_input[position])) {
+        type = TokenType::DOUBLE;
+        extractDigits();
+        if(inTextAndE()) {
+            incPosAndColumn();
+            extractExponent();
+        }
+    }
+    const auto value = _input.substr(start, position - start);
+    return {type, value, line, column - value.size()};
+}
 void Tokenizer::extractExponent() noexcept {
     if(positionIsInText() && vnd::TokenizerUtility::isPlusOrMinus(_input[position])) { incPosAndColumn(); }
     extractDigits();
@@ -160,7 +177,8 @@ Token Tokenizer::handleChar() {
     const auto start = position;
     std::string_view value{};
     while(!vnd::TokenizerUtility::isApostrophe(_input[position])) {
-        if(position + 1 > _inputSize) {
+        if(position + 1 == _inputSize) {
+            incPosAndColumn();
             value = _input.substr(start, position - start);
             return {TokenType::UNKNOWN, value, line, column - value.size()};
         }
@@ -172,20 +190,21 @@ Token Tokenizer::handleChar() {
     return {TokenType::CHAR, value, line, colum};
 }
 Token Tokenizer::handleString() {
+    const auto startColumn = column;
     incPosAndColumn();
     const auto start = position;
     std::string_view value{};
     while(!vnd::TokenizerUtility::isQuotation(_input[position])) {
-        if(position + 1 > _inputSize) {
+        if(position + 1 == _inputSize) {
+            incPosAndColumn();
             value = _input.substr(start, position - start);
-            return {TokenType::UNKNOWN, value, line, column - value.size()};
+            return {TokenType::UNKNOWN, value, line, startColumn};
         }
         incPosAndColumn();
     }
     value = _input.substr(start, position - start);
-    const auto colum = column - value.size();
     incPosAndColumn();
-    return {TokenType::STRING, value, line, colum};
+    return {TokenType::STRING, value, line, startColumn};
 }
 void Tokenizer::extractVarLenOperator() {
     while(positionIsInText() && vnd::TokenizerUtility::isOperator(_input[position])) { incPosAndColumn(); }

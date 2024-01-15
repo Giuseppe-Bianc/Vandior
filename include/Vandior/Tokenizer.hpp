@@ -25,6 +25,7 @@ private:
     [[nodiscard]] Token handleComment();
     [[nodiscard]] Token handleSingleLineComment();
     [[nodiscard]] Token handleMultiLineComment();
+    [[nodiscard]] Token handleDot();
     static void kewordType(const std::string_view &value, TokenType &type) noexcept;
     void handleWhiteSpace() noexcept;
     [[noreturn]] void handleError(const std::string &value, const std::string_view &errorMsg);
