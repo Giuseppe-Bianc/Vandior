@@ -17,10 +17,12 @@ TEST_CASE("corrected format for Tokentype", "[token_type]") {
     REQ_FORMAT(INTEGER, "INTEGER");
     REQ_FORMAT(DOUBLE,"DOUBLE");
     REQ_FORMAT(BOOLEAN, "BOOLEAN")
-    REQ_FORMAT(OPERATOR,"OPERATOR");
+    REQ_FORMAT(OPERATOR, "OPERATOR");
+    REQ_FORMAT(MINUS_OPERATOR, "MINUS_OPERATOR");
+    REQ_FORMAT(EQUAL_OPERATOR, "EQUAL_OPERATOR");
     REQ_FORMAT(IDENTIFIER,"IDENTIFIER");
     REQ_FORMAT(CHAR, "CHAR");
-    REQ_FORMAT(STRING, "STRING")
+    REQ_FORMAT(STRING, "STRING");
     REQ_FORMAT(K_MAIN,"K_MAIN");
     REQ_FORMAT(K_VAR, "K_VAR");
     REQ_FORMAT(K_STRUCTURE, "K_STRUCTURE");
@@ -35,8 +37,12 @@ TEST_CASE("corrected format for Tokentype", "[token_type]") {
     REQ_FORMAT(CLOSE_CUR_PARENTESIS, "CLOSE_CUR_PARENTESIS");
     REQ_FORMAT(OPERATION_EQUAL, "OPERATION_EQUAL");
     REQ_FORMAT(BOOLEAN_OPERATOR, "BOOLEAN_OPERATOR");
+    REQ_FORMAT(NOT_OPERATOR, "NOT_OPERATOR");
     REQ_FORMAT(LOGICAL_OPERATOR, "LOGICAL_OPERATOR");
     REQ_FORMAT(UNARY_OPERATOR, "UNARY_OPERATOR");
+    REQ_FORMAT(COMMA, "COMMA");
+    REQ_FORMAT(COLON, "COLON");
+    REQ_FORMAT(COMMENT, "COMMENT");
     REQ_FORMAT(EOFT,"EOF");
     REQ_FORMAT(UNKNOWN,"UNKNOWN");
 }
@@ -191,12 +197,12 @@ TEST_CASE("tokenizer emit operator token", "[tokenizer]"){
     REQUIRE(tokens.size() == 14);
     REQUIRE(tokens[0] == Token(oper, "*", 1, 1));
     REQUIRE(tokens[1] == Token(oper, "/", 1, 3));
-    REQUIRE(tokens[2] == Token(oper, "=", 1, 5));
-    REQUIRE(tokens[3] == Token(oper, ",", 1, 7));
-    REQUIRE(tokens[4] == Token(oper, ":", 1, 9));
-    REQUIRE(tokens[5] == Token(oper, "<", 1, 11));
-    REQUIRE(tokens[6] == Token(oper, ">", 1, 13));
-    REQUIRE(tokens[7] == Token(oper, "!", 1, 15));
+    REQUIRE(tokens[2] == Token(TokenType::EQUAL_OPERATOR, "=", 1, 5));
+    REQUIRE(tokens[3] == Token(TokenType::COMMA, ",", 1, 7));
+    REQUIRE(tokens[4] == Token(TokenType::COLON, ":", 1, 9));
+    REQUIRE(tokens[5] == Token(TokenType::BOOLEAN_OPERATOR, "<", 1, 11));
+    REQUIRE(tokens[6] == Token(TokenType::BOOLEAN_OPERATOR, ">", 1, 13));
+    REQUIRE(tokens[7] == Token(TokenType::NOT_OPERATOR, "!", 1, 15));
     REQUIRE(tokens[8] == Token(oper, "|", 1, 17));
     REQUIRE(tokens[9] == Token(oper, "&", 1, 19));
     REQUIRE(tokens[10] == Token(oper, "+", 1, 21));

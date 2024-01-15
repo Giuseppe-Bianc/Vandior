@@ -14,7 +14,7 @@ std::vector<Token> Tokenizer::tokenize() {  // NOLINT(*-include-cleaner)
         } else if(vnd::TokenizerUtility::isComment(_input, position)) {
             tokens.emplace_back(handleComment());
         } else if(vnd::TokenizerUtility::isOperator(currentChar)) [[likely]] {
-            tokens.emplace_back(handleOperators());
+            handleOperators(tokens);
         } else if(vnd::TokenizerUtility::isBrackets(currentChar)) [[likely]] {
             tokens.emplace_back(handleBrackets());
         } else if(vnd::TokenizerUtility::isApostrophe(currentChar)) [[likely]] {
@@ -192,14 +192,23 @@ void Tokenizer::extractVarLenOperator() {
 }
 TokenType Tokenizer::singoleCharOp(const char &view) {
     switch(view) {
+        using enum TokenType;
         case '-':
-            return TokenType::MINUS_OPERATOR;
+            return MINUS_OPERATOR;
         case '=':
-            return TokenType::EQUAL_OPERATOR;
+            return EQUAL_OPERATOR;
+        case '<':
+        case '>':
+            return BOOLEAN_OPERATOR;
         case '!':
-            return TokenType::NOT_OPERATOR;
+            return NOT_OPERATOR;
+        case '+':
+        case '*':
+        case '/':
+        case '^':
+            return OPERATOR;
         default:
-            return TokenType::OPERATOR;
+            return UNKNOWN;
     }
 }
 
@@ -212,19 +221,19 @@ TokenType Tokenizer::multyCharOp(const std::string_view &view) noexcept {
     return UNKNOWN;
 }
 
-Token Tokenizer::handleOperators() {
+void Tokenizer::handleOperators(std::vector<Token> &tokens) {
     const auto start = position;
     extractVarLenOperator();
-    const auto value = _input.substr(start, position - start);
-    TokenType type = TokenType::UNKNOWN;
-    if(!value.empty()) [[likely]] {
-        if(value.size() == 1) {
-            type = singoleCharOp(value[0]);
-        } else if(value.size() > 1) {
-            type = multyCharOp(value);
+    auto value = _input.substr(start, position - start);
+    while(!value.empty()) {
+        Token token;
+        if(value.size() > 1) { token = {multyCharOp(value.substr(0, 2)), value.substr(0, 2), line, column - 2}; }
+        if(token.getType() == TokenType::UNKNOWN || value.size() == 1) {
+            token = Token{singoleCharOp(value[0]), value.substr(0, 1), line, column - 1};
         }
+        tokens.emplace_back(token);
+        value = value.substr(token.getValue().size(), value.size() - token.getValue().size());
     }
-    return {type, value, line, column - value.size()};
 }
 
 void Tokenizer::handleError(const std::string &value, const std::string_view &errorMsg) {

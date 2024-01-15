@@ -37,7 +37,7 @@ private:
     void extractDigits() noexcept;
     void incPosAndColumn() noexcept;
     void extractExponent() noexcept;
-    [[nodiscard]] Token handleOperators();
+    void handleOperators(std::vector<Token> &tokens);
     void extractVarLenOperator();
     [[nodiscard]] static TokenType singoleCharOp(const char &view);
     [[nodiscard]] static TokenType multyCharOp(const std::string_view &view) noexcept;
