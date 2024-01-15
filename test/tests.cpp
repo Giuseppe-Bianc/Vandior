@@ -293,7 +293,6 @@ TEST_CASE("tokenizer emit string token", "[tokenizer]"){
     REQUIRE(tokens[2] == Token(TokenType::STRING, "", 1, 10));
 }
 
-/*
 TEST_CASE("tokenizer emit unknown token on non closed char token", "[tokenizer]"){
     constexpr std::string_view code2 = R"('a")";
     Tokenizer tokenizer{code2};
@@ -301,7 +300,7 @@ TEST_CASE("tokenizer emit unknown token on non closed char token", "[tokenizer]"
     REQUIRE(tokens.size() == 2);
     REQUIRE(tokens[0] == Token(TokenType::UNKNOWN, R"(a")", 1, 2));
 }
-
+/*
 TEST_CASE("tokenizer emit unknown token on non closed string token", "[tokenizer]"){
     constexpr std::string_view code2 = R"("a')";
     Tokenizer tokenizer{code2};

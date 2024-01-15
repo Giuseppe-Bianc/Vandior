@@ -60,12 +60,17 @@ DISABLE_WARNINGS_PUSH(26461 26821)
 #ifdef _WIN32  // Windows
 constexpr std::string_view filename = "../../../input.vn";
 #elif defined __unix__  // Linux and Unix-like systems
-constexpr std::string_view filename = "input.txt";  // Linux and Unix
+constexpr std::string_view filename = "../../../input.vn"; // Linux and Unix
 #endif
 auto main(int argc, const char *const argv[]) -> int {
     // NOLINTNEXTLINE
     setupSpdlog();
-    std::string str = readFromFile(filename.data());
+    std::string str;
+    try {
+        str = readFromFile(filename.data());
+    } catch(std::runtime_error &e) {
+        LINFO("error {}", e.what());
+    }
     std::string_view code(str);
     LINFO("{}", code);
     try {
