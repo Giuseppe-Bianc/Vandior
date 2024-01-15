@@ -22,6 +22,10 @@ private:
     [[nodiscard]] bool positionIsInText() const noexcept;
     [[nodiscard]] Token handleAlpha();
     [[nodiscard]] Token handleDigits();
+    [[nodiscard]] Token handleComment();
+    [[nodiscard]] Token handleSingleLineComment();
+    [[nodiscard]] Token handleMultiLineComment();
+    [[nodiscard]] Token handleDot();
     static void kewordType(const std::string_view &value, TokenType &type) noexcept;
     void handleWhiteSpace() noexcept;
     [[noreturn]] void handleError(const std::string &value, const std::string_view &errorMsg);
@@ -34,7 +38,7 @@ private:
     void extractDigits() noexcept;
     void incPosAndColumn() noexcept;
     void extractExponent() noexcept;
-    [[nodiscard]] Token handleOperators();
+    void handleOperators(std::vector<Token> &tokens);
     void extractVarLenOperator();
     [[nodiscard]] static TokenType singoleCharOp(const char &view);
     [[nodiscard]] static TokenType multyCharOp(const std::string_view &view) noexcept;

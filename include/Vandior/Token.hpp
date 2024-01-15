@@ -6,6 +6,9 @@ enum class TokenType : long {
     DOUBLE,
     BOOLEAN,
     OPERATOR,
+    MINUS_OPERATOR,
+    EQUAL_OPERATOR,
+    DOT_OPEARTOR,
     IDENTIFIER,
     CHAR,
     STRING,
@@ -23,8 +26,12 @@ enum class TokenType : long {
     CLOSE_CUR_PARENTESIS,
     OPERATION_EQUAL,
     BOOLEAN_OPERATOR,
+    NOT_OPERATOR,
     LOGICAL_OPERATOR,
     UNARY_OPERATOR,
+    COMMA,
+    COLON,
+    COMMENT,
     UNKNOWN,
     EOFT,
     // Add more types as needed
@@ -46,6 +53,15 @@ template <> struct fmt::formatter<TokenType> : fmt::formatter<std::string_view> 
             break;
         case OPERATOR:
             name = "OPERATOR";
+            break;
+        case MINUS_OPERATOR:
+            name = "MINUS_OPERATOR";
+            break;
+        case EQUAL_OPERATOR:
+            name = "EQUAL_OPERATOR";
+            break;
+        case DOT_OPEARTOR:
+            name = "DOT_OPERATOR";
             break;
         case IDENTIFIER:
             name = "IDENTIFIER";
@@ -101,11 +117,23 @@ template <> struct fmt::formatter<TokenType> : fmt::formatter<std::string_view> 
         case BOOLEAN_OPERATOR:
             name = "BOOLEAN_OPERATOR";
             break;
+        case NOT_OPERATOR:
+            name = "NOT_OPERATOR";
+            break;
         case LOGICAL_OPERATOR:
             name = "LOGICAL_OPERATOR";
             break;
         case UNARY_OPERATOR:
             name = "UNARY_OPERATOR";
+            break;
+        case COMMA:
+            name = "COMMA";
+            break;
+        case COLON:
+            name = "COLON";
+            break;
+        case COMMENT:
+            name = "COMMENT";
             break;
         // Add more cases as needed
         case UNKNOWN:

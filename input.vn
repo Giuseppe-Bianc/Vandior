@@ -1,0 +1,13 @@
+a = -42 + y - 1. / 1.0 * 1e+1 + 1E+1 + 1.1e+1 + 1.1E+1 + 1e-1 + 1E-1 + 1.1e-1 + 1.1E-1 && !true //Ciao
+2 > 1 < 1 + !false
+/*
+Ciao comment
+Comment
+*/ciao //Hello
+a +=-1
+. 1
+.123E12
+"Ciao"
+"Multi
+line
+string"
