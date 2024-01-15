@@ -11,6 +11,8 @@ std::vector<Token> Tokenizer::tokenize() {  // NOLINT(*-include-cleaner)
         } else if(std::isspace(currentChar)) [[likely]] {
             handleWhiteSpace();
             continue;  // Continue the loop to get the next token
+        } else if(vnd::TokenizerUtility::isComment(_input, position)) {
+            tokens.emplace_back(handleComment());
         } else if(vnd::TokenizerUtility::isOperator(currentChar)) [[likely]] {
             tokens.emplace_back(handleOperators());
         } else if(vnd::TokenizerUtility::isBrackets(currentChar)) [[likely]] {
@@ -52,7 +54,7 @@ void Tokenizer::kewordType(const std::string_view &value, TokenType &type) noexc
     if(value == "for") { type = K_FOR; }
     if(value == "fun") { type = K_FUN; }
     if(value == "return") { type = K_RETURN; }
-    if(value == "true" || value == "false") { type = TokenType::BOOLEAN; }
+    if(value == "true" || value == "false") { type = BOOLEAN; }
 }
 
 bool Tokenizer::inTextAndE() const noexcept { return positionIsInText() && std::toupper(_input[position]) == ECR; }
@@ -77,6 +79,34 @@ Token Tokenizer::handleDigits() {
     }
     const auto value = _input.substr(start, position - start);
     return {tokenType, value, line, column - value.size()};
+}
+Token Tokenizer::handleComment() {
+    if(_input[position + 1] == '/') { return handleSingleLineComment(); }
+    if(_input[position + 1] == '*') { return handleMultiLineComment(); }
+    return {TokenType::UNKNOWN, "", line, column};
+}
+Token Tokenizer::handleSingleLineComment() {
+    const auto start = position;
+    while(positionIsInText() && _input[position] != CNL) {
+        incPosAndColumn();
+    }
+    const auto value = _input.substr(start, position - start);
+    return {TokenType::COMMENT, value, line, column - value.size()};
+}
+Token Tokenizer::handleMultiLineComment() {
+    const auto start = position;
+    const auto startColumn = column;
+    while(_input[position] != '*' || _input[position + 1] != '/') {
+        if (position + 2 == _inputSize) {
+            const auto value = _input.substr(start, position - start + 1);
+            return {TokenType::UNKNOWN, value, line, startColumn};
+        }
+        handleWhiteSpace();
+    }
+    incPosAndColumn();
+    incPosAndColumn();
+    const auto value = _input.substr(start, position - start);
+    return {TokenType::COMMENT, value, line, startColumn};
 }
 void Tokenizer::extractExponent() noexcept {
     if(positionIsInText() && vnd::TokenizerUtility::isPlusOrMinus(_input[position])) { incPosAndColumn(); }

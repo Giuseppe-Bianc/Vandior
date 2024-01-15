@@ -24,14 +24,49 @@ namespace {
         tokens = tokenizer.tokenize();
     }
 }  // namespace
-constexpr std::string_view code = "a = -42 + y - 1. / 1.0 * 1e+1 + 1E+1 + 1.1e+1 + 1.1E+1 + 1e-1 + 1E-1 + 1.1e-1 + 1.1E-1 && !true,:";
 //constexpr std::string_view code2 = R"('a' '\\' '')";
 //constexpr std::string_view code2 = R"("a" "\\" "")";
 DISABLE_WARNINGS_PUSH(26461 26821)
 // NOLINTNEXTLINE(bugprone-exception-escape, readability-function-cognitive-complexity)
+
+static std::string readFromFile(const std::string &filename) {
+    AutoTimer timer("readFromFile");
+    std::filesystem::path filePath = filename;
+
+    if(!std::filesystem::exists(filePath)) { throw std::runtime_error(FORMAT("File not found: {}", filename)); }
+    if(!std::filesystem::is_regular_file(filePath)) { throw std::runtime_error(FORMAT("Path is not a regular file: {}", filename)); }
+
+    std::stringstream buffer;
+
+    if(std::ifstream fileStream{filePath, std::ios::in | std::ios::binary}; fileStream.is_open()) {
+        // Ensure that the file is opened securely
+        fileStream.exceptions(std::ios::failbit | std::ios::badbit);
+
+        try {
+            buffer << fileStream.rdbuf();
+        } catch(const std::ios_base::failure &e) {
+            throw std::runtime_error(FORMAT("Unable to read file: {}. Reason: {}", filename, e.what()));
+        }
+    } else {
+        // Handle the case when the file cannot be opened
+        // You might throw an exception or return an error indicator
+        throw std::runtime_error(FORMAT("Unable to open file: {}", filename));
+    }
+
+    // Extract the content as a string
+    return buffer.str();
+}
+#ifdef _WIN32  // Windows
+constexpr std::string_view filename = "../../../input.vn";
+#elif defined __unix__  // Linux and Unix-like systems
+constexpr std::string_view filename = "input.txt";  // Linux and Unix
+#endif
 int main(int argc, const char *const argv[]) {
     // NOLINTNEXTLINE
     setupSpdlog();
+    std::string str = readFromFile(filename.data());
+    std::string_view code(str);
+    LINFO("{}", code);
     try {
         CLI::App app{
             FORMAT("{} version {}", Vandior::cmake::project_name, Vandior::cmake::project_version)};  // NOLINT(*-include-cleaner)

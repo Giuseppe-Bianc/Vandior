@@ -22,6 +22,10 @@ namespace vnd {
     bool TokenizerUtility::isQuotation(char cha) noexcept { return cha == '\"'; }
     bool TokenizerUtility::isComma(char cha) noexcept { return cha == ','; }
     bool TokenizerUtility::isColon(char cha) noexcept { return cha == ':'; }
+    bool TokenizerUtility::isComment(const std::string_view &inputSpan, size_t position) noexcept {
+        return position != inputSpan.size() && inputSpan[position] == '/' &&
+               (inputSpan[position + 1] == '/' || inputSpan[position + 1] == '*');
+    }
     // bool TokenizerUtility::isVarLenOperator(const std::string_view &value) {
     //     if(value.size() == 1) { return isOperator(value[0]) || isBrackets(value[0]); }
     //     return isOperationEqual(value) || isUnaryOperator(value) || isBooleanOperator(value) || isLogicalOperator(value);

@@ -1,0 +1,5 @@
+a = -42 + y - 1. / 1.0 * 1e+1 + 1E+1 + 1.1e+1 + 1.1E+1 + 1e-1 + 1E-1 + 1.1e-1 + 1.1E-1 && !true //Ciao
+/*
+Ciao comment
+Comment
+*/ciao //Hello

@@ -22,6 +22,9 @@ private:
     [[nodiscard]] bool positionIsInText() const noexcept;
     [[nodiscard]] Token handleAlpha();
     [[nodiscard]] Token handleDigits();
+    [[nodiscard]] Token handleComment();
+    [[nodiscard]] Token handleSingleLineComment();
+    [[nodiscard]] Token handleMultiLineComment();
     static void kewordType(const std::string_view &value, TokenType &type) noexcept;
     void handleWhiteSpace() noexcept;
     [[noreturn]] void handleError(const std::string &value, const std::string_view &errorMsg);

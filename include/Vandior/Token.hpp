@@ -30,6 +30,7 @@ enum class TokenType : long {
     UNARY_OPERATOR,
     COMMA,
     COLON,
+    COMMENT,
     UNKNOWN,
     EOFT,
     // Add more types as needed
@@ -126,6 +127,9 @@ template <> struct fmt::formatter<TokenType> : fmt::formatter<std::string_view> 
             break;
         case COLON:
             name = "COLON";
+            break;
+        case COMMENT:
+            name = "COMMENT";
             break;
         // Add more cases as needed
         case UNKNOWN:

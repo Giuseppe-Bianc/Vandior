@@ -16,6 +16,7 @@ namespace vnd {
         [[nodiscard]] static bool isQuotation(char cha) noexcept;
         [[nodiscard]] static bool isComma(char cha) noexcept;
         [[nodiscard]] static bool isColon(char cha) noexcept;
+        [[nodiscard]] static bool isComment(const std::string_view &inputSpan, size_t position) noexcept;
     };
 
 }  // namespace vnd
