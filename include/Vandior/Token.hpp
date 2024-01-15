@@ -25,6 +25,7 @@ enum class TokenType : long {
     CLOSE_CUR_PARENTESIS,
     OPERATION_EQUAL,
     BOOLEAN_OPERATOR,
+    NOT_OPERATOR,
     LOGICAL_OPERATOR,
     UNARY_OPERATOR,
     UNKNOWN,
@@ -108,6 +109,9 @@ template <> struct fmt::formatter<TokenType> : fmt::formatter<std::string_view> 
             break;
         case BOOLEAN_OPERATOR:
             name = "BOOLEAN_OPERATOR";
+            break;
+        case NOT_OPERATOR:
+            name = "NOT_OPERATOR";
             break;
         case LOGICAL_OPERATOR:
             name = "LOGICAL_OPERATOR";

@@ -160,6 +160,8 @@ TokenType Tokenizer::singoleCharOp(const char &view) {
             return TokenType::MINUS_OPERATOR;
         case '=':
             return TokenType::EQUAL_OPERATOR;
+        case '!':
+            return TokenType::NOT_OPERATOR;
         default:
             return TokenType::OPERATOR;
     }
