@@ -14,6 +14,8 @@ namespace vnd {
         [[nodiscard]] static bool isBrackets(const char &cha);
         [[nodiscard]] static bool isApostrophe(const char &cha) noexcept;
         [[nodiscard]] static bool isQuotation(char cha) noexcept;
+        [[nodiscard]] static bool isComma(char cha) noexcept;
+        [[nodiscard]] static bool isColon(char cha) noexcept;
     };
 
 }  // namespace vnd

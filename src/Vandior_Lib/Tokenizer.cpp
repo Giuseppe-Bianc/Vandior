@@ -19,6 +19,12 @@ std::vector<Token> Tokenizer::tokenize() {  // NOLINT(*-include-cleaner)
             tokens.emplace_back(handleChar());
         } else if(vnd::TokenizerUtility::isQuotation(currentChar)) [[likely]] {
             tokens.emplace_back(handleString());
+        } else if(vnd::TokenizerUtility::isComma(currentChar)) {
+            tokens.emplace_back(TokenType::COMMA, ",", line, column - 1);
+            incPosAndColumn();
+        } else if(vnd::TokenizerUtility::isColon(currentChar)) {
+            tokens.emplace_back(TokenType::COLON, ":", line, column - 1);
+            incPosAndColumn();
         } else [[unlikely]] {
             handleError(std::string(1, currentChar), "Unknown Character");
         }
