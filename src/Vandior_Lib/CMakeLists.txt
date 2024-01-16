@@ -5,6 +5,7 @@ add_library(vandior_lib vandior.cpp
         Token.cpp
         Tokenizer.cpp
         TokenizerUtility.cpp
+        Instruction.cpp
         Parser.cpp
 )
 
