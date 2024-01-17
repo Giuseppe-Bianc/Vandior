@@ -5,11 +5,11 @@
 [![CodeQL](https://github.com/Giuseppe-Bianc/Vandior/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/Giuseppe-Bianc/Vandior/actions/workflows/codeql-analysis.yml)
 
 ## About Vandior
-A modern c++20 transpiler
 
+A modern c++20 transpiler
 
 ## More Details
 
- * [Dependency Setup](README_dependencies.md)
- * [Building Details](README_building.md)
- * [Docker](README_docker.md)
+* [Dependency Setup](README_dependencies.md)
+* [Building Details](README_building.md)
+* [Docker](README_docker.md)

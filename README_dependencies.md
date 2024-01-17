@@ -132,6 +132,11 @@ The following compilers should work:
 			sudo apt-get install doxygen
 			sudo apt-get install graphviz
 
+	- Modern Debian/Ubuntu:
+
+			sudo apt install doxygen
+			sudo apt install graphviz
+
 	- Windows:
 
 			choco install doxygen.install -y

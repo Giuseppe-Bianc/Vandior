@@ -1,30 +1,46 @@
 #pragma once
 
+/**
+ * @file
+ * @brief Macros and utilities for type casting
+ */
+
 // NOLINTNEXTLINE
 #include <bit>
 // #include <gsl/gsl>
 
-// Macro to cast to bool
-// Description:
-//   This macro is used to cast a value to std::byte type.
-// Usage example:
-//   bool b = C_BOOL(1);
+/**
+ * @defgroup TypeCastingMacros Type Casting Macros
+ * @{
+ */
+
+/**
+ * @brief Macro to cast to bool.
+ * This macro is used to cast a value to bool type.
+ * @param x The value to cast.
+ * @return The casted value.
+ * Usage example: @code{.cpp} bool b = C_BOOL(1); @endcode
+ */
 #define C_BOOL(x) static_cast<bool>(x)
 #define NC_BOOL(x) gsl::narrow_cast<bool>(x)
 #define BC_BOOL(x) std::bit_cast<bool>(x)
-// Macro to cast to std::byte
-// Description:
-//   This macro is used to cast a value to std::byte type.
-// Usage example:
-//   std::byte b = C_B(255);
+/**
+ * @brief Macro to cast to std::byte.
+ * This macro is used to cast a value to std::byte type.
+ * @param x The value to cast.
+ * @return The casted value.
+ * Usage example: @code{.cpp} std::byte b = C_B(255); @endcode
+ */
 #define C_B(x) static_cast<std::byte>(x)
 #define NC_B(x) gsl::narrow_cast<std::byte>(x)
 #define BC_B(x) std::bit_cast<std::byte>(x)
-// Macro to cast to std::intptr_t
-// Description:
-//   This macro is used to cast a value to std::intptr_t type.
-// Usage example:
-//   std::intptr_t ptr = C_IPTR(somePointer);
+/**
+ * @brief Macro to cast to std::intptr_t type.
+ * This macro is used to cast a value to std::intptr_t type.
+ * @param x The value to be casted.
+ * @return The value casted to std::intptr_t.
+ * Usage example: @code{.cpp} std::intptr_t ptr = C_IPTR(somePointer);@endcode
+ */
 #define C_IPTR(x) static_cast<std::intptr_t>(x)
 #define NC_IPTR(x) gsl::narrow_cast<std::intptr_t>(x)
 #define BC_IPTR(x) std::bit_cast<std::intptr_t>(x)
@@ -367,6 +383,12 @@
 #define NC_CPCU32T(x) gsl::narrow_cast<const uint32_t *>(static_cast<const void *>(x))
 #define BC_CPCU32T(x) std::bit_cast<const uint32_t *>(x)
 
+/** @} */  // end of TypeCastingMacros group
+/**
+ * @brief Namespace containing sizes of various types.
+ * @namespace TypeSizes
+ * @{
+ */
 namespace TypeSizes {
     static inline constexpr std::size_t sizeOfBool = sizeof(bool);
     static inline constexpr std::size_t sizeOfByte = sizeof(std::byte);
@@ -414,3 +436,4 @@ namespace TypeSizes {
     static inline constexpr std::size_t sizeOfU16StringView = sizeof(std::u16string_view);
     static inline constexpr std::size_t sizeOfU32StringView = sizeof(std::u32string_view);
 }  // namespace TypeSizes
+/** @} */  // end of TypeSizes namespace
