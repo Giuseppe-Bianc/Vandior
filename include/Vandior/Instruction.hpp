@@ -17,5 +17,11 @@ namespace vnd {
         std::vector<InstructionType> _types;
         std::vector<bool> _booleanOperators;
         Instruction() noexcept;
+        void checkIdentifier() noexcept;
+
+        [[nodiscard]] InstructionType lastType() const noexcept;
+        [[nodiscard]] inline bool lastTypeIs(const InstructionType &type) const noexcept;
+        [[nodiscard]] bool isExpression() const noexcept;
+        [[nodiscard]] bool isForExpression() const noexcept;
 	};
 }
