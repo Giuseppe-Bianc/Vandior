@@ -4,7 +4,6 @@
 #include "Token.hpp"
 
 namespace vnd {
-
     enum class InstructionType : short {
         PARAMETER_EXPRESSION,
         OPERATION,
@@ -28,7 +27,6 @@ namespace vnd {
         CLOSE_SCOPE,
         BLANK
     };
-
 }
 
 template <> struct fmt::formatter<vnd::InstructionType> : fmt::formatter<std::string_view> {  // NOLINT(*-include-cleaner)
