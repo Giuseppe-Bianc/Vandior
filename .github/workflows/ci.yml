@@ -153,8 +153,8 @@ jobs:
           vcpkg: false
           ccache: true
           clangtidy: ${{ env.CLANG_TIDY_VERSION }}
-
-
+          doxygen: true
+          graphviz: true
           cppcheck: true
 
           gcovr: true

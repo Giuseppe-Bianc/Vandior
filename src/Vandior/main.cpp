@@ -1,3 +1,4 @@
+#include "FileReaderError.hpp"
 #include "Vandior/vandior.hpp"
 
 DISABLE_WARNINGS_PUSH(
@@ -27,40 +28,40 @@ namespace {
         AutoTimer timer("readFromFile");
         std::filesystem::path filePath = filename;
 
-        if(!std::filesystem::exists(filePath)) { throw std::runtime_error(FORMAT("File not found: {}", filename)); }
-        if(!std::filesystem::is_regular_file(filePath)) { throw std::runtime_error(FORMAT("Path is not a regular file: {}", filename)); }
+        if(!std::filesystem::exists(filePath)) { throw FILEREADEREERRORF("File not found: {}", filename); }
+        if(!std::filesystem::is_regular_file(filePath)) { throw FILEREADEREERRORF("Path is not a regular file: {}", filename); }
 
         std::stringstream buffer;
 
-        if(std::ifstream fileStream{filePath, std::ios::in | std::ios::binary}; fileStream.is_open()) { // NOLINT(*-include-cleaner,
-                                                                                                        // hicpp-signed-bitwise)
+        if(std::ifstream fileStream{filePath, std::ios::in | std::ios::binary}; fileStream.is_open()) {  // NOLINT(*-include-cleaner,
+                                    // hicpp-signed-bitwise)
             // Ensure
             // that the file is opened securely
-            fileStream.exceptions(std::ios::failbit | std::ios::badbit); // NOLINT(hicpp-signed-bitwise)
+            fileStream.exceptions(std::ios::failbit | std::ios::badbit);  // NOLINT(hicpp-signed-bitwise)
 
             try {
                 buffer << fileStream.rdbuf();
             } catch(const std::ios_base::failure &e) {
-                throw std::runtime_error(FORMAT("Unable to read file: {}. Reason: {}", filename, e.what()));
+                throw FILEREADEREERRORF("Unable to read file: {}. Reason: {}", filename, e.what());
             }
         } else {
-            // Handle the case when the file cannot be opened
+            // Handle the case when the file cannot be opened,
             // You might throw an exception or return an error indicator
-            throw std::runtime_error(FORMAT("Unable to open file: {}", filename));
+            throw FILEREADEREERRORF("Unable to open file: {}", filename);
         }
 
         // Extract the content as a string
         return buffer.str();
     }
 }  // namespace
-//constexpr std::string_view code2 = R"('a' '\\' '')";
-//constexpr std::string_view code2 = R"("a" "\\" "")";
+// constexpr std::string_view code2 = R"('a' '\\' '')";
+// constexpr std::string_view code2 = R"("a" "\\" "")";
 DISABLE_WARNINGS_PUSH(26461 26821)
 // NOLINTNEXTLINE(bugprone-exception-escape, readability-function-cognitive-complexity)
 #ifdef _WIN32  // Windows
 constexpr std::string_view filename = "../../../input.vn";
 #elif defined __unix__  // Linux and Unix-like systems
-constexpr std::string_view filename = "../../../input.vn"; // Linux and Unix
+constexpr std::string_view filename = "../../../input.vn";  // Linux and Unix
 #endif
 auto main(int argc, const char *const argv[]) -> int {
     // NOLINTNEXTLINE
@@ -68,11 +69,10 @@ auto main(int argc, const char *const argv[]) -> int {
     std::string str;
     try {
         str = readFromFile(filename.data());
-    } catch(std::runtime_error &e) {
-        LINFO("error {}", e.what());
-    }
+    } catch(std::runtime_error &e) { LINFO("error {}", e.what()); }
     std::string_view code(str);
     LINFO("{}", code);
+    LINFO("code length {}", code.length());
     try {
         CLI::App app{
             FORMAT("{} version {}", Vandior::cmake::project_name, Vandior::cmake::project_version)};  // NOLINT(*-include-cleaner)
@@ -84,25 +84,20 @@ auto main(int argc, const char *const argv[]) -> int {
 
         CLI11_PARSE(app, argc, argv)
 
-        if (show_version) {
+        if(show_version) {
             LINFO("{}", Vandior::cmake::project_version);
             return EXIT_SUCCESS;  // NOLINT(*-include-cleaner)
         }
-        LINFO("code length {}", code.length());
         Tokenizer tokenizer{code};
         std::vector<Token> tokens;
         timeTokenizer(tokenizer, tokens);
-        for (const auto &item : tokens) {
-            LINFO("{}", item);
-        }
+        for(const auto &item : tokens) { LINFO("{}", item); }
         /* vnd::Parser parser(code);
         Timer timeAst("ast creation time");
         auto ast = parser.parse();
         prettyPrint(*ast);
         LINFO("{}", timeAst);*/
-    } catch (const std::exception &e) {
-        LERROR("Unhandled exception in main: {}", e.what());
-    }  // NOLINT(*-include-cleaner)
+    } catch(const std::exception &e) { LERROR("Unhandled exception in main: {}", e.what()); }  // NOLINT(*-include-cleaner)
 
     return EXIT_SUCCESS;  // Return appropriate exit code
 }

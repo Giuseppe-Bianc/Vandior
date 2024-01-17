@@ -37,6 +37,8 @@ enum class TokenType : long {
     // Add more types as needed
 };
 
+static inline constexpr TokenType eofTokenType = TokenType::EOFT;
+
 template <> struct fmt::formatter<TokenType> : fmt::formatter<std::string_view> {  // NOLINT(*-include-cleaner)
     template <typename FormatContext> auto format(TokenType tokenType, FormatContext &ctx) {
         std::string_view name;

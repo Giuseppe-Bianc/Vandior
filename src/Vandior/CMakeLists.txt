@@ -1,4 +1,5 @@
-add_executable(vandior main.cpp)
+add_executable(vandior main.cpp
+        FileReaderError.hpp)
 
 
 if (CMAKE_CXX_COMPILER_ID MATCHES ".*Clang")

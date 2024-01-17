@@ -62,7 +62,7 @@ TEST_CASE("default constructed token toString", "[token]"){
     REQUIRE(token.getValue().empty() == true);
     REQUIRE(token.getLine() == 0);
     REQUIRE(token.getColumn() == 0);
-    REQUIRE(token.to_string() == "(type: UNKNOWN, value: , line: 0, column: 0)");
+    REQUIRE(token.to_string() == "(type: UNKNOWN, value: '', line: 0, column: 0)");
 }
 
 TEST_CASE("default constructed token format", "[token]"){
@@ -71,7 +71,7 @@ TEST_CASE("default constructed token format", "[token]"){
     REQUIRE(token.getValue().empty() == true);
     REQUIRE(token.getLine() == 0);
     REQUIRE(token.getColumn() == 0);
-    REQUIRE(FORMAT("{}", token) == "(type: UNKNOWN, value: , line: 0, column: 0)");
+    REQUIRE(FORMAT("{}", token) == "(type: UNKNOWN, value: '', line: 0, column: 0)");
 }
 
 TEST_CASE("default constructed token set propriety", "[token]"){
@@ -104,7 +104,7 @@ TEST_CASE("default constructed token set propriety tostring", "[token]"){
     REQUIRE(token.getValue().empty() == false);
     REQUIRE(token.getLine() == 1);
     REQUIRE(token.getColumn() == 1);
-    REQUIRE(token.to_string() == "(type: INTEGER, value: assss, line: 1, column: 1)");
+    REQUIRE(token.to_string() == "(type: INTEGER, value: 'assss', line: 1, column: 1)");
 }
 
 TEST_CASE("default constructed token set propriety format", "[token]"){
@@ -121,7 +121,7 @@ TEST_CASE("default constructed token set propriety format", "[token]"){
     REQUIRE(token.getValue().empty() == false);
     REQUIRE(token.getLine() == 1);
     REQUIRE(token.getColumn() == 1);
-    REQUIRE(FORMAT("{}", token) == "(type: INTEGER, value: assss, line: 1, column: 1)");
+    REQUIRE(FORMAT("{}", token) == "(type: INTEGER, value: 'assss', line: 1, column: 1)");
 }
 
 TEST_CASE("Token Comparison Equality", "[Token]") {
