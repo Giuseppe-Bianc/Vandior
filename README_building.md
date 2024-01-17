@@ -1,3 +1,4 @@
+# README_building
 ## Build Instructions
 
 A full build has different steps:
@@ -74,8 +75,7 @@ CMake uses the environment variables CC and CXX to decide which compiler to use.
 				[Environment]::SetEnvironmentVariable("CXX", "g++.exe", "User")
 				refreshenv
 
-
-  - Temporarily (only for the current shell):
+ 	- Temporarily (only for the current shell):
 
 			$Env:CC="clang.exe"
 			$Env:CXX="clang++.exe"
@@ -188,5 +188,3 @@ cd ./build
 ctest -C Debug
 cd ../
 ```
-
-
