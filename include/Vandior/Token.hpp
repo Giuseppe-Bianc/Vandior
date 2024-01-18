@@ -8,7 +8,7 @@ enum class TokenType : long {
     OPERATOR,
     MINUS_OPERATOR,
     EQUAL_OPERATOR,
-    DOT_OPEARTOR,
+    DOT_OPERATOR,
     IDENTIFIER,
     CHAR,
     STRING,
@@ -62,7 +62,7 @@ template <> struct fmt::formatter<TokenType> : fmt::formatter<std::string_view> 
         case EQUAL_OPERATOR:
             name = "EQUAL_OPERATOR";
             break;
-        case DOT_OPEARTOR:
+        case DOT_OPERATOR:
             name = "DOT_OPERATOR";
             break;
         case IDENTIFIER:

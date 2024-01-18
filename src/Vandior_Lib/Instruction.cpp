@@ -23,74 +23,93 @@ void vnd::Instruction::checkToken(const Token &token) {
     switch (token.getType()) {
         using enum TokenType;
     case IDENTIFIER:
-        checkIdentifier();
+        checkIdentifier(token.getType());
+        break;
     default:
         _tokens = {};
+        break;
     }
+    _tokens.emplace_back(token);
 }
 
-void vnd::Instruction::checkIdentifier() noexcept {
+void vnd::Instruction::checkIdentifier(const TokenType &type) noexcept {
     using enum TokenType;
     using enum InstructionType;
-    /* if(isExpression()) {
-        this->_tokens = {OPERATOR, MINUS_OPERATOR, LOGICAL_OPERATOR, DOT_OPERATOR, OPEN_BRACKETS, OPEN_SQUARE_BRACKETS};
-        this->emplaceUnaryOperator(type);
-        this->emplaceExpressionTokens();
+    if(isExpression()) {
+        _allowedTokens = {OPERATOR, MINUS_OPERATOR, LOGICAL_OPERATOR, DOT_OPERATOR, OPEN_PARENTESIS, OPEN_SQ_PARENTESIS};
+        emplaceUnaryOperator(type);
+        emplaceExpressionTokens();
         return;
     }
-    switch(this->lastInstructionType()) {
+    switch(getLastType()) {
     case BLANK:
     case OPERATION:
-        this->setLastInstructionType(OPERATION);
-        this->allowedTokens = {EQUAL_OPERATOR, OPERATION_EQUAL,      DOT_OPERATOR, COMMA,
-                               OPEN_BRACKETS,  OPEN_SQUARE_BRACKETS, eofTokenType};
-        if(previousTokens.empty()) { this->allowedTokens.emplace_back(OPEN_BRACKETS); }
-        this->emplaceUnaryOperator(type);
+        setLastType(OPERATION);
+        _allowedTokens = {EQUAL_OPERATOR, OPERATION_EQUAL, DOT_OPERATOR, COMMA,
+                               OPEN_PARENTESIS,  OPEN_SQ_PARENTESIS, eofTokenType};
+        emplaceUnaryOperator(type);
         break;
     case DECLARATION:
-        if(!this->isPreviousEmpty() && this->previousTokensLast() == COLON) {
-            this->allowedTokens = {EQUAL_OPERATOR, OPEN_SQUARE_BRACKETS, eofTokenType};
+        if(!isEmpty() && getLastTokenType() == COLON) {
+            _allowedTokens = {EQUAL_OPERATOR, OPEN_SQ_PARENTESIS, eofTokenType};
             break;
         }
-        this->allowedTokens = {COMMA, COLON};
         break;
     case FOR_STRUCTURE:
-        if(this->isPreviousEmpty()) {
-            this->allowedTokens = {};
+        if(isEmpty()) {
+            _allowedTokens = {};
             break;
         }
-        if(this->previousTokensLast() == KEYWORD_VAR) {
-            this->allowedTokens = {COLON};
+        if(getLastTokenType() == K_VAR) {
+            _allowedTokens = {COLON};
             break;
         }
-        this->allowedTokens = {EQUAL_OPERATOR};
+        _allowedTokens = {EQUAL_OPERATOR};
         break;
     case DEFINITION:
-        this->allowedTokens = {OPEN_BRACKETS};
+        _allowedTokens = {OPEN_PARENTESIS};
         break;
     case PARAMETER_DEFINITION:
-        if(this->previousTokensLast() == COLON) {
-            this->allowedTokens = {COMMA, CLOSED_BRACKETS};
+        if(getLastTokenType() == COLON) {
+            _allowedTokens = {COMMA, CLOSE_PARENTESIS};
             break;
         }
-        this->allowedTokens = {COLON};
+        _allowedTokens = {COLON};
         break;
     case RETURN_DEFINITION:
-        this->allowedTokens = {COMMA, OPEN_CURLY_BRACKETS};
+        _allowedTokens = {COMMA, OPEN_CUR_PARENTESIS};
         break;
     default:
-        this->allowedTokens = {};
+        _allowedTokens = {};
         break;
-    }*/
+    }
 }
 
 
-vnd::InstructionType vnd::Instruction::lastType() const noexcept {
+vnd::InstructionType vnd::Instruction::getLastType() const noexcept {
     if(_types.empty()) { return InstructionType::BLANK; }
     return _types.back();
 }
 
-inline bool vnd::Instruction::lastTypeIs(const InstructionType &type) const noexcept { return lastType() == type; }
+void vnd::Instruction::setLastType(const InstructionType &type) noexcept {
+    if(_types.empty()) { return; }
+    _types.pop_back();
+    _types.emplace_back(type);
+}
+
+TokenType vnd::Instruction::getLastTokenType() const noexcept {
+    if(_tokens.empty()) { return TokenType::UNKNOWN; }
+    return _tokens.back().getType();
+}
+
+inline bool vnd::Instruction::lastTypeIs(const InstructionType &type) const noexcept { return getLastType() == type; }
+
+[[nodiscard]] inline bool vnd::Instruction::getLastBooleanOperator() const noexcept {
+    if(_booleanOperators.empty()) { return false; }
+    return _booleanOperators.back();
+}
+
+inline bool vnd::Instruction::isEmpty() const noexcept { return _tokens.empty(); }
 
 bool vnd::Instruction::isExpression() const noexcept {
     using enum InstructionType;
@@ -102,4 +121,54 @@ bool vnd::Instruction::isExpression() const noexcept {
 bool vnd::Instruction::isForExpression() const noexcept {
     using enum InstructionType;
     return lastTypeIs(FOR_INITIALIZATION) || lastTypeIs(FOR_CONDITION) || lastTypeIs(FOR_STEP);
+}
+
+inline bool vnd::Instruction::emplaceTokenType(const InstructionType &instruction, const TokenType token) noexcept {
+    if(lastTypeIs(instruction)) {
+        _allowedTokens.emplace_back(token);
+        return true;
+    }
+    return false;
+}
+
+void vnd::Instruction::emplaceExpressionTokens() noexcept {
+    using enum InstructionType;
+    using enum TokenType;
+    emplaceBooleanOperator();
+    if(emplaceTokenType(SQUARE_EXPRESSION, CLOSE_SQ_PARENTESIS)) { return; }
+    if(this->emplaceTokenType(EXPRESSION, CLOSE_PARENTESIS)) { return; }
+    if(lastTypeIs(PARAMETER_EXPRESSION)) {
+        _allowedTokens.emplace_back(CLOSE_PARENTESIS);
+        _allowedTokens.emplace_back(COMMA);
+        return;
+    }
+    if(lastTypeIs(ARRAY_INIZIALIZATION)) {
+        _allowedTokens.emplace_back(CLOSE_SQ_PARENTESIS);
+        _allowedTokens.emplace_back(COMMA);
+        return;
+    }
+    if(this->emplaceForTokens()) { return; }
+    this->emplaceCommaEoft();
+}
+
+inline void vnd::Instruction::emplaceCommaEoft() noexcept {
+    _allowedTokens.emplace_back(TokenType::COMMA);
+    _allowedTokens.emplace_back(eofTokenType);
+}
+
+inline void vnd::Instruction::emplaceBooleanOperator() noexcept {
+    if(!getLastBooleanOperator()) { _allowedTokens.emplace_back(TokenType::BOOLEAN_OPERATOR); }
+}
+
+inline bool vnd::Instruction::emplaceForTokens() noexcept {
+    if(isForExpression()) {
+        _allowedTokens.emplace_back(TokenType::OPEN_CUR_PARENTESIS);
+        if(!lastTypeIs(InstructionType::FOR_STEP)) { _allowedTokens.emplace_back(TokenType::COMMA); };
+        return true;
+    }
+    return false;
+}
+
+inline void vnd::Instruction::emplaceUnaryOperator(const TokenType& type) noexcept {
+    if(type != TokenType::UNARY_OPERATOR) { _allowedTokens.emplace_back(TokenType::UNARY_OPERATOR); }
 }

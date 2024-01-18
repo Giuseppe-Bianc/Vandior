@@ -17,11 +17,21 @@ namespace vnd {
         std::vector<InstructionType> _types;
         std::vector<bool> _booleanOperators;
         Instruction() noexcept;
-        void checkIdentifier() noexcept;
+        void checkIdentifier(const TokenType &type) noexcept;
 
-        [[nodiscard]] InstructionType lastType() const noexcept;
+        [[nodiscard]] InstructionType getLastType() const noexcept;
+        void setLastType(const InstructionType &type) noexcept;
         [[nodiscard]] inline bool lastTypeIs(const InstructionType &type) const noexcept;
+        [[nodiscard]] TokenType getLastTokenType() const noexcept;
+        [[nodiscard]] inline bool isEmpty() const noexcept;
+        [[nodiscard]] inline bool getLastBooleanOperator() const noexcept;
         [[nodiscard]] bool isExpression() const noexcept;
         [[nodiscard]] bool isForExpression() const noexcept;
+        [[nodiscard]] inline bool emplaceTokenType(const InstructionType &instruction, const TokenType token) noexcept;
+        void emplaceExpressionTokens() noexcept;
+        inline void emplaceCommaEoft() noexcept;
+        inline void emplaceBooleanOperator() noexcept;
+        inline bool emplaceForTokens() noexcept;
+        inline void emplaceUnaryOperator(const TokenType &type) noexcept;
 	};
 }

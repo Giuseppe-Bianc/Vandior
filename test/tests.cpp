@@ -20,7 +20,7 @@ TEST_CASE("corrected format for Tokentype", "[token_type]") {
     REQ_FORMAT(OPERATOR, "OPERATOR");
     REQ_FORMAT(MINUS_OPERATOR, "MINUS_OPERATOR");
     REQ_FORMAT(EQUAL_OPERATOR, "EQUAL_OPERATOR");
-    REQ_FORMAT(DOT_OPEARTOR, "DOT_OPERATOR");
+    REQ_FORMAT(DOT_OPERATOR, "DOT_OPERATOR");
     REQ_FORMAT(IDENTIFIER,"IDENTIFIER");
     REQ_FORMAT(CHAR, "CHAR");
     REQ_FORMAT(STRING, "STRING");
@@ -210,7 +210,7 @@ TEST_CASE("tokenizer emit operator token", "[tokenizer]"){
     REQUIRE(tokens[10] == Token(oper, "+", 1, 21));
     REQUIRE(tokens[11] == Token(TokenType::MINUS_OPERATOR, "-", 1, 23));
     REQUIRE(tokens[12] == Token(oper, "^", 1, 25));
-    REQUIRE(tokens[13] == Token(TokenType::DOT_OPEARTOR, ".", 1, 27));
+    REQUIRE(tokens[13] == Token(TokenType::DOT_OPERATOR, ".", 1, 27));
 }
 
 TEST_CASE("tokenizer emit operationEqual token", "[tokenizer]"){
