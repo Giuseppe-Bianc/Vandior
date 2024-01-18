@@ -1,7 +1,7 @@
 #include <algorithm>
 #include "Vandior/Instruction.hpp"
 
-std::vector <TokenType> vnd::Instruction::_expressionStartTokens = {TokenType::IDENTIFIER,     TokenType::INTEGER,
+const std::vector <TokenType> vnd::Instruction::_expressionStartTokens = {TokenType::IDENTIFIER,     TokenType::INTEGER,
                                                                 TokenType::DOUBLE,         TokenType::CHAR,
                                                                 TokenType::STRING,         TokenType::BOOLEAN,
                                                                 TokenType::MINUS_OPERATOR, TokenType::NOT_OPERATOR,
@@ -58,7 +58,17 @@ void vnd::Instruction::checkToken(const Token &token) {
         checkBooleanLogicalOperator(token.getType());
         break;
     case DOT_OPERATOR:
+        [[fallthrough]];
+    case COLON:
         _allowedTokens = {IDENTIFIER};
+        break;
+    case COMMA:
+        checkComma();
+        break;
+    case OPEN_PARENTESIS:
+        [[fallthrough]];
+    case OPEN_SQ_PARENTESIS:
+        checkOpenParentesis(token.getType());
         break;
     default:
         _tokens = {};
@@ -179,6 +189,52 @@ void vnd::Instruction::checkBooleanLogicalOperator(const TokenType& type) noexce
     _allowedTokens = {};
 }
 
+void vnd::Instruction::checkComma() noexcept {
+    using enum TokenType;
+    using enum InstructionType;
+    if(lastTypeIs(OPERATION) || lastTypeIs(DECLARATION) || lastTypeIs(PARAMETER_DEFINITION) ||
+       lastTypeIs(RETURN_DEFINITION)) {
+        _allowedTokens = {IDENTIFIER};
+        return;
+    }
+    if(lastTypeIs(FOR_INITIALIZATION)) {
+        setLastType(FOR_CONDITION);
+    } else if(lastTypeIs(FOR_CONDITION)) {
+        setLastType(FOR_STEP);
+    }
+    setLastBooleanOperator(false);
+    _allowedTokens = _expressionStartTokens;
+}
+
+void vnd::Instruction::checkOpenParentesis(const TokenType &type) noexcept {
+    using enum TokenType;
+    using enum InstructionType;
+    addBooleanOperator();
+    _allowedTokens = {IDENTIFIER, INTEGER, DOUBLE, CHAR, STRING, BOOLEAN, MINUS_OPERATOR, NOT_OPERATOR, OPEN_PARENTESIS};
+    if(type == OPEN_PARENTESIS) {
+        _allowedTokens.emplace_back(CLOSE_PARENTESIS);
+        if(lastTypeIs(DEFINITION)) {
+            addType(PARAMETER_DEFINITION);
+            _allowedTokens = {IDENTIFIER, CLOSE_PARENTESIS};
+            return;
+        }
+        if(getLastTokenType() == IDENTIFIER || getLastTokenType() == CLOSE_SQ_PARENTESIS) {
+            this->addType(PARAMETER_EXPRESSION);
+            return;
+        }
+        addType(EXPRESSION);
+        return;
+    }
+    if(getLastTokenType() == EQUAL_OPERATOR || getLastTokenType() == COMMA || getLastTokenType() == OPEN_SQ_PARENTESIS) {
+        addType(ARRAY_INIZIALIZATION);
+        _allowedTokens.emplace_back(OPEN_SQ_PARENTESIS);
+        _allowedTokens.emplace_back(CLOSE_SQ_PARENTESIS);
+        return;
+    }
+    if(lastTypeIs(DECLARATION)) { _allowedTokens.emplace_back(CLOSE_SQ_PARENTESIS); }
+    addType(SQUARE_EXPRESSION);
+}
+
 
 vnd::InstructionType vnd::Instruction::getLastType() const noexcept {
     if(_types.empty()) { return InstructionType::BLANK; }
@@ -210,6 +266,8 @@ void vnd::Instruction::setLastBooleanOperator(const bool present) noexcept {
     _booleanOperators.pop_back();
     _booleanOperators.emplace_back(present);
 }
+
+void vnd::Instruction::addBooleanOperator() noexcept { _booleanOperators.emplace_back(false); }
 
 inline bool vnd::Instruction::isEmpty() const noexcept { return _tokens.empty(); }
 
