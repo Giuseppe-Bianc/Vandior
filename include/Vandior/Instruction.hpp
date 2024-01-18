@@ -18,6 +18,8 @@ namespace vnd {
         std::vector<bool> _booleanOperators;
         Instruction() noexcept;
         void checkIdentifier(const TokenType &type) noexcept;
+        void checkValue(const TokenType &type) noexcept;
+        void checkOperator(const TokenType &type) noexcept;
 
         [[nodiscard]] InstructionType getLastType() const noexcept;
         void setLastType(const InstructionType &type) noexcept;

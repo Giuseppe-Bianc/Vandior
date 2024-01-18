@@ -23,7 +23,22 @@ void vnd::Instruction::checkToken(const Token &token) {
     switch (token.getType()) {
         using enum TokenType;
     case IDENTIFIER:
+        [[fallthrough]];
+    case UNARY_OPERATOR:
         checkIdentifier(token.getType());
+        break;
+    case INTEGER:
+    case DOUBLE:
+    case CHAR:
+    case STRING:
+        [[fallthrough]];
+    case BOOLEAN:
+        checkValue(token.getType());
+        break;
+    case OPERATOR:
+        [[fallthrough]];
+    case MINUS_OPERATOR:
+        checkOperator(token.getType());
         break;
     default:
         _tokens = {};
@@ -83,6 +98,32 @@ void vnd::Instruction::checkIdentifier(const TokenType &type) noexcept {
         _allowedTokens = {};
         break;
     }
+}
+
+void vnd::Instruction::checkValue(const TokenType &type) noexcept {
+    using enum TokenType;
+    using enum InstructionType;
+    if(isExpression()) {
+        _allowedTokens = {OPERATOR, MINUS_OPERATOR, LOGICAL_OPERATOR};
+        if(type == STRING) {
+            _allowedTokens.emplace_back(DOT_OPERATOR);
+            _allowedTokens.emplace_back(OPEN_SQ_PARENTESIS);
+        }
+        this->emplaceExpressionTokens();
+        return;
+    }
+    _allowedTokens = {};
+}
+
+void vnd::Instruction::checkOperator(const TokenType &type) noexcept {
+    using enum TokenType;
+    using enum InstructionType;
+    if(isExpression()) {
+        _allowedTokens = {IDENTIFIER, INTEGER, DOUBLE, CHAR, STRING, BOOLEAN, MINUS_OPERATOR, OPEN_PARENTESIS};
+        if(type == MINUS_OPERATOR) { _allowedTokens.emplace_back(OPERATOR); }
+        return;
+    }
+    _allowedTokens = {};
 }
 
 
