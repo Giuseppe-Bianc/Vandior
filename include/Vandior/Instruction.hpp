@@ -28,6 +28,10 @@ namespace vnd {
         void checkClosedParentesis(const TokenType &type) noexcept;
         void checkOpenCurParentesis() noexcept;
         void checkClosedCurParentesis() noexcept;
+        void checkKMain() noexcept;
+        void checkKVar() noexcept;
+        void checkKStructure() noexcept;
+        void checkKFor() noexcept;
 
         [[nodiscard]] InstructionType getLastType() const noexcept;
         void setLastType(const InstructionType &type) noexcept;
