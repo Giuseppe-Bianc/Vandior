@@ -70,6 +70,17 @@ void vnd::Instruction::checkToken(const Token &token) {
     case OPEN_SQ_PARENTESIS:
         checkOpenParentesis(token.getType());
         break;
+    case CLOSE_PARENTESIS:
+        [[fallthrough]];
+    case CLOSE_SQ_PARENTESIS:
+        checkClosedParentesis(token.getType());
+        break;
+    case OPEN_CUR_PARENTESIS:
+        checkOpenCurParentesis();
+        break;
+    case CLOSE_CUR_PARENTESIS:
+        checkClosedCurParentesis();
+        break;
     default:
         _tokens = {};
         break;
@@ -235,6 +246,62 @@ void vnd::Instruction::checkOpenParentesis(const TokenType &type) noexcept {
     addType(SQUARE_EXPRESSION);
 }
 
+void vnd::Instruction::checkClosedParentesis(const TokenType &type) noexcept {
+    using enum TokenType;
+    using enum InstructionType;
+    removeType();
+    removeBooleanOperator();
+    if(isExpression()) {
+        _allowedTokens = {OPERATOR, MINUS_OPERATOR, LOGICAL_OPERATOR, DOT_OPERATOR, OPEN_SQ_PARENTESIS};
+        if(type == CLOSE_SQ_PARENTESIS) {
+            _allowedTokens.emplace_back(UNARY_OPERATOR);
+            _allowedTokens.emplace_back(OPEN_PARENTESIS);
+        }
+        emplaceExpressionTokens();
+        return;
+    }
+    switch(getLastType()) {
+    case OPERATION:
+        _allowedTokens = {DOT_OPERATOR, OPEN_SQ_PARENTESIS};
+        if(type == CLOSE_PARENTESIS) {
+            _allowedTokens.emplace_back(eofTokenType);
+            break;
+        }
+        _allowedTokens.emplace_back(EQUAL_OPERATOR);
+        _allowedTokens.emplace_back(OPERATION_EQUAL);
+        _allowedTokens.emplace_back(UNARY_OPERATOR);
+        _allowedTokens.emplace_back(COMMA);
+        _allowedTokens.emplace_back(OPEN_PARENTESIS);
+        break;
+    case DECLARATION:
+        _allowedTokens = {EQUAL_OPERATOR, eofTokenType};
+        if(type == CLOSE_SQ_PARENTESIS) { _allowedTokens.emplace_back(OPEN_SQ_PARENTESIS); }
+        break;
+    case STRUCTURE:
+        _allowedTokens = {OPEN_CUR_PARENTESIS};
+        break;
+    case DEFINITION:
+        setLastType(RETURN_DEFINITION);
+        _allowedTokens = {COLON, OPEN_CUR_PARENTESIS};
+        break;
+    default:
+        _allowedTokens = {};
+        break;
+    }
+}
+
+void vnd::Instruction::checkOpenCurParentesis() noexcept {
+    using enum InstructionType;
+    using enum TokenType;
+    if(lastTypeIs(BLANK)) { setLastType(OPEN_SCOPE); }
+    _allowedTokens = {eofTokenType, CLOSE_CUR_PARENTESIS};
+}
+
+void vnd::Instruction::checkClosedCurParentesis() noexcept {
+    using enum InstructionType;
+    if(lastTypeIs(BLANK)) { setLastType(CLOSE_SCOPE); }
+    _allowedTokens = {eofTokenType};
+}
 
 vnd::InstructionType vnd::Instruction::getLastType() const noexcept {
     if(_types.empty()) { return InstructionType::BLANK; }
@@ -248,6 +315,11 @@ void vnd::Instruction::setLastType(const InstructionType &type) noexcept {
 }
 
 void vnd::Instruction::addType(const InstructionType &type) noexcept { _types.emplace_back(type); }
+
+void vnd::Instruction::removeType() noexcept {
+    if(_types.empty()) { return; }
+    _types.pop_back();
+}
 
 TokenType vnd::Instruction::getLastTokenType() const noexcept {
     if(_tokens.empty()) { return TokenType::UNKNOWN; }
@@ -268,6 +340,11 @@ void vnd::Instruction::setLastBooleanOperator(const bool present) noexcept {
 }
 
 void vnd::Instruction::addBooleanOperator() noexcept { _booleanOperators.emplace_back(false); }
+
+void vnd::Instruction::removeBooleanOperator() noexcept {
+    if(_booleanOperators.empty()) { return; }
+    _booleanOperators.pop_back();
+}
 
 inline bool vnd::Instruction::isEmpty() const noexcept { return _tokens.empty(); }
 

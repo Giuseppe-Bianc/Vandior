@@ -25,14 +25,19 @@ namespace vnd {
         void checkBooleanLogicalOperator(const TokenType &type) noexcept;
         void checkComma() noexcept;
         void checkOpenParentesis(const TokenType &type) noexcept;
+        void checkClosedParentesis(const TokenType &type) noexcept;
+        void checkOpenCurParentesis() noexcept;
+        void checkClosedCurParentesis() noexcept;
 
         [[nodiscard]] InstructionType getLastType() const noexcept;
         void setLastType(const InstructionType &type) noexcept;
         void addType(const InstructionType &type) noexcept;
+        void removeType() noexcept;
         [[nodiscard]] inline bool lastTypeIs(const InstructionType &type) const noexcept;
         [[nodiscard]] inline bool getLastBooleanOperator() const noexcept;
         void setLastBooleanOperator(const bool present) noexcept; 
         void addBooleanOperator() noexcept;
+        void removeBooleanOperator() noexcept;
         [[nodiscard]] TokenType getLastTokenType() const noexcept;
         [[nodiscard]] inline bool isEmpty() const noexcept;
         [[nodiscard]] bool isExpression() const noexcept;
