@@ -106,6 +106,10 @@ void vnd::Instruction::checkToken(const Token &token) {
     _tokens.emplace_back(token);
 }
 
+bool vnd::Instruction::canTerminate() const noexcept {
+    return std::ranges::find(_allowedTokens, eofTokenType) != _allowedTokens.end();
+}
+
 void vnd::Instruction::checkIdentifier(const TokenType &type) noexcept {
     using enum TokenType;
     using enum InstructionType;
@@ -128,6 +132,7 @@ void vnd::Instruction::checkIdentifier(const TokenType &type) noexcept {
             _allowedTokens = {EQUAL_OPERATOR, OPEN_SQ_PARENTESIS, eofTokenType};
             break;
         }
+        _allowedTokens = {COMMA, COLON};
         break;
     case FOR_STRUCTURE:
         if(isEmpty()) {
