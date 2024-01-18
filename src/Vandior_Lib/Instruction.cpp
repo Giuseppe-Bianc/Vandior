@@ -1,6 +1,12 @@
 #include <algorithm>
 #include "Vandior/Instruction.hpp"
 
+std::vector <TokenType> vnd::Instruction::_expressionStartTokens = {TokenType::IDENTIFIER,     TokenType::INTEGER,
+                                                                TokenType::DOUBLE,         TokenType::CHAR,
+                                                                TokenType::STRING,         TokenType::BOOLEAN,
+                                                                TokenType::MINUS_OPERATOR, TokenType::NOT_OPERATOR,
+                                                                TokenType::OPEN_PARENTESIS,  TokenType::OPEN_SQ_PARENTESIS};
+
 vnd::Instruction::Instruction() noexcept
   : _types({InstructionType::BLANK}),
     _allowedTokens({TokenType::K_MAIN, TokenType::K_VAR, TokenType::K_STRUCTURE, TokenType::K_FOR,
@@ -39,6 +45,20 @@ void vnd::Instruction::checkToken(const Token &token) {
         [[fallthrough]];
     case MINUS_OPERATOR:
         checkOperator(token.getType());
+        break;
+    case EQUAL_OPERATOR:
+        [[fallthrough]];
+    case OPERATION_EQUAL:
+        checkEqualOperator();
+        break;
+    case BOOLEAN_OPERATOR:
+    case NOT_OPERATOR:
+        [[fallthrough]];
+    case LOGICAL_OPERATOR:
+        checkBooleanLogicalOperator(token.getType());
+        break;
+    case DOT_OPERATOR:
+        _allowedTokens = {IDENTIFIER};
         break;
     default:
         _tokens = {};
@@ -120,7 +140,40 @@ void vnd::Instruction::checkOperator(const TokenType &type) noexcept {
     using enum InstructionType;
     if(isExpression()) {
         _allowedTokens = {IDENTIFIER, INTEGER, DOUBLE, CHAR, STRING, BOOLEAN, MINUS_OPERATOR, OPEN_PARENTESIS};
-        if(type == MINUS_OPERATOR) { _allowedTokens.emplace_back(OPERATOR); }
+        if(type == OPERATOR) { _allowedTokens.emplace_back(MINUS_OPERATOR); }
+        return;
+    }
+    _allowedTokens = {};
+}
+
+void vnd::Instruction::checkEqualOperator() noexcept {
+    using enum TokenType;
+    using enum InstructionType;
+    _allowedTokens = _expressionStartTokens;
+    if(lastTypeIs(OPERATION)) {
+        this->setLastType(ASSIGNATION);
+        return;
+    }
+    if(lastTypeIs(DECLARATION)) {
+        this->setLastType(INITIALIZATION);
+        return;
+    }
+    if(lastTypeIs(FOR_STRUCTURE)) {
+        this->addType(FOR_INITIALIZATION);
+        return;
+    }
+    _allowedTokens = {};
+}
+
+void vnd::Instruction::checkBooleanLogicalOperator(const TokenType& type) noexcept {
+    using enum TokenType;
+    using enum InstructionType;
+    if(isExpression()) {
+        _allowedTokens = _expressionStartTokens;
+        if(type != NOT_OPERATOR) {
+            _allowedTokens.emplace_back(NOT_OPERATOR);
+            setLastBooleanOperator(type == BOOLEAN_OPERATOR);
+        }
         return;
     }
     _allowedTokens = {};
@@ -138,6 +191,8 @@ void vnd::Instruction::setLastType(const InstructionType &type) noexcept {
     _types.emplace_back(type);
 }
 
+void vnd::Instruction::addType(const InstructionType &type) noexcept { _types.emplace_back(type); }
+
 TokenType vnd::Instruction::getLastTokenType() const noexcept {
     if(_tokens.empty()) { return TokenType::UNKNOWN; }
     return _tokens.back().getType();
@@ -148,6 +203,12 @@ inline bool vnd::Instruction::lastTypeIs(const InstructionType &type) const noex
 [[nodiscard]] inline bool vnd::Instruction::getLastBooleanOperator() const noexcept {
     if(_booleanOperators.empty()) { return false; }
     return _booleanOperators.back();
+}
+
+void vnd::Instruction::setLastBooleanOperator(const bool present) noexcept {
+    if(_booleanOperators.empty()) { return; }
+    _booleanOperators.pop_back();
+    _booleanOperators.emplace_back(present);
 }
 
 inline bool vnd::Instruction::isEmpty() const noexcept { return _tokens.empty(); }
