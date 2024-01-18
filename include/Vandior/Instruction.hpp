@@ -32,7 +32,8 @@ namespace vnd {
         void checkKVar() noexcept;
         void checkKStructure() noexcept;
         void checkKFor() noexcept;
-
+        void checkKFun() noexcept;
+        void checkKReturn() noexcept;
         [[nodiscard]] InstructionType getLastType() const noexcept;
         void setLastType(const InstructionType &type) noexcept;
         void addType(const InstructionType &type) noexcept;

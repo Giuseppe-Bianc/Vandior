@@ -92,7 +92,13 @@ void vnd::Instruction::checkToken(const Token &token) {
         break;
     case K_FOR:
         checkKFor();
-        break:
+        break;
+    case K_FUN:
+        checkKFun();
+        break;
+    case K_RETURN:
+        checkKReturn();
+        break;
     default:
         _tokens = {};
         break;
@@ -322,7 +328,7 @@ void vnd::Instruction::checkKMain() noexcept {
     _allowedTokens = {OPEN_CUR_PARENTESIS};
 }
 
-void vnd::Instruction::checkKVar() {
+void vnd::Instruction::checkKVar() noexcept {
     using enum TokenType;
     using enum InstructionType;
     if(lastTypeIs(BLANK)) {
@@ -338,13 +344,27 @@ void vnd::Instruction::checkKStructure() noexcept {
     _allowedTokens = {OPEN_PARENTESIS};
 }
 
-void vnd::Instruction::checkKFor() {
+void vnd::Instruction::checkKFor() noexcept {
     using enum TokenType;
     using enum InstructionType;
     setLastType(FOR_STRUCTURE);
     _allowedTokens = {K_VAR, IDENTIFIER};
 }
 
+void vnd::Instruction::checkKFun() noexcept {
+    using enum TokenType;
+    using enum InstructionType;
+    setLastType(DEFINITION);
+    _allowedTokens = {IDENTIFIER};
+}
+
+void vnd::Instruction::checkKReturn() noexcept {
+    using enum TokenType;
+    using enum InstructionType;
+    setLastType(RETURN_EXPRESSION);
+    _allowedTokens = _expressionStartTokens;
+    _allowedTokens.emplace_back(eofTokenType);
+}
 
 vnd::InstructionType vnd::Instruction::getLastType() const noexcept {
     if(_types.empty()) { return InstructionType::BLANK; }
