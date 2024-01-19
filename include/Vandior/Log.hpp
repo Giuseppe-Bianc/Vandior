@@ -21,10 +21,45 @@ DISABLE_WARNINGS_POP()
 #pragma GCC diagnostic pop
 #endif
 
+/**
+ * @def LTRACE()
+ * @brief Macro for logging trace messages using SPDLOG_TRACE.
+ * @param ... Variable arguments to be formatted and logged.
+ */
 #define LTRACE(...) SPDLOG_TRACE(__VA_ARGS__)
+
+/**
+ * @def LDEBUG(...)
+ * @brief Macro for logging debug messages using SPDLOG_DEBUG.
+ * @param ... Variable arguments to be formatted and logged.
+ */
 #define LDEBUG(...) SPDLOG_DEBUG(__VA_ARGS__)
+
+/**
+ * @def LINFO(...)
+ * @brief Macro for logging informational messages using SPDLOG_INFO.
+ * @param ... Variable arguments to be formatted and logged.
+ */
 #define LINFO(...) SPDLOG_INFO(__VA_ARGS__)
+
+/**
+ * @def LWARN(...)
+ * @brief Macro for logging warning messages using SPDLOG_WARN.
+ * @param ... Variable arguments to be formatted and logged.
+ */
 #define LWARN(...) SPDLOG_WARN(__VA_ARGS__)
+
+/**
+ * @def LERROR(...)
+ * @brief Macro for logging error messages using SPDLOG_ERROR.
+ * @param ... Variable arguments to be formatted and logged.
+ */
 #define LERROR(...) SPDLOG_ERROR(__VA_ARGS__)
+
+/**
+ * @def LCRITICAL(...)
+ * @brief Macro for logging critical messages using SPDLOG_CRITICAL.
+ * @param ... Variable arguments to be formatted and logged.
+ */
 #define LCRITICAL(...) SPDLOG_CRITICAL(__VA_ARGS__)
 // NOLINTEND

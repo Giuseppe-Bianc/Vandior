@@ -7,13 +7,13 @@ static inline constexpr std::size_t colum = 6;
 static inline constexpr auto lfh = 1.0;
 static inline constexpr auto lfh2 = lfh+0.5;
 static inline constexpr auto rhs = 2.0;
-static inline constexpr auto identf = TokenType::IDENTIFIER;
-static inline constexpr auto inte =TokenType::INTEGER;
-static inline constexpr auto doub = TokenType::DOUBLE;
-static inline constexpr auto oper = TokenType::OPERATOR;
+static inline constexpr auto identf = vnd::TokenType::IDENTIFIER;
+static inline constexpr auto inte = vnd::TokenType::INTEGER;
+static inline constexpr auto doub = vnd::TokenType::DOUBLE;
+static inline constexpr auto oper = vnd::TokenType::OPERATOR;
 #define REQ_FORMAT(type, string)  REQUIRE(FORMAT("{}", type) == (string)); // NOLINT(*-macro-usage)
 TEST_CASE("corrected format for Tokentype", "[token_type]") {
-    using enum TokenType;
+    using enum vnd::TokenType;
     REQ_FORMAT(INTEGER, "INTEGER");
     REQ_FORMAT(DOUBLE,"DOUBLE");
     REQ_FORMAT(BOOLEAN, "BOOLEAN")
@@ -49,16 +49,16 @@ TEST_CASE("corrected format for Tokentype", "[token_type]") {
 }
 
 TEST_CASE("default constructed token", "[token]"){
-    Token token{};
-    REQUIRE(token.getType() == TokenType::UNKNOWN);
+    vnd::Token token{};
+    REQUIRE(token.getType() == vnd::TokenType::UNKNOWN);
     REQUIRE(token.getValue().empty() == true);
     REQUIRE(token.getLine() == 0);
     REQUIRE(token.getColumn() == 0);
 }
 
 TEST_CASE("default constructed token toString", "[token]"){
-    Token token{};
-    REQUIRE(token.getType() == TokenType::UNKNOWN);
+    vnd::Token token{};
+    REQUIRE(token.getType() == vnd::TokenType::UNKNOWN);
     REQUIRE(token.getValue().empty() == true);
     REQUIRE(token.getLine() == 0);
     REQUIRE(token.getColumn() == 0);
@@ -66,8 +66,8 @@ TEST_CASE("default constructed token toString", "[token]"){
 }
 
 TEST_CASE("default constructed token format", "[token]"){
-    Token token{};
-    REQUIRE(token.getType() == TokenType::UNKNOWN);
+    vnd::Token token{};
+    REQUIRE(token.getType() == vnd::TokenType::UNKNOWN);
     REQUIRE(token.getValue().empty() == true);
     REQUIRE(token.getLine() == 0);
     REQUIRE(token.getColumn() == 0);
@@ -75,32 +75,32 @@ TEST_CASE("default constructed token format", "[token]"){
 }
 
 TEST_CASE("default constructed token set propriety", "[token]"){
-    Token token{};
-    REQUIRE(token.getType() == TokenType::UNKNOWN);
+    vnd::Token token{};
+    REQUIRE(token.getType() == vnd::TokenType::UNKNOWN);
     REQUIRE(token.getValue().empty() == true);
     REQUIRE(token.getLine() == 0);
     REQUIRE(token.getColumn() == 0);
-    token.setType(TokenType::INTEGER);
+    token.setType(vnd::TokenType::INTEGER);
     token.setValue("assss");
     token.setLine(1);
     token.setColumn(1);
-    REQUIRE(token.getType() == TokenType::INTEGER);
+    REQUIRE(token.getType() == vnd::TokenType::INTEGER);
     REQUIRE(token.getValue().empty() == false);
     REQUIRE(token.getLine() == 1);
     REQUIRE(token.getColumn() == 1);
 }
 
 TEST_CASE("default constructed token set propriety tostring", "[token]"){
-    Token token{};
-    REQUIRE(token.getType() == TokenType::UNKNOWN);
+    vnd::Token token{};
+    REQUIRE(token.getType() == vnd::TokenType::UNKNOWN);
     REQUIRE(token.getValue().empty() == true);
     REQUIRE(token.getLine() == 0);
     REQUIRE(token.getColumn() == 0);
-    token.setType(TokenType::INTEGER);
+    token.setType(vnd::TokenType::INTEGER);
     token.setValue("assss");
     token.setLine(1);
     token.setColumn(1);
-    REQUIRE(token.getType() == TokenType::INTEGER);
+    REQUIRE(token.getType() == vnd::TokenType::INTEGER);
     REQUIRE(token.getValue().empty() == false);
     REQUIRE(token.getLine() == 1);
     REQUIRE(token.getColumn() == 1);
@@ -108,16 +108,16 @@ TEST_CASE("default constructed token set propriety tostring", "[token]"){
 }
 
 TEST_CASE("default constructed token set propriety format", "[token]"){
-    Token token{};
-    REQUIRE(token.getType() == TokenType::UNKNOWN);
+    vnd::Token token{};
+    REQUIRE(token.getType() == vnd::TokenType::UNKNOWN);
     REQUIRE(token.getValue().empty() == true);
     REQUIRE(token.getLine() == 0);
     REQUIRE(token.getColumn() == 0);
-    token.setType(TokenType::INTEGER);
+    token.setType(vnd::TokenType::INTEGER);
     token.setValue("assss");
     token.setLine(1);
     token.setColumn(1);
-    REQUIRE(token.getType() == TokenType::INTEGER);
+    REQUIRE(token.getType() == vnd::TokenType::INTEGER);
     REQUIRE(token.getValue().empty() == false);
     REQUIRE(token.getLine() == 1);
     REQUIRE(token.getColumn() == 1);
@@ -125,180 +125,180 @@ TEST_CASE("default constructed token set propriety format", "[token]"){
 }
 
 TEST_CASE("Token Comparison Equality", "[Token]") {
-    Token token1(oper, "+", line,  colum);
-    Token token2(oper, "+", line,  colum);
+    vnd::Token token1(oper, "+", line,  colum);
+    vnd::Token token2(oper, "+", line,  colum);
     REQUIRE(token1 == token2);
 }
 
 TEST_CASE("Token Comparison Inequality", "[Token]") {
-    Token token1(identf, "variable", line,  colum);
-    Token token2(identf, "variable2", line,  colum);
+    vnd::Token token1(identf, "variable", line,  colum);
+    vnd::Token token2(identf, "variable2", line,  colum);
     REQUIRE(token1 != token2);
 }
 
 TEST_CASE("tokenizer emit identifier token", "[tokenizer]"){
-    Tokenizer tokenizer{"a a_ a0 a000_"};
-    std::vector<Token> tokens = tokenizer.tokenize();
+    vnd::Tokenizer tokenizer{"a a_ a0 a000_"};
+    std::vector<vnd::Token> tokens = tokenizer.tokenize();
     REQUIRE(tokens.size() == 5);
-    REQUIRE(tokens[0] == Token(identf, "a", 1, 1));
-    REQUIRE(tokens[1] == Token(identf, "a_", 1, 3));
-    REQUIRE(tokens[2] == Token(identf, "a0", 1, 6));
-    REQUIRE(tokens[3] == Token(identf, "a000_", 1, 9));
+    REQUIRE(tokens[0] == vnd::Token(identf, "a", 1, 1));
+    REQUIRE(tokens[1] == vnd::Token(identf, "a_", 1, 3));
+    REQUIRE(tokens[2] == vnd::Token(identf, "a0", 1, 6));
+    REQUIRE(tokens[3] == vnd::Token(identf, "a000_", 1, 9));
 }
 
 TEST_CASE("tokenizer emit identifier token new line", "[tokenizer]"){
-    Tokenizer tokenizer{"a a_\na0 a000_"};
-    std::vector<Token> tokens = tokenizer.tokenize();
+    vnd::Tokenizer tokenizer{"a a_\na0 a000_"};
+    std::vector<vnd::Token> tokens = tokenizer.tokenize();
     REQUIRE(tokens.size() == 5);
-    REQUIRE(tokens[0] == Token(identf, "a", 1, 1));
-    REQUIRE(tokens[1] == Token(identf, "a_", 1, 3));
-    REQUIRE(tokens[2] == Token(identf, "a0", 2, 1));
-    REQUIRE(tokens[3] == Token(identf, "a000_", 2, 4));
+    REQUIRE(tokens[0] == vnd::Token(identf, "a", 1, 1));
+    REQUIRE(tokens[1] == vnd::Token(identf, "a_", 1, 3));
+    REQUIRE(tokens[2] == vnd::Token(identf, "a0", 2, 1));
+    REQUIRE(tokens[3] == vnd::Token(identf, "a000_", 2, 4));
 }
 
 TEST_CASE("tokenizer emit integer token", "[tokenizer]"){
-    Tokenizer tokenizer{"42 333 550 34000000"};
-    std::vector<Token> tokens = tokenizer.tokenize();
+    vnd::Tokenizer tokenizer{"42 333 550 34000000"};
+    std::vector<vnd::Token> tokens = tokenizer.tokenize();
     REQUIRE(tokens.size() == 5);
-    REQUIRE(tokens[0] == Token(inte, "42", 1, 1));
-    REQUIRE(tokens[1] == Token(inte, "333", 1, 4));
-    REQUIRE(tokens[2] == Token(inte, "550", 1, 8));
-    REQUIRE(tokens[3] == Token(inte, "34000000", 1, 12));
+    REQUIRE(tokens[0] == vnd::Token(inte, "42", 1, 1));
+    REQUIRE(tokens[1] == vnd::Token(inte, "333", 1, 4));
+    REQUIRE(tokens[2] == vnd::Token(inte, "550", 1, 8));
+    REQUIRE(tokens[3] == vnd::Token(inte, "34000000", 1, 12));
 }
 
 TEST_CASE("tokenizer emit integer token new line", "[tokenizer]"){
-    Tokenizer tokenizer{"42 333\n550 34000000"};
-    std::vector<Token> tokens = tokenizer.tokenize();
+    vnd::Tokenizer tokenizer{"42 333\n550 34000000"};
+    std::vector<vnd::Token> tokens = tokenizer.tokenize();
     REQUIRE(tokens.size() == 5);
-    REQUIRE(tokens[0] == Token(inte, "42", 1, 1));
-    REQUIRE(tokens[1] == Token(inte, "333", 1, 4));
-    REQUIRE(tokens[2] == Token(inte, "550", 2, 1));
-    REQUIRE(tokens[3] == Token(inte, "34000000", 2, 5));
+    REQUIRE(tokens[0] == vnd::Token(inte, "42", 1, 1));
+    REQUIRE(tokens[1] == vnd::Token(inte, "333", 1, 4));
+    REQUIRE(tokens[2] == vnd::Token(inte, "550", 2, 1));
+    REQUIRE(tokens[3] == vnd::Token(inte, "34000000", 2, 5));
 }
 
 TEST_CASE("tokenizer emit double token", "[tokenizer]"){
-    Tokenizer tokenizer{"1. 1.0 1e+1 1E+1 1.1e+1 1.1E+1 1e-1 1E-1 1.1e-1 1.1E-1 .4e12"};
-    std::vector<Token> tokens = tokenizer.tokenize();
+    vnd::Tokenizer tokenizer{"1. 1.0 1e+1 1E+1 1.1e+1 1.1E+1 1e-1 1E-1 1.1e-1 1.1E-1 .4e12"};
+    std::vector<vnd::Token> tokens = tokenizer.tokenize();
     REQUIRE(tokens.size() == 12);
-    REQUIRE(tokens[0] == Token(doub, "1.", 1, 1));
-    REQUIRE(tokens[1] == Token(doub, "1.0", 1, 4));
-    REQUIRE(tokens[2] == Token(doub, "1e+1", 1, 8));
-    REQUIRE(tokens[3] == Token(doub, "1E+1", 1, 13));
-    REQUIRE(tokens[4] == Token(doub, "1.1e+1", 1, 18));
-    REQUIRE(tokens[5] == Token(doub, "1.1E+1", 1, 25));
-    REQUIRE(tokens[6] == Token(doub, "1e-1", 1, 32));
-    REQUIRE(tokens[7] == Token(doub, "1E-1", 1, 37));
-    REQUIRE(tokens[8] == Token(doub, "1.1e-1", 1, 42));
-    REQUIRE(tokens[9] == Token(doub, "1.1E-1", 1, 49));
-    REQUIRE(tokens[10] == Token(doub, ".4e12", 1, 56));
+    REQUIRE(tokens[0] == vnd::Token(doub, "1.", 1, 1));
+    REQUIRE(tokens[1] == vnd::Token(doub, "1.0", 1, 4));
+    REQUIRE(tokens[2] == vnd::Token(doub, "1e+1", 1, 8));
+    REQUIRE(tokens[3] == vnd::Token(doub, "1E+1", 1, 13));
+    REQUIRE(tokens[4] == vnd::Token(doub, "1.1e+1", 1, 18));
+    REQUIRE(tokens[5] == vnd::Token(doub, "1.1E+1", 1, 25));
+    REQUIRE(tokens[6] == vnd::Token(doub, "1e-1", 1, 32));
+    REQUIRE(tokens[7] == vnd::Token(doub, "1E-1", 1, 37));
+    REQUIRE(tokens[8] == vnd::Token(doub, "1.1e-1", 1, 42));
+    REQUIRE(tokens[9] == vnd::Token(doub, "1.1E-1", 1, 49));
+    REQUIRE(tokens[10] == vnd::Token(doub, ".4e12", 1, 56));
 }
 
 TEST_CASE("tokenizer emit operator token", "[tokenizer]"){
-    Tokenizer tokenizer{"* / = , : < > ! | & + - ^ ."};
-    std::vector<Token> tokens = tokenizer.tokenize();
+    vnd::Tokenizer tokenizer{"* / = , : < > ! | & + - ^ ."};
+    std::vector<vnd::Token> tokens = tokenizer.tokenize();
     REQUIRE(tokens.size() == 15);
-    REQUIRE(tokens[0] == Token(oper, "*", 1, 1));
-    REQUIRE(tokens[1] == Token(oper, "/", 1, 3));
-    REQUIRE(tokens[2] == Token(TokenType::EQUAL_OPERATOR, "=", 1, 5));
-    REQUIRE(tokens[3] == Token(TokenType::COMMA, ",", 1, 6));
-    REQUIRE(tokens[4] == Token(TokenType::COLON, ":", 1, 8));
-    REQUIRE(tokens[5] == Token(TokenType::BOOLEAN_OPERATOR, "<", 1, 11));
-    REQUIRE(tokens[6] == Token(TokenType::BOOLEAN_OPERATOR, ">", 1, 13));
-    REQUIRE(tokens[7] == Token(TokenType::NOT_OPERATOR, "!", 1, 15));
-    REQUIRE(tokens[8] == Token(oper, "|", 1, 17));
-    REQUIRE(tokens[9] == Token(oper, "&", 1, 19));
-    REQUIRE(tokens[10] == Token(oper, "+", 1, 21));
-    REQUIRE(tokens[11] == Token(TokenType::MINUS_OPERATOR, "-", 1, 23));
-    REQUIRE(tokens[12] == Token(oper, "^", 1, 25));
-    REQUIRE(tokens[13] == Token(TokenType::DOT_OPERATOR, ".", 1, 27));
+    REQUIRE(tokens[0] == vnd::Token(oper, "*", 1, 1));
+    REQUIRE(tokens[1] == vnd::Token(oper, "/", 1, 3));
+    REQUIRE(tokens[2] == vnd::Token(vnd::TokenType::EQUAL_OPERATOR, "=", 1, 5));
+    REQUIRE(tokens[3] == vnd::Token(vnd::TokenType::COMMA, ",", 1, 6));
+    REQUIRE(tokens[4] == vnd::Token(vnd::TokenType::COLON, ":", 1, 8));
+    REQUIRE(tokens[5] == vnd::Token(vnd::TokenType::BOOLEAN_OPERATOR, "<", 1, 11));
+    REQUIRE(tokens[6] == vnd::Token(vnd::TokenType::BOOLEAN_OPERATOR, ">", 1, 13));
+    REQUIRE(tokens[7] == vnd::Token(vnd::TokenType::NOT_OPERATOR, "!", 1, 15));
+    REQUIRE(tokens[8] == vnd::Token(oper, "|", 1, 17));
+    REQUIRE(tokens[9] == vnd::Token(oper, "&", 1, 19));
+    REQUIRE(tokens[10] == vnd::Token(oper, "+", 1, 21));
+    REQUIRE(tokens[11] == vnd::Token(vnd::TokenType::MINUS_OPERATOR, "-", 1, 23));
+    REQUIRE(tokens[12] == vnd::Token(oper, "^", 1, 25));
+    REQUIRE(tokens[13] == vnd::Token(vnd::TokenType::DOT_OPERATOR, ".", 1, 27));
 }
 
 TEST_CASE("tokenizer emit operationEqual token", "[tokenizer]"){
-    Tokenizer tokenizer{"+= -= *= /="};
-    std::vector<Token> tokens = tokenizer.tokenize();
+    vnd::Tokenizer tokenizer{"+= -= *= /="};
+    std::vector<vnd::Token> tokens = tokenizer.tokenize();
     REQUIRE(tokens.size() == 5);
-    REQUIRE(tokens[0] == Token(TokenType::OPERATION_EQUAL, "+=", 1, 1));
-    REQUIRE(tokens[1] == Token(TokenType::OPERATION_EQUAL, "-=", 1, 4));
-    REQUIRE(tokens[2] == Token(TokenType::OPERATION_EQUAL, "*=", 1, 7));
-    REQUIRE(tokens[3] == Token(TokenType::OPERATION_EQUAL, "/=", 1, 10));
+    REQUIRE(tokens[0] == vnd::Token(vnd::TokenType::OPERATION_EQUAL, "+=", 1, 1));
+    REQUIRE(tokens[1] == vnd::Token(vnd::TokenType::OPERATION_EQUAL, "-=", 1, 4));
+    REQUIRE(tokens[2] == vnd::Token(vnd::TokenType::OPERATION_EQUAL, "*=", 1, 7));
+    REQUIRE(tokens[3] == vnd::Token(vnd::TokenType::OPERATION_EQUAL, "/=", 1, 10));
 }
 
 TEST_CASE("tokenizer emit boolean operator token", "[tokenizer]"){
-    Tokenizer tokenizer{"== >= <= !="};
-    std::vector<Token> tokens = tokenizer.tokenize();
+    vnd::Tokenizer tokenizer{"== >= <= !="};
+    std::vector<vnd::Token> tokens = tokenizer.tokenize();
     REQUIRE(tokens.size() == 5);
-    REQUIRE(tokens[0] == Token(TokenType::BOOLEAN_OPERATOR, "==", 1, 1));
-    REQUIRE(tokens[1] == Token(TokenType::BOOLEAN_OPERATOR, ">=", 1, 4));
-    REQUIRE(tokens[2] == Token(TokenType::BOOLEAN_OPERATOR, "<=", 1, 7));
-    REQUIRE(tokens[3] == Token(TokenType::BOOLEAN_OPERATOR, "!=", 1, 10));
+    REQUIRE(tokens[0] == vnd::Token(vnd::TokenType::BOOLEAN_OPERATOR, "==", 1, 1));
+    REQUIRE(tokens[1] == vnd::Token(vnd::TokenType::BOOLEAN_OPERATOR, ">=", 1, 4));
+    REQUIRE(tokens[2] == vnd::Token(vnd::TokenType::BOOLEAN_OPERATOR, "<=", 1, 7));
+    REQUIRE(tokens[3] == vnd::Token(vnd::TokenType::BOOLEAN_OPERATOR, "!=", 1, 10));
 }
 
 TEST_CASE("tokenizer emit logical operator token", "[tokenizer]"){
-    Tokenizer tokenizer{"&& ||"};
-    std::vector<Token> tokens = tokenizer.tokenize();
+    vnd::Tokenizer tokenizer{"&& ||"};
+    std::vector<vnd::Token> tokens = tokenizer.tokenize();
     REQUIRE(tokens.size() == 3);
-    REQUIRE(tokens[0] == Token(TokenType::LOGICAL_OPERATOR, "&&", 1, 1));
-    REQUIRE(tokens[1] == Token(TokenType::LOGICAL_OPERATOR, "||", 1, 4));
+    REQUIRE(tokens[0] == vnd::Token(vnd::TokenType::LOGICAL_OPERATOR, "&&", 1, 1));
+    REQUIRE(tokens[1] == vnd::Token(vnd::TokenType::LOGICAL_OPERATOR, "||", 1, 4));
 }
 
 TEST_CASE("tokenizer emit unary operator token", "[tokenizer]"){
-    Tokenizer tokenizer{"++ --"};
-    std::vector<Token> tokens = tokenizer.tokenize();
+    vnd::Tokenizer tokenizer{"++ --"};
+    std::vector<vnd::Token> tokens = tokenizer.tokenize();
     REQUIRE(tokens.size() == 3);
-    REQUIRE(tokens[0] == Token(TokenType::UNARY_OPERATOR, "++", 1, 1));
-    REQUIRE(tokens[1] == Token(TokenType::UNARY_OPERATOR, "--", 1, 4));
+    REQUIRE(tokens[0] == vnd::Token(vnd::TokenType::UNARY_OPERATOR, "++", 1, 1));
+    REQUIRE(tokens[1] == vnd::Token(vnd::TokenType::UNARY_OPERATOR, "--", 1, 4));
 }
 
 TEST_CASE("tokenizer emit parenthesis token", "[tokenizer]"){
-    Tokenizer tokenizer{"( )"};
-    std::vector<Token> tokens = tokenizer.tokenize();
+    vnd::Tokenizer tokenizer{"( )"};
+    std::vector<vnd::Token> tokens = tokenizer.tokenize();
     REQUIRE(tokens.size() == 3);
-    REQUIRE(tokens[0] == Token(TokenType::OPEN_PARENTESIS, "(", 1, 1));
-    REQUIRE(tokens[1] == Token(TokenType::CLOSE_PARENTESIS, ")", 1, 3));
+    REQUIRE(tokens[0] == vnd::Token(vnd::TokenType::OPEN_PARENTESIS, "(", 1, 1));
+    REQUIRE(tokens[1] == vnd::Token(vnd::TokenType::CLOSE_PARENTESIS, ")", 1, 3));
 }
 
 TEST_CASE("tokenizer emit square parenthesis token", "[tokenizer]"){
-    Tokenizer tokenizer{"[ ]"};
-    std::vector<Token> tokens = tokenizer.tokenize();
+    vnd::Tokenizer tokenizer{"[ ]"};
+    std::vector<vnd::Token> tokens = tokenizer.tokenize();
     REQUIRE(tokens.size() == 3);
-    REQUIRE(tokens[0] == Token(TokenType::OPEN_SQ_PARENTESIS, "[", 1, 1));
-    REQUIRE(tokens[1] == Token(TokenType::CLOSE_SQ_PARENTESIS, "]", 1, 3));
+    REQUIRE(tokens[0] == vnd::Token(vnd::TokenType::OPEN_SQ_PARENTESIS, "[", 1, 1));
+    REQUIRE(tokens[1] == vnd::Token(vnd::TokenType::CLOSE_SQ_PARENTESIS, "]", 1, 3));
 }
 
-TEST_CASE("tokenizer emit square curly token", "[tokenizer]"){
-    Tokenizer tokenizer{"{ }"};
-    std::vector<Token> tokens = tokenizer.tokenize();
+TEST_CASE("vnd::Tokenizer emit square curly token", "[vnd::Tokenizer]"){
+    vnd::Tokenizer tokenizer{"{ }"};
+    std::vector<vnd::Token> tokens = tokenizer.tokenize();
     REQUIRE(tokens.size() == 3);
-    REQUIRE(tokens[0] == Token(TokenType::OPEN_CUR_PARENTESIS, "{", 1, 1));
-    REQUIRE(tokens[1] == Token(TokenType::CLOSE_CUR_PARENTESIS, "}", 1, 3));
+    REQUIRE(tokens[0] == vnd::Token(vnd::TokenType::OPEN_CUR_PARENTESIS, "{", 1, 1));
+    REQUIRE(tokens[1] == vnd::Token(vnd::TokenType::CLOSE_CUR_PARENTESIS, "}", 1, 3));
 }
 
-TEST_CASE("tokenizer emit char token", "[tokenizer]"){
+TEST_CASE("vnd::Tokenizer emit char token", "[vnd::Tokenizer]"){
     constexpr std::string_view code2 = R"('a' '\\' '')";
-    Tokenizer tokenizer{code2};
-    std::vector<Token> tokens = tokenizer.tokenize();
+    vnd::Tokenizer tokenizer{code2};
+    std::vector<vnd::Token> tokens = tokenizer.tokenize();
     REQUIRE(tokens.size() == 4);
-    REQUIRE(tokens[0] == Token(TokenType::CHAR, "a", 1, 2));
-    REQUIRE(tokens[1] == Token(TokenType::CHAR,  R"(\\)", 1, 6));
-    REQUIRE(tokens[2] == Token(TokenType::CHAR, "", 1, 11));
+    REQUIRE(tokens[0] == vnd::Token(vnd::TokenType::CHAR, "a", 1, 2));
+    REQUIRE(tokens[1] == vnd::Token(vnd::TokenType::CHAR,  R"(\\)", 1, 6));
+    REQUIRE(tokens[2] == vnd::Token(vnd::TokenType::CHAR, "", 1, 11));
 }
 
-TEST_CASE("tokenizer emit string token", "[tokenizer]"){
+TEST_CASE("vnd::Tokenizer emit string token", "[vnd::Tokenizer]"){
     constexpr std::string_view code2 = R"("a" "\\" "")";
-    Tokenizer tokenizer{code2};
-    std::vector<Token> tokens = tokenizer.tokenize();
+    vnd::Tokenizer tokenizer{code2};
+    std::vector<vnd::Token> tokens = tokenizer.tokenize();
     REQUIRE(tokens.size() == 4);
-    REQUIRE(tokens[0] == Token(TokenType::STRING, "a", 1,1));
-    REQUIRE(tokens[1] == Token(TokenType::STRING, R"(\\)", 1, 5));
-    REQUIRE(tokens[2] == Token(TokenType::STRING, "", 1, 10));
+    REQUIRE(tokens[0] == vnd::Token(vnd::TokenType::STRING, "a", 1,1));
+    REQUIRE(tokens[1] == vnd::Token(vnd::TokenType::STRING, R"(\\)", 1, 5));
+    REQUIRE(tokens[2] == vnd::Token(vnd::TokenType::STRING, "", 1, 10));
 }
 
 TEST_CASE("tokenizer emit unknown token on non closed char token", "[tokenizer]"){
     constexpr std::string_view code2 = R"('a")";
-    Tokenizer tokenizer{code2};
-    std::vector<Token> tokens = tokenizer.tokenize();
+    vnd::Tokenizer tokenizer{code2};
+    std::vector<vnd::Token> tokens = tokenizer.tokenize();
     REQUIRE(tokens.size() == 2);
-    REQUIRE(tokens[0] == Token(TokenType::UNKNOWN, R"(a")", 1, 2));
+    REQUIRE(tokens[0] == vnd::Token(vnd::TokenType::UNKNOWN, R"(a")", 1, 2));
 }
 /*
 TEST_CASE("tokenizer emit unknown token on non closed string token", "[tokenizer]"){
@@ -308,7 +308,6 @@ TEST_CASE("tokenizer emit unknown token on non closed string token", "[tokenizer
     REQUIRE(tokens.size() == 2);
     REQUIRE(tokens[0] == Token(TokenType::UNKNOWN, R"(a')", 1, 2));
 }*/
-/*
 TEST_CASE("corrected format for InstructionType", "[Instruction_type]") {
     using enum vnd::InstructionType;
     REQ_FORMAT(PARAMETER_EXPRESSION, "PARAMETER_EXPRESSION");
@@ -332,7 +331,7 @@ TEST_CASE("corrected format for InstructionType", "[Instruction_type]") {
     REQ_FORMAT(OPEN_SCOPE, "OPEN_SCOPE");
     REQ_FORMAT(CLOSE_SCOPE, "CLOSE_SCOPE");
     REQ_FORMAT(BLANK, "BLANK");
-}*/
+}
 
 TEST_CASE("Parser emit number node", "[parser]"){
     vnd::Parser parser("1");

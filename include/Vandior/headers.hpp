@@ -104,34 +104,76 @@ static inline constexpr const char *NEWL = &CNL;  // FreeBSD
 static inline constexpr const char *NEWL = &CNL;  // Default case
 #endif
 
+/**
+ * @def SYSPAUSE
+ * @brief A macro to pause the system and wait for user input.
+ * Usage: SYSPAUSE();
+ */
 #define SYSPAUSE()                                                                                                               \
     do {                                                                                                                         \
         LINFO("Press enter to exit...");                                                                                         \
         std::cin.ignore();                                                                                                       \
     } while(0);
 
+/**
+ * @brief Specialization of fmt::formatter for std::filesystem::path.
+ */
 template <> struct fmt::formatter<std::filesystem::path> : formatter<std::string_view> {
+    /**
+     * @brief Format function for std::filesystem::path.
+     * @param path The path to be formatted.
+     * @param ctx The format context.
+     * @return The formatted string.
+     */
     template <typename FormatContext> auto format(const std::filesystem::path &path, FormatContext &ctx) {
         return formatter<std::string_view>::format(path.string(), ctx);
     }
 };
 
+/**
+ * @brief Specialization of fmt::formatter for glm::vec.
+ */
 template <typename T, glm::length_t L, glm::qualifier Q> struct fmt::formatter<glm::vec<L, T, Q>> : formatter<std::string_view> {
+    /**
+     * @brief Format function for glm::vec.
+     * @param vector The vector to be formatted.
+     * @param ctx The format context.
+     * @return The formatted string.
+     */
     template <typename FormatContext> auto format(const glm::vec<L, T, Q> &vector, FormatContext &ctx) {
         return formatter<std::string_view>::format(glmp::to_string(vector), ctx);
     }
 };
 
+/**
+ * @brief Specialization of fmt::formatter for glm::mat.
+ */
 template <typename T, glm::length_t C, glm::length_t R, glm::qualifier Q>
 struct fmt::formatter<glm::mat<C, R, T, Q>> : formatter<std::string_view> {
+    /**
+     * @brief Format function for glm::mat.
+     * @param matrix The matrix to be formatted.
+     * @param ctx The format context.
+     * @return The formatted string.
+     */
     template <typename FormatContext> auto format(const glm::mat<C, R, T, Q> &matrix, FormatContext &ctx) {
         return formatter<std::string_view>::format(glmp::to_string(matrix), ctx);
     }
 };
 
+/**
+ * @brief Specialization of fmt::formatter for glm::qua.
+ */
 template <typename T, glm::qualifier Q> struct fmt::formatter<glm::qua<T, Q>> : formatter<std::string_view> {
+    /**
+     * @brief Format function for glm::qua.
+     * @param quaternion The quaternion to be formatted.
+     * @param ctx The format context.
+     * @return The formatted string.
+     */
     template <typename FormatContext> auto format(const glm::qua<T, Q> &quaternion, FormatContext &ctx) {
         return formatter<std::string_view>::format(glmp::to_string(quaternion), ctx);
     }
 };
+
 // NOLINTEND

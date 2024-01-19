@@ -19,7 +19,7 @@ namespace {
         const auto console = spdlog::stdout_color_mt(R"(console)");
         spdlog::set_default_logger(console);
     }
-    void timeTokenizer(Tokenizer &tokenizer, std::vector<Token> &tokens) {
+    void timeTokenizer(vnd::Tokenizer &tokenizer, std::vector<vnd::Token> &tokens) {
         tokens.clear();
         AutoTimer timer("tokenizer.tokenize()");
         tokens = tokenizer.tokenize();
@@ -33,7 +33,8 @@ namespace {
 
         std::stringstream buffer;
 
-        if(std::ifstream fileStream{filePath, std::ios::in | std::ios::binary}; fileStream.is_open()) {  // NOLINT(*-include-cleaner,
+        if(std::ifstream fileStream{filePath, std::ios::in | std::ios::binary};
+           fileStream.is_open()) {  // NOLINT(*-include-cleaner,
                                     // hicpp-signed-bitwise)
             // Ensure
             // that the file is opened securely
@@ -88,19 +89,19 @@ auto main(int argc, const char *const argv[]) -> int {
             LINFO("{}", Vandior::cmake::project_version);
             return EXIT_SUCCESS;  // NOLINT(*-include-cleaner)
         }
-        Tokenizer tokenizer{code};
-        std::vector<Token> tokens;
+        vnd::Tokenizer tokenizer{code};
+        std::vector<vnd::Token> tokens;
         timeTokenizer(tokenizer, tokens);
         for(const auto &item : tokens) { LINFO("{}", item); }
         std::vector<vnd::Instruction> instructions;
         AutoTimer tim("tokenizer total time");
         size_t line = tokens.at(0).getLine();
-        for(const Token &token : tokens) {
-            if(token.getType() == TokenType::COMMENT) [[unlikely]] { continue; }
+        for(const vnd::Token &token : tokens) {
+            if(token.getType() == vnd::TokenType::COMMENT) [[unlikely]] { continue; }
             if(token.getLine() >= line) [[likely]] {
                 if(instructions.empty() || instructions.back().canTerminate()) [[likely]] {
                     instructions.emplace_back(vnd::Instruction::create());
-                } else if(instructions.back().typeToString().back() != "EXPRESSION" && token.getType() != TokenType::STRING)
+                } else if(instructions.back().typeToString().back() != "EXPRESSION" && token.getType() != vnd::TokenType::STRING)
                     [[unlikely]] {
                     LINFO("Unexpected token: ENDL");
                     break;
