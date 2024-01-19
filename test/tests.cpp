@@ -20,7 +20,7 @@ TEST_CASE("corrected format for Tokentype", "[token_type]") {
     REQ_FORMAT(OPERATOR, "OPERATOR");
     REQ_FORMAT(MINUS_OPERATOR, "MINUS_OPERATOR");
     REQ_FORMAT(EQUAL_OPERATOR, "EQUAL_OPERATOR");
-    REQ_FORMAT(DOT_OPEARTOR, "DOT_OPERATOR");
+    REQ_FORMAT(DOT_OPERATOR, "DOT_OPERATOR");
     REQ_FORMAT(IDENTIFIER,"IDENTIFIER");
     REQ_FORMAT(CHAR, "CHAR");
     REQ_FORMAT(STRING, "STRING");
@@ -210,7 +210,7 @@ TEST_CASE("tokenizer emit operator token", "[tokenizer]"){
     REQUIRE(tokens[10] == Token(oper, "+", 1, 21));
     REQUIRE(tokens[11] == Token(TokenType::MINUS_OPERATOR, "-", 1, 23));
     REQUIRE(tokens[12] == Token(oper, "^", 1, 25));
-    REQUIRE(tokens[13] == Token(TokenType::DOT_OPEARTOR, ".", 1, 27));
+    REQUIRE(tokens[13] == Token(TokenType::DOT_OPERATOR, ".", 1, 27));
 }
 
 TEST_CASE("tokenizer emit operationEqual token", "[tokenizer]"){
@@ -307,6 +307,31 @@ TEST_CASE("tokenizer emit unknown token on non closed string token", "[tokenizer
     std::vector<Token> tokens = tokenizer.tokenize();
     REQUIRE(tokens.size() == 2);
     REQUIRE(tokens[0] == Token(TokenType::UNKNOWN, R"(a')", 1, 2));
+}*/
+/*
+TEST_CASE("corrected format for InstructionType", "[Instruction_type]") {
+    using enum vnd::InstructionType;
+    REQ_FORMAT(PARAMETER_EXPRESSION, "PARAMETER_EXPRESSION");
+    REQ_FORMAT(OPERATION, "OPERATION");
+    REQ_FORMAT(ASSIGNATION, "ASSIGNATION")
+    REQ_FORMAT(EXPRESSION, "EXPRESSION");
+    REQ_FORMAT(SQUARE_EXPRESSION, "SQUARE_EXPRESSION");
+    REQ_FORMAT(RETURN_EXPRESSION, "RETURN_EXPRESSION");
+    REQ_FORMAT(DECLARATION, "DECLARATION");
+    REQ_FORMAT(INITIALIZATION, "INITIALIZATION");
+    REQ_FORMAT(ARRAY_INIZIALIZATION, "ARRAY_INIZIALIZATION");
+    REQ_FORMAT(MAIN, "MAIN");
+    REQ_FORMAT(STRUCTURE, "STRUCTURE");
+    REQ_FORMAT(FOR_STRUCTURE, "FOR_STRUCTURE");
+    REQ_FORMAT(FOR_INITIALIZATION, "FOR_INITIALIZATION");
+    REQ_FORMAT(FOR_CONDITION, "FOR_CONDITION");
+    REQ_FORMAT(FOR_STEP, "FOR_STEP");
+    REQ_FORMAT(DEFINITION, "DEFINITION");
+    REQ_FORMAT(PARAMETER_DEFINITION, "PARAMETER_DEFINITION");
+    REQ_FORMAT(RETURN_DEFINITION, "RETURN_DEFINITION");
+    REQ_FORMAT(OPEN_SCOPE, "OPEN_SCOPE");
+    REQ_FORMAT(CLOSE_SCOPE, "CLOSE_SCOPE");
+    REQ_FORMAT(BLANK, "BLANK");
 }*/
 
 TEST_CASE("Parser emit number node", "[parser]"){

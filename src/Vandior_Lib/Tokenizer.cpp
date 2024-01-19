@@ -110,7 +110,7 @@ Token Tokenizer::handleMultiLineComment() {
 }
 Token Tokenizer::handleDot() {
     const auto start = position;
-    auto type = TokenType::DOT_OPEARTOR;
+    auto type = TokenType::DOT_OPERATOR;
     incPosAndColumn();
     if(positionIsInText() && std::isdigit(_input[position])) {
         type = TokenType::DOUBLE;

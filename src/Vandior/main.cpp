@@ -92,6 +92,23 @@ auto main(int argc, const char *const argv[]) -> int {
         std::vector<Token> tokens;
         timeTokenizer(tokenizer, tokens);
         for(const auto &item : tokens) { LINFO("{}", item); }
+        std::vector<vnd::Instruction> instructions;
+        AutoTimer tim("tokenizer total time");
+        size_t line = tokens.at(0).getLine();
+        for(const Token &token : tokens) {
+            if(token.getType() == TokenType::COMMENT) [[unlikely]] { continue; }
+            if(token.getLine() >= line) [[likely]] {
+                if(instructions.empty() || instructions.back().canTerminate()) [[likely]] {
+                    instructions.emplace_back(vnd::Instruction::create());
+                } else if(instructions.back().typeToString().back() != "EXPRESSION" && token.getType() != TokenType::STRING)
+                    [[unlikely]] {
+                    LINFO("Unexpected token: ENDL");
+                    break;
+                }
+                line = token.getLine() + 1;
+            }
+            instructions.back().checkToken(token);
+        }
         /* vnd::Parser parser(code);
         Timer timeAst("ast creation time");
         auto ast = parser.parse();
