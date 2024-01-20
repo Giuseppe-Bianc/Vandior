@@ -20,7 +20,8 @@ namespace vnd {
     std::vector<std::string> Instruction::typeToString() const noexcept {
         std::vector<std::string> result;
         result.reserve(_types.size());
-        for(const InstructionType &instruction : _types) { result.emplace_back(FORMAT("{}", instruction)); }
+        std::transform(_types.begin(), _types.end(), std::back_inserter(result),
+                       [](const InstructionType &instruction) { return FORMAT("{}", instruction); });
         return result;
     }
 
@@ -264,8 +265,8 @@ namespace vnd {
             addType(EXPRESSION);
             return;
         }
-        if(getLastTokenType() == EQUAL_OPERATOR || getLastTokenType() == COMMA ||
-            getLastTokenType() == OPEN_PARENTESIS || getLastTokenType() == OPEN_SQ_PARENTESIS) {
+        if(getLastTokenType() == EQUAL_OPERATOR || getLastTokenType() == COMMA || getLastTokenType() == OPEN_PARENTESIS ||
+           getLastTokenType() == OPEN_SQ_PARENTESIS) {
             addType(ARRAY_INIZIALIZATION);
             _allowedTokens.emplace_back(CLOSE_SQ_PARENTESIS);
             return;
