@@ -265,7 +265,7 @@ TEST_CASE("tokenizer emit square parenthesis token", "[tokenizer]"){
     REQUIRE(tokens[1] == vnd::Token(vnd::TokenType::CLOSE_SQ_PARENTESIS, "]", 1, 3));
 }
 
-TEST_CASE("vnd::Tokenizer emit square curly token", "[vnd::Tokenizer]"){
+TEST_CASE("Tokenizer emit square curly token", "[Tokenizer]"){
     vnd::Tokenizer tokenizer{"{ }"};
     std::vector<vnd::Token> tokens = tokenizer.tokenize();
     REQUIRE(tokens.size() == 3);
@@ -273,7 +273,7 @@ TEST_CASE("vnd::Tokenizer emit square curly token", "[vnd::Tokenizer]"){
     REQUIRE(tokens[1] == vnd::Token(vnd::TokenType::CLOSE_CUR_PARENTESIS, "}", 1, 3));
 }
 
-TEST_CASE("vnd::Tokenizer emit char token", "[vnd::Tokenizer]"){
+TEST_CASE("Tokenizer emit char token", "[Tokenizer]"){
     constexpr std::string_view code2 = R"('a' '\\' '')";
     vnd::Tokenizer tokenizer{code2};
     std::vector<vnd::Token> tokens = tokenizer.tokenize();
@@ -283,7 +283,7 @@ TEST_CASE("vnd::Tokenizer emit char token", "[vnd::Tokenizer]"){
     REQUIRE(tokens[2] == vnd::Token(vnd::TokenType::CHAR, "", 1, 11));
 }
 
-TEST_CASE("vnd::Tokenizer emit string token", "[vnd::Tokenizer]"){
+TEST_CASE("Tokenizer emit string token", "[Tokenizer]"){
     constexpr std::string_view code2 = R"("a" "\\" "")";
     vnd::Tokenizer tokenizer{code2};
     std::vector<vnd::Token> tokens = tokenizer.tokenize();
@@ -300,6 +300,24 @@ TEST_CASE("tokenizer emit unknown token on non closed char token", "[tokenizer]"
     REQUIRE(tokens.size() == 2);
     REQUIRE(tokens[0] == vnd::Token(vnd::TokenType::UNKNOWN, R"(a")", 1, 2));
 }
+
+TEST_CASE("tokenizer emit comment token", "[tokenizer]"){
+    constexpr std::string_view code2 = R"(// line comment)";
+    vnd::Tokenizer tokenizer{code2};
+    std::vector<vnd::Token> tokens = tokenizer.tokenize();
+    REQUIRE(tokens.size() == 2);
+    REQUIRE(tokens[0] == vnd::Token(vnd::TokenType::COMMENT, "// line comment", 1, 1));
+}
+
+TEST_CASE("tokenizer emit multiline comment token", "[tokenizer]"){
+    constexpr std::string_view code2 = R"(/*multi\nline\ncomment*/)";
+    vnd::Tokenizer tokenizer{code2};
+    std::vector<vnd::Token> tokens = tokenizer.tokenize();
+    REQUIRE(tokens.size() == 2);
+    REQUIRE(tokens[0] == vnd::Token(vnd::TokenType::COMMENT, R"(/*multi\nline\ncomment*/)", 1, 1));
+}
+
+
 /*
 TEST_CASE("tokenizer emit unknown token on non closed string token", "[tokenizer]"){
     constexpr std::string_view code2 = R"("a')";
@@ -331,6 +349,31 @@ TEST_CASE("corrected format for InstructionType", "[Instruction_type]") {
     REQ_FORMAT(OPEN_SCOPE, "OPEN_SCOPE");
     REQ_FORMAT(CLOSE_SCOPE, "CLOSE_SCOPE");
     REQ_FORMAT(BLANK, "BLANK");
+}
+
+TEST_CASE("Instruction default constructor and test function", "[Instruction]") {
+    vnd::Instruction instruction = vnd::Instruction::create();
+    REQUIRE(instruction.test() == "test");
+}
+
+TEST_CASE("Instruction typeToString function", "[Instruction]") {
+    vnd::Instruction instruction = vnd::Instruction::create();
+    std::vector<std::string> result = instruction.typeToString();
+    REQUIRE(result.size() == 1);
+    REQUIRE(result[0] == "BLANK");
+}
+
+TEST_CASE("Instruction checkToken function for valid tokens", "[Instruction]") {
+    vnd::Instruction instruction = vnd::Instruction::create();
+    vnd::Token identifierToken(vnd::TokenType::IDENTIFIER, "variable", 1, 2);
+    instruction.checkToken(identifierToken);
+    REQUIRE(instruction.canTerminate() == true);
+}
+
+TEST_CASE("Instruction checkToken function for invalid tokens", "[Instruction]") {
+    vnd::Instruction instruction = vnd::Instruction::create();
+    vnd::Token invalidToken(vnd::TokenType::UNKNOWN, "invalid", 1, 2);
+    REQUIRE_THROWS_AS(instruction.checkToken(invalidToken), vnd::InstructionException);
 }
 
 TEST_CASE("Parser emit number node", "[parser]"){
