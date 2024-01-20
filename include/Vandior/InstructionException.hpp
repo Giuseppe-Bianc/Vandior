@@ -5,6 +5,6 @@
 namespace vnd {
     class InstructionException : public std::runtime_error {
     public:
-        InstructionException(const Token &token);
+        explicit InstructionException(const Token &token);
     };
 }
