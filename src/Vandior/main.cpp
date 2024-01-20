@@ -14,17 +14,17 @@ DISABLE_WARNINGS_POP()
 #include <internal_use_only/config.hpp>
 
 namespace {
-    void setupSpdlog() {
+    auto setupSpdlog() -> void {
         spdlog::set_pattern(R"(%^[%T] [%l] %v%$)");
         const auto console = spdlog::stdout_color_mt(R"(console)");
         spdlog::set_default_logger(console);
     }
-    void timeTokenizer(vnd::Tokenizer &tokenizer, std::vector<vnd::Token> &tokens) {
+    auto timeTokenizer(vnd::Tokenizer &tokenizer, std::vector<vnd::Token> &tokens) -> void {
         tokens.clear();
         AutoTimer timer("tokenizer.tokenize()");
         tokens = tokenizer.tokenize();
     }
-    std::string readFromFile(const std::string &filename) {
+    auto readFromFile(const std::string &filename) -> std::string {
         AutoTimer timer("readFromFile");
         std::filesystem::path filePath = filename;
 
@@ -33,9 +33,7 @@ namespace {
 
         std::stringstream buffer;
 
-        if(std::ifstream fileStream{filePath, std::ios::in | std::ios::binary};
-           fileStream.is_open()) {  // NOLINT(*-include-cleaner,
-                                    // hicpp-signed-bitwise)
+        if(std::ifstream fileStream{filePath, std::ios::in | std::ios::binary}; fileStream.is_open()) {  // NOLINT(*-include-cleaner,  hicpp-signed-bitwise)
             // Ensure
             // that the file is opened securely
             fileStream.exceptions(std::ios::failbit | std::ios::badbit);  // NOLINT(hicpp-signed-bitwise)
