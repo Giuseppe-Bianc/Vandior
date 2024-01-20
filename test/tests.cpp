@@ -333,6 +333,97 @@ TEST_CASE("corrected format for InstructionType", "[Instruction_type]") {
     REQ_FORMAT(BLANK, "BLANK");
 }
 
+/* TEST_CASE("Corrected type of assignation istruction") {
+    vnd::Instruction instruction = vnd::Instruction::create();
+    REQUIRE(instruction.getLastType() == vnd::InstructionType::BLANK);
+    instruction.checkToken(vnd::Token{vnd::TokenType::IDENTIFIER, "", 0, 0});
+    REQUIRE(instruction.getLastType() == vnd::InstructionType::OPERATION);
+    instruction.checkToken(vnd::Token{vnd::TokenType::EQUAL_OPERATOR, "", 0, 1});
+    REQUIRE(instruction.getLastType() == vnd::InstructionType::ASSIGNATION);
+    instruction.checkToken(vnd::Token{vnd::TokenType::OPEN_PARENTESIS, "", 0, 2});
+    REQUIRE(instruction.getLastType() == vnd::InstructionType::EXPRESSION);
+    instruction.checkToken(vnd::Token{vnd::TokenType::IDENTIFIER, "", 0, 3});
+    instruction.checkToken(vnd::Token{vnd::TokenType::OPERATOR, "", 0, 4});
+    instruction.checkToken(vnd::Token{vnd::TokenType::IDENTIFIER, "", 0, 5});
+    instruction.checkToken(vnd::Token{vnd::TokenType::EQUAL_OPERATOR, "", 0, 6});
+    instruction.checkToken(vnd::Token{vnd::TokenType::CLOSE_PARENTESIS, "", 0, 7});
+}
+
+TEST_CASE("Corrected type of assignation istruction") {
+    vnd::Instruction instruction = vnd::Instruction::create();
+    instruction.checkToken(vnd::Token{vnd::TokenType::K_VAR, "", 0, 0});
+    instruction.checkToken(vnd::Token{vnd::TokenType::IDENTIFIER, "", 0, 1});
+    REQUIRE(instruction.getLastType() == vnd::InstructionType::DECLARATION);
+    instruction.checkToken(vnd::Token{vnd::TokenType::COLON, "", 0, 2});
+    instruction.checkToken(vnd::Token{vnd::TokenType::IDENTIFIER, "", 0, 3});
+    instruction.checkToken(vnd::Token{vnd::TokenType::OPEN_SQ_PARENTESIS, "", 0, 4});
+    REQUIRE(instruction.getLastType() == vnd::InstructionType::SQUARE_EXPRESSION);
+    instruction.checkToken(vnd::Token{vnd::TokenType::CLOSE_SQ_PARENTESIS, "", 0, 5});
+    instruction.checkToken(vnd::Token{vnd::TokenType::EQUAL_OPERATOR, "", 0, 6});
+    REQUIRE(instruction.getLastType() == vnd::InstructionType::INITIALIZATION);
+    instruction.checkToken(vnd::Token{vnd::TokenType::IDENTIFIER, "", 0, 7});
+    instruction.checkToken(vnd::Token{vnd::TokenType::OPEN_SQ_PARENTESIS, "", 0, 8});
+    instruction.checkToken(vnd::Token{vnd::TokenType::INTEGER, "", 0, 9});
+    REQUIRE(instruction.getLastType() == vnd::InstructionType::SQUARE_EXPRESSION);
+    instruction.checkToken(vnd::Token{vnd::TokenType::CLOSE_SQ_PARENTESIS, "", 0, 10});
+}
+
+TEST_CASE("Corrected type of parameter expression istruction") {
+    vnd::Instruction instruction = vnd::Instruction::create();
+    instruction.checkToken(vnd::Token{vnd::TokenType::IDENTIFIER, "", 0, 0});
+    instruction.checkToken(vnd::Token{vnd::TokenType::OPEN_PARENTESIS, "", 0, 1});
+    REQUIRE(instruction.getLastType() == vnd::InstructionType::PARAMETER_EXPRESSION);
+    instruction.checkToken(vnd::Token{vnd::TokenType::OPEN_SQ_PARENTESIS, "", 0, 2});
+    instruction.checkToken(vnd::Token{vnd::TokenType::CLOSE_PARENTESIS, "", 0, 3});
+}
+
+TEST_CASE("Corrected type of parameter definition istruction") {
+    vnd::Instruction instruction = vnd::Instruction::create();
+    instruction.checkToken(vnd::Token{vnd::TokenType::K_FUN, "", 0, 0});
+    instruction.checkToken(vnd::Token{vnd::TokenType::IDENTIFIER, "", 0, 1});
+    instruction.checkToken(vnd::Token{vnd::TokenType::OPEN_PARENTESIS, "", 0, 2});
+    REQUIRE(instruction.getLastType() == vnd::InstructionType::PARAMETER_DEFINITION);
+    instruction.checkToken(vnd::Token{vnd::TokenType::CLOSE_PARENTESIS, "", 0, 3});
+}
+
+TEST_CASE("Corrected type of return expression istruction") {
+    vnd::Instruction instruction = vnd::Instruction::create();
+    instruction.checkToken(vnd::Token{vnd::TokenType::K_RETURN, "", 0, 0});
+    instruction.checkToken(vnd::Token{vnd::TokenType::BOOLEAN, "", 0, 1});
+    REQUIRE(instruction.getLastType() == vnd::InstructionType::RETURN_EXPRESSION);
+}
+
+TEST_CASE("Corrected type of main istruction") {
+    vnd::Instruction instruction = vnd::Instruction::create();
+    instruction.checkToken(vnd::Token{vnd::TokenType::K_MAIN, "", 0, 0});
+    instruction.checkToken(vnd::Token{vnd::TokenType::OPEN_CUR_PARENTESIS, "", 0, 1});
+    REQUIRE(instruction.getLastType() == vnd::InstructionType::MAIN);
+}
+
+TEST_CASE("Corrected type of structure istruction") {
+    vnd::Instruction instruction = vnd::Instruction::create();
+    instruction.checkToken(vnd::Token{vnd::TokenType::K_STRUCTURE, "", 0, 0});
+    instruction.checkToken(vnd::Token{vnd::TokenType::OPEN_PARENTESIS, "", 0, 1});
+    instruction.checkToken(vnd::Token{vnd::TokenType::CLOSE_PARENTESIS, "", 0, 2});
+    instruction.checkToken(vnd::Token{vnd::TokenType::OPEN_CUR_PARENTESIS, "", 0, 3});
+    REQUIRE(instruction.getLastType() == vnd::InstructionType::STRUCTURE);
+}
+
+TEST_CASE("Corrected type of for istruction") {
+    vnd::Instruction instruction = vnd::Instruction::create();
+    instruction.checkToken(vnd::Token{vnd::TokenType::K_FOR, "", 0, 0});
+    REQUIRE(instruction.getLastType() == vnd::InstructionType::FOR_STRUCTURE);
+    instruction.checkToken(vnd::Token{vnd::TokenType::IDENTIFIER, "", 0, 1});
+    instruction.checkToken(vnd::Token{vnd::TokenType::EQUAL_OPERATOR, "", 0, 2});
+    REQUIRE(instruction.getLastType() == vnd::InstructionType::FOR_INITIALIZATION);
+    instruction.checkToken(vnd::Token{vnd::TokenType::DOUBLE, "", 0, 3});
+    instruction.checkToken(vnd::Token{vnd::TokenType::COMMA, "", 0, 4});
+    REQUIRE(instruction.getLastType() == vnd::InstructionType::FOR_CONDITION);
+    instruction.checkToken(vnd::Token{vnd::TokenType::DOUBLE, "", 0, 5});
+    instruction.checkToken(vnd::Token{vnd::TokenType::COMMA, "", 0, 6});
+    REQUIRE(instruction.getLastType() == vnd::InstructionType::FOR_STEP);
+}*/
+
 TEST_CASE("Parser emit number node", "[parser]"){
     vnd::Parser parser("1");
     auto ast = parser.parse();

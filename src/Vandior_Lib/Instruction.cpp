@@ -249,7 +249,7 @@ namespace vnd {
         using enum TokenType;
         using enum InstructionType;
         addBooleanOperator();
-        _allowedTokens = {IDENTIFIER, INTEGER, DOUBLE, CHAR, STRING, BOOLEAN, MINUS_OPERATOR, NOT_OPERATOR, OPEN_PARENTESIS};
+        _allowedTokens = _expressionStartTokens;
         if(type == OPEN_PARENTESIS) {
             _allowedTokens.emplace_back(CLOSE_PARENTESIS);
             if(lastTypeIs(DEFINITION)) {
@@ -264,9 +264,9 @@ namespace vnd {
             addType(EXPRESSION);
             return;
         }
-        if(getLastTokenType() == EQUAL_OPERATOR || getLastTokenType() == COMMA || getLastTokenType() == OPEN_SQ_PARENTESIS) {
+        if(getLastTokenType() == EQUAL_OPERATOR || getLastTokenType() == COMMA ||
+            getLastTokenType() == OPEN_PARENTESIS || getLastTokenType() == OPEN_SQ_PARENTESIS) {
             addType(ARRAY_INIZIALIZATION);
-            _allowedTokens.emplace_back(OPEN_SQ_PARENTESIS);
             _allowedTokens.emplace_back(CLOSE_SQ_PARENTESIS);
             return;
         }
