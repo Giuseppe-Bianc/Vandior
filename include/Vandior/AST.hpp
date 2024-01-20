@@ -7,10 +7,18 @@
 #include "Log.hpp"
 #include "headers.hpp"
 
-// Define different types of AST nodes
+/**
+ * @brief Enum representing different types of AST nodes.
+ */
 enum class NodeType { BinaryExpression, UnaryExpression, Number, Variable };
 
-template <> struct fmt::formatter<NodeType> : fmt::formatter<std::string_view> {  // NOLINT(*-include-cleaner)
+/**
+ * @brief Specialization of fmt::formatter for NodeType enumeration.
+ */
+template <> struct fmt::formatter<NodeType> : fmt::formatter<std::string_view> {
+    /**
+     * @brief Formats the NodeType for printing.
+     */
     template <typename FormatContext> auto format(NodeType nodeType, FormatContext &ctx) {
         std::string_view name;
         switch(nodeType) {
@@ -34,18 +42,40 @@ template <> struct fmt::formatter<NodeType> : fmt::formatter<std::string_view> {
     }
 };
 
-// Base class for AST nodes
+/**
+ * @brief Base class for AST nodes.
+ */
 class ASTNode {
 public:
     virtual ~ASTNode() = default;
+    /**
+     * @brief Gets the type of the AST node.
+     * @return NodeType enumeration value.
+     */
     virtual NodeType getType() const = 0;
+    /**
+     * @brief Returns a string representation of the AST node.
+     * @return String representation of the AST node.
+     */
     virtual std::string print() const = 0;
+    /**
+     * @brief Returns a compact string representation of the AST node for compilation purposes.
+     * @return Compact string representation of the AST node.
+     */
     virtual std::string comp_print() const = 0;
 };
 
-// Binary expression node
+/**
+ * @brief Binary expression node class representing nodes with two operands and an operator.
+ */
 class BinaryExpressionNode : public ASTNode {
 public:
+    /**
+     * @brief Constructor for BinaryExpressionNode.
+     * @param _op Operator for the binary expression.
+     * @param _left Left operand.
+     * @param _right Right operand.
+     */
     BinaryExpressionNode(std::string_view _op, std::unique_ptr<ASTNode> _left, std::unique_ptr<ASTNode> _right) noexcept
       : op(_op), left(std::move(_left)), right(std::move(_right)) {}
 
@@ -67,9 +97,16 @@ private:
     std::unique_ptr<ASTNode> left, right;
 };
 
-// Unary expression node
+/**
+ * @brief Unary expression node class representing nodes with a single operand and an operator.
+ */
 class UnaryExpressionNode : public ASTNode {
 public:
+    /**
+     * @brief Constructor for UnaryExpressionNode.
+     * @param _op Operator for the unary expression.
+     * @param _operand Operand of the unary expression.
+     */
     UnaryExpressionNode(std::string_view _op, std::unique_ptr<ASTNode> _operand) noexcept
       : op(_op), operand(std::move(_operand)) {}
 
@@ -84,10 +121,20 @@ private:
     std::unique_ptr<ASTNode> operand;
 };
 
-// Number node
+/**
+ * @brief Number node class representing numeric values in the AST.
+ */
 class NumberNode : public ASTNode {
 public:
+    /**
+     * @brief Constructor for NumberNode with integer value.
+     * @param _value Integer value of the number.
+     */
     explicit NumberNode(int _value) noexcept : value(C_D(_value)) {}
+    /**
+     * @brief Constructor for NumberNode with double value.
+     * @param _value Double value of the number.
+     */
     explicit NumberNode(double _value) noexcept : value(_value) {}
 
     NodeType getType() const noexcept override { return NodeType::Number; }
@@ -100,9 +147,15 @@ private:
     double value;
 };
 
-// Variable node
+/**
+ * @brief Variable node class representing variable names in the AST.
+ */
 class VariableNode : public ASTNode {
 public:
+    /**
+     * @brief Constructor for VariableNode.
+     * @param _name Name of the variable.
+     */
     explicit VariableNode(std::string_view _name) noexcept : name(_name) {}
 
     NodeType getType() const noexcept override { return NodeType::Variable; }
@@ -115,14 +168,32 @@ private:
     std::string_view name;
 };
 
+/**
+ * @brief Utility function for printing with indentation.
+ * @param indent Number of spaces for indentation.
+ * @param label Label for the printed information.
+ * @param value Value to be printed.
+ */
 static inline constexpr void print_indent(int indent, const auto &label, const auto &value) {
     LINFO("{: ^{}}{}: {}", "", indent, label, value);
 }
+/**
+ * @brief Utility function for printing with indentation, followed by a new line.
+ * @param indent Number of spaces for indentation.
+ * @param label Label for the printed information.
+ * @param value Value to be printed.
+ * @param labelnl Label for the new line.
+ */
 static inline constexpr void print_indent_dl(int indent, const auto &label, const auto &value, const auto &labelnl) {
     print_indent(indent, label, value);
     LINFO("{: ^{}}{}:", "", indent, labelnl);
 }
 
+/**
+ * @brief Pretty prints the AST starting from the given node with optional indentation.
+ * @param node The root of the AST to be pretty printed.
+ * @param indent Number of spaces for indentation.
+ */
 static inline constexpr void prettyPrint(const ASTNode &node, int indent = 0) {
     // Recursively print children for Binary and Unary expression nodes
     if(const auto *binaryNode = dynamic_cast<const BinaryExpressionNode *>(&node)) {
