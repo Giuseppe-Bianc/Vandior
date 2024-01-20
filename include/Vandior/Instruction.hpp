@@ -12,6 +12,7 @@ namespace vnd {
         [[nodiscard]] std::vector<std::string> typeToString() const noexcept;
         void checkToken(const Token &token);
         bool canTerminate() const noexcept;
+        [[nodiscard]] InstructionType getLastType() const noexcept;
     private:
         static const std::vector<TokenType> _expressionStartTokens;
         std::vector<TokenType> _allowedTokens;
@@ -35,7 +36,6 @@ namespace vnd {
         void checkKFor() noexcept;
         void checkKFun() noexcept;
         void checkKReturn() noexcept;
-        [[nodiscard]] InstructionType getLastType() const noexcept;
         void setLastType(const InstructionType &type) noexcept;
         void addType(const InstructionType &type) noexcept;
         void removeType() noexcept;

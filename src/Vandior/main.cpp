@@ -98,6 +98,7 @@ auto main(int argc, const char *const argv[]) -> int {
             if(token.getType() == vnd::TokenType::COMMENT) [[unlikely]] { continue; }
             if(token.getLine() >= line) [[likely]] {
                 if(instructions.empty() || instructions.back().canTerminate()) [[likely]] {
+                    if(!instructions.empty()) { LINFO("{}", instructions.back().getLastType()); }
                     instructions.emplace_back(vnd::Instruction::create());
                 } else if(instructions.back().typeToString().back() != "EXPRESSION" && token.getType() != vnd::TokenType::STRING)
                     [[unlikely]] {

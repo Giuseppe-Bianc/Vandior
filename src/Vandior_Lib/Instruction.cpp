@@ -110,6 +110,11 @@ namespace vnd {
         return std::ranges::find(_allowedTokens, eofTokenType) != _allowedTokens.end();
     }
 
+    InstructionType vnd::Instruction::getLastType() const noexcept {
+        if(_types.empty()) { return InstructionType::BLANK; }
+        return _types.back();
+    }
+
     void Instruction::checkIdentifier(const TokenType &type) noexcept {
         using enum TokenType;
         using enum InstructionType;
@@ -367,11 +372,6 @@ namespace vnd {
         setLastType(RETURN_EXPRESSION);
         _allowedTokens = _expressionStartTokens;
         _allowedTokens.emplace_back(eofTokenType);
-    }
-
-    InstructionType vnd::Instruction::getLastType() const noexcept {
-        if(_types.empty()) { return InstructionType::BLANK; }
-        return _types.back();
     }
 
     void Instruction::setLastType(const InstructionType &type) noexcept {
