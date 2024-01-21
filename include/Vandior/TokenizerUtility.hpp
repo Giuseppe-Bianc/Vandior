@@ -99,6 +99,13 @@ namespace vnd {
          * @return True if a comment is found, false otherwise.
          */
         [[nodiscard]] static bool isComment(const std::string_view &inputSpan, size_t position) noexcept;
+
+        /**
+         * @brief Check if the character is alphanumeric or underscore.
+         * @param cha The input character..
+         * @return True if the character is alphanumeric or underscore, false otherwise.
+         */
+        [[nodiscard]] static bool isalnumUnderscore(const char &cha) noexcept;
     };
 
 }  // namespace vnd

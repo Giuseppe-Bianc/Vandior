@@ -40,12 +40,10 @@ namespace vnd {
     }
     bool Tokenizer::positionIsInText() const noexcept { return position < _inputSize; }
 
-    bool Tokenizer::isalnumUnderscore(const char &cha) const noexcept { return std::isalnum(C_UC(cha)) || cha == '_'; }
-
     Token Tokenizer::handleAlpha() {
         const auto start = position;
         TokenType type = TokenType::IDENTIFIER;
-        while(positionIsInText() && isalnumUnderscore(_input[position])) { incPosAndColumn(); }
+        while(positionIsInText() && TokenizerUtility::isalnumUnderscore(_input[position])) { incPosAndColumn(); }
         const auto value = _input.substr(start, position - start);
         kewordType(value, type);
         return {type, value, line, column - value.size()};

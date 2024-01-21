@@ -46,7 +46,6 @@ namespace vnd {
         [[nodiscard]] Token handleBrackets();
         [[nodiscard]] TokenType getType(const std::string_view &value) const noexcept;
         [[nodiscard]] Token handleChar();
-        [[nodiscard]] bool isalnumUnderscore(const char &cha) const noexcept;
         [[nodiscard]] bool inTextAndE() const noexcept;
         Token handleString();
     };

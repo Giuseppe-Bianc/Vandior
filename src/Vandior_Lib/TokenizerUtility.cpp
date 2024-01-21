@@ -27,4 +27,5 @@ namespace vnd {
         return position != inputSpan.size() && inputSpan[position] == '/' &&
                (inputSpan[position + 1] == '/' || inputSpan[position + 1] == '*');
     }
+    bool TokenizerUtility::isalnumUnderscore(const char &cha) noexcept { return std::isalnum(C_UC(cha)) || cha == '_'; }
 }  // namespace vnd
