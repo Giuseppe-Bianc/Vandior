@@ -60,4 +60,4 @@ fun function(var1: type, var2: type): type1, type2 {
 	return
 }
 variable = function().method().a
-variable = a[0].method(-45, true, function().b[0], [1, 2, 4, variable[1]][0].value([1,2 , [4, 5]], 4, [[2, 2], [3, 3]]))
+variable %= a[0].method(-45, true, function().b[0], [1, 2, 4, variable[1]][0].value([1,2 , [4, 5]], 4, [[2, 2], [3, 3]])) % 2

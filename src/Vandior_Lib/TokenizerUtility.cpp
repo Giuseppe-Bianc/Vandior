@@ -2,12 +2,12 @@
 
 namespace vnd {
     bool TokenizerUtility::isOperator(const char &aChar) {
-        static const std::unordered_set<char> operators = {'*', '/', '=', '<', '>', '!', '|', '&', '+', '-', '^'};
+        static const std::unordered_set<char> operators = {'*', '/', '=', '<', '>', '!', '|', '&', '+', '-', '^', '%'};
         return operators.contains(aChar);
     }
     bool TokenizerUtility::isPlusOrMinus(const char &cara) noexcept { return cara == '+' || cara == '-'; }
     bool TokenizerUtility::isOperationEqual(const std::string_view &value) noexcept {
-        return value == "+=" || value == "-=" || value == "*=" || value == "/=";
+        return value == "+=" || value == "-=" || value == "*=" || value == "/=" || value == "^=" || value == "%=";
     }
     bool TokenizerUtility::isBooleanOperator(const std::string_view &value) noexcept {
         return value == "==" || value == ">=" || value == "<=" || value == "!=";

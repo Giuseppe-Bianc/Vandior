@@ -199,7 +199,7 @@ TEST_CASE("tokenizer emit double token", "[tokenizer]"){
 }
 
 TEST_CASE("tokenizer emit operator token", "[tokenizer]"){
-    vnd::Tokenizer tokenizer{"* / = , : < > ! | & + - ^ ."};
+    vnd::Tokenizer tokenizer{"* / = , : < > ! | & + - ^ % ."};
     std::vector<vnd::Token> tokens = tokenizer.tokenize();
     REQUIRE(tokens.size() == 15);
     REQUIRE(tokens[0] == vnd::Token(oper, "*", 1, 1));
@@ -215,17 +215,19 @@ TEST_CASE("tokenizer emit operator token", "[tokenizer]"){
     REQUIRE(tokens[10] == vnd::Token(oper, "+", 1, 21));
     REQUIRE(tokens[11] == vnd::Token(vnd::TokenType::MINUS_OPERATOR, "-", 1, 23));
     REQUIRE(tokens[12] == vnd::Token(oper, "^", 1, 25));
-    REQUIRE(tokens[13] == vnd::Token(vnd::TokenType::DOT_OPERATOR, ".", 1, 27));
+    REQUIRE(tokens[12] == vnd::Token(oper, "%", 1, 27));
+    REQUIRE(tokens[13] == vnd::Token(vnd::TokenType::DOT_OPERATOR, ".", 1, 29));
 }
 
 TEST_CASE("tokenizer emit operationEqual token", "[tokenizer]"){
-    vnd::Tokenizer tokenizer{"+= -= *= /="};
+    vnd::Tokenizer tokenizer{"+= -= *= /= %="};
     std::vector<vnd::Token> tokens = tokenizer.tokenize();
     REQUIRE(tokens.size() == 5);
     REQUIRE(tokens[0] == vnd::Token(vnd::TokenType::OPERATION_EQUAL, "+=", 1, 1));
     REQUIRE(tokens[1] == vnd::Token(vnd::TokenType::OPERATION_EQUAL, "-=", 1, 4));
     REQUIRE(tokens[2] == vnd::Token(vnd::TokenType::OPERATION_EQUAL, "*=", 1, 7));
     REQUIRE(tokens[3] == vnd::Token(vnd::TokenType::OPERATION_EQUAL, "/=", 1, 10));
+    REQUIRE(tokens[3] == vnd::Token(vnd::TokenType::OPERATION_EQUAL, "%=", 1, 13));
 }
 
 TEST_CASE("tokenizer emit boolean operator token", "[tokenizer]"){

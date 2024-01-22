@@ -223,6 +223,7 @@ namespace vnd {
         case '*':
         case '/':
         case '^':
+        case '%':
         case '|':
         case '&':
             return OPERATOR;
