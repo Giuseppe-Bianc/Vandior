@@ -198,7 +198,7 @@ namespace vnd {
                 value = _input.substr(start, position - start);
                 return {TokenType::UNKNOWN, value, line, startColumn};
             }
-            incPosAndColumn();
+            handleWhiteSpace();
         }
         value = _input.substr(start, position - start);
         incPosAndColumn();
