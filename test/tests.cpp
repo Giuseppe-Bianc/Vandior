@@ -706,3 +706,183 @@ TEST_CASE("Parser emit binary expression node compact print", "[parser]") {
     REQUIRE(rightNumber->getValue() == rhs);
     REQUIRE(binaryNode->comp_print() == "BINE(op:\"+\" l:NUM(1), r:NUM(2))");
 }
+
+TEST_CASE("Parser emit binary expression node parentesis", "[parser]") {
+    vnd::Parser parser("1 + (2 + 3)");
+    auto ast = parser.parse();
+    REQUIRE(ast != nullptr);
+    REQUIRE(ast->getType() == NodeType::BinaryExpression);
+
+    const auto* binaryNode = dynamic_cast<const BinaryExpressionNode*>(ast.get());
+
+    // Check the operation
+    REQUIRE(binaryNode->getOp() == "+");
+
+    REQUIRE(binaryNode->getLeft()->getType() == NodeType::Number);
+    REQUIRE(binaryNode->getRight()->getType() == NodeType::BinaryExpression);
+
+    // Check the left and right operands
+    const auto * leftNumber = dynamic_cast<const NumberNode*>(binaryNode->getLeft().get());
+    const auto * right = dynamic_cast<const BinaryExpressionNode*>(binaryNode->getRight().get());
+    REQUIRE(leftNumber != nullptr);
+    REQUIRE(right != nullptr);
+    // Check the left and right operands
+    const auto * rLeftNumber = dynamic_cast<const NumberNode*>(right->getLeft().get());
+    const auto * rRightNumber = dynamic_cast<const NumberNode*>(right->getRight().get());
+
+    // Check the values of left and right operands
+    REQUIRE(leftNumber->getValue() == lfh);
+    REQUIRE(rLeftNumber->getValue() == rhs);
+    REQUIRE(rRightNumber->getValue() == rhs+1);
+}
+
+TEST_CASE("Parser emit binary expression node parentesis 2", "[parser]") {
+    vnd::Parser parser("(2 + 3) + 1");
+    auto ast = parser.parse();
+    REQUIRE(ast != nullptr);
+    REQUIRE(ast->getType() == NodeType::BinaryExpression);
+
+    const auto* binaryNode = dynamic_cast<const BinaryExpressionNode*>(ast.get());
+
+    // Check the operation
+    REQUIRE(binaryNode->getOp() == "+");
+
+    REQUIRE(binaryNode->getLeft()->getType() == NodeType::BinaryExpression);
+    REQUIRE(binaryNode->getRight()->getType() == NodeType::Number);
+
+    // Check the left and right operands
+    const auto * left = dynamic_cast<const BinaryExpressionNode*>(binaryNode->getLeft().get());
+    const auto * rightNumber = dynamic_cast<const NumberNode*>(binaryNode->getRight().get());
+    REQUIRE(left != nullptr);
+    REQUIRE(rightNumber != nullptr);
+    // Check the left and right operands
+    const auto * lLeftNumber = dynamic_cast<const NumberNode*>(left->getLeft().get());
+    const auto * lRightNumber = dynamic_cast<const NumberNode*>(left->getRight().get());
+
+    // Check the values of left and right operands
+    REQUIRE(lLeftNumber->getValue() == rhs);
+    REQUIRE(lRightNumber->getValue() == rhs+1);
+    REQUIRE(rightNumber->getValue() == lfh);
+}
+
+
+TEST_CASE("Parser emit binary expression node parentesis print", "[parser]") {
+    vnd::Parser parser("1 + (2 + 3)");
+    auto ast = parser.parse();
+    REQUIRE(ast != nullptr);
+    REQUIRE(ast->getType() == NodeType::BinaryExpression);
+
+    const auto* binaryNode = dynamic_cast<const BinaryExpressionNode*>(ast.get());
+
+    // Check the operation
+    REQUIRE(binaryNode->getOp() == "+");
+
+    REQUIRE(binaryNode->getLeft()->getType() == NodeType::Number);
+    REQUIRE(binaryNode->getRight()->getType() == NodeType::BinaryExpression);
+
+    // Check the left and right operands
+    const auto * leftNumber = dynamic_cast<const NumberNode*>(binaryNode->getLeft().get());
+    const auto * right = dynamic_cast<const BinaryExpressionNode*>(binaryNode->getRight().get());
+    REQUIRE(leftNumber != nullptr);
+    REQUIRE(right != nullptr);
+    // Check the left and right operands
+    const auto * rLeftNumber = dynamic_cast<const NumberNode*>(right->getLeft().get());
+    const auto * rRightNumber = dynamic_cast<const NumberNode*>(right->getRight().get());
+
+    // Check the values of left and right operands
+    REQUIRE(leftNumber->getValue() == lfh);
+    REQUIRE(rLeftNumber->getValue() == rhs);
+    REQUIRE(rRightNumber->getValue() == rhs+1);
+    REQUIRE(binaryNode->print()== "BINARY_EXPRESION(op:\"+\" left:NUMBER(1), right:BINARY_EXPRESION(op:\"+\" left:NUMBER(2), right:NUMBER(3)))");
+}
+
+TEST_CASE("Parser emit binary expression node parentesis 2 print", "[parser]") {
+    vnd::Parser parser("(2 + 3) + 1");
+    auto ast = parser.parse();
+    REQUIRE(ast != nullptr);
+    REQUIRE(ast->getType() == NodeType::BinaryExpression);
+
+    const auto* binaryNode = dynamic_cast<const BinaryExpressionNode*>(ast.get());
+
+    // Check the operation
+    REQUIRE(binaryNode->getOp() == "+");
+
+    REQUIRE(binaryNode->getLeft()->getType() == NodeType::BinaryExpression);
+    REQUIRE(binaryNode->getRight()->getType() == NodeType::Number);
+
+    // Check the left and right operands
+    const auto * left = dynamic_cast<const BinaryExpressionNode*>(binaryNode->getLeft().get());
+    const auto * rightNumber = dynamic_cast<const NumberNode*>(binaryNode->getRight().get());
+    REQUIRE(left != nullptr);
+    REQUIRE(rightNumber != nullptr);
+    // Check the left and right operands
+    const auto * lLeftNumber = dynamic_cast<const NumberNode*>(left->getLeft().get());
+    const auto * lRightNumber = dynamic_cast<const NumberNode*>(left->getRight().get());
+
+    // Check the values of left and right operands
+    REQUIRE(lLeftNumber->getValue() == rhs);
+    REQUIRE(lRightNumber->getValue() == rhs+1);
+    REQUIRE(rightNumber->getValue() == lfh);
+    REQUIRE(binaryNode->print()== "BINARY_EXPRESION(op:\"+\" left:BINARY_EXPRESION(op:\"+\" left:NUMBER(2), right:NUMBER(3)), right:NUMBER(1))");
+}
+
+
+TEST_CASE("Parser emit binary expression node parentesis compat print", "[parser]") {
+    vnd::Parser parser("1 + (2 + 3)");
+    auto ast = parser.parse();
+    REQUIRE(ast != nullptr);
+    REQUIRE(ast->getType() == NodeType::BinaryExpression);
+
+    const auto* binaryNode = dynamic_cast<const BinaryExpressionNode*>(ast.get());
+
+    // Check the operation
+    REQUIRE(binaryNode->getOp() == "+");
+
+    REQUIRE(binaryNode->getLeft()->getType() == NodeType::Number);
+    REQUIRE(binaryNode->getRight()->getType() == NodeType::BinaryExpression);
+
+    // Check the left and right operands
+    const auto * leftNumber = dynamic_cast<const NumberNode*>(binaryNode->getLeft().get());
+    const auto * right = dynamic_cast<const BinaryExpressionNode*>(binaryNode->getRight().get());
+    REQUIRE(leftNumber != nullptr);
+    REQUIRE(right != nullptr);
+    // Check the left and right operands
+    const auto * rLeftNumber = dynamic_cast<const NumberNode*>(right->getLeft().get());
+    const auto * rRightNumber = dynamic_cast<const NumberNode*>(right->getRight().get());
+
+    // Check the values of left and right operands
+    REQUIRE(leftNumber->getValue() == lfh);
+    REQUIRE(rLeftNumber->getValue() == rhs);
+    REQUIRE(rRightNumber->getValue() == rhs+1);
+    REQUIRE(binaryNode->comp_print() == "BINE(op:\"+\" l:NUM(1), r:BINE(op:\"+\" l:NUM(2), r:NUM(3)))");
+}
+
+TEST_CASE("Parser emit binary expression node parentesis 2 compat print", "[parser]") {
+    vnd::Parser parser("(2 + 3) + 1");
+    auto ast = parser.parse();
+    REQUIRE(ast != nullptr);
+    REQUIRE(ast->getType() == NodeType::BinaryExpression);
+
+    const auto* binaryNode = dynamic_cast<const BinaryExpressionNode*>(ast.get());
+
+    // Check the operation
+    REQUIRE(binaryNode->getOp() == "+");
+
+    REQUIRE(binaryNode->getLeft()->getType() == NodeType::BinaryExpression);
+    REQUIRE(binaryNode->getRight()->getType() == NodeType::Number);
+
+    // Check the left and right operands
+    const auto * left = dynamic_cast<const BinaryExpressionNode*>(binaryNode->getLeft().get());
+    const auto * rightNumber = dynamic_cast<const NumberNode*>(binaryNode->getRight().get());
+    REQUIRE(left != nullptr);
+    REQUIRE(rightNumber != nullptr);
+    // Check the left and right operands
+    const auto * lLeftNumber = dynamic_cast<const NumberNode*>(left->getLeft().get());
+    const auto * lRightNumber = dynamic_cast<const NumberNode*>(left->getRight().get());
+
+    // Check the values of left and right operands
+    REQUIRE(lLeftNumber->getValue() == rhs);
+    REQUIRE(lRightNumber->getValue() == rhs+1);
+    REQUIRE(rightNumber->getValue() == lfh);
+    REQUIRE(binaryNode->comp_print()== "BINE(op:\"+\" l:BINE(op:\"+\" l:NUM(2), r:NUM(3)), r:NUM(1))");
+}
