@@ -658,6 +658,153 @@ TEST_CASE("Parser emit binary expression node", "[parser]") {
     REQUIRE(rightNumber->getValue() == rhs);
 }
 
+TEST_CASE("Parser emit binary expression node multiply", "[parser]") {
+    vnd::Parser parser("1 * 2");
+    auto ast = parser.parse();
+    REQUIRE(ast != nullptr);
+    REQUIRE(ast->getType() == NodeType::BinaryExpression);
+
+    const auto* binaryNode = dynamic_cast<const BinaryExpressionNode*>(ast.get());
+    REQUIRE(binaryNode != nullptr);
+
+    // Check the operation
+    REQUIRE(binaryNode->getOp() == "*");
+
+    // Check the left and right operands
+    const auto * leftNumber = dynamic_cast<const NumberNode*>(binaryNode->getLeft().get());
+    const auto * rightNumber = dynamic_cast<const NumberNode*>(binaryNode->getRight().get());
+
+    REQUIRE(leftNumber != nullptr);
+    REQUIRE(rightNumber != nullptr);
+
+    // Check the values of left and right operands
+    REQUIRE(leftNumber->getValue() == lfh);
+    REQUIRE(rightNumber->getValue() == rhs);
+}
+
+TEST_CASE("Parser emit binary expression node divide", "[parser]") {
+    vnd::Parser parser("1 / 2");
+    auto ast = parser.parse();
+    REQUIRE(ast != nullptr);
+    REQUIRE(ast->getType() == NodeType::BinaryExpression);
+
+    const auto* binaryNode = dynamic_cast<const BinaryExpressionNode*>(ast.get());
+    REQUIRE(binaryNode != nullptr);
+
+    // Check the operation
+    REQUIRE(binaryNode->getOp() == "/");
+
+    // Check the left and right operands
+    const auto * leftNumber = dynamic_cast<const NumberNode*>(binaryNode->getLeft().get());
+    const auto * rightNumber = dynamic_cast<const NumberNode*>(binaryNode->getRight().get());
+
+    REQUIRE(leftNumber != nullptr);
+    REQUIRE(rightNumber != nullptr);
+
+    // Check the values of left and right operands
+    REQUIRE(leftNumber->getValue() == lfh);
+    REQUIRE(rightNumber->getValue() == rhs);
+}
+
+TEST_CASE("Parser emit binary expression node multiply print", "[parser]") {
+    vnd::Parser parser("1 * 2");
+    auto ast = parser.parse();
+    REQUIRE(ast != nullptr);
+    REQUIRE(ast->getType() == NodeType::BinaryExpression);
+
+    const auto* binaryNode = dynamic_cast<const BinaryExpressionNode*>(ast.get());
+    REQUIRE(binaryNode != nullptr);
+
+    // Check the operation
+    REQUIRE(binaryNode->getOp() == "*");
+
+    // Check the left and right operands
+    const auto * leftNumber = dynamic_cast<const NumberNode*>(binaryNode->getLeft().get());
+    const auto * rightNumber = dynamic_cast<const NumberNode*>(binaryNode->getRight().get());
+
+    REQUIRE(leftNumber != nullptr);
+    REQUIRE(rightNumber != nullptr);
+
+    // Check the values of left and right operands
+    REQUIRE(leftNumber->getValue() == lfh);
+    REQUIRE(rightNumber->getValue() == rhs);
+    REQUIRE(binaryNode->print() == "BINARY_EXPRESION(op:\"*\" left:NUMBER(1), right:NUMBER(2))");
+}
+
+TEST_CASE("Parser emit binary expression node divide print", "[parser]") {
+    vnd::Parser parser("1 / 2");
+    auto ast = parser.parse();
+    REQUIRE(ast != nullptr);
+    REQUIRE(ast->getType() == NodeType::BinaryExpression);
+
+    const auto* binaryNode = dynamic_cast<const BinaryExpressionNode*>(ast.get());
+    REQUIRE(binaryNode != nullptr);
+
+    // Check the operation
+    REQUIRE(binaryNode->getOp() == "/");
+
+    // Check the left and right operands
+    const auto * leftNumber = dynamic_cast<const NumberNode*>(binaryNode->getLeft().get());
+    const auto * rightNumber = dynamic_cast<const NumberNode*>(binaryNode->getRight().get());
+
+    REQUIRE(leftNumber != nullptr);
+    REQUIRE(rightNumber != nullptr);
+
+    // Check the values of left and right operands
+    REQUIRE(leftNumber->getValue() == lfh);
+    REQUIRE(rightNumber->getValue() == rhs);
+    REQUIRE(binaryNode->print() == "BINARY_EXPRESION(op:\"/\" left:NUMBER(1), right:NUMBER(2))");
+}
+
+TEST_CASE("Parser emit binary expression node multiply comp print", "[parser]") {
+    vnd::Parser parser("1 * 2");
+    auto ast = parser.parse();
+    REQUIRE(ast != nullptr);
+    REQUIRE(ast->getType() == NodeType::BinaryExpression);
+
+    const auto* binaryNode = dynamic_cast<const BinaryExpressionNode*>(ast.get());
+    REQUIRE(binaryNode != nullptr);
+
+    // Check the operation
+    REQUIRE(binaryNode->getOp() == "*");
+
+    // Check the left and right operands
+    const auto * leftNumber = dynamic_cast<const NumberNode*>(binaryNode->getLeft().get());
+    const auto * rightNumber = dynamic_cast<const NumberNode*>(binaryNode->getRight().get());
+
+    REQUIRE(leftNumber != nullptr);
+    REQUIRE(rightNumber != nullptr);
+
+    // Check the values of left and right operands
+    REQUIRE(leftNumber->getValue() == lfh);
+    REQUIRE(rightNumber->getValue() == rhs);
+    REQUIRE(binaryNode->comp_print() == "BINE(op:\"*\" l:NUM(1), r:NUM(2))");
+}
+
+TEST_CASE("Parser emit binary expression node divide comp print", "[parser]") {
+    vnd::Parser parser("1 / 2");
+    auto ast = parser.parse();
+    REQUIRE(ast != nullptr);
+    REQUIRE(ast->getType() == NodeType::BinaryExpression);
+
+    const auto* binaryNode = dynamic_cast<const BinaryExpressionNode*>(ast.get());
+    REQUIRE(binaryNode != nullptr);
+
+    // Check the operation
+    REQUIRE(binaryNode->getOp() == "/");
+
+    // Check the left and right operands
+    const auto * leftNumber = dynamic_cast<const NumberNode*>(binaryNode->getLeft().get());
+    const auto * rightNumber = dynamic_cast<const NumberNode*>(binaryNode->getRight().get());
+
+    REQUIRE(leftNumber != nullptr);
+    REQUIRE(rightNumber != nullptr);
+
+    // Check the values of left and right operands
+    REQUIRE(leftNumber->getValue() == lfh);
+    REQUIRE(rightNumber->getValue() == rhs);
+    REQUIRE(binaryNode->comp_print() == "BINE(op:\"/\" l:NUM(1), r:NUM(2))");
+}
 
 TEST_CASE("Parser emit binary expression node print", "[parser]") {
     vnd::Parser parser("1 + 2");
