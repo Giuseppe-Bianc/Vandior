@@ -7,30 +7,34 @@ namespace vnd {
 
     Transpiler Transpiler::create(std::vector<Instruction> instructions) noexcept { return Transpiler(instructions); }
 
-    /* void Transpiler::transpile() {
-        this->output.open("output.cpp");
-        this->write("#include <iostream>\n");
+    void Transpiler::transpile() noexcept {
         using enum TokenType;
         using enum InstructionType;
+        _output.open("output.cpp");
+        write("#include <iostream>\n");
         try {
-            for(const Instruction i : this->instructions) {
-                switch(i.getType()) {
+            for(const Instruction &i : _instructions) {
+                switch(i.getLastType()) {
                 case MAIN:
-                    this->writeMain(i);
+                    //this->writeMain(i);
                     break;
                 case DECLARATION:
                 case INITIALIZATION:
-                    LINFO(i.toString());
-                    this->writeDeclaration(i);
+                    //LINFO(i.toString());
+                    //this->writeDeclaration(i);
+                    break;
                 }
             }
-        } catch(TranspilerException &e) { LERROR("{}", e.what()); }
-        output.close();
+        } catch(TranspilerException &e) {
+            LERROR("{}", e.what());
+            _output.close();
+        }
+        _output.close();
     }
 
-    void Transpiler::write(const std::string &str) { this->output << str; }
+    void Transpiler::write(const std::string &str) noexcept { _output << str; }
 
-    void Transpiler::checkTrailingBracket(const Instruction &instruction) {
+    /*void Transpiler::checkTrailingBracket(const Instruction &instruction) {
         if(instruction.size() == 0) { return; }
         if(instruction.getTokens().back().getType() == TokenType::CLOSED_CURLY_BRACKETS) {
             this->write("}");

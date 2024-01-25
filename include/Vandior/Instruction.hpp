@@ -8,11 +8,12 @@ namespace vnd {
     class Instruction {
 	public:
         static Instruction create() noexcept;
-        std::string test() { return "test"; }
+        [[nodiscard]] InstructionType getType() const noexcept;
         [[nodiscard]] std::vector<std::string> typeToString() const noexcept;
         void checkToken(const Token &token);
         bool canTerminate() const noexcept;
         [[nodiscard]] InstructionType getLastType() const noexcept;
+        [[nodiscard]] std::string toString() const noexcept;
     private:
         static const std::vector<TokenType> _expressionStartTokens;
         std::vector<TokenType> _allowedTokens;

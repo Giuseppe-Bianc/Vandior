@@ -3,6 +3,7 @@
 #include <fstream>
 #include <memory>
 #include "Vandior/Instruction.hpp"
+#include "Vandior/TranpilerException.hpp"
 #include "Vandior/Scope.hpp"
 
 namespace vnd {
@@ -10,7 +11,7 @@ namespace vnd {
     class Transpiler {
     public:
         static Transpiler create(std::vector<Instruction> instructions) noexcept;
-        //void transpile();
+        void transpile() noexcept;
     private:
         Transpiler(std::vector<Instruction> _instructions) noexcept;
         int _tabs;
@@ -19,8 +20,8 @@ namespace vnd {
         std::vector<Instruction> _instructions;
         std::shared_ptr<Scope> _scope;
         bool _main;
-        /*void write(const std::string &str);
-        void checkTrailingBracket(const Instruction &instruction);
+        void write(const std::string &str) noexcept;
+        /*void checkTrailingBracket(const Instruction &instruction);
         void openScope();
         void closeScope();
         void writeMain(const Instruction &instruction);

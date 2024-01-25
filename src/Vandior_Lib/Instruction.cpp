@@ -17,11 +17,23 @@ namespace vnd {
 
     Instruction Instruction::create() noexcept { return {}; }
 
+    InstructionType Instruction::getLastType() const noexcept {
+        if(_types.empty()) { return InstructionType::BLANK; }
+        return _types.back();
+    }
+
     std::vector<std::string> Instruction::typeToString() const noexcept {
         std::vector<std::string> result;
         result.reserve(_types.size());
         std::transform(_types.begin(), _types.end(), std::back_inserter(result),
                        [](const InstructionType &instruction) { return FORMAT("{}", instruction); });
+        return result;
+    }
+
+    std::string Instruction::toString() const noexcept {
+        std::string result = "";
+        if(_tokens.empty()) { return ""; }
+        for(const Token &i : _tokens) { result += std::string(i.getValue()) + " "; }
         return result;
     }
 
@@ -109,11 +121,6 @@ namespace vnd {
 
     bool Instruction::canTerminate() const noexcept {
         return std::ranges::find(_allowedTokens, eofTokenType) != _allowedTokens.end();
-    }
-
-    InstructionType vnd::Instruction::getLastType() const noexcept {
-        if(_types.empty()) { return InstructionType::BLANK; }
-        return _types.back();
     }
 
     void Instruction::checkIdentifier(const TokenType &type) noexcept {

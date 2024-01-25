@@ -109,6 +109,8 @@ auto main(int argc, const char *const argv[]) -> int {
             }
             instructions.back().checkToken(token);
         }
+        vnd::Transpiler transpiler = vnd::Transpiler::create(instructions);
+        transpiler.transpile();
         /* vnd::Parser parser(code);
         Timer timeAst("ast creation time");
         auto ast = parser.parse();
