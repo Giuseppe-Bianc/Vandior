@@ -6,7 +6,7 @@ main {
 	variable = 42 * -y + 1. + 1.0 + 1e+1 + "10"
 	variable[1]++ = -4
 }
-main {}
+//main {}
 variable.method().a++, variable2--, ciao.a()
 
 var variable2, variable3: type = variable[0 + true && (!false || '\n')] == -4, !variable[2][true]['a' / "HELLO"]-- && 7.2

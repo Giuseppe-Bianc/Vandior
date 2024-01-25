@@ -5,18 +5,19 @@ namespace vnd {
     Transpiler::Transpiler(std::vector<Instruction> instructions) noexcept
       : _tabs(0), _text(""), _instructions(instructions), _scope(Scope::create()), _main(false) {}
 
-    Transpiler Transpiler::create(std::vector<Instruction> instructions) noexcept { return Transpiler(instructions); }
+    Transpiler Transpiler::create(std::vector<Instruction> instructions) noexcept { return {instructions}; }
 
-    void Transpiler::transpile() noexcept {
+    void Transpiler::transpile() {
         using enum TokenType;
         using enum InstructionType;
         _output.open("output.cpp");
         write("#include <iostream>\n");
         try {
             for(const Instruction &i : _instructions) {
+                _text = "";
                 switch(i.getLastType()) {
                 case MAIN:
-                    //this->writeMain(i);
+                    transpileMain(i);
                     break;
                 case DECLARATION:
                 case INITIALIZATION:
@@ -24,6 +25,7 @@ namespace vnd {
                     //this->writeDeclaration(i);
                     break;
                 }
+                write(_text + "\n");
             }
         } catch(TranspilerException &e) {
             LERROR("{}", e.what());
@@ -34,15 +36,21 @@ namespace vnd {
 
     void Transpiler::write(const std::string &str) noexcept { _output << str; }
 
-    /*void Transpiler::checkTrailingBracket(const Instruction &instruction) {
-        if(instruction.size() == 0) { return; }
-        if(instruction.getTokens().back().getType() == TokenType::CLOSED_CURLY_BRACKETS) {
-            this->write("}");
-            this->closeScope();
+    void Transpiler::checkTrailingBracket(const Instruction &instruction) {
+        if(instruction.getTokens().back().getType() == TokenType::CLOSE_CUR_PARENTESIS) {
+            _text += "}";
+            //this->closeScope();
         }
     }
 
-    void Transpiler::openScope() {
+    void Transpiler::transpileMain(const Instruction &instruction) {
+        if(_main) { throw TranspilerException("Main already declared", instruction); }
+        _text += "int main() {";
+        //this->openScope();
+        this->checkTrailingBracket(instruction);
+        _main = true;
+    }
+    /*void Transpiler::openScope() {
         std::shared_ptr<Scope> newScope = std::make_shared<Scope>(this->scope);
 
         this->scope = newScope;

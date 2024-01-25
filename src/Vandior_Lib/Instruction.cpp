@@ -17,6 +17,11 @@ namespace vnd {
 
     Instruction Instruction::create() noexcept { return {}; }
 
+    std::vector<Token> Instruction::getTokens() const noexcept {
+        if(_tokens.empty()) { return {{TokenType::UNKNOWN, "", 0, 0}}; }
+        return _tokens;
+    }
+
     InstructionType Instruction::getLastType() const noexcept {
         if(_types.empty()) { return InstructionType::BLANK; }
         return _types.back();
@@ -33,6 +38,7 @@ namespace vnd {
     std::string Instruction::toString() const noexcept {
         std::string result = "";
         if(_tokens.empty()) { return ""; }
+        result += std::to_string(_tokens[0].getLine()) + "\t";
         for(const Token &i : _tokens) { result += std::string(i.getValue()) + " "; }
         return result;
     }
