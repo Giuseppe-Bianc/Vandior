@@ -8,18 +8,18 @@ namespace vnd {
 
     class Scope {
     public:
-        static std::shared_ptr<Scope> create() noexcept;
-        /*static std::shared_ptr<Scope> create(std::shared_ptr<Scope> _parent) noexcept;
+        static std::shared_ptr<Scope> create(std::shared_ptr<Scope> parent) noexcept;
+        static std::shared_ptr<Scope> createMain() noexcept;
         std::shared_ptr<Scope> getParent() const noexcept;
         void removeParent() noexcept;
-        void checkVariable(const std::string &variable);
-        bool checkType(const std::string &type) const;*/
+        void addType(std::string_view type) noexcept;
+        //void checkVariable(const std::string &variable);
+        //bool checkType(const std::string &type) const;
     private:
-        Scope() noexcept;
-        //Scope(std::shared_ptr<Scope> _parent) noexcept;
-        std::unordered_map<std::string, std::string> _identifiers;
-        std::unordered_set<std::string> _types;
+        Scope(std::shared_ptr<Scope> parent) noexcept;
+        std::unordered_map<std::string_view, std::string_view> _identifiers;
+        std::unordered_set<std::string_view> _types;
         std::shared_ptr<Scope> _parent;
     };
 
-}  // namespace vnd*/
+}  // namespace vnd

@@ -3,7 +3,7 @@
 namespace vnd {
 
     Transpiler::Transpiler(std::vector<Instruction> instructions) noexcept
-      : _tabs(0), _text(""), _instructions(instructions), _scope(Scope::create()), _main(false) {}
+      : _tabs(0), _text(""), _instructions(instructions), _scope(Scope::createMain()), _main(false) {}
 
     Transpiler Transpiler::create(std::vector<Instruction> instructions) noexcept { return {instructions}; }
 
@@ -21,8 +21,7 @@ namespace vnd {
                     break;
                 case DECLARATION:
                 case INITIALIZATION:
-                    //LINFO(i.toString());
-                    //this->writeDeclaration(i);
+                    //transpileDeclaration(i);
                     break;
                 }
                 write(_text + "\n");
@@ -39,42 +38,33 @@ namespace vnd {
     void Transpiler::checkTrailingBracket(const Instruction &instruction) {
         if(instruction.getTokens().back().getType() == TokenType::CLOSE_CUR_PARENTESIS) {
             _text += "}";
-            //this->closeScope();
+            closeScope();
         }
     }
 
     void Transpiler::transpileMain(const Instruction &instruction) {
         if(_main) { throw TranspilerException("Main already declared", instruction); }
+        if(_scope->getParent() != nullptr) { throw TranspilerException("Cannot declare main here", instruction); }
         _text += "int main() {";
-        //this->openScope();
+        openScope();
         this->checkTrailingBracket(instruction);
         _main = true;
     }
-    /*void Transpiler::openScope() {
-        std::shared_ptr<Scope> newScope = std::make_shared<Scope>(this->scope);
 
-        this->scope = newScope;
-        tabs++;
+    void Transpiler::openScope() noexcept {
+        std::shared_ptr<Scope> newScope = Scope::create(_scope);
+        _scope = newScope;
+        _tabs++;
     }
 
-    void Transpiler::closeScope() {
-        std::shared_ptr<Scope> oldScope = this->scope;
-
-        this->scope = this->scope->getParent();
+    void Transpiler::closeScope() noexcept {
+        std::shared_ptr<Scope> oldScope = _scope;
+        _scope = _scope->getParent();
         oldScope->removeParent();
-        tabs--;
+       _tabs--;
     }
 
-    void Transpiler::writeMain(const Instruction &instruction) {
-        if(this->main) { throw TranspilerException("Main already declared", instruction); }
-        this->write("int main() {");
-        this->openScope();
-        this->checkTrailingBracket(instruction);
-        this->write("\n");
-        this->main = true;
-    }
-
-    void Transpiler::writeDeclaration(const Instruction &instruction) {
+    /*void Transpiler::writeDeclaration(const Instruction &instruction) {
         using enum TokenType;
 
         std::vector<Token> tokens = instruction.getTokens();

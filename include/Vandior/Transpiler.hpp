@@ -3,7 +3,7 @@
 #include <fstream>
 #include <memory>
 #include "Vandior/Instruction.hpp"
-#include "Vandior/TranpilerException.hpp"
+#include "Vandior/TranspilerException.hpp"
 #include "Vandior/Scope.hpp"
 
 namespace vnd {
@@ -23,9 +23,8 @@ namespace vnd {
         void write(const std::string &str) noexcept;
         void checkTrailingBracket(const Instruction &instruction);
         void transpileMain(const Instruction &i);
-        /*void openScope();
-        void closeScope();
-        void writeDeclaration(const Instruction &instruction);*/
+        void openScope() noexcept;
+        void closeScope() noexcept;
     };
 
 }  // namespace vnd*/

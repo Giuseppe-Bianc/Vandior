@@ -1,5 +1,4 @@
 #pragma once
-
 #include <stdexcept>
 #include "Instruction.hpp"
 #include "Log.hpp"
