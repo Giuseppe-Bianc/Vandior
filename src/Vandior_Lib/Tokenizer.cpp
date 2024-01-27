@@ -16,7 +16,8 @@ namespace vnd {
             } else if(vnd::TokenizerUtility::isComment(_input, position)) {
                 tokens.emplace_back(handleComment());
             } else if(vnd::TokenizerUtility::isOperator(currentChar)) [[likely]] {
-                handleOperators(tokens);
+                auto opTokens = handleOperators();
+                tokens.insert(tokens.end(), begin(opTokens), end(opTokens));
             } else if(vnd::TokenizerUtility::isDot(currentChar)) {
                 tokens.emplace_back(handleDot());
             } else if(vnd::TokenizerUtility::isBrackets(currentChar)) [[likely]] {
@@ -215,6 +216,7 @@ namespace vnd {
         case '=':
             return EQUAL_OPERATOR;
         case '<':
+            [[fallthrough]];
         case '>':
             return BOOLEAN_OPERATOR;
         case '!':
@@ -225,6 +227,7 @@ namespace vnd {
         case '^':
         case '%':
         case '|':
+            [[fallthrough]];
         case '&':
             return OPERATOR;
         default:
@@ -241,7 +244,8 @@ namespace vnd {
         return UNKNOWN;
     }
 
-    void Tokenizer::handleOperators(std::vector<Token> &tokens) {
+    std::vector<Token> Tokenizer::handleOperators() {
+        std::vector<Token> tokens;
         const auto start = position;
         extractVarLenOperator();
         auto value = _input.substr(start, position - start);
@@ -254,6 +258,7 @@ namespace vnd {
             tokens.emplace_back(token);
             value = value.substr(token.getValue().size(), value.size() - token.getValue().size());
         }
+        return tokens;
     }
 
     void Tokenizer::handleError(const std::string &value, const std::string_view &errorMsg) {

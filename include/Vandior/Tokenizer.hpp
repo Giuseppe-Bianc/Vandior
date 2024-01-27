@@ -39,7 +39,7 @@ namespace vnd {
         void extractDigits() noexcept;
         void incPosAndColumn() noexcept;
         void extractExponent() noexcept;
-        void handleOperators(std::vector<Token> &tokens);
+        [[nodiscard]] std::vector<Token> handleOperators();
         void extractVarLenOperator();
         [[nodiscard]] static TokenType singoleCharOp(const char &view) noexcept;
         [[nodiscard]] static TokenType multyCharOp(const std::string_view &view) noexcept;
