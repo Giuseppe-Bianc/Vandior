@@ -1,7 +1,7 @@
 main {
-	var variable: type
+	var variable: bool
 	variable = .1
-	const constant: type[] = [12, "Ciao", true || 12 > variable + (12 / 3 * true), variable--], [[12, 5], [7, 6, 'b'], []]
+	const constant: int[] = [12, "Ciao", true || 12 > variable + (12 / 3 * true), variable--], [[12, 5], [7, 6, 'b'], []]
 	var num1, num2: type[12 + a / 2][] = 1 + 1 + "AAAA".len(), variable.method("Ciao", .24e-15) * -5 + "String"[variable.m() - 1 + "Ciao"[0]]
 	variable = 42 * -y + 1. + 1.0 + 1e+1 + "10"
 	variable[1]++ = -4

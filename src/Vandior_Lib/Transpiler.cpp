@@ -3,7 +3,7 @@
 namespace vnd {
 
     Transpiler::Transpiler(std::vector<Instruction> instructions) noexcept
-      : _tabs(0), _text(""), _instructions(instructions), _scope(Scope::createMain()), _main(false) {}
+      : _tabs(0), _text(""), _instructions(instructions), _scope(Scope::createMain()), _main(false), _firstScopeInstruction(false) {}
 
     Transpiler Transpiler::create(std::vector<Instruction> instructions) noexcept { return {instructions}; }
 
@@ -34,7 +34,14 @@ namespace vnd {
         _output.close();
     }
 
-    void Transpiler::write(const std::string &str) noexcept { _output << str; }
+    void Transpiler::write(const std::string &str) noexcept {
+        int tabs = _tabs;
+        if(tabs > 0 && _firstScopeInstruction) {
+            tabs--;
+            _firstScopeInstruction = false;
+        }
+        _output << std::string(tabs, '\t') + str;
+    }
 
     void Transpiler::checkTrailingBracket(const Instruction &instruction) {
         if(instruction.getTokens().back().getType() == TokenType::CLOSE_CUR_PARENTESIS) {
@@ -48,16 +55,20 @@ namespace vnd {
         if(_scope->getParent() != nullptr) { throw TranspilerException("Cannot declare main here", instruction); }
         _text += "int main() {";
         openScope();
-        this->checkTrailingBracket(instruction);
+        checkTrailingBracket(instruction);
         _main = true;
     }
 
     void Transpiler::transpileDeclaration(const Instruction& instruction) {
         std::vector<Token> tokens = instruction.getTokens();
-        std::string_view type;
+        std::string type;
         std::vector<Token>::iterator i = tokens.begin();
         std::vector<std::string_view> variables = transpileDeclarationIndentifiers(i);
         type = (++i)->getValue();
+        while(i != tokens.end() && i->getType() != TokenType::EQUAL_OPERATOR) {
+            if(i->getType() == TokenType::OPEN_SQ_PARENTESIS) { type = "std::vector<" + type + ">"; }
+            i++;
+        }
         _text += type;
         _text += " ";
         for(std::string_view j : variables) {
@@ -88,6 +99,7 @@ namespace vnd {
         std::shared_ptr<Scope> newScope = Scope::create(_scope);
         _scope = newScope;
         _tabs++;
+        _firstScopeInstruction = true;
     }
 
     void Transpiler::closeScope() noexcept {
@@ -96,26 +108,5 @@ namespace vnd {
         oldScope->removeParent();
        _tabs--;
     }
-
-    /*void Transpiler::writeDeclaration(const Instruction &instruction) {
-        using enum TokenType;
-
-        std::vector<Token> tokens = instruction.getTokens();
-        std::vector<std::string> variables;
-        std::string current;
-        std::vector<Token>::iterator i = tokens.begin();
-
-        while(i->getType() != COLON) {
-            if(i->getType() == IDENTIFIER) {
-                this->scope->checkVariable(i->getValue());
-                variables.emplace_back(i->getValue());
-            }
-            i++;
-        }
-        for(std::string k : variables) { LINFO(k); }
-        i++;
-        if(i->getType() != IDENTIFIER) { throw TranspilerException("Expected type", instruction); }
-        LINFO("{} {}", i->getValue(), this->scope->checkType(i->getValue()));
-    }*/
 
 }  // namespace vnd*/
