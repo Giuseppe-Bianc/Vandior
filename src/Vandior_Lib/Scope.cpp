@@ -27,4 +27,4 @@ namespace vnd {
 
     bool Scope::checkType(const std::string &type) const { return this->types.at(type); }*/
 
-}  // namespace vnd*/
+}  // namespace vnd

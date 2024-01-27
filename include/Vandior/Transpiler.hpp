@@ -23,6 +23,8 @@ namespace vnd {
         void write(const std::string &str) noexcept;
         void checkTrailingBracket(const Instruction &instruction);
         void transpileMain(const Instruction &i);
+        void transpileDeclaration(const Instruction &i);
+        std::vector<std::string_view> transpileDeclarationIndentifiers(std::vector<Token>::iterator &iterator);
         void openScope() noexcept;
         void closeScope() noexcept;
     };

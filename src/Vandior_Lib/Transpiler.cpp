@@ -12,6 +12,7 @@ namespace vnd {
         using enum InstructionType;
         _output.open("output.cpp");
         write("#include <iostream>\n");
+        write("#include <vector>\n");
         try {
             for(const Instruction &i : _instructions) {
                 _text = "";
@@ -21,7 +22,7 @@ namespace vnd {
                     break;
                 case DECLARATION:
                 case INITIALIZATION:
-                    //transpileDeclaration(i);
+                    transpileDeclaration(i);
                     break;
                 }
                 write(_text + "\n");
@@ -49,6 +50,38 @@ namespace vnd {
         openScope();
         this->checkTrailingBracket(instruction);
         _main = true;
+    }
+
+    void Transpiler::transpileDeclaration(const Instruction& instruction) {
+        std::vector<Token> tokens = instruction.getTokens();
+        std::string_view type;
+        std::vector<Token>::iterator i = tokens.begin();
+        std::vector<std::string_view> variables = transpileDeclarationIndentifiers(i);
+        type = (++i)->getValue();
+        _text += type;
+        _text += " ";
+        for(std::string_view j : variables) {
+            _text += j;
+            if(j != variables.back()) {
+                _text += ", ";
+            } else {
+                _text += ";";
+            }
+        }
+    }
+
+    std::vector<std::string_view> Transpiler::transpileDeclarationIndentifiers(std::vector<Token>::iterator &iterator) {
+        using enum TokenType;
+        std::vector<std::string_view> result;
+        if(iterator->getValue() == "const") { _text += "const "; }
+        while(iterator->getType() != COLON) {
+            if(iterator->getType() == IDENTIFIER) {
+                // this->scope->checkVariable(i->getValue());
+                result.emplace_back(iterator->getValue());
+            }
+            iterator++;
+        }
+        return result;
     }
 
     void Transpiler::openScope() noexcept {
