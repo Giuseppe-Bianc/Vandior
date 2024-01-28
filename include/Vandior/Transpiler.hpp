@@ -1,10 +1,11 @@
- #pragma once
+#pragma once
 #include <vector>
 #include <fstream>
 #include <memory>
 #include "Vandior/Instruction.hpp"
 #include "Vandior/TranspilerException.hpp"
 #include "Vandior/Scope.hpp"
+#include "Vandior/Expression.hpp"
 
 namespace vnd {
 
@@ -25,7 +26,7 @@ namespace vnd {
         void checkTrailingBracket(const Instruction &instruction);
         void transpileMain(const Instruction &i);
         void transpileDeclaration(const Instruction &i);
-        [[nodiscard]] std::vector<std::string_view> transpileDeclarationIndentifiers(std::vector<Token>::iterator &iterator);
+        [[nodiscard]] std::vector<std::string_view> extractVariables(std::vector<Token>::iterator &iterator);
         void openScope() noexcept;
         void closeScope() noexcept;
     };

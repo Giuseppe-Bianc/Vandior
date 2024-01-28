@@ -74,7 +74,8 @@ namespace vnd {
         std::vector<Token> tokens = instruction.getTokens();
         std::string type;
         std::vector<Token>::iterator i = tokens.begin();
-        std::vector<std::string_view> variables = transpileDeclarationIndentifiers(i);
+        std::vector<std::string_view> variables = extractVariables(i);
+        std::vector<Expression> expressions;
         type = (++i)->getValue();
         while(i != tokens.end() && i->getType() != TokenType::EQUAL_OPERATOR) {
             if(i->getType() == TokenType::OPEN_SQ_PARENTESIS) { type = "std::vector<" + type + ">"; }
@@ -82,8 +83,21 @@ namespace vnd {
         }
         _text += type;
         _text += " ";
+        if(i != tokens.end() && i->getType() == TokenType::EQUAL_OPERATOR) {
+            i++;
+            while(i != tokens.end()) {
+                expressions.emplace_back(Expression::create(i, TokenType::COMMA, tokens.end()));
+                LINFO("{}", i != tokens.end());
+                if(i != tokens.end()) { i++; }
+            }
+        }
         for(std::string_view j : variables) {
             _text += j;
+            if(!expressions.empty()) {
+                _text += " =";
+                _text += expressions.begin()->getText();
+                expressions.erase(expressions.begin());
+            }
             if(j != variables.back()) {
                 _text += ", ";
             } else {
@@ -92,7 +106,7 @@ namespace vnd {
         }
     }
 
-    std::vector<std::string_view> Transpiler::transpileDeclarationIndentifiers(std::vector<Token>::iterator &iterator) {
+    std::vector<std::string_view> Transpiler::extractVariables(std::vector<Token>::iterator &iterator) {
         using enum TokenType;
         std::vector<std::string_view> result;
         if(iterator->getValue() == "const") { _text += "const "; }
