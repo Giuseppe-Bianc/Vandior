@@ -75,7 +75,7 @@ namespace vnd {
         std::string type;
         std::vector<Token>::iterator i = tokens.begin();
         std::vector<std::string_view> variables = extractVariables(i);
-        std::vector<Expression> expressions;
+        ExpressionFactory factory = ExpressionFactory::create(i, tokens.end());
         type = (++i)->getValue();
         while(i != tokens.end() && i->getType() != TokenType::EQUAL_OPERATOR) {
             if(i->getType() == TokenType::OPEN_SQ_PARENTESIS) { type = "std::vector<" + type + ">"; }
@@ -86,23 +86,17 @@ namespace vnd {
         if(i != tokens.end() && i->getType() == TokenType::EQUAL_OPERATOR) {
             i++;
             while(i != tokens.end()) {
-                expressions.emplace_back(Expression::create(i, TokenType::COMMA, tokens.end()));
-                LINFO("{}", i != tokens.end());
+                factory.parse(TokenType::COMMA);
                 if(i != tokens.end()) { i++; }
             }
         }
         for(std::string_view j : variables) {
             _text += j;
-            if(!expressions.empty()) {
+            if(!factory.empty()) {
                 _text += " =";
-                _text += expressions.begin()->getText();
-                expressions.erase(expressions.begin());
+                _text += factory.getExpression();
             }
-            if(j != variables.back()) {
-                _text += ", ";
-            } else {
-                _text += ";";
-            }
+            emplaceCommaColon(j == variables.back());
         }
     }
 
@@ -132,6 +126,14 @@ namespace vnd {
         _scope = _scope->getParent();
         oldScope->removeParent();
        _tabs--;
+    }
+
+    void Transpiler::emplaceCommaColon(const bool colon) noexcept {
+        if(colon) {
+            _text += ";";
+            return;
+        }
+        _text += ", ";
     }
 
 }  // namespace vnd

@@ -6,11 +6,10 @@ namespace vnd {
 
     class Expression {
     public:
-        [[nodiscard]] static Expression create(std::vector<Token>::iterator &iterator, TokenType end,
-                                               std::vector<Token>::iterator tokensEnd) noexcept;
+        [[nodiscard]] static Expression create(const std::string text) noexcept;
         std::string getText() const noexcept;
     private:
-        Expression(std::string text) noexcept;
+        Expression(const std::string text) noexcept;
         std::string _text;
         std::string _type;
     };

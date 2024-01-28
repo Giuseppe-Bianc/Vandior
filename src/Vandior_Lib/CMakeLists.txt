@@ -9,6 +9,7 @@ add_library(vandior_lib vandior.cpp
         Instruction.cpp
         Parser.cpp
         Scope.cpp
+        ExpressionFactory.cpp
         Expression.cpp
         Transpiler.cpp
 )

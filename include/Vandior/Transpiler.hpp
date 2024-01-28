@@ -5,6 +5,7 @@
 #include "Vandior/Instruction.hpp"
 #include "Vandior/TranspilerException.hpp"
 #include "Vandior/Scope.hpp"
+#include "Vandior/ExpressionFactory.hpp"
 #include "Vandior/Expression.hpp"
 
 namespace vnd {
@@ -29,6 +30,7 @@ namespace vnd {
         [[nodiscard]] std::vector<std::string_view> extractVariables(std::vector<Token>::iterator &iterator);
         void openScope() noexcept;
         void closeScope() noexcept;
+        void emplaceCommaColon(const bool colon) noexcept;
     };
 
 }  // namespace vnd
