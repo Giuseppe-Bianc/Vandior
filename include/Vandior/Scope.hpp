@@ -8,11 +8,12 @@ namespace vnd {
 
     class Scope {
     public:
-        static std::shared_ptr<Scope> create(std::shared_ptr<Scope> parent) noexcept;
-        static std::shared_ptr<Scope> createMain() noexcept;
+        [[nodiscard]] static std::shared_ptr<Scope> create(std::shared_ptr<Scope> parent) noexcept;
+        [[nodiscard]] static std::shared_ptr<Scope> createMain() noexcept;
         std::shared_ptr<Scope> getParent() const noexcept;
         void removeParent() noexcept;
         void addType(std::string_view type) noexcept;
+        [[nodiscard]] bool isMainScope() const noexcept;
         //void checkVariable(const std::string &variable);
         //bool checkType(const std::string &type) const;
     private:

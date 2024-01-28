@@ -7,7 +7,7 @@
 namespace vnd {
     class Instruction {
 	public:
-        static Instruction create() noexcept;
+        [[nodiscard]] static Instruction create() noexcept;
         [[nodiscard]] std::vector<Token> getTokens() const noexcept;
         [[nodiscard]] InstructionType getLastType() const noexcept;
         [[nodiscard]] std::vector<std::string> typeToString() const noexcept;

@@ -24,9 +24,19 @@ namespace vnd {
                 case INITIALIZATION:
                     transpileDeclaration(i);
                     break;
+                case OPEN_SCOPE:
+                    _text += "{";
+                    openScope();
+                    checkTrailingBracket(i);
+                    break;
+                case CLOSE_SCOPE:
+                    if(_scope->isMainScope()) { throw TranspilerException("Unexpected }", i); }
+                    checkTrailingBracket(i);
+                    break;
                 }
                 write(_text + "\n");
             }
+            if(!_scope->isMainScope()) { throw TranspilerException("Expected }", Instruction::create()); }
         } catch(TranspilerException &e) {
             LERROR("{}", e.what());
             _output.close();
@@ -51,6 +61,7 @@ namespace vnd {
     }
 
     void Transpiler::transpileMain(const Instruction &instruction) {
+        if(!_scope->isMainScope()) { throw TranspilerException("Cannot declare main here", instruction); }
         if(_main) { throw TranspilerException("Main already declared", instruction); }
         if(_scope->getParent() != nullptr) { throw TranspilerException("Cannot declare main here", instruction); }
         _text += "int main() {";
@@ -109,4 +120,4 @@ namespace vnd {
        _tabs--;
     }
 
-}  // namespace vnd*/
+}  // namespace vnd

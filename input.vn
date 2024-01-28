@@ -1,4 +1,10 @@
+var variable, variable2: int[]
 main {
+	const v1, v2: int = 1, 2
+	{
+	}
+}
+/*main {
 	var variable: bool
 	variable = .1
 	const constant: int[] = [12, "Ciao", true || 12 > variable + (12 / 3 * true), variable--], [[12, 5], [7, 6, 'b'], []]
@@ -19,10 +25,7 @@ variable -= -4. + ( // Single line comment
 	variable2++ == true ||
 	!variable >= 10
 )
-variable = variable-- && /*|| f*/ -4.5
-/*multi-
-line
-comment*/
+variable = variable-- && -4.5
 variable = true
 {
 	variable = !false || !true
@@ -60,4 +63,4 @@ fun function(var1: type, var2: type): type1, type2 {
 	return
 }
 variable = function().method().a
-variable %= a[0].method(-45, true, function().b[0], [1, 2, 4, variable[1]][0].value([1,2 , [4, 5]], 4, [[2, 2], [3, 3]])) % 2
+variable %= a[0].method(-45, true, function().b[0], [1, 2, 4, variable[1]][0].value([1,2 , [4, 5]], 4, [[2, 2], [3, 3]])) % 2*/

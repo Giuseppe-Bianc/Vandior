@@ -23,6 +23,8 @@ namespace vnd {
     void Scope::addType(std::string_view type) noexcept {
         _types.emplace(type);
     }
+
+    bool Scope::isMainScope() const noexcept { return _parent == nullptr; }
     /*void Scope::checkVariable(const std::string &variable) { LINFO(this->identifiers[variable]); }
 
     bool Scope::checkType(const std::string &type) const { return this->types.at(type); }*/

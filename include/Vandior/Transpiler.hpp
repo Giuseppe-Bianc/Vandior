@@ -10,7 +10,7 @@ namespace vnd {
 
     class Transpiler {
     public:
-        static Transpiler create(std::vector<Instruction> instructions) noexcept;
+        [[nodiscard]] static Transpiler create(std::vector<Instruction> instructions) noexcept;
         void transpile();
     private:
         Transpiler(std::vector<Instruction> _instructions) noexcept;
@@ -25,7 +25,7 @@ namespace vnd {
         void checkTrailingBracket(const Instruction &instruction);
         void transpileMain(const Instruction &i);
         void transpileDeclaration(const Instruction &i);
-        std::vector<std::string_view> transpileDeclarationIndentifiers(std::vector<Token>::iterator &iterator);
+        [[nodiscard]] std::vector<std::string_view> transpileDeclarationIndentifiers(std::vector<Token>::iterator &iterator);
         void openScope() noexcept;
         void closeScope() noexcept;
     };
