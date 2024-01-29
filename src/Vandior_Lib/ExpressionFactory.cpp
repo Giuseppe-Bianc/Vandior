@@ -20,6 +20,8 @@ namespace vnd {
         _expressions.emplace_back(Expression::create(text));
     }
 
+    std::size_t ExpressionFactory::size() const noexcept { return _expressions.size(); }
+
     bool ExpressionFactory::empty() const noexcept { return _expressions.empty(); }
 
     std::string ExpressionFactory::getExpression() noexcept {

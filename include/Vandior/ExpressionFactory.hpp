@@ -9,6 +9,7 @@ namespace vnd {
         [[nodiscard]] static ExpressionFactory create(std::vector<Token>::iterator &iterator, 
                                                std::vector<Token>::iterator tokensEnd) noexcept;
         void parse(const TokenType &endToken) noexcept;
+        [[nodiscard]] std::size_t size() const noexcept;
         [[nodiscard]] bool empty() const noexcept;
         [[nodiscard]] std::string getExpression() noexcept;
     private:

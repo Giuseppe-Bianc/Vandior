@@ -74,6 +74,7 @@ namespace vnd {
         std::vector<Token> tokens = instruction.getTokens();
         std::string type;
         std::vector<Token>::iterator i = tokens.begin();
+        bool isConst = i->getValue() == "const";
         std::vector<std::string_view> variables = extractVariables(i);
         ExpressionFactory factory = ExpressionFactory::create(i, tokens.end());
         type = (++i)->getValue();
@@ -89,6 +90,10 @@ namespace vnd {
                 factory.parse(TokenType::COMMA);
                 if(i != tokens.end()) { i++; }
             }
+        }
+        if(isConst && variables.size() > factory.size()) {
+            throw TranspilerException(FORMAT("Uninitialized constant: {} values for {} constants",
+                                      factory.size(), variables.size()), instruction);
         }
         for(std::string_view j : variables) {
             _text += j;
