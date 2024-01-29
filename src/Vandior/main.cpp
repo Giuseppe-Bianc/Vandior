@@ -102,7 +102,7 @@ auto main(int argc, const char *const argv[]) -> int {
                     instructions.emplace_back(vnd::Instruction::create());
                 } else if(instructions.back().typeToString().back() != "EXPRESSION" && token.getType() != vnd::TokenType::STRING)
                     [[unlikely]] {
-                    LINFO("Unexpected token: ENDL");
+                    throw vnd::InstructionException(token);
                     break;
                 }
                 line = token.getLine() + 1;
