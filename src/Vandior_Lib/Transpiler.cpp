@@ -3,7 +3,7 @@
 namespace vnd {
 
     Transpiler::Transpiler(std::vector<Instruction> instructions) noexcept
-      : _tabs(0), _text(""), _instructions(instructions), _scope(Scope::createMain()), _main(false) {}
+      : _tabs(0), _text(""), _instructions(instructions), _scope(Scope::createMain()), _main(0) {}
 
     Transpiler Transpiler::create(std::vector<Instruction> instructions) noexcept { return {instructions}; }
 
@@ -39,15 +39,23 @@ namespace vnd {
             }
             if(!_scope->isMainScope()) { throw TranspilerException("Expected }", Instruction::create()); }
             _output << _text;
+            _output.close();
+            LINFO("Transpiling successfull");
         } catch(TranspilerException &e) {
             LERROR("{}", e.what());
             _output.close();
         }
-        _output.close();
     }
 
     void Transpiler::checkTrailingBracket(const Instruction &instruction) {
         if(instruction.getTokens().back().getType() == TokenType::CLOSE_CUR_PARENTESIS) {
+            if(_main == 1 && _scope->getParent() && _scope->getParent()->isMainScope()) {
+                if(instruction.getLastType() == InstructionType::MAIN) { _text += "\n"; }
+                _text += std::string(_tabs, '\t');
+                _text += "return 0;\n";
+                _text += std::string(_tabs - 1, '\t');
+                _main = -1;
+            }
             _text += "}";
             closeScope();
         }
@@ -55,12 +63,12 @@ namespace vnd {
 
     void Transpiler::transpileMain(const Instruction &instruction) {
         if(!_scope->isMainScope()) { throw TranspilerException("Cannot declare main here", instruction); }
-        if(_main) { throw TranspilerException("Main already declared", instruction); }
+        if(_main == -1) { throw TranspilerException("Main already declared", instruction); }
         if(_scope->getParent() != nullptr) { throw TranspilerException("Cannot declare main here", instruction); }
         _text += "int main() {";
+        _main = 1;
         openScope();
         checkTrailingBracket(instruction);
-        _main = true;
     }
 
     void Transpiler::transpileDeclaration(const Instruction& instruction) {

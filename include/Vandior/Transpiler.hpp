@@ -21,7 +21,7 @@ namespace vnd {
         std::ofstream _output;
         std::vector<Instruction> _instructions;
         std::shared_ptr<Scope> _scope;
-        bool _main;
+        char _main;
         void checkTrailingBracket(const Instruction &instruction);
         void transpileMain(const Instruction &i);
         void transpileDeclaration(const Instruction &i);
