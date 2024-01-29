@@ -22,8 +22,6 @@ namespace vnd {
         std::vector<Instruction> _instructions;
         std::shared_ptr<Scope> _scope;
         bool _main;
-        bool _firstScopeInstruction;
-        void write(const std::string &str) noexcept;
         void checkTrailingBracket(const Instruction &instruction);
         void transpileMain(const Instruction &i);
         void transpileDeclaration(const Instruction &i);

@@ -3,7 +3,7 @@
 namespace vnd {
 
     Transpiler::Transpiler(std::vector<Instruction> instructions) noexcept
-      : _tabs(0), _text(""), _instructions(instructions), _scope(Scope::createMain()), _main(false), _firstScopeInstruction(false) {}
+      : _tabs(0), _text(""), _instructions(instructions), _scope(Scope::createMain()), _main(false) {}
 
     Transpiler Transpiler::create(std::vector<Instruction> instructions) noexcept { return {instructions}; }
 
@@ -11,11 +11,11 @@ namespace vnd {
         using enum TokenType;
         using enum InstructionType;
         _output.open("output.cpp");
-        write("#include <iostream>\n");
-        write("#include <vector>\n");
+        _text += "#include <iostream>\n";
+        _text += "#include <vector>\n";
         try {
             for(const Instruction &i : _instructions) {
-                _text = "";
+                _text += std::string(_tabs, '\t');
                 switch(i.getLastType()) {
                 case MAIN:
                     transpileMain(i);
@@ -30,27 +30,20 @@ namespace vnd {
                     checkTrailingBracket(i);
                     break;
                 case CLOSE_SCOPE:
+                    _text.pop_back();
                     if(_scope->isMainScope()) { throw TranspilerException("Unexpected }", i); }
                     checkTrailingBracket(i);
                     break;
                 }
-                write(_text + "\n");
+                _text += "\n";
             }
             if(!_scope->isMainScope()) { throw TranspilerException("Expected }", Instruction::create()); }
+            _output << _text;
         } catch(TranspilerException &e) {
             LERROR("{}", e.what());
             _output.close();
         }
         _output.close();
-    }
-
-    void Transpiler::write(const std::string &str) noexcept {
-        int tabs = _tabs;
-        if(tabs > 0 && _firstScopeInstruction) {
-            tabs--;
-            _firstScopeInstruction = false;
-        }
-        _output << std::string(tabs, '\t') + str;
     }
 
     void Transpiler::checkTrailingBracket(const Instruction &instruction) {
@@ -123,7 +116,6 @@ namespace vnd {
         std::shared_ptr<Scope> newScope = Scope::create(_scope);
         _scope = newScope;
         _tabs++;
-        _firstScopeInstruction = true;
     }
 
     void Transpiler::closeScope() noexcept {
