@@ -5,7 +5,8 @@ namespace vnd {
     const std::vector<TokenType> Instruction::_expressionStartTokens = {
         TokenType::IDENTIFIER,      TokenType::INTEGER,           TokenType::DOUBLE,         TokenType::CHAR,
         TokenType::STRING,          TokenType::BOOLEAN,           TokenType::MINUS_OPERATOR, TokenType::NOT_OPERATOR,
-        TokenType::OPEN_PARENTESIS, TokenType::OPEN_SQ_PARENTESIS};
+        TokenType::OPEN_PARENTESIS, TokenType::OPEN_CUR_PARENTESIS
+    };
 
     Instruction::Instruction() noexcept
       : _allowedTokens({TokenType::K_MAIN, TokenType::K_VAR, TokenType::K_STRUCTURE, TokenType::K_FOR, TokenType::K_FUN,
@@ -272,16 +273,10 @@ namespace vnd {
                 return;
             }
             if(getLastTokenType() == IDENTIFIER || getLastTokenType() == CLOSE_SQ_PARENTESIS) {
-                this->addType(PARAMETER_EXPRESSION);
+                addType(PARAMETER_EXPRESSION);
                 return;
             }
             addType(EXPRESSION);
-            return;
-        }
-        if(getLastTokenType() == EQUAL_OPERATOR || getLastTokenType() == COMMA || getLastTokenType() == OPEN_PARENTESIS ||
-           getLastTokenType() == OPEN_SQ_PARENTESIS) {
-            addType(ARRAY_INIZIALIZATION);
-            _allowedTokens.emplace_back(CLOSE_SQ_PARENTESIS);
             return;
         }
         if(lastTypeIs(DECLARATION)) { _allowedTokens.emplace_back(CLOSE_SQ_PARENTESIS); }
@@ -335,12 +330,28 @@ namespace vnd {
     void Instruction::checkOpenCurParentesis() noexcept {
         using enum InstructionType;
         using enum TokenType;
+        if(getLastTokenType() == EQUAL_OPERATOR || getLastTokenType() == COMMA || getLastTokenType() == OPEN_PARENTESIS ||
+           getLastTokenType() == OPEN_CUR_PARENTESIS) {
+            addType(ARRAY_INIZIALIZATION);
+            _allowedTokens.emplace_back(CLOSE_CUR_PARENTESIS);
+            return;
+        }
         if(lastTypeIs(BLANK)) { setLastType(OPEN_SCOPE); }
         _allowedTokens = {eofTokenType, CLOSE_CUR_PARENTESIS};
     }
 
     void Instruction::checkClosedCurParentesis() noexcept {
         using enum InstructionType;
+        using enum TokenType;
+        if(lastTypeIs(ARRAY_INIZIALIZATION)) {
+            removeType();
+            if(lastTypeIs(ARRAY_INIZIALIZATION)) {
+                _allowedTokens = {COMMA, CLOSE_CUR_PARENTESIS};
+                return;
+            }
+            emplaceExpressionTokens();
+            return;
+        }
         if(lastTypeIs(BLANK)) { setLastType(CLOSE_SCOPE); }
         _allowedTokens = {eofTokenType};
     }
@@ -453,19 +464,19 @@ namespace vnd {
         using enum TokenType;
         emplaceBooleanOperator();
         if(emplaceTokenType(SQUARE_EXPRESSION, CLOSE_SQ_PARENTESIS)) { return; }
-        if(this->emplaceTokenType(EXPRESSION, CLOSE_PARENTESIS)) { return; }
+        if(emplaceTokenType(EXPRESSION, CLOSE_PARENTESIS)) { return; }
         if(lastTypeIs(PARAMETER_EXPRESSION)) {
             _allowedTokens.emplace_back(CLOSE_PARENTESIS);
             _allowedTokens.emplace_back(COMMA);
             return;
         }
         if(lastTypeIs(ARRAY_INIZIALIZATION)) {
-            _allowedTokens.emplace_back(CLOSE_SQ_PARENTESIS);
+            _allowedTokens.emplace_back(CLOSE_CUR_PARENTESIS);
             _allowedTokens.emplace_back(COMMA);
             return;
         }
-        if(this->emplaceForTokens()) { return; }
-        this->emplaceCommaEoft();
+        if(emplaceForTokens()) { return; }
+        emplaceCommaEoft();
     }
 
     inline void Instruction::emplaceCommaEoft() noexcept {
