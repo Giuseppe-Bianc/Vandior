@@ -103,17 +103,22 @@ namespace vnd {
                 _text += " =";
                 _text += factory.getExpression();
             }
+            auto [check, shadowing] = _scope->checkVariable(j);
+            if(check) {
+                if(!shadowing) { throw TranspilerException(FORMAT("{} already defined", j), instruction); }
+                LWARN("{} already defined", j);
+            }
+            _scope->addVariable(j, type, isConst);
             emplaceCommaColon(j == variables.back());
         }
     }
 
-    std::vector<std::string_view> Transpiler::extractVariables(std::vector<Token>::iterator &iterator) {
+    std::vector<std::string_view> Transpiler::extractVariables(std::vector<Token>::iterator &iterator) noexcept {
         using enum TokenType;
         std::vector<std::string_view> result;
         if(iterator->getValue() == "const") { _text += "const "; }
         while(iterator->getType() != COLON) {
             if(iterator->getType() == IDENTIFIER) {
-                // this->scope->checkVariable(i->getValue());
                 result.emplace_back(iterator->getValue());
             }
             iterator++;

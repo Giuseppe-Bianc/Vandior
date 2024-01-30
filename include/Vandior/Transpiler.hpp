@@ -25,7 +25,7 @@ namespace vnd {
         void checkTrailingBracket(const Instruction &instruction);
         void transpileMain(const Instruction &i);
         void transpileDeclaration(const Instruction &i);
-        [[nodiscard]] std::vector<std::string_view> extractVariables(std::vector<Token>::iterator &iterator);
+        [[nodiscard]] std::vector<std::string_view> extractVariables(std::vector<Token>::iterator &iterator) noexcept;
         void openScope() noexcept;
         void closeScope() noexcept;
         void emplaceCommaColon(const bool colon) noexcept;

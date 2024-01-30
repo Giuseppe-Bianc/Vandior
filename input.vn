@@ -1,6 +1,7 @@
 var variable, variable2: int[]
 main {
-	const v1, v2: float = 1 + 2, 2 * 56 % variable + (-12 + 6 - 5)
+	const v1, v2: float = 1 + 2, 2 * 56 + (-12 + 6 - 5)
+	var variable, variable2: int
 	{
 	}
 }
