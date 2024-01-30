@@ -25,26 +25,35 @@ namespace vnd {
         _types.emplace(type);
     }
 
-    void Scope::addVariable(const std::string_view identifer, const std::string_view type, const bool isConst) noexcept {
+    void Scope::addVariable(const std::string_view identifier, const std::string_view type, const bool isConst) noexcept {
         if(isConst) {
-            _consts[identifer] = type;
+            _consts[std::string{identifier}] = std::string{type};
             return;
         }
-        _vars[identifer] = type;
+        _vars[std::string{identifier}] = type;
     }
 
     bool Scope::isMainScope() const noexcept { return _parent == nullptr; }
 
     bool Scope::checkType(const std::string_view type) const noexcept {
-        if(_types.find(type) != _types.end()) { return true; }
+        if(_types.find(std::string{type}) != _types.end()) { return true; }
         if(_parent) { return _parent->checkType(type); }
         return false;
     }
 
-    std::pair<bool, bool> Scope::checkVariable(const std::string_view type, const bool shadowing) const noexcept {
-        if(_vars.find(type) != _vars.end() || _consts.find(type) != _consts.end()) { return {true, shadowing}; }
-        if(_parent) { return _parent->checkVariable(type, true); }
+    std::pair<bool, bool> Scope::checkVariable(const std::string_view identifier, const bool shadowing) const noexcept {
+        if(_vars.find(std::string{identifier}) != _vars.end() || _consts.find(std::string{identifier}) != _consts.end()) {
+            return {true, shadowing};
+        }
+        if(_parent) { return _parent->checkVariable(identifier, true); }
         return {false, false};
+    }
+
+    std::string_view Scope::getVariableType(const std::string_view identifier) const noexcept {
+        if(_vars.find(std::string{identifier}) != _vars.end()) { return _vars.at(std::string{identifier}); }
+        if(_consts.find(std::string{identifier}) != _consts.end()) { return _consts.at(std::string{identifier}); }
+        if(_parent) { return _parent->getVariableType(identifier); }
+        return "";
     }
 
 }  // namespace vnd

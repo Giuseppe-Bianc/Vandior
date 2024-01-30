@@ -77,7 +77,7 @@ namespace vnd {
         std::vector<Token>::iterator i = tokens.begin();
         bool isConst = i->getValue() == "const";
         std::vector<std::string_view> variables = extractVariables(i);
-        ExpressionFactory factory = ExpressionFactory::create(i, tokens.end());
+        ExpressionFactory factory = ExpressionFactory::create(i, tokens.end(), _scope);
         type = (++i)->getValue();
         if(!_scope->checkType(type)) { throw TranspilerException(FORMAT("Type {} not valid", type), instruction); }
         while(i != tokens.end() && i->getType() != TokenType::EQUAL_OPERATOR) {
@@ -89,7 +89,9 @@ namespace vnd {
         if(i != tokens.end() && i->getType() == TokenType::EQUAL_OPERATOR) {
             i++;
             while(i != tokens.end()) {
-                factory.parse(TokenType::COMMA);
+                if(std::string error = factory.parse(TokenType::COMMA); error != "") {
+                    throw TranspilerException(error, instruction);
+                }
                 if(i != tokens.end()) { i++; }
             }
         }
