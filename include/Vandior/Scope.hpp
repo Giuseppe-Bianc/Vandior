@@ -14,6 +14,7 @@ namespace vnd {
         void removeParent() noexcept;
         void addType(std::string_view type) noexcept;
         [[nodiscard]] bool isMainScope() const noexcept;
+        [[nodiscard]] bool checkType(const std::string_view type) const;
         //void checkVariable(const std::string &variable);
         //bool checkType(const std::string &type) const;
     private:

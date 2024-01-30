@@ -25,6 +25,12 @@ namespace vnd {
     }
 
     bool Scope::isMainScope() const noexcept { return _parent == nullptr; }
+
+    bool Scope::checkType(const std::string_view type) const {
+        if(_types.find(type) != _types.end()) { return true; }
+        if(_parent) { return _parent->checkType(type); }
+        return false;
+    }
     /*void Scope::checkVariable(const std::string &variable) { LINFO(this->identifiers[variable]); }
 
     bool Scope::checkType(const std::string &type) const { return this->types.at(type); }*/

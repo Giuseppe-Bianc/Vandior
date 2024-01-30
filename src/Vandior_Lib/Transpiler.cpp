@@ -79,6 +79,7 @@ namespace vnd {
         std::vector<std::string_view> variables = extractVariables(i);
         ExpressionFactory factory = ExpressionFactory::create(i, tokens.end());
         type = (++i)->getValue();
+        if(!_scope->checkType(type)) { throw TranspilerException(FORMAT("Type {} not valid", type), instruction); }
         while(i != tokens.end() && i->getType() != TokenType::EQUAL_OPERATOR) {
             if(i->getType() == TokenType::OPEN_SQ_PARENTESIS) { type = "std::vector<" + type + ">"; }
             i++;
