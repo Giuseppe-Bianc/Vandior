@@ -11,12 +11,32 @@ namespace vnd {
         return {iterator, end, scope};
     }
 
+    std::string ExpressionFactory::checkType(std::tuple<bool, bool, std::string> &oldType, const std::string_view newType) noexcept {
+        if(std::get<2>(oldType) == "") {
+            std::get<2>(oldType) = newType;
+            return "";
+        }
+        if(std::get<2>(oldType) == newType) { return ""; }
+        if((std::get<2>(oldType) == "int" || std::get<2>(oldType) == "float" || std::get<2>(oldType) == "operator") &&
+           (newType == "int" || newType == "float" || newType == "operator")) {
+            return "";
+        }
+        if(std::get<2>(oldType) == "logical" || newType == "logical") {
+            std::get<2>(oldType) = "";
+            return "";
+        }
+        return FORMAT("Incompatible types: {}, {}", std::get<2>(oldType), newType);
+    }
+
     std::string ExpressionFactory::parse(const TokenType &endToken) noexcept {
         std::vector<std::string> text;
-        std::string type = "";
+        std::tuple<bool, bool, std::string> type = std::make_tuple(false, false, "");
         while(_iterator != _end && _iterator->getType() != endToken) {
+            std::string_view newType = ExpressionFactory::getTokenType(*_iterator);
+            std::string error;
+            if(newType == "") { return FORMAT("Identifier {} not found", _iterator->getValue()); }
+            error = ExpressionFactory::checkType(type, newType);
             text.emplace_back(" ");
-            std::string error = checkType(type, getTokenType(*_iterator));
             if(error != "") { return error; }
             text.emplace_back(_iterator->getValue());
             _iterator++;
@@ -42,6 +62,8 @@ namespace vnd {
             return "int";
         case DOUBLE:
             return "float";
+        case BOOLEAN:
+            return "bool";
         case IDENTIFIER:
             return _scope->getVariableType(token.getValue());
         case OPERATOR:
@@ -53,23 +75,6 @@ namespace vnd {
             return "logical";
         }
         return "";
-    }
-
-    std::string ExpressionFactory::checkType(std::string &oldType, const std::string_view newType) noexcept {
-        if(oldType == "") {
-            oldType = newType;
-            return "";
-        }
-        if(oldType == newType) { return ""; }
-        if((oldType == "int" || oldType == "float" || oldType == "operator") &&
-           (newType == "int" || newType == "float" || newType == "operator")) {
-            return "";
-        }
-        if(oldType == "logical" || newType == "logical") {
-            oldType = "";
-            return "";
-        }
-        return FORMAT("Incompatible types: {}, {}", oldType, newType);
     }
 
 }  // namespace vnd
