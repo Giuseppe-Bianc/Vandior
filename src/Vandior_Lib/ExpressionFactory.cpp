@@ -1,6 +1,9 @@
+#include <algorithm>
 #include "Vandior/ExpressionFactory.hpp"
 
 namespace vnd {
+    
+    std::vector<std::string> ExpressionFactory::_numberTypes = {"int", "float"};
 
     ExpressionFactory::ExpressionFactory(std::vector<Token>::iterator &iterator, std::vector<Token>::iterator end,
                                          std::shared_ptr<Scope> scope) noexcept
@@ -11,19 +14,31 @@ namespace vnd {
         return {iterator, end, scope};
     }
 
+    bool ExpressionFactory::isNumber(const std::string &type) noexcept {
+        return std::ranges::find(ExpressionFactory::_numberTypes, type) != ExpressionFactory::_numberTypes.end();
+    }
+
     std::string ExpressionFactory::checkType(std::tuple<bool, bool, std::string> &oldType, const std::string_view newType) noexcept {
         if(std::get<2>(oldType) == "") {
             std::get<2>(oldType) = newType;
             return "";
         }
         if(std::get<2>(oldType) == newType) { return ""; }
-        if((std::get<2>(oldType) == "int" || std::get<2>(oldType) == "float" || std::get<2>(oldType) == "operator") &&
-           (newType == "int" || newType == "float" || newType == "operator")) {
+        if(ExpressionFactory::isNumber(std::get<2>(oldType)) && (ExpressionFactory::isNumber(std::string{newType}) || newType == "operator")) {
             return "";
         }
-        if(std::get<2>(oldType) == "logical" || newType == "logical") {
-            std::get<2>(oldType) = "";
+        if(newType == "boolean") {
+            std::get<0>(oldType) = true;
             return "";
+        }
+        if(newType == "logical") {
+            if(std::get<2>(oldType) == "bool" || std::get<0>(oldType) == true) {
+                std::get<0>(oldType) = false;
+                std::get<1>(oldType) = true;
+                std::get<2>(oldType) = "";
+                return "";
+            }
+            return FORMAT("Cannot apply operator for {} type", std::get<2>(oldType));
         }
         return FORMAT("Incompatible types: {}, {}", std::get<2>(oldType), newType);
     }
@@ -64,11 +79,17 @@ namespace vnd {
             return "float";
         case BOOLEAN:
             return "bool";
+        case CHAR:
+            return "char";
+        case STRING:
+            return "string";
         case IDENTIFIER:
             return _scope->getVariableType(token.getValue());
         case OPERATOR:
         case MINUS_OPERATOR:
             return "operator";
+        case BOOLEAN_OPERATOR:
+            return "boolean";
         case NOT_OPERATOR:
             return "not";
         case LOGICAL_OPERATOR:

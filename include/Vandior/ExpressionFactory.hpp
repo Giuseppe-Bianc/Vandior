@@ -18,7 +18,9 @@ namespace vnd {
     private:
         ExpressionFactory(std::vector<Token>::iterator &iterator, std::vector<Token>::iterator end,
                           std::shared_ptr<Scope> scope) noexcept;
-        static std::string checkType(std::tuple<bool, bool, std::string> &oldType, const std::string_view newType) noexcept;
+        static std::vector<std::string> _numberTypes;
+        [[nodiscard]] static bool isNumber(const std::string &type) noexcept;
+        [[nodiscard]] static std::string checkType(std::tuple<bool, bool, std::string> &oldType, const std::string_view newType) noexcept;
         std::vector<Token>::iterator &_iterator;
         std::vector<Token>::iterator _end;
         std::shared_ptr<Scope> _scope;

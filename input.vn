@@ -1,4 +1,4 @@
-const variable, variable2: int = true && 1 + 3 || false, 1
+const variable, variable2: int = 1 == 2 && 1 + 3 <= -6.57 + 78 || false, 1
 main {
 	const v1, v2: float = 1 + 2, 2 * 56 + variable
 	var variable, variable2: bool
