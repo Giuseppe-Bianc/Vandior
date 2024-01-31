@@ -1,5 +1,6 @@
 # Enable doxygen doc builds of source
 function(Vandior_enable_doxygen DOXYGEN_THEME)
+  message(STATUS "Configuring Doxygen documentation...")
   # If not specified, use the top readme file as the first page
   if((NOT DOXYGEN_USE_MDFILE_AS_MAINPAGE) AND EXISTS "${PROJECT_SOURCE_DIR}/README.md")
     set(DOXYGEN_USE_MDFILE_AS_MAINPAGE "${PROJECT_SOURCE_DIR}/README.md")
@@ -23,6 +24,7 @@ function(Vandior_enable_doxygen DOXYGEN_THEME)
     set(DOXYGEN_EXCLUDE_PATTERNS "${CMAKE_CURRENT_BINARY_DIR}/vcpkg_installed/*" "${CMAKE_CURRENT_BINARY_DIR}/_deps/*")
   endif()
 
+  # Set Doxygen theme
   if("${DOXYGEN_THEME}" STREQUAL "")
     set(DOXYGEN_THEME "awesome-sidebar")
   endif()
@@ -31,7 +33,7 @@ function(Vandior_enable_doxygen DOXYGEN_THEME)
     # use a modern doxygen theme
     # https://github.com/jothepro/doxygen-awesome-css v1.6.1
     FetchContent_Declare(_doxygen_theme
-                         URL https://github.com/jothepro/doxygen-awesome-css/archive/refs/tags/v1.6.1.zip)
+            URL https://github.com/jothepro/doxygen-awesome-css/archive/refs/tags/v1.6.1.zip)
     FetchContent_MakeAvailable(_doxygen_theme)
     if("${DOXYGEN_THEME}" STREQUAL "awesome" OR "${DOXYGEN_THEME}" STREQUAL "awesome-sidebar")
       set(DOXYGEN_HTML_EXTRA_STYLESHEET "${_doxygen_theme_SOURCE_DIR}/doxygen-awesome.css")
@@ -41,14 +43,15 @@ function(Vandior_enable_doxygen DOXYGEN_THEME)
                                         "${_doxygen_theme_SOURCE_DIR}/doxygen-awesome-sidebar-only.css")
     endif()
   else()
-    # use the original doxygen theme
+    # Use the original Doxygen theme
   endif()
 
-  # find doxygen and dot if available
+  # Find Doxygen and Dot if available
   find_package(Doxygen REQUIRED OPTIONAL_COMPONENTS dot)
 
-  # add doxygen-docs target
-  message(STATUS "Adding `doxygen-docs` target that builds the documentation.")
+  # Add Doxygen-docs target
+  message(STATUS "Adding `doxygen-docs` target to build the documentation.")
   doxygen_add_docs(doxygen-docs ALL ${PROJECT_SOURCE_DIR}
-                   COMMENT "Generating documentation - entry file: ${CMAKE_CURRENT_BINARY_DIR}/html/index.html")
+          COMMENT "Generating documentation - entry file: ${CMAKE_CURRENT_BINARY_DIR}/html/index.html")
+  message(STATUS "Doxygen documentation configuration completed.")
 endfunction()

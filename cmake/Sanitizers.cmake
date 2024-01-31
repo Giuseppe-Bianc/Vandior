@@ -53,6 +53,8 @@ function(
        OR ${ENABLE_SANITIZER_MEMORY})
       message(WARNING "MSVC only supports address sanitizer")
     endif()
+  else()
+    message(WARNING "Compiler not recognized. Sanitizers are supported only for GNU, Clang, and MSVC.")
   endif()
 
   list(
@@ -69,6 +71,7 @@ function(
       if(NOT MSVC)
         target_compile_options(${project_name} INTERFACE -fsanitize=${LIST_OF_SANITIZERS})
         target_link_options(${project_name} INTERFACE -fsanitize=${LIST_OF_SANITIZERS})
+        message(STATUS "Enabled sanitizers: ${LIST_OF_SANITIZERS}")
       else()
         string(FIND "$ENV{PATH}" "$ENV{VSINSTALLDIR}" index_of_vs_install_dir)
         if("${index_of_vs_install_dir}" STREQUAL "-1")
@@ -80,7 +83,10 @@ function(
         target_compile_options(${project_name} INTERFACE /fsanitize=${LIST_OF_SANITIZERS} /Zi /INCREMENTAL:NO)
         target_compile_definitions(${project_name} INTERFACE _DISABLE_VECTOR_ANNOTATION _DISABLE_STRING_ANNOTATION)
         target_link_options(${project_name} INTERFACE /INCREMENTAL:NO)
+        message(STATUS "Enabled sanitizers: ${LIST_OF_SANITIZERS}")
       endif()
+    else()
+      message(STATUS "No sanitizers enabled.")
     endif()
   endif()
 
