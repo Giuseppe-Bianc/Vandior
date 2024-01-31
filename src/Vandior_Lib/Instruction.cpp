@@ -40,7 +40,15 @@ namespace vnd {
         std::string result = "";
         if(_tokens.empty()) { return ""; }
         result += std::to_string(_tokens[0].getLine()) + "\t";
-        for(const Token &i : _tokens) { result += std::string(i.getValue()) + " "; }
+        for(const Token &i : _tokens) {
+            if(i.getType() == TokenType::CHAR) {
+                result += "'" + std::string{i.getValue()} + "' ";
+            } else if(i.getType() == TokenType::STRING) {
+                result += "\"" + std::string{i.getValue()} + "\" ";
+            } else {
+                result += std::string(i.getValue()) + " ";
+            }
+        }
         return result;
     }
 

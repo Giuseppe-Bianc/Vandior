@@ -7,7 +7,7 @@ namespace vnd {
 
     ExpressionFactory::ExpressionFactory(std::vector<Token>::iterator &iterator, std::vector<Token>::iterator end,
                                          std::shared_ptr<Scope> scope) noexcept
-      : _iterator(iterator), _end(end), _scope(scope), _expressions({}) {}
+      : _iterator(iterator), _end(end), _scope(scope), _text({}), _expressions({}) {}
 
     ExpressionFactory ExpressionFactory::create(std::vector<Token>::iterator &iterator, std::vector<Token>::iterator end,
                                                 std::shared_ptr<Scope> scope) noexcept {
@@ -44,19 +44,18 @@ namespace vnd {
     }
 
     std::string ExpressionFactory::parse(const TokenType &endToken) noexcept {
-        std::vector<std::string> text;
+        _text = {};
         std::tuple<bool, bool, std::string> type = std::make_tuple(false, false, "");
         while(_iterator != _end && _iterator->getType() != endToken) {
             std::string_view newType = ExpressionFactory::getTokenType(*_iterator);
             std::string error;
             if(newType == "") { return FORMAT("Identifier {} not found", _iterator->getValue()); }
-            error = ExpressionFactory::checkType(type, newType);
-            text.emplace_back(" ");
-            if(error != "") { return error; }
-            text.emplace_back(_iterator->getValue());
+            if(error = ExpressionFactory::checkType(type, newType); error != "") { return error; }
+            _text.emplace_back(" ");
+            emplaceToken(*_iterator);
             _iterator++;
         }
-        _expressions.emplace_back(Expression::create(text));
+        _expressions.emplace_back(Expression::create(_text, std::get<2>(type)));
         return "";
     }
 
@@ -64,8 +63,8 @@ namespace vnd {
 
     bool ExpressionFactory::empty() const noexcept { return _expressions.empty(); }
 
-    std::string ExpressionFactory::getExpression() noexcept {
-        std::string result = _expressions.begin()->getText();
+    Expression ExpressionFactory::getExpression() noexcept {
+        Expression result = *_expressions.begin();
         _expressions.erase(_expressions.begin());
         return result;
     }
@@ -96,6 +95,19 @@ namespace vnd {
             return "logical";
         }
         return "";
+    }
+
+    void ExpressionFactory::emplaceToken(const Token& token) noexcept {
+        using enum TokenType;
+        if(token.getType() == CHAR) {
+            _text.emplace_back("'" + std::string{token.getValue()} + "'");
+            return;
+        }
+        if(token.getType() == STRING) {
+            _text.emplace_back("\"" + std::string{token.getValue()} + "\"");
+            return;
+        }
+        _text.emplace_back(token.getValue());
     }
 
 }  // namespace vnd

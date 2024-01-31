@@ -7,6 +7,10 @@ namespace vnd {
 
     Transpiler Transpiler::create(std::vector<Instruction> instructions) noexcept { return {instructions}; }
 
+    bool Transpiler::canAssign(const std::string left, const std::string right) noexcept {
+        return (ExpressionFactory::isNumber(left) && ExpressionFactory::isNumber(right)) || left == right;
+    }
+
     void Transpiler::transpile() {
         using enum TokenType;
         using enum InstructionType;
@@ -102,8 +106,12 @@ namespace vnd {
         for(std::string_view j : variables) {
             _text += j;
             if(!factory.empty()) {
+                Expression expression = factory.getExpression();
+                if(!Transpiler::canAssign(type, expression.getType())) {
+                    throw TranspilerException(FORMAT("Cannot assign {} to {}", expression.getType(), type), instruction);
+                }
                 _text += " =";
-                _text += factory.getExpression();
+                _text += expression.getText();
             }
             auto [check, shadowing] = _scope->checkVariable(j);
             if(check) {
