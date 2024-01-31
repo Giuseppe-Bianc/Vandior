@@ -75,8 +75,8 @@ function(set_env_from_string env_string)
       # set env_name to env_value
       set(ENV{${env_name}} "${env_value}")
 
-      # update cmake program path
-      if("${env_name}" EQUAL "PATH")
+      # update CMake program path
+      if("${env_name}" STREQUAL "PATH")
         list(APPEND CMAKE_PROGRAM_PATH ${env_value})
       endif()
     endif()
