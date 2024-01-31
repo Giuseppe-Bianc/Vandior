@@ -35,7 +35,7 @@ jobs:
         compiler:
           # you can specify the version after `-` like "llvm-15.0.2".
           - llvm-16.0.5
-          - gcc-latest
+          - gcc-11
         generator:
           - "Ninja Multi-Config"
         build_type:
@@ -56,7 +56,7 @@ jobs:
         include:
           # Add appropriate variables for gcov version required. This will intentionally break
           # if you try to use a compiler that does not have gcov set
-          - compiler:  gcc-latest
+          - compiler:  gcc-11
             gcov_executable: gcov
             enable_ipo: On
 
