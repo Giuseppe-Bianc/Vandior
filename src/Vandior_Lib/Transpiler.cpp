@@ -16,7 +16,9 @@ namespace vnd {
         using enum InstructionType;
         _output.open("output.cpp");
         _text += "#include <iostream>\n";
+        _text += "#include <cmath>\n";
         _text += "#include <vector>\n";
+        _text += "using std::string;\n";
         try {
             for(const Instruction &i : _instructions) {
                 _text += std::string(_tabs, '\t');

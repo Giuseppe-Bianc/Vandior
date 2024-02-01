@@ -26,6 +26,7 @@ namespace vnd {
         std::shared_ptr<Scope> _scope;
         std::vector<std::string> _text;
         std::vector<Expression> _expressions;
+        char _lastOperator;
         [[nodiscard]] std::string_view getTokenType(const Token &token) const noexcept;
         void emplaceToken(const Token &token) noexcept;
     };

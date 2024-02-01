@@ -7,7 +7,7 @@ namespace vnd {
 
     ExpressionFactory::ExpressionFactory(std::vector<Token>::iterator &iterator, std::vector<Token>::iterator end,
                                          std::shared_ptr<Scope> scope) noexcept
-      : _iterator(iterator), _end(end), _scope(scope), _text({}), _expressions({}) {}
+      : _iterator(iterator), _end(end), _scope(scope), _text({}), _expressions({}), _lastOperator('\0') {}
 
     ExpressionFactory ExpressionFactory::create(std::vector<Token>::iterator &iterator, std::vector<Token>::iterator end,
                                                 std::shared_ptr<Scope> scope) noexcept {
@@ -107,7 +107,17 @@ namespace vnd {
             _text.emplace_back("\"" + std::string{token.getValue()} + "\"");
             return;
         }
+        if(token.getValue() == "^") {
+            _text.emplace(_text.end() - 2, "std::pow(");
+            _text.emplace_back(",");
+            _lastOperator = '^';
+            return;
+        }
         _text.emplace_back(token.getValue());
+        if(_lastOperator == '^') {
+            _text.emplace_back(")");
+            _lastOperator = '\0';
+        }
     }
 
 }  // namespace vnd
