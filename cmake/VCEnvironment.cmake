@@ -73,7 +73,5 @@ function(run_vcvarsall)
           "Could not find `vcvarsall.bat` for automatic MSVC environment preparation. Please manually open the MSVC command prompt and rebuild the project.
       ")
     endif()
-  else()
-    message(STATUS "MSVC environment is already set. VSCMD_VER is present.")
   endif()
 endfunction()
