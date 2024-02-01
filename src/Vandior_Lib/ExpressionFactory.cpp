@@ -113,10 +113,12 @@ namespace vnd {
             _lastOperator = '^';
             return;
         }
+        if(token.getType() == TokenType::IDENTIFIER) { _text.emplace_back("_"); }
         _text.emplace_back(token.getValue());
         if(_lastOperator != '\0') {
             _text.emplace_back(")");
             _lastOperator = '\0';
+            return;
         }
         if(token.getValue() == "/") {
             _text.emplace_back(" double(");

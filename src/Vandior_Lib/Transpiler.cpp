@@ -106,6 +106,7 @@ namespace vnd {
                                       factory.size(), variables.size()), instruction);
         }
         for(std::string_view j : variables) {
+            _text += "_";
             _text += j;
             if(!factory.empty()) {
                 Expression expression = factory.getExpression();
