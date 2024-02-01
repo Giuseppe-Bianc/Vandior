@@ -7,7 +7,7 @@
 // NOLINTNEXTLINE
 #include <bit>
 // #include <gsl/gsl>
-
+//NOLINTBEGIN
 /**
  * @defgroup TypeCastingMacros Type Casting Macros
  * @{
@@ -486,6 +486,7 @@
 #define NC_CPCU32T(x) gsl::narrow_cast<const uint32_t *>(static_cast<const void *>(x))
 #define BC_CPCU32T(x) std::bit_cast<const uint32_t *>(x)
 
+//NOLINTEND
 /** @} */  // end of TypeCastingMacros group
 /**
  * @brief Namespace containing sizes of various types.
