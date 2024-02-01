@@ -50,7 +50,7 @@ function(Vandior_setup_dependencies)
   endif ()
 
   if(NOT TARGET Catch2::Catch2WithMain)
-    CPMAddPackage("gh:catchorg/Catch2@3.3.2")
+    CPMAddPackage("gh:catchorg/Catch2@3.5.2")
   endif()
 
   if(NOT TARGET CLI11::CLI11)

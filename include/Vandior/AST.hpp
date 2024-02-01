@@ -57,7 +57,7 @@ public:
      * @brief Gets the type of the AST node.
      * @return NodeType enumeration value.
      */
-    virtual NodeType getType() const = 0;
+    [[nodiscard]]virtual NodeType getType() const = 0;
     /**
      * @brief Returns a string representation of the AST node.
      * @return String representation of the AST node.

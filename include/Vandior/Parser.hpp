@@ -10,7 +10,7 @@ namespace vnd {
     class Parser {
     public:
         explicit Parser(const std::string_view &input)
-          : tokenizer{input}, tokens{tokenizer.tokenize()}, tokenSize(tokens.size()), position{} {}
+          : tokenizer{input}, tokens{tokenizer.tokenize()}, tokenSize(tokens.size()) {}
 
         std::unique_ptr<ASTNode> parse();
 
