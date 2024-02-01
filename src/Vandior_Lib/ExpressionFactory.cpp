@@ -114,9 +114,14 @@ namespace vnd {
             return;
         }
         _text.emplace_back(token.getValue());
-        if(_lastOperator == '^') {
+        if(_lastOperator != '\0') {
             _text.emplace_back(")");
             _lastOperator = '\0';
+        }
+        if(token.getValue() == "/") {
+            _text.emplace_back(" double(");
+            _lastOperator = '/';
+            return;
         }
     }
 
