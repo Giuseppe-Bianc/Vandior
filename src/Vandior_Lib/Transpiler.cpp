@@ -71,9 +71,11 @@ namespace vnd {
         if(!_scope->isMainScope()) { throw TranspilerException("Cannot declare main here", instruction); }
         if(_main == -1) { throw TranspilerException("Main already declared", instruction); }
         if(_scope->getParent() != nullptr) { throw TranspilerException("Cannot declare main here", instruction); }
-        _text += "int main() {";
+        _text += "int main(int argc, char **argv) {\n";
         _main = 1;
         openScope();
+        _text += std::string(_tabs, '\t') + "std::vector<string> _args(argv, argv + argc);";
+        _scope->addVariable("args", "std::vector<string>", true);
         checkTrailingBracket(instruction);
     }
 
