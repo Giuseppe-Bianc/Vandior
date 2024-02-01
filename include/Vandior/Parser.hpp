@@ -28,8 +28,8 @@ namespace vnd {
         std::unique_ptr<ASTNode> parseExpression();
 
         Tokenizer tokenizer;
-        std::vector<Token> tokens;
-        std::size_t tokenSize;
-        std::size_t position;
+        std::vector<Token> tokens{};
+        std::size_t tokenSize{};
+        std::size_t position{};
     };
 }  // namespace vnd

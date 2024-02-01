@@ -11,7 +11,7 @@ namespace vnd {
         std::string test() { return "test"; }
         [[nodiscard]] std::vector<std::string> typeToString() const noexcept;
         void checkToken(const Token &token);
-        bool canTerminate() const noexcept;
+        [[nodiscard]] bool canTerminate() const noexcept;
         [[nodiscard]] InstructionType getLastType() const noexcept;
     private:
         static const std::vector<TokenType> _expressionStartTokens;
