@@ -48,6 +48,7 @@ namespace vnd {
         [[nodiscard]] Token handleChar();
         [[nodiscard]] bool inTextAndE() const noexcept;
         Token handleString();
+        Token handleHexadecimalOrOctal();
     };
 
 }  // namespace vnd

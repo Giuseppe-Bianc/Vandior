@@ -1,5 +1,5 @@
 #include "Vandior/Tokenizer.hpp"
-
+using namespace std::literals::string_view_literals;
 namespace vnd {
 
     std::vector<Token> Tokenizer::tokenize() {  // NOLINT(*-include-cleaner)
@@ -10,6 +10,8 @@ namespace vnd {
                 tokens.emplace_back(handleAlpha());
             } else if(std::isdigit(currentChar)) [[likely]] {
                 tokens.emplace_back(handleDigits());
+            } else if (currentChar == '#') [[likely]] {
+                tokens.emplace_back(handleHexadecimalOrOctal());
             } else if(std::isspace(currentChar)) [[likely]] {
                 handleWhiteSpace();
                 continue;  // Continue the loop to get the next token
@@ -294,6 +296,24 @@ namespace vnd {
         errorMessageStream << contextLine;
         errorMessageStream << highlighting;
         return errorMessageStream.str();
+    }
+    Token Tokenizer::handleHexadecimalOrOctal() {
+        const auto start = position;
+        TokenType tokenType = TokenType::INTEGER;
+        incPosAndColumn();
+        if(std::tolower(_input[position]) != 'o') {
+            while (positionIsInText() && std::isxdigit(C_UC(_input[position]))) {
+                incPosAndColumn();
+            }
+        } else {
+            incPosAndColumn();
+            while (positionIsInText() && TokenizerUtility::isOctalDigit(_input[position])) {
+                incPosAndColumn();
+            }
+        }
+
+        const auto value = _input.substr(start, position - start);
+        return {tokenType, value, line, column - value.size()-1};
     }
 
 }  // namespace vnd

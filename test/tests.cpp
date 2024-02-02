@@ -161,6 +161,28 @@ TEST_CASE("tokenizer emit identifier token new line", "[tokenizer]"){
     REQUIRE(tokens[3] == vnd::Token(identf, "a000_", 2, 4));
 }
 
+TEST_CASE("tokenizer emit integer token for hexadecimals numbers", "[tokenizer]"){
+    // hexadecimals 0xhexnum a-f A-F 0-9
+    vnd::Tokenizer tokenizer{"#0 #23 #24 #ff #7f"};
+    std::vector<vnd::Token> tokens = tokenizer.tokenize();
+    REQUIRE(tokens.size() == 6);
+    REQUIRE(tokens[0] == vnd::Token(inte, "#0", 1, 0));
+    REQUIRE(tokens[1] == vnd::Token(inte, "#23", 1, 3));
+    REQUIRE(tokens[2] == vnd::Token(inte, "#24", 1, 7));
+    REQUIRE(tokens[3] == vnd::Token(inte, "#ff", 1, 11));
+    REQUIRE(tokens[4] == vnd::Token(inte, "#7f", 1, 15));
+}
+
+TEST_CASE("tokenizer emit integer token for octal numbers", "[tokenizer]"){
+    // octal 0oOctnum 0-7
+    vnd::Tokenizer tokenizer{"#o0 #o23 #o24"};
+    std::vector<vnd::Token> tokens = tokenizer.tokenize();
+    REQUIRE(tokens.size() == 4);
+    REQUIRE(tokens[0] == vnd::Token(inte, "#o0", 1, 0));
+    REQUIRE(tokens[1] == vnd::Token(inte, "#o23", 1, 4));
+    REQUIRE(tokens[2] == vnd::Token(inte, "#o24", 1, 9));
+}
+
 TEST_CASE("tokenizer emit integer token", "[tokenizer]"){
     vnd::Tokenizer tokenizer{"42 333 550 34000000"};
     std::vector<vnd::Token> tokens = tokenizer.tokenize();

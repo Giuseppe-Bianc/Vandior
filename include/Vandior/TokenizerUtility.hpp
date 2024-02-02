@@ -102,10 +102,17 @@ namespace vnd {
 
         /**
          * @brief Check if the character is alphanumeric or underscore.
-         * @param cha The input character..
+         * @param cha The input character.
          * @return True if the character is alphanumeric or underscore, false otherwise.
          */
         [[nodiscard]] static bool isalnumUnderscore(const char &cha) noexcept;
+
+        /**
+         * @brief Check if the character is a octal digit.
+         * @param cha The input character.
+         * @return True if the character is a octal digit, false otherwise.
+         */
+        [[nodiscard]] static bool isOctalDigit(const char &cha) noexcept;
     };
 
 }  // namespace vnd
