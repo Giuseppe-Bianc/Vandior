@@ -29,6 +29,7 @@ namespace vnd {
         char _lastOperator;
         [[nodiscard]] std::string_view getTokenType(const Token &token) const noexcept;
         void emplaceToken(const Token &token) noexcept;
+        [[nodiscard]] std::string writeToken(const Token &token) noexcept;
     };
 
 }  // namespace vnd

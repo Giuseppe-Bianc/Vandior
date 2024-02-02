@@ -99,6 +99,7 @@ namespace vnd {
 
     void ExpressionFactory::emplaceToken(const Token& token) noexcept {
         using enum TokenType;
+        std::string_view value = token.getValue();
         if(token.getType() == CHAR) {
             _text.emplace_back("'" + std::string{token.getValue()} + "'");
             return;
@@ -107,24 +108,40 @@ namespace vnd {
             _text.emplace_back("\"" + std::string{token.getValue()} + "\"");
             return;
         }
-        if(token.getValue() == "^") {
+        if(value == "^") {
             _text.emplace(_text.end() - 2, "std::pow(");
             _text.emplace_back(",");
             _lastOperator = '^';
             return;
         }
-        if(token.getType() == TokenType::IDENTIFIER) { _text.emplace_back("_"); }
-        _text.emplace_back(token.getValue());
+        _text.emplace_back(writeToken(token));
         if(_lastOperator != '\0') {
             _text.emplace_back(")");
             _lastOperator = '\0';
             return;
         }
-        if(token.getValue() == "/") {
+        if(value == "/") {
             _text.emplace_back(" double(");
             _lastOperator = '/';
             return;
         }
+    }
+
+    std::string ExpressionFactory::writeToken(const Token& token) noexcept {
+
+        std::string value = std::string{token.getValue()};
+
+        if(token.getType() == TokenType::IDENTIFIER) { return "_" + value; }
+        if(token.getType() == TokenType::INTEGER && value[0] == '#') {
+            value.erase(0, 1);
+            if(!value.empty() && value[0] == 'o') {
+                value.erase(0, 1);
+                return "0" + value;
+            }
+            return "0x" + value;
+        }
+        return value;
+
     }
 
 }  // namespace vnd
