@@ -28,4 +28,5 @@ namespace vnd {
                (inputSpan[position + 1] == '/' || inputSpan[position + 1] == '*');
     }
     bool TokenizerUtility::isalnumUnderscore(const char &cha) noexcept { return std::isalnum(C_UC(cha)) || cha == '_'; }
+    bool TokenizerUtility::isOctalDigit(const char &cha) noexcept { return std::isdigit(C_UC(cha)) && cha >= '0' && cha <= '7'; }
 }  // namespace vnd
