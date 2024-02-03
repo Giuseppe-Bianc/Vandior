@@ -201,7 +201,7 @@ namespace vnd {
                 value = _input.substr(start, position - start);
                 return {TokenType::UNKNOWN, value, {_filename,line, startColumn}};
             }
-            incPosAndColumn();
+            handleWhiteSpace();
         }
         value = _input.substr(start, position - start);
         incPosAndColumn();
@@ -227,6 +227,7 @@ namespace vnd {
         case '*':
         case '/':
         case '^':
+        case '%':
         case '|':
             [[fallthrough]];
         case '&':

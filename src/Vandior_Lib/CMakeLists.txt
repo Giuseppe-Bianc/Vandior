@@ -8,6 +8,10 @@ add_library(vandior_lib vandior.cpp
         InstructionException.cpp
         Instruction.cpp
         Parser.cpp
+        Scope.cpp
+        ExpressionFactory.cpp
+        Expression.cpp
+        Transpiler.cpp
 )
 
 add_library(Vandior::vandior_lib ALIAS vandior_lib)

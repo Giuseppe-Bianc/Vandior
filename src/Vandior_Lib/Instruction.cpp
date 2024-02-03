@@ -5,23 +5,50 @@ namespace vnd {
     const std::vector<TokenType> Instruction::_expressionStartTokens = {
         TokenType::IDENTIFIER,      TokenType::INTEGER,           TokenType::DOUBLE,         TokenType::CHAR,
         TokenType::STRING,          TokenType::BOOLEAN,           TokenType::MINUS_OPERATOR, TokenType::NOT_OPERATOR,
-        TokenType::OPEN_PARENTESIS, TokenType::OPEN_SQ_PARENTESIS};
+        TokenType::OPEN_PARENTESIS, TokenType::OPEN_CUR_PARENTESIS
+    };
 
-    Instruction::Instruction() noexcept
+    Instruction::Instruction(const std::string_view filename) noexcept
       : _allowedTokens({TokenType::K_MAIN, TokenType::K_VAR, TokenType::K_STRUCTURE, TokenType::K_FOR, TokenType::K_FUN,
                         TokenType::K_RETURN, TokenType::IDENTIFIER, TokenType::OPEN_CUR_PARENTESIS,
                         TokenType::CLOSE_CUR_PARENTESIS, eofTokenType}),
-        _types({InstructionType::BLANK}), _booleanOperators({false}) {
+        _types({InstructionType::BLANK}), _booleanOperators({false}), _filename(filename) {
         _tokens.reserve({});
     }
 
-    Instruction Instruction::create() noexcept { return {}; }
+    Instruction Instruction::create(const std::string_view filename) noexcept { return {filename}; }
+
+    std::vector<Token> Instruction::getTokens() const noexcept {
+        if(_tokens.empty()) { return {{TokenType::UNKNOWN, "", {_filename, 0, 0}}}; }
+        return _tokens;
+    }
+
+    InstructionType Instruction::getLastType() const noexcept {
+        if(_types.empty()) { return InstructionType::BLANK; }
+        return _types.back();
+    }
 
     std::vector<std::string> Instruction::typeToString() const noexcept {
         std::vector<std::string> result;
         result.reserve(_types.size());
         std::transform(_types.begin(), _types.end(), std::back_inserter(result),
                        [](const InstructionType &instruction) { return FORMAT("{}", instruction); });
+        return result;
+    }
+
+    std::string Instruction::toString() const noexcept {
+        std::string result = "";
+        if(_tokens.empty()) { return ""; }
+        result += std::to_string(_tokens[0].getLine()) + "\t";
+        for(const Token &i : _tokens) {
+            if(i.getType() == TokenType::CHAR) {
+                result += "'" + std::string{i.getValue()} + "' ";
+            } else if(i.getType() == TokenType::STRING) {
+                result += "\"" + std::string{i.getValue()} + "\" ";
+            } else {
+                result += std::string(i.getValue()) + " ";
+            }
+        }
         return result;
     }
 
@@ -109,11 +136,6 @@ namespace vnd {
 
     bool Instruction::canTerminate() const noexcept {
         return std::ranges::find(_allowedTokens, eofTokenType) != _allowedTokens.end();
-    }
-
-    InstructionType vnd::Instruction::getLastType() const noexcept {
-        if(_types.empty()) { return InstructionType::BLANK; }
-        return _types.back();
     }
 
     void Instruction::checkIdentifier(const TokenType &type) noexcept {
@@ -259,16 +281,10 @@ namespace vnd {
                 return;
             }
             if(getLastTokenType() == IDENTIFIER || getLastTokenType() == CLOSE_SQ_PARENTESIS) {
-                this->addType(PARAMETER_EXPRESSION);
+                addType(PARAMETER_EXPRESSION);
                 return;
             }
             addType(EXPRESSION);
-            return;
-        }
-        if(getLastTokenType() == EQUAL_OPERATOR || getLastTokenType() == COMMA || getLastTokenType() == OPEN_PARENTESIS ||
-           getLastTokenType() == OPEN_SQ_PARENTESIS) {
-            addType(ARRAY_INIZIALIZATION);
-            _allowedTokens.emplace_back(CLOSE_SQ_PARENTESIS);
             return;
         }
         if(lastTypeIs(DECLARATION)) { _allowedTokens.emplace_back(CLOSE_SQ_PARENTESIS); }
@@ -322,12 +338,29 @@ namespace vnd {
     void Instruction::checkOpenCurParentesis() noexcept {
         using enum InstructionType;
         using enum TokenType;
+        if(getLastTokenType() == EQUAL_OPERATOR || getLastTokenType() == COMMA || getLastTokenType() == OPEN_PARENTESIS ||
+           getLastTokenType() == OPEN_CUR_PARENTESIS) {
+            addType(ARRAY_INIZIALIZATION);
+            _allowedTokens.emplace_back(CLOSE_CUR_PARENTESIS);
+            return;
+        }
         if(lastTypeIs(BLANK)) { setLastType(OPEN_SCOPE); }
         _allowedTokens = {eofTokenType, CLOSE_CUR_PARENTESIS};
     }
 
     void Instruction::checkClosedCurParentesis() noexcept {
         using enum InstructionType;
+        using enum TokenType;
+        if(lastTypeIs(ARRAY_INIZIALIZATION)) {
+            removeType();
+            if(lastTypeIs(ARRAY_INIZIALIZATION)) {
+                _allowedTokens = {COMMA, CLOSE_CUR_PARENTESIS};
+                return;
+            }
+            _allowedTokens = {DOT_OPERATOR, OPEN_SQ_PARENTESIS};
+            emplaceExpressionTokens();
+            return;
+        }
         if(lastTypeIs(BLANK)) { setLastType(CLOSE_SCOPE); }
         _allowedTokens = {eofTokenType};
     }
@@ -440,19 +473,19 @@ namespace vnd {
         using enum TokenType;
         emplaceBooleanOperator();
         if(emplaceTokenType(SQUARE_EXPRESSION, CLOSE_SQ_PARENTESIS)) { return; }
-        if(this->emplaceTokenType(EXPRESSION, CLOSE_PARENTESIS)) { return; }
+        if(emplaceTokenType(EXPRESSION, CLOSE_PARENTESIS)) { return; }
         if(lastTypeIs(PARAMETER_EXPRESSION)) {
             _allowedTokens.emplace_back(CLOSE_PARENTESIS);
             _allowedTokens.emplace_back(COMMA);
             return;
         }
         if(lastTypeIs(ARRAY_INIZIALIZATION)) {
-            _allowedTokens.emplace_back(CLOSE_SQ_PARENTESIS);
+            _allowedTokens.emplace_back(CLOSE_CUR_PARENTESIS);
             _allowedTokens.emplace_back(COMMA);
             return;
         }
-        if(this->emplaceForTokens()) { return; }
-        this->emplaceCommaEoft();
+        if(emplaceForTokens()) { return; }
+        emplaceCommaEoft();
     }
 
     inline void Instruction::emplaceCommaEoft() noexcept {

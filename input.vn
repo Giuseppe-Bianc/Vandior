@@ -1,12 +1,21 @@
+const variable, variable2: bool = 1 == #f2 && 1 + 3 <= -6.57 + #o7 ^ 2 || false, true <= false
+const intVar: int = 2
 main {
-	var variable: type
+	var v1, v2: float = 1 + 2, 2 * 56 *(65 + 8.98 ^ (35 + 56 -67 / 7)) + 2 / intVar
+	const variable, variable2: char = 'c', 'V'
+	var s, s2: string = "Ciao", "Text"
+	{
+	}
+}
+/*main {
+	var variable: bool
 	variable = .1
-	const constant: type[] = [12, "Ciao", true || 12 > variable + (12 / 3 * true), variable--], [[12, 5], [7, 6, 'b'], []]
+	const constant: int[] = [12, "Ciao", true || 12 > variable + (12 / 3 * true), variable--], [[12, 5], [7, 6, 'b'], []]
 	var num1, num2: type[12 + a / 2][] = 1 + 1 + "AAAA".len(), variable.method("Ciao", .24e-15) * -5 + "String"[variable.m() - 1 + "Ciao"[0]]
 	variable = 42 * -y + 1. + 1.0 + 1e+1 + "10"
 	variable[1]++ = -4
 }
-main {}
+//main {}
 variable.method().a++, variable2--, ciao.a()
 
 var variable2, variable3: type = variable[0 + true && (!false || '\n')] == -4, !variable[2][true]['a' / "HELLO"]-- && 7.2
@@ -19,10 +28,7 @@ variable -= -4. + ( // Single line comment
 	variable2++ == true ||
 	!variable >= 10
 )
-variable = variable-- && /*|| f*/ -4.5
-/*multi-
-line
-comment*/
+variable = variable-- && -4.5
 variable = true
 {
 	variable = !false || !true
@@ -60,4 +66,4 @@ fun function(var1: type, var2: type): type1, type2 {
 	return
 }
 variable = function().method().a
-variable = a[0].method(-45, true, function().b[0], [1, 2, 4, variable[1]][0].value([1,2 , [4, 5]], 4, [[2, 2], [3, 3]]))
+variable %= a[0].method(-45, true, function().b[0], [1, 2, 4, variable[1]][0].value([1, 2, [4, 5]], 4, [[2, 2], [3, 3]])) % 2*/

@@ -7,19 +7,21 @@
 namespace vnd {
     class Instruction {
 	public:
-        static Instruction create() noexcept;
-        std::string test() { return "test"; }
+        [[nodiscard]] static Instruction create(const std::string_view filename) noexcept;
+        [[nodiscard]] std::vector<Token> getTokens() const noexcept;
+        [[nodiscard]] InstructionType getLastType() const noexcept;
         [[nodiscard]] std::vector<std::string> typeToString() const noexcept;
         void checkToken(const Token &token);
         [[nodiscard]] bool canTerminate() const noexcept;
-        [[nodiscard]] InstructionType getLastType() const noexcept;
+        [[nodiscard]] std::string toString() const noexcept;
     private:
+        Instruction(const std::string_view filename) noexcept;
         static const std::vector<TokenType> _expressionStartTokens;
         std::vector<TokenType> _allowedTokens;
         std::vector<Token> _tokens;
         std::vector<InstructionType> _types;
         std::vector<bool> _booleanOperators;
-        Instruction() noexcept;
+        std::string_view _filename;
         void checkIdentifier(const TokenType &type) noexcept;
         void checkValue(const TokenType &type) noexcept;
         void checkOperator(const TokenType &type) noexcept;
