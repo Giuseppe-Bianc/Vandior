@@ -37,16 +37,16 @@ namespace vnd {
     }
 
     std::string Instruction::toString() const noexcept {
-        std::string result = "";
+        std::string result;
         if(_tokens.empty()) { return ""; }
-        result += std::to_string(_tokens[0].getLine()) + "\t";
-        for(const Token &i : _tokens) {
-            if(i.getType() == TokenType::CHAR) {
-                result += "'" + std::string{i.getValue()} + "' ";
-            } else if(i.getType() == TokenType::STRING) {
-                result += "\"" + std::string{i.getValue()} + "\" ";
+        result += std::to_string(_tokens[0].getLine()).append("\t");
+        for(const Token &iter : _tokens) {
+            if(iter.getType() == TokenType::CHAR) {
+                result += std::string("'").append(std::string{iter.getValue()}).append("' ");
+            } else if(iter.getType() == TokenType::STRING) {
+                result += std::string("\"").append(std::string{iter.getValue()}).append("\" ");
             } else {
-                result += std::string(i.getValue()) + " ";
+                result += std::string(iter.getValue()).append(" ");
             }
         }
         return result;

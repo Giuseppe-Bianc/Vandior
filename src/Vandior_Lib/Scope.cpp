@@ -2,9 +2,11 @@
 
 namespace vnd {
 
-    Scope::Scope(std::shared_ptr<Scope> parent) noexcept: _vars({}), _consts({}), _types(), _parent(parent) {}
+    Scope::Scope(std::shared_ptr<Scope> parent) noexcept : _vars({}), _consts({}), _parent(std::move(parent)) {}
 
-    std::shared_ptr<Scope> Scope::create(std::shared_ptr<Scope> parent) noexcept { return std::make_shared<Scope>(Scope(parent)); }
+    std::shared_ptr<Scope> Scope::create(std::shared_ptr<Scope> parent) noexcept {
+        return std::make_shared<Scope>(Scope(std::move(parent)));
+    }
 
     std::shared_ptr<Scope> Scope::createMain() noexcept {
         std::shared_ptr<Scope> mainScope = std::make_shared<Scope>(Scope(nullptr));
@@ -35,12 +37,13 @@ namespace vnd {
 
     bool Scope::isMainScope() const noexcept { return _parent == nullptr; }
 
-    bool Scope::checkType(const std::string_view type) const noexcept {
+    bool Scope::checkType(const std::string_view type) const noexcept {  // NOLINT(*-no-recursion)
         if(_types.find(std::string{type}) != _types.end()) { return true; }
         if(_parent) { return _parent->checkType(type); }
         return false;
     }
 
+    // NOLINTNEXTLINE
     std::pair<bool, bool> Scope::checkVariable(const std::string_view identifier, const bool shadowing) const noexcept {
         if(_vars.find(std::string{identifier}) != _vars.end() || _consts.find(std::string{identifier}) != _consts.end()) {
             return {true, shadowing};
@@ -49,7 +52,7 @@ namespace vnd {
         return {false, false};
     }
 
-    std::string_view Scope::getVariableType(const std::string_view identifier) const noexcept {
+    std::string_view Scope::getVariableType(const std::string_view identifier) const noexcept {  // NOLINT(*-no-recursion)
         if(_vars.find(std::string{identifier}) != _vars.end()) { return _vars.at(std::string{identifier}); }
         if(_consts.find(std::string{identifier}) != _consts.end()) { return _consts.at(std::string{identifier}); }
         if(_parent) { return _parent->getVariableType(identifier); }

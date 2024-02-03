@@ -16,7 +16,7 @@ namespace vnd {
         void transpile();
     private:
         Transpiler(std::vector<Instruction> _instructions) noexcept;
-        static bool canAssign(const std::string left, const std::string right) noexcept;
+        static bool canAssign(const std::string &left, const std::string &right) noexcept;
         int _tabs;
         std::string _text;
         std::ofstream _output;

@@ -383,33 +383,28 @@ TEST_CASE("corrected format for InstructionType", "[Instruction_type]") {
     REQ_FORMAT(BLANK, "BLANK");
 }
 
-TEST_CASE("Instruction default constructor and test function", "[Instruction]") {
-    vnd::Instruction instruction = vnd::Instruction::create();
-    REQUIRE(instruction.test() == "test");
-}
-
 TEST_CASE("Instruction typeToString function", "[Instruction]") {
-    vnd::Instruction instruction = vnd::Instruction::create();
+    vnd::Instruction instruction = vnd::Instruction::create("unkown.vn");
     std::vector<std::string> result = instruction.typeToString();
     REQUIRE(result.size() == 1);
     REQUIRE(result[0] == "BLANK");
 }
 
 TEST_CASE("Instruction checkToken function for valid tokens", "[Instruction]") {
-    vnd::Instruction instruction = vnd::Instruction::create();
+    vnd::Instruction instruction = vnd::Instruction::create("unkown.vn");
     vnd::Token identifierToken(vnd::TokenType::IDENTIFIER, "variable", vnd::CodeSourceLocation("unkown.vn",1, 2));
     instruction.checkToken(identifierToken);
     REQUIRE(instruction.canTerminate() == true);
 }
 
 TEST_CASE("Instruction checkToken function for invalid tokens", "[Instruction]") {
-    vnd::Instruction instruction = vnd::Instruction::create();
+    vnd::Instruction instruction = vnd::Instruction::create("unkown.vn");
     vnd::Token invalidToken(vnd::TokenType::UNKNOWN, "invalid", vnd::CodeSourceLocation("unkown.vn",1, 2));
     REQUIRE_THROWS_AS(instruction.checkToken(invalidToken), vnd::InstructionException);
 }
 
 TEST_CASE("Corrected type of assignation istruction","[Instruction]") {
-    vnd::Instruction instruction = vnd::Instruction::create();
+    vnd::Instruction instruction = vnd::Instruction::create("unkown.vn");
     REQUIRE(instruction.getLastType() == vnd::InstructionType::BLANK);
     instruction.checkToken(vnd::Token{vnd::TokenType::IDENTIFIER, "a", vnd::CodeSourceLocation("unkown.vn",1, 0)});
     REQUIRE(instruction.getLastType() == vnd::InstructionType::OPERATION);
@@ -420,7 +415,7 @@ TEST_CASE("Corrected type of assignation istruction","[Instruction]") {
 }
 
 TEST_CASE("Corrected type of multy assignation instruction","[Instruction]") {
-    vnd::Instruction instruction = vnd::Instruction::create();
+    vnd::Instruction instruction = vnd::Instruction::create("unkown.vn");
     instruction.checkToken(vnd::Token{vnd::TokenType::K_VAR, "", vnd::CodeSourceLocation("unkown.vn",0, 0)});
     instruction.checkToken(vnd::Token{vnd::TokenType::IDENTIFIER, "", vnd::CodeSourceLocation("unkown.vn",0, 1)});
     REQUIRE(instruction.getLastType() == vnd::InstructionType::DECLARATION);
@@ -439,14 +434,14 @@ TEST_CASE("Corrected type of multy assignation instruction","[Instruction]") {
 }
 
 TEST_CASE("Corrected type of parameter expression instruction","[Instruction]") {
-    vnd::Instruction instruction = vnd::Instruction::create();
+    vnd::Instruction instruction = vnd::Instruction::create("unkown.vn");
     instruction.checkToken(vnd::Token{vnd::TokenType::IDENTIFIER, "", vnd::CodeSourceLocation("unkown.vn",0, 0)});
     instruction.checkToken(vnd::Token{vnd::TokenType::OPEN_PARENTESIS, "", vnd::CodeSourceLocation("unkown.vn",0, 1)});
     REQUIRE(instruction.getLastType() == vnd::InstructionType::PARAMETER_EXPRESSION);
 }
 
 TEST_CASE("Corrected type of parameter definition instruction","[Instruction]") {
-    vnd::Instruction instruction = vnd::Instruction::create();
+    vnd::Instruction instruction = vnd::Instruction::create("unkown.vn");
     instruction.checkToken(vnd::Token{vnd::TokenType::K_FUN, "", vnd::CodeSourceLocation("unkown.vn",0, 0)});
     instruction.checkToken(vnd::Token{vnd::TokenType::IDENTIFIER, "", vnd::CodeSourceLocation("unkown.vn",0, 1)});
     instruction.checkToken(vnd::Token{vnd::TokenType::OPEN_PARENTESIS, "", vnd::CodeSourceLocation("unkown.vn",0, 2)});
@@ -455,21 +450,21 @@ TEST_CASE("Corrected type of parameter definition instruction","[Instruction]") 
 }
 
 TEST_CASE("Corrected type of return expression instruction","[Instruction]") {
-    vnd::Instruction instruction = vnd::Instruction::create();
+    vnd::Instruction instruction = vnd::Instruction::create("unkown.vn");
     instruction.checkToken(vnd::Token{vnd::TokenType::K_RETURN, "", vnd::CodeSourceLocation("unkown.vn",0, 0)});
     instruction.checkToken(vnd::Token{vnd::TokenType::BOOLEAN, "", vnd::CodeSourceLocation("unkown.vn",0, 1)});
     REQUIRE(instruction.getLastType() == vnd::InstructionType::RETURN_EXPRESSION);
 }
 
 TEST_CASE("Corrected type of main instruction","[Instruction]") {
-    vnd::Instruction instruction = vnd::Instruction::create();
+    vnd::Instruction instruction = vnd::Instruction::create("unkown.vn");
     instruction.checkToken(vnd::Token{vnd::TokenType::K_MAIN, "", vnd::CodeSourceLocation("unkown.vn",0, 0)});
     instruction.checkToken(vnd::Token{vnd::TokenType::OPEN_CUR_PARENTESIS, "", vnd::CodeSourceLocation("unkown.vn",0, 1)});
     REQUIRE(instruction.getLastType() == vnd::InstructionType::MAIN);
 }
 
 TEST_CASE("Corrected type of structure instruction","[Instruction]") {
-    vnd::Instruction instruction = vnd::Instruction::create();
+    vnd::Instruction instruction = vnd::Instruction::create("unkown.vn");
     instruction.checkToken(vnd::Token{vnd::TokenType::K_STRUCTURE, "", vnd::CodeSourceLocation("unkown.vn",0, 0)});
     instruction.checkToken(vnd::Token{vnd::TokenType::OPEN_PARENTESIS, "", vnd::CodeSourceLocation("unkown.vn",0, 1)});
     instruction.checkToken(vnd::Token{vnd::TokenType::CLOSE_PARENTESIS, "", vnd::CodeSourceLocation("unkown.vn",0, 2)});
@@ -478,7 +473,7 @@ TEST_CASE("Corrected type of structure instruction","[Instruction]") {
 }
 
 TEST_CASE("Corrected type of for instruction","[Instruction]") {
-    vnd::Instruction instruction = vnd::Instruction::create();
+    vnd::Instruction instruction = vnd::Instruction::create("unkown.vn");
     instruction.checkToken(vnd::Token{vnd::TokenType::K_FOR, "", vnd::CodeSourceLocation("unkown.vn",0, 0)});
     REQUIRE(instruction.getLastType() == vnd::InstructionType::FOR_STRUCTURE);
     instruction.checkToken(vnd::Token{vnd::TokenType::IDENTIFIER, "", vnd::CodeSourceLocation("unkown.vn",0, 1)});
