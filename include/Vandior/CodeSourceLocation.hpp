@@ -126,8 +126,8 @@ namespace vnd {
         std::string toString() const noexcept { return FORMAT("(file:{}, line:{}, column:{})",_fileName,_line,_column);}
     private:
         std::string_view _fileName;  ///< The name of the source file.
-        std::size_t _line;           ///< The line number in the source file.
-        std::size_t _column;         ///< The column number in the source file.
+        std::size_t _line{};           ///< The line number in the source file.
+        std::size_t _column{};         ///< The column number in the source file.
     };
 
 }  // namespace vnd

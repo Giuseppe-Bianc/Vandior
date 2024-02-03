@@ -1,5 +1,4 @@
 /**
- * @file token.hpp
  * @brief Defines TokenType and Token classes for lexical analysis in a programming language.
  */
 #pragma once
@@ -177,8 +176,7 @@ namespace vnd {
          * Initializes the token with the specified values.
          * @param type The type of the token.
          * @param value The value associated with the token.
-         * @param line The line number where the token appears.
-         * @param column The column number where the token appears.
+         * @param sourceLocation The source location where the token appears.
          */
         Token(TokenType type, const std::string_view &value, const CodeSourceLocation &sourceLocation) noexcept
           : _type(type), _value(value), _sourceLocation{sourceLocation} {}
@@ -268,7 +266,7 @@ namespace vnd {
 
         /**
          * @brief Set the filename where the token appears.
-         * @param line The filename to set.
+         * @param fileName The filename to set.
          */
         void setFileName(const std::string_view &fileName) noexcept { _sourceLocation.setFileName(fileName); }
 
