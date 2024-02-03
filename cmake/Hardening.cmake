@@ -10,7 +10,7 @@ macro(
 
   if(MSVC)
     set(NEW_COMPILE_OPTIONS "${NEW_COMPILE_OPTIONS} /sdl /DYNAMICBASE /guard:cf")
-    message(STATUS "*** MSVC flags: /sdl /DYNAMICBASE /guard:cf /NXCOMPAT /CETCOMPAT")
+    message(STATUS "*** MSVC flags added: /sdl /DYNAMICBASE /guard:cf /NXCOMPAT /CETCOMPAT")
     set(NEW_LINK_OPTIONS "${NEW_LINK_OPTIONS} /NXCOMPAT /CETCOMPAT")
 
   elseif(CMAKE_CXX_COMPILER_ID MATCHES ".*Clang|GNU")
@@ -20,6 +20,7 @@ macro(
     set(NEW_COMPILE_OPTIONS "${NEW_COMPILE_OPTIONS} -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=3")
     message(STATUS "*** g++/clang _FORTIFY_SOURCE=3 enabled")
 
+    # Uncomment the following code if PIE mode is supported and desired
     #    check_cxx_compiler_flag(-fpie PIE)
     #if(PIE)
     #  set(NEW_COMPILE_OPTIONS ${NEW_COMPILE_OPTIONS} -fpie)
@@ -70,15 +71,15 @@ macro(
         set(NEW_COMPILE_OPTIONS "${NEW_COMPILE_OPTIONS} -fno-sanitize-recover=undefined")
         set(NEW_LINK_OPTIONS "${NEW_LINK_OPTIONS} -fno-sanitize-recover=undefined")
       else()
-        message(STATUS "** not enabling -fno-sanitize-recover=undefined for global consumption")
+        message(STATUS "** Not enabling -fno-sanitize-recover=undefined for global consumption")
       endif()
 
-      message(STATUS "*** ubsan minimal runtime enabled")
+      message(STATUS "*** UBSan minimal runtime enabled")
     else()
-      message(STATUS "*** ubsan minimal runtime NOT enabled (not supported)")
+      message(STATUS "*** UBSan minimal runtime NOT enabled (not supported)")
     endif()
   else()
-    message(STATUS "*** ubsan minimal runtime NOT enabled (not requested)")
+    message(STATUS "*** UBSan minimal runtime NOT enabled (not requested)")
   endif()
 
   message(STATUS "** Hardening Compiler Flags: ${NEW_COMPILE_OPTIONS}")

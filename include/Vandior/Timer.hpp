@@ -93,8 +93,8 @@ public:
      * @param target_time Target time in seconds.
      * @return A string with timing information.
      */
-    [[maybe_unused]] [[nodiscard]] std::string time_it(const std::function<void()> &f,
-                                                       long double target_time = 1) {  // NOLINT(*-identifier-length)
+    // NOLINTNEXTLINE(*-identifier-length)
+    [[maybe_unused]] [[nodiscard]] std::string time_it(const std::function<void()> &f, long double target_time = 1) {
         const time_point start = start_;
         // NOLINTNEXTLINE(clang-analyzer-cplusplus.InnerPointer)
         [[maybe_unused]] auto total_time = C_LD(NAN);

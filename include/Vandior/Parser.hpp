@@ -9,8 +9,8 @@
 namespace vnd {
     class Parser {
     public:
-        explicit Parser(const std::string_view &input)
-          : tokenizer{input}, tokens{tokenizer.tokenize()}, tokenSize(tokens.size()), position{} {}
+        explicit Parser(const std::string_view &input, const std::string_view &fileName)
+          : tokenizer{input,fileName}, tokens{tokenizer.tokenize()}, tokenSize(tokens.size()) {}
 
         std::unique_ptr<ASTNode> parse();
 
@@ -28,8 +28,8 @@ namespace vnd {
         std::unique_ptr<ASTNode> parseExpression();
 
         Tokenizer tokenizer;
-        std::vector<Token> tokens;
-        std::size_t tokenSize;
-        std::size_t position;
+        std::vector<Token> tokens{};
+        std::size_t tokenSize{};
+        std::size_t position{};
     };
 }  // namespace vnd

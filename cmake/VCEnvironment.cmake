@@ -19,7 +19,7 @@ macro(detect_architecture)
       set(VCVARSALL_ARCH ${CMAKE_HOST_SYSTEM_PROCESSOR})
     else()
       set(VCVARSALL_ARCH x64)
-      message(STATUS "Unkown architecture CMAKE_SYSTEM_PROCESSOR: ${CMAKE_SYSTEM_PROCESSOR_LOWER} - using x64")
+      message(STATUS "Unknown architecture CMAKE_SYSTEM_PROCESSOR: ${CMAKE_SYSTEM_PROCESSOR_LOWER} - using x64")
     endif()
   endif()
 endmacro()
@@ -42,10 +42,14 @@ function(run_vcvarsall)
       PATH_SUFFIXES "VC/Auxiliary/Build" "Common7/Tools" "Tools")
 
     if(EXISTS ${VCVARSALL_FILE})
-      # detect the architecture
+      # Detect the architecture
       detect_architecture()
 
-      # run vcvarsall and print the environment variables
+      # Run vcvarsall.bat and print informative messages
+      message(STATUS "Searching for vcvarsall.bat in the Visual Studio directory...")
+      message(STATUS "Found vcvarsall.bat at: ${VCVARSALL_FILE}")
+      message(STATUS "Detected architecture: ${VCVARSALL_ARCH}")
+
       message(STATUS "Running `${VCVARSALL_FILE} ${VCVARSALL_ARCH}` to set up the MSVC environment")
       execute_process(
         COMMAND
@@ -55,12 +59,14 @@ function(run_vcvarsall)
         OUTPUT_VARIABLE VCVARSALL_OUTPUT
         OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-      # parse the output and get the environment variables string
+      # Parse the output and get the environment variables string
       find_substring_by_prefix(VCVARSALL_ENV "VCVARSALL_ENV_START" "${VCVARSALL_OUTPUT}")
 
-      # set the environment variables
+      # Set the environment variables
+      message(STATUS "Setting environment variables from vcvarsall.bat output...")
       set_env_from_string("${VCVARSALL_ENV}")
 
+      message(STATUS "MSVC environment is set up successfully.")
     else()
       message(
         WARNING

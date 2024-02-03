@@ -9,12 +9,13 @@
 namespace vnd {
     class Tokenizer {
     public:
-        explicit Tokenizer(const std::string_view &input) noexcept
-          : _input(input), _inputSize(input.size()) {}  // NOLINT(*-include-cleaner)
+        explicit Tokenizer(const std::string_view &input, const std::string_view &fileName = "unknown.vn") noexcept
+          : _input(input), _filename(fileName), _inputSize(input.size()) {}  // NOLINT(*-include-cleaner)
         [[nodiscard]] std::vector<Token> tokenize();    // NOLINT(*-include-cleaner)
 
     private:
         std::string_view _input;
+        std::string_view _filename;
         std::size_t _inputSize;
         std::size_t position = 0;
         std::size_t line = 1;
@@ -39,7 +40,7 @@ namespace vnd {
         void extractDigits() noexcept;
         void incPosAndColumn() noexcept;
         void extractExponent() noexcept;
-        void handleOperators(std::vector<Token> &tokens);
+        [[nodiscard]] std::vector<Token> handleOperators();
         void extractVarLenOperator();
         [[nodiscard]] static TokenType singoleCharOp(const char &view) noexcept;
         [[nodiscard]] static TokenType multyCharOp(const std::string_view &view) noexcept;
@@ -48,6 +49,7 @@ namespace vnd {
         [[nodiscard]] Token handleChar();
         [[nodiscard]] bool inTextAndE() const noexcept;
         Token handleString();
+        Token handleHexadecimalOrOctal();
     };
 
 }  // namespace vnd

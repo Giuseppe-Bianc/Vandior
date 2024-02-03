@@ -18,6 +18,9 @@ enum class NodeType { BinaryExpression, UnaryExpression, Number, Variable };
 template <> struct fmt::formatter<NodeType> : fmt::formatter<std::string_view> {
     /**
      * @brief Formats the NodeType for printing.
+     * @param nodeType The node type to be formatted.
+     * @param ctx The formatting context.
+     * @return The formatted string.
      */
     template <typename FormatContext> auto format(NodeType nodeType, FormatContext &ctx) {
         std::string_view name;
@@ -43,7 +46,9 @@ template <> struct fmt::formatter<NodeType> : fmt::formatter<std::string_view> {
 };
 
 /**
- * @brief Base class for AST nodes.
+ * @brief Base class for Abstract Syntax Tree (AST) nodes.
+ *
+ * This class serves as the base for all AST nodes in the system.
  */
 class ASTNode {
 public:
@@ -52,17 +57,17 @@ public:
      * @brief Gets the type of the AST node.
      * @return NodeType enumeration value.
      */
-    virtual NodeType getType() const = 0;
+    [[nodiscard]]virtual NodeType getType() const = 0;
     /**
      * @brief Returns a string representation of the AST node.
      * @return String representation of the AST node.
      */
-    virtual std::string print() const = 0;
+    [[nodiscard]] virtual std::string print() const = 0;
     /**
      * @brief Returns a compact string representation of the AST node for compilation purposes.
      * @return Compact string representation of the AST node.
      */
-    virtual std::string comp_print() const = 0;
+    [[nodiscard]] virtual std::string comp_print() const = 0;
 };
 
 /**
@@ -79,18 +84,18 @@ public:
     BinaryExpressionNode(std::string_view _op, std::unique_ptr<ASTNode> _left, std::unique_ptr<ASTNode> _right) noexcept
       : op(_op), left(std::move(_left)), right(std::move(_right)) {}
 
-    NodeType getType() const noexcept override { return NodeType::BinaryExpression; }
+    [[nodiscard]] NodeType getType() const noexcept override { return NodeType::BinaryExpression; }
 
-    std::string print() const override {
+    [[nodiscard]] std::string print() const override {
         return FORMAT("{}(op:\"{}\" left:{}, right:{})", getType(), op, left->print(), right->print());
     }
-    std::string comp_print() const override {
+    [[nodiscard]] std::string comp_print() const override {
         return FORMAT("BINE(op:\"{}\" l:{}, r:{})", op, left->comp_print(), right->comp_print());
     }
 
-    const std::string_view &getOp() const noexcept { return op; }
-    const std::unique_ptr<ASTNode> &getLeft() const noexcept { return left; }
-    const std::unique_ptr<ASTNode> &getRight() const noexcept { return right; }
+    [[nodiscard]] const std::string_view &getOp() const noexcept { return op; }
+    [[nodiscard]] const std::unique_ptr<ASTNode> &getLeft() const noexcept { return left; }
+    [[nodiscard]] const std::unique_ptr<ASTNode> &getRight() const noexcept { return right; }
 
 private:
     std::string_view op;
@@ -110,11 +115,11 @@ public:
     UnaryExpressionNode(std::string_view _op, std::unique_ptr<ASTNode> _operand) noexcept
       : op(_op), operand(std::move(_operand)) {}
 
-    NodeType getType() const noexcept override { return NodeType::UnaryExpression; }
-    std::string print() const override { return FORMAT("{}(op:\"{}\" operand:{})", getType(), op, operand->print()); }
-    std::string comp_print() const override { return FORMAT("UNE(op:\"{}\" opr:{})", op, operand->comp_print()); }
-    const std::string_view &getOp() const noexcept { return op; }
-    const std::unique_ptr<ASTNode> &getOperand() const noexcept { return operand; }
+    [[nodiscard]] NodeType getType() const noexcept override { return NodeType::UnaryExpression; }
+    [[nodiscard]] std::string print() const override { return FORMAT("{}(op:\"{}\" operand:{})", getType(), op, operand->print()); }
+    [[nodiscard]] std::string comp_print() const override { return FORMAT("UNE(op:\"{}\" opr:{})", op, operand->comp_print()); }
+    [[nodiscard]] const std::string_view &getOp() const noexcept { return op; }
+    [[nodiscard]] const std::unique_ptr<ASTNode> &getOperand() const noexcept { return operand; }
 
 private:
     std::string_view op;
@@ -137,11 +142,11 @@ public:
      */
     explicit NumberNode(double _value) noexcept : value(_value) {}
 
-    NodeType getType() const noexcept override { return NodeType::Number; }
+    [[nodiscard]] NodeType getType() const noexcept override { return NodeType::Number; }
 
-    std::string print() const override { return FORMAT("{}({})", getType(), value); }
-    std::string comp_print() const override { return FORMAT("NUM({})", value); }
-    double getValue() const noexcept { return value; }
+    [[nodiscard]] std::string print() const override { return FORMAT("{}({})", getType(), value); }
+    [[nodiscard]] std::string comp_print() const override { return FORMAT("NUM({})", value); }
+    [[nodiscard]] double getValue() const noexcept { return value; }
 
 private:
     double value;
@@ -158,11 +163,11 @@ public:
      */
     explicit VariableNode(std::string_view _name) noexcept : name(_name) {}
 
-    NodeType getType() const noexcept override { return NodeType::Variable; }
+    [[nodiscard]] NodeType getType() const noexcept override { return NodeType::Variable; }
 
-    std::string print() const override { return FORMAT("{} ({})", getType(), name); }
-    std::string comp_print() const override { return FORMAT("VAR({})", name); }
-    const std::string_view &getName() const noexcept { return name; }
+    [[nodiscard]] std::string print() const override { return FORMAT("{} ({})", getType(), name); }
+    [[nodiscard]] std::string comp_print() const override { return FORMAT("VAR({})", name); }
+    [[nodiscard]] const std::string_view &getName() const noexcept { return name; }
 
 private:
     std::string_view name;
@@ -194,6 +199,7 @@ static inline constexpr void print_indent_dl(int indent, const auto &label, cons
  * @param node The root of the AST to be pretty printed.
  * @param indent Number of spaces for indentation.
  */
+ //NOLINTNEXTLINE(misc-no-recursion)
 static inline constexpr void prettyPrint(const ASTNode &node, int indent = 0) {
     // Recursively print children for Binary and Unary expression nodes
     if(const auto *binaryNode = dynamic_cast<const BinaryExpressionNode *>(&node)) {

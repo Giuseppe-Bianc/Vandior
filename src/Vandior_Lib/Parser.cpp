@@ -71,7 +71,7 @@ namespace vnd {
             auto expression = parseExpression();
             if (getCurrentToken().getValue() == ")") {
                 consumeToken();
-                return std::move(expression);
+                return expression;
             } else {
                 // Handle error: mismatched parentheses
                 return nullptr;

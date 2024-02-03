@@ -1,5 +1,5 @@
 #include "Vandior/Tokenizer.hpp"
-
+using namespace std::literals::string_view_literals;
 namespace vnd {
 
     std::vector<Token> Tokenizer::tokenize() {  // NOLINT(*-include-cleaner)
@@ -10,13 +10,16 @@ namespace vnd {
                 tokens.emplace_back(handleAlpha());
             } else if(std::isdigit(currentChar)) [[likely]] {
                 tokens.emplace_back(handleDigits());
+            } else if (currentChar == '#') [[likely]] {
+                tokens.emplace_back(handleHexadecimalOrOctal());
             } else if(std::isspace(currentChar)) [[likely]] {
                 handleWhiteSpace();
                 continue;  // Continue the loop to get the next token
             } else if(vnd::TokenizerUtility::isComment(_input, position)) {
                 tokens.emplace_back(handleComment());
             } else if(vnd::TokenizerUtility::isOperator(currentChar)) [[likely]] {
-                handleOperators(tokens);
+                auto opTokens = handleOperators();
+                tokens.insert(tokens.end(), begin(opTokens), end(opTokens));
             } else if(vnd::TokenizerUtility::isDot(currentChar)) {
                 tokens.emplace_back(handleDot());
             } else if(vnd::TokenizerUtility::isBrackets(currentChar)) [[likely]] {
@@ -26,16 +29,16 @@ namespace vnd {
             } else if(vnd::TokenizerUtility::isQuotation(currentChar)) [[likely]] {
                 tokens.emplace_back(handleString());
             } else if(vnd::TokenizerUtility::isComma(currentChar)) {
-                tokens.emplace_back(TokenType::COMMA, ",", line, column - 1);
+                tokens.emplace_back(TokenType::COMMA, ",", CodeSourceLocation{_filename,line, column - 1});
                 incPosAndColumn();
             } else if(vnd::TokenizerUtility::isColon(currentChar)) {
-                tokens.emplace_back(TokenType::COLON, ":", line, column - 1);
+                tokens.emplace_back(TokenType::COLON, ":", CodeSourceLocation{_filename,line, column - 1});
                 incPosAndColumn();
             } else [[unlikely]] {
                 handleError(std::string(1, currentChar), "Unknown Character");
             }
         }
-        tokens.emplace_back(TokenType::EOFT, "", line, column);
+        tokens.emplace_back(TokenType::EOFT, "", CodeSourceLocation{_filename,line, column});
         return tokens;
     }
     bool Tokenizer::positionIsInText() const noexcept { return position < _inputSize; }
@@ -46,7 +49,7 @@ namespace vnd {
         while(positionIsInText() && TokenizerUtility::isalnumUnderscore(_input[position])) { incPosAndColumn(); }
         const auto value = _input.substr(start, position - start);
         kewordType(value, type);
-        return {type, value, line, column - value.size()};
+        return {type, value, {_filename,line, column - value.size()}};
     }
     void Tokenizer::kewordType(const std::string_view &value, TokenType &type) noexcept {
         using enum TokenType;
@@ -80,18 +83,18 @@ namespace vnd {
             tokenType = TokenType::DOUBLE;
         }
         const auto value = _input.substr(start, position - start);
-        return {tokenType, value, line, column - value.size()};
+        return {tokenType, value,{_filename, line, column - value.size()}};
     }
     Token Tokenizer::handleComment() {
         if(_input[position + 1] == '/') { return handleSingleLineComment(); }
         if(_input[position + 1] == '*') { return handleMultiLineComment(); }
-        return {TokenType::UNKNOWN, "", line, column};
+        return {TokenType::UNKNOWN, "", {_filename,line, column }};
     }
     Token Tokenizer::handleSingleLineComment() {
         const auto start = position;
         while(positionIsInText() && _input[position] != CNL) { incPosAndColumn(); }
         const auto value = _input.substr(start, position - start);
-        return {TokenType::COMMENT, value, line, column - value.size()};
+        return {TokenType::COMMENT, value,{_filename, line, column - value.size()}};
     }
     Token Tokenizer::handleMultiLineComment() {
         const auto start = position;
@@ -99,14 +102,14 @@ namespace vnd {
         while(_input[position] != '*' || _input[position + 1] != '/') {
             if(position + 2 == _inputSize) {
                 const auto value = _input.substr(start, position - start + 1);
-                return {TokenType::UNKNOWN, value, line, startColumn};
+                return {TokenType::UNKNOWN, value, {_filename,line, startColumn}};
             }
             handleWhiteSpace();
         }
         incPosAndColumn();
         incPosAndColumn();
         const auto value = _input.substr(start, position - start);
-        return {TokenType::COMMENT, value, line, startColumn};
+        return {TokenType::COMMENT, value,{_filename, line, startColumn}};
     }
     Token Tokenizer::handleDot() {
         const auto start = position;
@@ -121,7 +124,7 @@ namespace vnd {
             }
         }
         const auto value = _input.substr(start, position - start);
-        return {type, value, line, column - value.size()};
+        return {type, value, {_filename,line, column - value.size()}};
     }
     void Tokenizer::extractExponent() noexcept {
         if(positionIsInText() && vnd::TokenizerUtility::isPlusOrMinus(_input[position])) { incPosAndColumn(); }
@@ -148,7 +151,7 @@ namespace vnd {
         incPosAndColumn();
         const auto value = _input.substr(start, position - start);
         const auto type = getType(value);
-        return {type, value, line, column - value.size()};
+        return {type, value, {_filename,line, column - value.size()}};
     }
 
     TokenType Tokenizer::getType(const std::string_view &value) const noexcept {
@@ -178,14 +181,14 @@ namespace vnd {
             if(position + 1 == _inputSize) {
                 incPosAndColumn();
                 value = _input.substr(start, position - start);
-                return {TokenType::UNKNOWN, value, line, column - value.size()};
+                return {TokenType::UNKNOWN, value, {_filename,line, column - value.size()}};
             }
             incPosAndColumn();
         }
         value = _input.substr(start, position - start);
         const auto colum = column - value.size();
         incPosAndColumn();
-        return {TokenType::CHAR, value, line, colum};
+        return {TokenType::CHAR, value, {_filename,line, colum}};
     }
     Token Tokenizer::handleString() {
         const auto startColumn = column;
@@ -196,13 +199,13 @@ namespace vnd {
             if(position + 1 == _inputSize) {
                 incPosAndColumn();
                 value = _input.substr(start, position - start);
-                return {TokenType::UNKNOWN, value, line, startColumn};
+                return {TokenType::UNKNOWN, value, {_filename,line, startColumn}};
             }
-            incPosAndColumn();
+            handleWhiteSpace();
         }
         value = _input.substr(start, position - start);
         incPosAndColumn();
-        return {TokenType::STRING, value, line, startColumn};
+        return {TokenType::STRING, value,{_filename, line, startColumn}};
     }
     void Tokenizer::extractVarLenOperator() {
         while(positionIsInText() && vnd::TokenizerUtility::isOperator(_input[position])) { incPosAndColumn(); }
@@ -215,6 +218,7 @@ namespace vnd {
         case '=':
             return EQUAL_OPERATOR;
         case '<':
+            [[fallthrough]];
         case '>':
             return BOOLEAN_OPERATOR;
         case '!':
@@ -225,6 +229,7 @@ namespace vnd {
         case '^':
         case '%':
         case '|':
+            [[fallthrough]];
         case '&':
             return OPERATOR;
         default:
@@ -241,19 +246,21 @@ namespace vnd {
         return UNKNOWN;
     }
 
-    void Tokenizer::handleOperators(std::vector<Token> &tokens) {
+    std::vector<Token> Tokenizer::handleOperators() {
+        std::vector<Token> tokens;
         const auto start = position;
         extractVarLenOperator();
         auto value = _input.substr(start, position - start);
         while(!value.empty()) {
             Token token;
-            if(value.size() > 1) { token = {multyCharOp(value.substr(0, 2)), value.substr(0, 2), line, column - 2}; }
+            if(value.size() > 1) { token = {multyCharOp(value.substr(0, 2)), value.substr(0, 2), {_filename,line, column - 2}}; }
             if(token.getType() == TokenType::UNKNOWN || value.size() == 1) {
-                token = Token{singoleCharOp(value[0]), value.substr(0, 1), line, column - 1};
+                token = Token{singoleCharOp(value[0]), value.substr(0, 1), {_filename,line, column - 1}};
             }
             tokens.emplace_back(token);
             value = value.substr(token.getValue().size(), value.size() - token.getValue().size());
         }
+        return tokens;
     }
 
     void Tokenizer::handleError(const std::string &value, const std::string_view &errorMsg) {
@@ -290,6 +297,24 @@ namespace vnd {
         errorMessageStream << contextLine;
         errorMessageStream << highlighting;
         return errorMessageStream.str();
+    }
+    Token Tokenizer::handleHexadecimalOrOctal() {
+        const auto start = position;
+        TokenType tokenType = TokenType::INTEGER;
+        incPosAndColumn();
+        if(std::tolower(_input[position]) != 'o') {
+            while (positionIsInText() && std::isxdigit(C_UC(_input[position]))) {
+                incPosAndColumn();
+            }
+        } else {
+            incPosAndColumn();
+            while (positionIsInText() && TokenizerUtility::isOctalDigit(_input[position])) {
+                incPosAndColumn();
+            }
+        }
+
+        const auto value = _input.substr(start, position - start);
+        return {tokenType, value,{_filename, line, column - value.size()-1}};
     }
 
 }  // namespace vnd
