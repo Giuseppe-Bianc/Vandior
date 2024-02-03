@@ -43,7 +43,7 @@ namespace vnd {
                 }
                 _text += "\n";
             }
-            if(!_scope->isMainScope()) { throw TranspilerException("Expected }", Instruction::create()); }
+            if(!_scope->isMainScope()) { throw TranspilerException("Expected }", Instruction::create("")); }
             _output << _text;
             _output.close();
             LINFO("Transpiling successfull");

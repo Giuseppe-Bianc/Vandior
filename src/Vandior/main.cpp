@@ -87,7 +87,7 @@ auto main(int argc, const char *const argv[]) -> int {
             LINFO("{}", Vandior::cmake::project_version);
             return EXIT_SUCCESS;  // NOLINT(*-include-cleaner)
         }
-        vnd::Tokenizer tokenizer{code};
+        vnd::Tokenizer tokenizer{code, filename};
         std::vector<vnd::Token> tokens;
         timeTokenizer(tokenizer, tokens);
         for(const auto &item : tokens) { LINFO("{}", item); }
@@ -99,7 +99,7 @@ auto main(int argc, const char *const argv[]) -> int {
             if(token.getLine() >= line) [[likely]] {
                 if(instructions.empty() || instructions.back().canTerminate()) [[likely]] {
                     if(!instructions.empty()) { LINFO("{}", instructions.back().getLastType()); }
-                    instructions.emplace_back(vnd::Instruction::create());
+                    instructions.emplace_back(vnd::Instruction::create(filename));
                 } else if(instructions.back().typeToString().back() != "EXPRESSION" && token.getType() != vnd::TokenType::STRING)
                     [[unlikely]] {
                     throw vnd::InstructionException(token);

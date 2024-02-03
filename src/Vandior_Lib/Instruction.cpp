@@ -8,18 +8,18 @@ namespace vnd {
         TokenType::OPEN_PARENTESIS, TokenType::OPEN_CUR_PARENTESIS
     };
 
-    Instruction::Instruction() noexcept
+    Instruction::Instruction(const std::string_view filename) noexcept
       : _allowedTokens({TokenType::K_MAIN, TokenType::K_VAR, TokenType::K_STRUCTURE, TokenType::K_FOR, TokenType::K_FUN,
                         TokenType::K_RETURN, TokenType::IDENTIFIER, TokenType::OPEN_CUR_PARENTESIS,
                         TokenType::CLOSE_CUR_PARENTESIS, eofTokenType}),
-        _types({InstructionType::BLANK}), _booleanOperators({false}) {
+        _types({InstructionType::BLANK}), _booleanOperators({false}), _filename(filename) {
         _tokens.reserve({});
     }
 
-    Instruction Instruction::create() noexcept { return {}; }
+    Instruction Instruction::create(const std::string_view filename) noexcept { return {filename}; }
 
     std::vector<Token> Instruction::getTokens() const noexcept {
-        if(_tokens.empty()) { return {{TokenType::UNKNOWN, "", 0, 0}}; }
+        if(_tokens.empty()) { return {{TokenType::UNKNOWN, "", {_filename, 0, 0}}}; }
         return _tokens;
     }
 
