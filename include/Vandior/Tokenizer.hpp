@@ -9,12 +9,13 @@
 namespace vnd {
     class Tokenizer {
     public:
-        explicit Tokenizer(const std::string_view &input) noexcept
-          : _input(input), _inputSize(input.size()) {}  // NOLINT(*-include-cleaner)
+        explicit Tokenizer(const std::string_view &input, const std::string_view &fileName = "unknown.vn") noexcept
+          : _input(input), _filename(fileName), _inputSize(input.size()) {}  // NOLINT(*-include-cleaner)
         [[nodiscard]] std::vector<Token> tokenize();    // NOLINT(*-include-cleaner)
 
     private:
         std::string_view _input;
+        std::string_view _filename;
         std::size_t _inputSize;
         std::size_t position = 0;
         std::size_t line = 1;

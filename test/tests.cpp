@@ -67,7 +67,7 @@ TEST_CASE("default constructed token toString", "[token]"){
     REQUIRE(token.getValue().empty() == true);
     REQUIRE(token.getLine() == 0);
     REQUIRE(token.getColumn() == 0);
-    REQUIRE(token.to_string() == "(type: UNKNOWN, value: '', line: 0, column: 0)");
+    REQUIRE(token.to_string() == "(type: UNKNOWN, value: '', source location:(file:unknown, line:0, column:0))");
 }
 
 TEST_CASE("default constructed token format", "[token]"){
@@ -76,7 +76,7 @@ TEST_CASE("default constructed token format", "[token]"){
     REQUIRE(token.getValue().empty() == true);
     REQUIRE(token.getLine() == 0);
     REQUIRE(token.getColumn() == 0);
-    REQUIRE(FORMAT("{}", token) == "(type: UNKNOWN, value: '', line: 0, column: 0)");
+    REQUIRE(FORMAT("{}", token) == "(type: UNKNOWN, value: '', source location:(file:unknown, line:0, column:0))");
 }
 
 TEST_CASE("default constructed token set propriety", "[token]"){
@@ -109,7 +109,7 @@ TEST_CASE("default constructed token set propriety tostring", "[token]"){
     REQUIRE(token.getValue().empty() == false);
     REQUIRE(token.getLine() == 1);
     REQUIRE(token.getColumn() == 1);
-    REQUIRE(token.to_string() == "(type: INTEGER, value: 'assss', line: 1, column: 1)");
+    REQUIRE(token.to_string() == "(type: INTEGER, value: 'assss', source location:(file:unknown, line:1, column:1))");
 }
 
 TEST_CASE("default constructed token set propriety format", "[token]"){
@@ -126,237 +126,237 @@ TEST_CASE("default constructed token set propriety format", "[token]"){
     REQUIRE(token.getValue().empty() == false);
     REQUIRE(token.getLine() == 1);
     REQUIRE(token.getColumn() == 1);
-    REQUIRE(FORMAT("{}", token) == "(type: INTEGER, value: 'assss', line: 1, column: 1)");
+    REQUIRE(FORMAT("{}", token) == "(type: INTEGER, value: 'assss', source location:(file:unknown, line:1, column:1))");
 }
 
 TEST_CASE("Token Comparison Equality", "[Token]") {
-    vnd::Token token1(oper, "+", line,  colum);
-    vnd::Token token2(oper, "+", line,  colum);
+    vnd::Token token1(oper, "+", vnd::CodeSourceLocation("unkown.vn", line,  colum));
+    vnd::Token token2(oper, "+", vnd::CodeSourceLocation("unkown.vn", line,  colum));
     REQUIRE(token1 == token2);
 }
 
 TEST_CASE("Token Comparison Inequality", "[Token]") {
-    vnd::Token token1(identf, "variable", line,  colum);
-    vnd::Token token2(identf, "variable2", line,  colum);
+    vnd::Token token1(identf, "variable", vnd::CodeSourceLocation("unkown.vn", line,  colum));
+    vnd::Token token2(identf, "variable2", vnd::CodeSourceLocation("unkown.vn", line,  colum));
     REQUIRE(token1 != token2);
 }
 
 TEST_CASE("tokenizer emit identifier token", "[tokenizer]"){
-    vnd::Tokenizer tokenizer{"a a_ a0 a000_"};
+    vnd::Tokenizer tokenizer{"a a_ a0 a000_","unkown.vn"};
     std::vector<vnd::Token> tokens = tokenizer.tokenize();
     REQUIRE(tokens.size() == 5);
-    REQUIRE(tokens[0] == vnd::Token(identf, "a", 1, 1));
-    REQUIRE(tokens[1] == vnd::Token(identf, "a_", 1, 3));
-    REQUIRE(tokens[2] == vnd::Token(identf, "a0", 1, 6));
-    REQUIRE(tokens[3] == vnd::Token(identf, "a000_", 1, 9));
+    REQUIRE(tokens[0] == vnd::Token(identf, "a",vnd::CodeSourceLocation("unkown.vn", 1, 1)));
+    REQUIRE(tokens[1] == vnd::Token(identf, "a_",vnd::CodeSourceLocation("unkown.vn", 1, 3)));
+    REQUIRE(tokens[2] == vnd::Token(identf, "a0",vnd::CodeSourceLocation("unkown.vn", 1, 6)));
+    REQUIRE(tokens[3] == vnd::Token(identf, "a000_",vnd::CodeSourceLocation("unkown.vn", 1, 9)));
 }
 
 TEST_CASE("tokenizer emit identifier token new line", "[tokenizer]"){
-    vnd::Tokenizer tokenizer{"a a_\na0 a000_"};
+    vnd::Tokenizer tokenizer{"a a_\na0 a000_","unkown.vn"};
     std::vector<vnd::Token> tokens = tokenizer.tokenize();
     REQUIRE(tokens.size() == 5);
-    REQUIRE(tokens[0] == vnd::Token(identf, "a", 1, 1));
-    REQUIRE(tokens[1] == vnd::Token(identf, "a_", 1, 3));
-    REQUIRE(tokens[2] == vnd::Token(identf, "a0", 2, 1));
-    REQUIRE(tokens[3] == vnd::Token(identf, "a000_", 2, 4));
+    REQUIRE(tokens[0] == vnd::Token(identf, "a", vnd::CodeSourceLocation("unkown.vn",1, 1)));
+    REQUIRE(tokens[1] == vnd::Token(identf, "a_", vnd::CodeSourceLocation("unkown.vn",1, 3)));
+    REQUIRE(tokens[2] == vnd::Token(identf, "a0", vnd::CodeSourceLocation("unkown.vn",2, 1)));
+    REQUIRE(tokens[3] == vnd::Token(identf, "a000_",vnd::CodeSourceLocation("unkown.vn", 2, 4)));
 }
 
 TEST_CASE("tokenizer emit integer token for hexadecimals numbers", "[tokenizer]"){
     // hexadecimals 0xhexnum a-f A-F 0-9
-    vnd::Tokenizer tokenizer{"#0 #23 #24 #ff #7f"};
+    vnd::Tokenizer tokenizer{"#0 #23 #24 #ff #7f","unkown.vn"};
     std::vector<vnd::Token> tokens = tokenizer.tokenize();
     REQUIRE(tokens.size() == 6);
-    REQUIRE(tokens[0] == vnd::Token(inte, "#0", 1, 0));
-    REQUIRE(tokens[1] == vnd::Token(inte, "#23", 1, 3));
-    REQUIRE(tokens[2] == vnd::Token(inte, "#24", 1, 7));
-    REQUIRE(tokens[3] == vnd::Token(inte, "#ff", 1, 11));
-    REQUIRE(tokens[4] == vnd::Token(inte, "#7f", 1, 15));
+    REQUIRE(tokens[0] == vnd::Token(inte, "#0",vnd::CodeSourceLocation("unkown.vn", 1, 0)));
+    REQUIRE(tokens[1] == vnd::Token(inte, "#23",vnd::CodeSourceLocation("unkown.vn", 1, 3)));
+    REQUIRE(tokens[2] == vnd::Token(inte, "#24",vnd::CodeSourceLocation("unkown.vn", 1, 7)));
+    REQUIRE(tokens[3] == vnd::Token(inte, "#ff",vnd::CodeSourceLocation("unkown.vn", 1, 11)));
+    REQUIRE(tokens[4] == vnd::Token(inte, "#7f",vnd::CodeSourceLocation("unkown.vn", 1, 15)));
 }
 
 TEST_CASE("tokenizer emit integer token for octal numbers", "[tokenizer]"){
     // octal 0oOctnum 0-7
-    vnd::Tokenizer tokenizer{"#o0 #o23 #o24"};
+    vnd::Tokenizer tokenizer{"#o0 #o23 #o24","unkown.vn"};
     std::vector<vnd::Token> tokens = tokenizer.tokenize();
     REQUIRE(tokens.size() == 4);
-    REQUIRE(tokens[0] == vnd::Token(inte, "#o0", 1, 0));
-    REQUIRE(tokens[1] == vnd::Token(inte, "#o23", 1, 4));
-    REQUIRE(tokens[2] == vnd::Token(inte, "#o24", 1, 9));
+    REQUIRE(tokens[0] == vnd::Token(inte, "#o0", vnd::CodeSourceLocation("unkown.vn",1, 0)));
+    REQUIRE(tokens[1] == vnd::Token(inte, "#o23", vnd::CodeSourceLocation("unkown.vn",1, 4)));
+    REQUIRE(tokens[2] == vnd::Token(inte, "#o24", vnd::CodeSourceLocation("unkown.vn",1, 9)));
 }
 
 TEST_CASE("tokenizer emit integer token", "[tokenizer]"){
-    vnd::Tokenizer tokenizer{"42 333 550 34000000"};
+    vnd::Tokenizer tokenizer{"42 333 550 34000000","unkown.vn"};
     std::vector<vnd::Token> tokens = tokenizer.tokenize();
     REQUIRE(tokens.size() == 5);
-    REQUIRE(tokens[0] == vnd::Token(inte, "42", 1, 1));
-    REQUIRE(tokens[1] == vnd::Token(inte, "333", 1, 4));
-    REQUIRE(tokens[2] == vnd::Token(inte, "550", 1, 8));
-    REQUIRE(tokens[3] == vnd::Token(inte, "34000000", 1, 12));
+    REQUIRE(tokens[0] == vnd::Token(inte, "42", vnd::CodeSourceLocation("unkown.vn",1, 1)));
+    REQUIRE(tokens[1] == vnd::Token(inte, "333", vnd::CodeSourceLocation("unkown.vn",1, 4)));
+    REQUIRE(tokens[2] == vnd::Token(inte, "550", vnd::CodeSourceLocation("unkown.vn",1, 8)));
+    REQUIRE(tokens[3] == vnd::Token(inte, "34000000", vnd::CodeSourceLocation("unkown.vn",1, 12)));
 }
 
 TEST_CASE("tokenizer emit integer token new line", "[tokenizer]"){
-    vnd::Tokenizer tokenizer{"42 333\n550 34000000"};
+    vnd::Tokenizer tokenizer{"42 333\n550 34000000","unkown.vn"};
     std::vector<vnd::Token> tokens = tokenizer.tokenize();
     REQUIRE(tokens.size() == 5);
-    REQUIRE(tokens[0] == vnd::Token(inte, "42", 1, 1));
-    REQUIRE(tokens[1] == vnd::Token(inte, "333", 1, 4));
-    REQUIRE(tokens[2] == vnd::Token(inte, "550", 2, 1));
-    REQUIRE(tokens[3] == vnd::Token(inte, "34000000", 2, 5));
+    REQUIRE(tokens[0] == vnd::Token(inte, "42", vnd::CodeSourceLocation("unkown.vn",1, 1)));
+    REQUIRE(tokens[1] == vnd::Token(inte, "333", vnd::CodeSourceLocation("unkown.vn",1, 4)));
+    REQUIRE(tokens[2] == vnd::Token(inte, "550", vnd::CodeSourceLocation("unkown.vn",2, 1)));
+    REQUIRE(tokens[3] == vnd::Token(inte, "34000000", vnd::CodeSourceLocation("unkown.vn",2, 5)));
 }
 
 TEST_CASE("tokenizer emit double token", "[tokenizer]"){
-    vnd::Tokenizer tokenizer{"1. 1.0 1e+1 1E+1 1.1e+1 1.1E+1 1e-1 1E-1 1.1e-1 1.1E-1 .4e12"};
+    vnd::Tokenizer tokenizer{"1. 1.0 1e+1 1E+1 1.1e+1 1.1E+1 1e-1 1E-1 1.1e-1 1.1E-1 .4e12","unkown.vn"};
     std::vector<vnd::Token> tokens = tokenizer.tokenize();
     REQUIRE(tokens.size() == 12);
-    REQUIRE(tokens[0] == vnd::Token(doub, "1.", 1, 1));
-    REQUIRE(tokens[1] == vnd::Token(doub, "1.0", 1, 4));
-    REQUIRE(tokens[2] == vnd::Token(doub, "1e+1", 1, 8));
-    REQUIRE(tokens[3] == vnd::Token(doub, "1E+1", 1, 13));
-    REQUIRE(tokens[4] == vnd::Token(doub, "1.1e+1", 1, 18));
-    REQUIRE(tokens[5] == vnd::Token(doub, "1.1E+1", 1, 25));
-    REQUIRE(tokens[6] == vnd::Token(doub, "1e-1", 1, 32));
-    REQUIRE(tokens[7] == vnd::Token(doub, "1E-1", 1, 37));
-    REQUIRE(tokens[8] == vnd::Token(doub, "1.1e-1", 1, 42));
-    REQUIRE(tokens[9] == vnd::Token(doub, "1.1E-1", 1, 49));
-    REQUIRE(tokens[10] == vnd::Token(doub, ".4e12", 1, 56));
+    REQUIRE(tokens[0] == vnd::Token(doub, "1.", vnd::CodeSourceLocation("unkown.vn",1, 1)));
+    REQUIRE(tokens[1] == vnd::Token(doub, "1.0", vnd::CodeSourceLocation("unkown.vn",1, 4)));
+    REQUIRE(tokens[2] == vnd::Token(doub, "1e+1", vnd::CodeSourceLocation("unkown.vn",1, 8)));
+    REQUIRE(tokens[3] == vnd::Token(doub, "1E+1", vnd::CodeSourceLocation("unkown.vn",1, 13)));
+    REQUIRE(tokens[4] == vnd::Token(doub, "1.1e+1", vnd::CodeSourceLocation("unkown.vn",1, 18)));
+    REQUIRE(tokens[5] == vnd::Token(doub, "1.1E+1", vnd::CodeSourceLocation("unkown.vn",1, 25)));
+    REQUIRE(tokens[6] == vnd::Token(doub, "1e-1", vnd::CodeSourceLocation("unkown.vn",1, 32)));
+    REQUIRE(tokens[7] == vnd::Token(doub, "1E-1", vnd::CodeSourceLocation("unkown.vn",1, 37)));
+    REQUIRE(tokens[8] == vnd::Token(doub, "1.1e-1", vnd::CodeSourceLocation("unkown.vn",1, 42)));
+    REQUIRE(tokens[9] == vnd::Token(doub, "1.1E-1", vnd::CodeSourceLocation("unkown.vn",1, 49)));
+    REQUIRE(tokens[10] == vnd::Token(doub, ".4e12", vnd::CodeSourceLocation("unkown.vn",1, 56)));
 }
 
 TEST_CASE("tokenizer emit operator token", "[tokenizer]"){
-    vnd::Tokenizer tokenizer{"* / = , : < > ! | & + - ^ ."};
+    vnd::Tokenizer tokenizer{"* / = , : < > ! | & + - ^ .","unkown.vn"};
     std::vector<vnd::Token> tokens = tokenizer.tokenize();
     REQUIRE(tokens.size() == 15);
-    REQUIRE(tokens[0] == vnd::Token(oper, "*", 1, 1));
-    REQUIRE(tokens[1] == vnd::Token(oper, "/", 1, 3));
-    REQUIRE(tokens[2] == vnd::Token(vnd::TokenType::EQUAL_OPERATOR, "=", 1, 5));
-    REQUIRE(tokens[3] == vnd::Token(vnd::TokenType::COMMA, ",", 1, 6));
-    REQUIRE(tokens[4] == vnd::Token(vnd::TokenType::COLON, ":", 1, 8));
-    REQUIRE(tokens[5] == vnd::Token(vnd::TokenType::BOOLEAN_OPERATOR, "<", 1, 11));
-    REQUIRE(tokens[6] == vnd::Token(vnd::TokenType::BOOLEAN_OPERATOR, ">", 1, 13));
-    REQUIRE(tokens[7] == vnd::Token(vnd::TokenType::NOT_OPERATOR, "!", 1, 15));
-    REQUIRE(tokens[8] == vnd::Token(oper, "|", 1, 17));
-    REQUIRE(tokens[9] == vnd::Token(oper, "&", 1, 19));
-    REQUIRE(tokens[10] == vnd::Token(oper, "+", 1, 21));
-    REQUIRE(tokens[11] == vnd::Token(vnd::TokenType::MINUS_OPERATOR, "-", 1, 23));
-    REQUIRE(tokens[12] == vnd::Token(oper, "^", 1, 25));
-    REQUIRE(tokens[13] == vnd::Token(vnd::TokenType::DOT_OPERATOR, ".", 1, 27));
+    REQUIRE(tokens[0] == vnd::Token(oper, "*", vnd::CodeSourceLocation("unkown.vn",1, 1)));
+    REQUIRE(tokens[1] == vnd::Token(oper, "/", vnd::CodeSourceLocation("unkown.vn",1, 3)));
+    REQUIRE(tokens[2] == vnd::Token(vnd::TokenType::EQUAL_OPERATOR, "=", vnd::CodeSourceLocation("unkown.vn",1, 5)));
+    REQUIRE(tokens[3] == vnd::Token(vnd::TokenType::COMMA, ",", vnd::CodeSourceLocation("unkown.vn",1, 6)));
+    REQUIRE(tokens[4] == vnd::Token(vnd::TokenType::COLON, ":", vnd::CodeSourceLocation("unkown.vn",1, 8)));
+    REQUIRE(tokens[5] == vnd::Token(vnd::TokenType::BOOLEAN_OPERATOR, "<", vnd::CodeSourceLocation("unkown.vn",1, 11)));
+    REQUIRE(tokens[6] == vnd::Token(vnd::TokenType::BOOLEAN_OPERATOR, ">", vnd::CodeSourceLocation("unkown.vn",1, 13)));
+    REQUIRE(tokens[7] == vnd::Token(vnd::TokenType::NOT_OPERATOR, "!", vnd::CodeSourceLocation("unkown.vn",1, 15)));
+    REQUIRE(tokens[8] == vnd::Token(oper, "|", vnd::CodeSourceLocation("unkown.vn",1, 17)));
+    REQUIRE(tokens[9] == vnd::Token(oper, "&", vnd::CodeSourceLocation("unkown.vn",1, 19)));
+    REQUIRE(tokens[10] == vnd::Token(oper, "+", vnd::CodeSourceLocation("unkown.vn",1, 21)));
+    REQUIRE(tokens[11] == vnd::Token(vnd::TokenType::MINUS_OPERATOR, "-", vnd::CodeSourceLocation("unkown.vn",1, 23)));
+    REQUIRE(tokens[12] == vnd::Token(oper, "^", vnd::CodeSourceLocation("unkown.vn",1, 25)));
+    REQUIRE(tokens[13] == vnd::Token(vnd::TokenType::DOT_OPERATOR, ".", vnd::CodeSourceLocation("unkown.vn",1, 27)));
 }
 
 TEST_CASE("tokenizer emit operationEqual token", "[tokenizer]"){
-    vnd::Tokenizer tokenizer{"+= -= *= /="};
+    vnd::Tokenizer tokenizer{"+= -= *= /=","unkown.vn"};
     std::vector<vnd::Token> tokens = tokenizer.tokenize();
     REQUIRE(tokens.size() == 5);
-    REQUIRE(tokens[0] == vnd::Token(vnd::TokenType::OPERATION_EQUAL, "+=", 1, 1));
-    REQUIRE(tokens[1] == vnd::Token(vnd::TokenType::OPERATION_EQUAL, "-=", 1, 4));
-    REQUIRE(tokens[2] == vnd::Token(vnd::TokenType::OPERATION_EQUAL, "*=", 1, 7));
-    REQUIRE(tokens[3] == vnd::Token(vnd::TokenType::OPERATION_EQUAL, "/=", 1, 10));
+    REQUIRE(tokens[0] == vnd::Token(vnd::TokenType::OPERATION_EQUAL, "+=", vnd::CodeSourceLocation("unkown.vn",1, 1)));
+    REQUIRE(tokens[1] == vnd::Token(vnd::TokenType::OPERATION_EQUAL, "-=", vnd::CodeSourceLocation("unkown.vn",1, 4)));
+    REQUIRE(tokens[2] == vnd::Token(vnd::TokenType::OPERATION_EQUAL, "*=", vnd::CodeSourceLocation("unkown.vn",1, 7)));
+    REQUIRE(tokens[3] == vnd::Token(vnd::TokenType::OPERATION_EQUAL, "/=", vnd::CodeSourceLocation("unkown.vn",1, 10)));
 }
 
 TEST_CASE("tokenizer emit boolean operator token", "[tokenizer]"){
-    vnd::Tokenizer tokenizer{"== >= <= !="};
+    vnd::Tokenizer tokenizer{"== >= <= !=","unkown.vn"};
     std::vector<vnd::Token> tokens = tokenizer.tokenize();
     REQUIRE(tokens.size() == 5);
-    REQUIRE(tokens[0] == vnd::Token(vnd::TokenType::BOOLEAN_OPERATOR, "==", 1, 1));
-    REQUIRE(tokens[1] == vnd::Token(vnd::TokenType::BOOLEAN_OPERATOR, ">=", 1, 4));
-    REQUIRE(tokens[2] == vnd::Token(vnd::TokenType::BOOLEAN_OPERATOR, "<=", 1, 7));
-    REQUIRE(tokens[3] == vnd::Token(vnd::TokenType::BOOLEAN_OPERATOR, "!=", 1, 10));
+    REQUIRE(tokens[0] == vnd::Token(vnd::TokenType::BOOLEAN_OPERATOR, "==", vnd::CodeSourceLocation("unkown.vn",1, 1)));
+    REQUIRE(tokens[1] == vnd::Token(vnd::TokenType::BOOLEAN_OPERATOR, ">=", vnd::CodeSourceLocation("unkown.vn",1, 4)));
+    REQUIRE(tokens[2] == vnd::Token(vnd::TokenType::BOOLEAN_OPERATOR, "<=", vnd::CodeSourceLocation("unkown.vn",1, 7)));
+    REQUIRE(tokens[3] == vnd::Token(vnd::TokenType::BOOLEAN_OPERATOR, "!=", vnd::CodeSourceLocation("unkown.vn",1, 10)));
 }
 
 TEST_CASE("tokenizer emit logical operator token", "[tokenizer]"){
-    vnd::Tokenizer tokenizer{"&& ||"};
+    vnd::Tokenizer tokenizer{"&& ||","unkown.vn"};
     std::vector<vnd::Token> tokens = tokenizer.tokenize();
     REQUIRE(tokens.size() == 3);
-    REQUIRE(tokens[0] == vnd::Token(vnd::TokenType::LOGICAL_OPERATOR, "&&", 1, 1));
-    REQUIRE(tokens[1] == vnd::Token(vnd::TokenType::LOGICAL_OPERATOR, "||", 1, 4));
+    REQUIRE(tokens[0] == vnd::Token(vnd::TokenType::LOGICAL_OPERATOR, "&&", vnd::CodeSourceLocation("unkown.vn",1, 1)));
+    REQUIRE(tokens[1] == vnd::Token(vnd::TokenType::LOGICAL_OPERATOR, "||", vnd::CodeSourceLocation("unkown.vn",1, 4)));
 }
 
 TEST_CASE("tokenizer emit unary operator token", "[tokenizer]"){
-    vnd::Tokenizer tokenizer{"++ --"};
+    vnd::Tokenizer tokenizer{"++ --","unkown.vn"};
     std::vector<vnd::Token> tokens = tokenizer.tokenize();
     REQUIRE(tokens.size() == 3);
-    REQUIRE(tokens[0] == vnd::Token(vnd::TokenType::UNARY_OPERATOR, "++", 1, 1));
-    REQUIRE(tokens[1] == vnd::Token(vnd::TokenType::UNARY_OPERATOR, "--", 1, 4));
+    REQUIRE(tokens[0] == vnd::Token(vnd::TokenType::UNARY_OPERATOR, "++", vnd::CodeSourceLocation("unkown.vn",1, 1)));
+    REQUIRE(tokens[1] == vnd::Token(vnd::TokenType::UNARY_OPERATOR, "--", vnd::CodeSourceLocation("unkown.vn",1, 4)));
 }
 
 TEST_CASE("tokenizer emit parenthesis token", "[tokenizer]"){
-    vnd::Tokenizer tokenizer{"( )"};
+    vnd::Tokenizer tokenizer{"( )","unkown.vn"};
     std::vector<vnd::Token> tokens = tokenizer.tokenize();
     REQUIRE(tokens.size() == 3);
-    REQUIRE(tokens[0] == vnd::Token(vnd::TokenType::OPEN_PARENTESIS, "(", 1, 1));
-    REQUIRE(tokens[1] == vnd::Token(vnd::TokenType::CLOSE_PARENTESIS, ")", 1, 3));
+    REQUIRE(tokens[0] == vnd::Token(vnd::TokenType::OPEN_PARENTESIS, "(", vnd::CodeSourceLocation("unkown.vn",1, 1)));
+    REQUIRE(tokens[1] == vnd::Token(vnd::TokenType::CLOSE_PARENTESIS, ")", vnd::CodeSourceLocation("unkown.vn",1, 3)));
 }
 
 TEST_CASE("tokenizer emit square parenthesis token", "[tokenizer]"){
-    vnd::Tokenizer tokenizer{"[ ]"};
+    vnd::Tokenizer tokenizer{"[ ]","unkown.vn"};
     std::vector<vnd::Token> tokens = tokenizer.tokenize();
     REQUIRE(tokens.size() == 3);
-    REQUIRE(tokens[0] == vnd::Token(vnd::TokenType::OPEN_SQ_PARENTESIS, "[", 1, 1));
-    REQUIRE(tokens[1] == vnd::Token(vnd::TokenType::CLOSE_SQ_PARENTESIS, "]", 1, 3));
+    REQUIRE(tokens[0] == vnd::Token(vnd::TokenType::OPEN_SQ_PARENTESIS, "[", vnd::CodeSourceLocation("unkown.vn",1, 1)));
+    REQUIRE(tokens[1] == vnd::Token(vnd::TokenType::CLOSE_SQ_PARENTESIS, "]", vnd::CodeSourceLocation("unkown.vn",1, 3)));
 }
 
 TEST_CASE("Tokenizer emit square curly token", "[Tokenizer]"){
-    vnd::Tokenizer tokenizer{"{ }"};
+    vnd::Tokenizer tokenizer{"{ }","unkown.vn"};
     std::vector<vnd::Token> tokens = tokenizer.tokenize();
     REQUIRE(tokens.size() == 3);
-    REQUIRE(tokens[0] == vnd::Token(vnd::TokenType::OPEN_CUR_PARENTESIS, "{", 1, 1));
-    REQUIRE(tokens[1] == vnd::Token(vnd::TokenType::CLOSE_CUR_PARENTESIS, "}", 1, 3));
+    REQUIRE(tokens[0] == vnd::Token(vnd::TokenType::OPEN_CUR_PARENTESIS, "{", vnd::CodeSourceLocation("unkown.vn",1, 1)));
+    REQUIRE(tokens[1] == vnd::Token(vnd::TokenType::CLOSE_CUR_PARENTESIS, "}", vnd::CodeSourceLocation("unkown.vn",1, 3)));
 }
 
 TEST_CASE("Tokenizer emit char token", "[Tokenizer]"){
     constexpr std::string_view code2 = R"('a' '\\' '')";
-    vnd::Tokenizer tokenizer{code2};
+    vnd::Tokenizer tokenizer{code2,"unkown.vn"};
     std::vector<vnd::Token> tokens = tokenizer.tokenize();
     REQUIRE(tokens.size() == 4);
-    REQUIRE(tokens[0] == vnd::Token(vnd::TokenType::CHAR, "a", 1, 2));
-    REQUIRE(tokens[1] == vnd::Token(vnd::TokenType::CHAR,  R"(\\)", 1, 6));
-    REQUIRE(tokens[2] == vnd::Token(vnd::TokenType::CHAR, "", 1, 11));
+    REQUIRE(tokens[0] == vnd::Token(vnd::TokenType::CHAR, "a", vnd::CodeSourceLocation("unkown.vn",1, 2)));
+    REQUIRE(tokens[1] == vnd::Token(vnd::TokenType::CHAR,  R"(\\)", vnd::CodeSourceLocation("unkown.vn",1, 6)));
+    REQUIRE(tokens[2] == vnd::Token(vnd::TokenType::CHAR, "", vnd::CodeSourceLocation("unkown.vn",1, 11)));
 }
 
 TEST_CASE("Tokenizer emit exception for unkonwn char", "[Tokenizer]") {
-    vnd::Tokenizer tokenizer{";"};
+    vnd::Tokenizer tokenizer{";","unkown.vn"};
     REQUIRE_THROWS_AS(tokenizer.tokenize(), std::runtime_error);
 }
 
 TEST_CASE("Tokenizer emit string token", "[Tokenizer]"){
     constexpr std::string_view code2 = R"("a" "\\" "")";
-    vnd::Tokenizer tokenizer{code2};
+    vnd::Tokenizer tokenizer{code2,"unkown.vn"};
     std::vector<vnd::Token> tokens = tokenizer.tokenize();
     REQUIRE(tokens.size() == 4);
-    REQUIRE(tokens[0] == vnd::Token(vnd::TokenType::STRING, "a", 1,1));
-    REQUIRE(tokens[1] == vnd::Token(vnd::TokenType::STRING, R"(\\)", 1, 5));
-    REQUIRE(tokens[2] == vnd::Token(vnd::TokenType::STRING, "", 1, 10));
+    REQUIRE(tokens[0] == vnd::Token(vnd::TokenType::STRING, "a", vnd::CodeSourceLocation("unkown.vn",1,1)));
+    REQUIRE(tokens[1] == vnd::Token(vnd::TokenType::STRING, R"(\\)", vnd::CodeSourceLocation("unkown.vn",1, 5)));
+    REQUIRE(tokens[2] == vnd::Token(vnd::TokenType::STRING, "", vnd::CodeSourceLocation("unkown.vn",1, 10)));
 }
 
 TEST_CASE("tokenizer emit unknown token on non closed char token", "[tokenizer]"){
     constexpr std::string_view code2 = R"('a")";
-    vnd::Tokenizer tokenizer{code2};
+    vnd::Tokenizer tokenizer{code2,"unkown.vn"};
     std::vector<vnd::Token> tokens = tokenizer.tokenize();
     REQUIRE(tokens.size() == 2);
-    REQUIRE(tokens[0] == vnd::Token(vnd::TokenType::UNKNOWN, R"(a")", 1, 2));
+    REQUIRE(tokens[0] == vnd::Token(vnd::TokenType::UNKNOWN, R"(a")", vnd::CodeSourceLocation("unkown.vn",1, 2)));
 }
 
 TEST_CASE("tokenizer emit comment token", "[tokenizer]"){
     constexpr std::string_view code2 = R"(// line comment)";
-    vnd::Tokenizer tokenizer{code2};
+    vnd::Tokenizer tokenizer{code2,"unkown.vn"};
     std::vector<vnd::Token> tokens = tokenizer.tokenize();
     REQUIRE(tokens.size() == 2);
-    REQUIRE(tokens[0] == vnd::Token(vnd::TokenType::COMMENT, "// line comment", 1, 1));
+    REQUIRE(tokens[0] == vnd::Token(vnd::TokenType::COMMENT, "// line comment", vnd::CodeSourceLocation("unkown.vn",1, 1)));
 }
 
 TEST_CASE("tokenizer emit multiline comment token", "[tokenizer]"){
     constexpr std::string_view code2 = R"(/*multi\nline\ncomment*/)";
-    vnd::Tokenizer tokenizer{code2};
+    vnd::Tokenizer tokenizer{code2,"unkown.vn"};
     std::vector<vnd::Token> tokens = tokenizer.tokenize();
     REQUIRE(tokens.size() == 2);
-    REQUIRE(tokens[0] == vnd::Token(vnd::TokenType::COMMENT, R"(/*multi\nline\ncomment*/)", 1, 1));
+    REQUIRE(tokens[0] == vnd::Token(vnd::TokenType::COMMENT, R"(/*multi\nline\ncomment*/)", vnd::CodeSourceLocation("unkown.vn",1, 1)));
 }
 
 
 /*
 TEST_CASE("tokenizer emit unknown token on non closed string token", "[tokenizer]"){
     constexpr std::string_view code2 = R"("a')";
-    Tokenizer tokenizer{code2};
+    Tokenizer tokenizer{code2,"unkown.vn"};
     std::vector<Token> tokens = tokenizer.tokenize();
     REQUIRE(tokens.size() == 2);
-    REQUIRE(tokens[0] == Token(TokenType::UNKNOWN, R"(a')", 1, 2));
+    REQUIRE(tokens[0] == Token(TokenType::UNKNOWN, R"(a')", vnd::CodeSourceLocation("unkown.vn",1, 2)));
 }*/
 TEST_CASE("corrected format for InstructionType", "[Instruction_type]") {
     using enum vnd::InstructionType;
@@ -397,103 +397,103 @@ TEST_CASE("Instruction typeToString function", "[Instruction]") {
 
 TEST_CASE("Instruction checkToken function for valid tokens", "[Instruction]") {
     vnd::Instruction instruction = vnd::Instruction::create();
-    vnd::Token identifierToken(vnd::TokenType::IDENTIFIER, "variable", 1, 2);
+    vnd::Token identifierToken(vnd::TokenType::IDENTIFIER, "variable", vnd::CodeSourceLocation("unkown.vn",1, 2));
     instruction.checkToken(identifierToken);
     REQUIRE(instruction.canTerminate() == true);
 }
 
 TEST_CASE("Instruction checkToken function for invalid tokens", "[Instruction]") {
     vnd::Instruction instruction = vnd::Instruction::create();
-    vnd::Token invalidToken(vnd::TokenType::UNKNOWN, "invalid", 1, 2);
+    vnd::Token invalidToken(vnd::TokenType::UNKNOWN, "invalid", vnd::CodeSourceLocation("unkown.vn",1, 2));
     REQUIRE_THROWS_AS(instruction.checkToken(invalidToken), vnd::InstructionException);
 }
 
 TEST_CASE("Corrected type of assignation istruction","[Instruction]") {
     vnd::Instruction instruction = vnd::Instruction::create();
     REQUIRE(instruction.getLastType() == vnd::InstructionType::BLANK);
-    instruction.checkToken(vnd::Token{vnd::TokenType::IDENTIFIER, "a", 1, 0});
+    instruction.checkToken(vnd::Token{vnd::TokenType::IDENTIFIER, "a", vnd::CodeSourceLocation("unkown.vn",1, 0)});
     REQUIRE(instruction.getLastType() == vnd::InstructionType::OPERATION);
-    instruction.checkToken(vnd::Token{vnd::TokenType::EQUAL_OPERATOR, "", 1, 1});
+    instruction.checkToken(vnd::Token{vnd::TokenType::EQUAL_OPERATOR, "", vnd::CodeSourceLocation("unkown.vn",1, 1)});
     REQUIRE(instruction.getLastType() == vnd::InstructionType::ASSIGNATION);
-    instruction.checkToken(vnd::Token{vnd::TokenType::OPEN_PARENTESIS, "", 1, 2});
+    instruction.checkToken(vnd::Token{vnd::TokenType::OPEN_PARENTESIS, "", vnd::CodeSourceLocation("unkown.vn",1, 2)});
     REQUIRE(instruction.getLastType() == vnd::InstructionType::EXPRESSION);
 }
 
 TEST_CASE("Corrected type of multy assignation instruction","[Instruction]") {
     vnd::Instruction instruction = vnd::Instruction::create();
-    instruction.checkToken(vnd::Token{vnd::TokenType::K_VAR, "", 0, 0});
-    instruction.checkToken(vnd::Token{vnd::TokenType::IDENTIFIER, "", 0, 1});
+    instruction.checkToken(vnd::Token{vnd::TokenType::K_VAR, "", vnd::CodeSourceLocation("unkown.vn",0, 0)});
+    instruction.checkToken(vnd::Token{vnd::TokenType::IDENTIFIER, "", vnd::CodeSourceLocation("unkown.vn",0, 1)});
     REQUIRE(instruction.getLastType() == vnd::InstructionType::DECLARATION);
-    instruction.checkToken(vnd::Token{vnd::TokenType::COLON, "", 0, 2});
-    instruction.checkToken(vnd::Token{vnd::TokenType::IDENTIFIER, "", 0, 3});
-    instruction.checkToken(vnd::Token{vnd::TokenType::OPEN_SQ_PARENTESIS, "", 0, 4});
+    instruction.checkToken(vnd::Token{vnd::TokenType::COLON, "", vnd::CodeSourceLocation("unkown.vn",0, 2)});
+    instruction.checkToken(vnd::Token{vnd::TokenType::IDENTIFIER, "", vnd::CodeSourceLocation("unkown.vn",0, 3)});
+    instruction.checkToken(vnd::Token{vnd::TokenType::OPEN_SQ_PARENTESIS, "", vnd::CodeSourceLocation("unkown.vn",0, 4)});
     REQUIRE(instruction.getLastType() == vnd::InstructionType::SQUARE_EXPRESSION);
-    instruction.checkToken(vnd::Token{vnd::TokenType::CLOSE_SQ_PARENTESIS, "", 0, colum2});
-    instruction.checkToken(vnd::Token{vnd::TokenType::EQUAL_OPERATOR, "", 0, colum});
+    instruction.checkToken(vnd::Token{vnd::TokenType::CLOSE_SQ_PARENTESIS, "", vnd::CodeSourceLocation("unkown.vn",0, colum2)});
+    instruction.checkToken(vnd::Token{vnd::TokenType::EQUAL_OPERATOR, "", vnd::CodeSourceLocation("unkown.vn",0, colum)});
     REQUIRE(instruction.getLastType() == vnd::InstructionType::INITIALIZATION);
-    instruction.checkToken(vnd::Token{vnd::TokenType::IDENTIFIER, "", 0, colum3});
-    instruction.checkToken(vnd::Token{vnd::TokenType::OPEN_SQ_PARENTESIS, "", 0, colum4});
-    instruction.checkToken(vnd::Token{vnd::TokenType::INTEGER, "", 0, colum5});
+    instruction.checkToken(vnd::Token{vnd::TokenType::IDENTIFIER, "", vnd::CodeSourceLocation("unkown.vn",0, colum3)});
+    instruction.checkToken(vnd::Token{vnd::TokenType::OPEN_SQ_PARENTESIS, "", vnd::CodeSourceLocation("unkown.vn",0, colum4)});
+    instruction.checkToken(vnd::Token{vnd::TokenType::INTEGER, "", vnd::CodeSourceLocation("unkown.vn",0, colum5)});
     REQUIRE(instruction.getLastType() == vnd::InstructionType::SQUARE_EXPRESSION);
-    instruction.checkToken(vnd::Token{vnd::TokenType::CLOSE_SQ_PARENTESIS, "", 0, colum6});
+    instruction.checkToken(vnd::Token{vnd::TokenType::CLOSE_SQ_PARENTESIS, "", vnd::CodeSourceLocation("unkown.vn",0, colum6)});
 }
 
 TEST_CASE("Corrected type of parameter expression instruction","[Instruction]") {
     vnd::Instruction instruction = vnd::Instruction::create();
-    instruction.checkToken(vnd::Token{vnd::TokenType::IDENTIFIER, "", 0, 0});
-    instruction.checkToken(vnd::Token{vnd::TokenType::OPEN_PARENTESIS, "", 0, 1});
+    instruction.checkToken(vnd::Token{vnd::TokenType::IDENTIFIER, "", vnd::CodeSourceLocation("unkown.vn",0, 0)});
+    instruction.checkToken(vnd::Token{vnd::TokenType::OPEN_PARENTESIS, "", vnd::CodeSourceLocation("unkown.vn",0, 1)});
     REQUIRE(instruction.getLastType() == vnd::InstructionType::PARAMETER_EXPRESSION);
 }
 
 TEST_CASE("Corrected type of parameter definition instruction","[Instruction]") {
     vnd::Instruction instruction = vnd::Instruction::create();
-    instruction.checkToken(vnd::Token{vnd::TokenType::K_FUN, "", 0, 0});
-    instruction.checkToken(vnd::Token{vnd::TokenType::IDENTIFIER, "", 0, 1});
-    instruction.checkToken(vnd::Token{vnd::TokenType::OPEN_PARENTESIS, "", 0, 2});
+    instruction.checkToken(vnd::Token{vnd::TokenType::K_FUN, "", vnd::CodeSourceLocation("unkown.vn",0, 0)});
+    instruction.checkToken(vnd::Token{vnd::TokenType::IDENTIFIER, "", vnd::CodeSourceLocation("unkown.vn",0, 1)});
+    instruction.checkToken(vnd::Token{vnd::TokenType::OPEN_PARENTESIS, "", vnd::CodeSourceLocation("unkown.vn",0, 2)});
     REQUIRE(instruction.getLastType() == vnd::InstructionType::PARAMETER_DEFINITION);
-    instruction.checkToken(vnd::Token{vnd::TokenType::CLOSE_PARENTESIS, "", 0, 3});
+    instruction.checkToken(vnd::Token{vnd::TokenType::CLOSE_PARENTESIS, "", vnd::CodeSourceLocation("unkown.vn",0, 3)});
 }
 
 TEST_CASE("Corrected type of return expression instruction","[Instruction]") {
     vnd::Instruction instruction = vnd::Instruction::create();
-    instruction.checkToken(vnd::Token{vnd::TokenType::K_RETURN, "", 0, 0});
-    instruction.checkToken(vnd::Token{vnd::TokenType::BOOLEAN, "", 0, 1});
+    instruction.checkToken(vnd::Token{vnd::TokenType::K_RETURN, "", vnd::CodeSourceLocation("unkown.vn",0, 0)});
+    instruction.checkToken(vnd::Token{vnd::TokenType::BOOLEAN, "", vnd::CodeSourceLocation("unkown.vn",0, 1)});
     REQUIRE(instruction.getLastType() == vnd::InstructionType::RETURN_EXPRESSION);
 }
 
 TEST_CASE("Corrected type of main instruction","[Instruction]") {
     vnd::Instruction instruction = vnd::Instruction::create();
-    instruction.checkToken(vnd::Token{vnd::TokenType::K_MAIN, "", 0, 0});
-    instruction.checkToken(vnd::Token{vnd::TokenType::OPEN_CUR_PARENTESIS, "", 0, 1});
+    instruction.checkToken(vnd::Token{vnd::TokenType::K_MAIN, "", vnd::CodeSourceLocation("unkown.vn",0, 0)});
+    instruction.checkToken(vnd::Token{vnd::TokenType::OPEN_CUR_PARENTESIS, "", vnd::CodeSourceLocation("unkown.vn",0, 1)});
     REQUIRE(instruction.getLastType() == vnd::InstructionType::MAIN);
 }
 
 TEST_CASE("Corrected type of structure instruction","[Instruction]") {
     vnd::Instruction instruction = vnd::Instruction::create();
-    instruction.checkToken(vnd::Token{vnd::TokenType::K_STRUCTURE, "", 0, 0});
-    instruction.checkToken(vnd::Token{vnd::TokenType::OPEN_PARENTESIS, "", 0, 1});
-    instruction.checkToken(vnd::Token{vnd::TokenType::CLOSE_PARENTESIS, "", 0, 2});
-    instruction.checkToken(vnd::Token{vnd::TokenType::OPEN_CUR_PARENTESIS, "", 0, 3});
+    instruction.checkToken(vnd::Token{vnd::TokenType::K_STRUCTURE, "", vnd::CodeSourceLocation("unkown.vn",0, 0)});
+    instruction.checkToken(vnd::Token{vnd::TokenType::OPEN_PARENTESIS, "", vnd::CodeSourceLocation("unkown.vn",0, 1)});
+    instruction.checkToken(vnd::Token{vnd::TokenType::CLOSE_PARENTESIS, "", vnd::CodeSourceLocation("unkown.vn",0, 2)});
+    instruction.checkToken(vnd::Token{vnd::TokenType::OPEN_CUR_PARENTESIS, "", vnd::CodeSourceLocation("unkown.vn",0, 3)});
     REQUIRE(instruction.getLastType() == vnd::InstructionType::STRUCTURE);
 }
 
 TEST_CASE("Corrected type of for instruction","[Instruction]") {
     vnd::Instruction instruction = vnd::Instruction::create();
-    instruction.checkToken(vnd::Token{vnd::TokenType::K_FOR, "", 0, 0});
+    instruction.checkToken(vnd::Token{vnd::TokenType::K_FOR, "", vnd::CodeSourceLocation("unkown.vn",0, 0)});
     REQUIRE(instruction.getLastType() == vnd::InstructionType::FOR_STRUCTURE);
-    instruction.checkToken(vnd::Token{vnd::TokenType::IDENTIFIER, "", 0, 1});
-    instruction.checkToken(vnd::Token{vnd::TokenType::EQUAL_OPERATOR, "", 0, 2});
+    instruction.checkToken(vnd::Token{vnd::TokenType::IDENTIFIER, "", vnd::CodeSourceLocation("unkown.vn",0, 1)});
+    instruction.checkToken(vnd::Token{vnd::TokenType::EQUAL_OPERATOR, "", vnd::CodeSourceLocation("unkown.vn",0, 2)});
     REQUIRE(instruction.getLastType() == vnd::InstructionType::FOR_INITIALIZATION);
-    instruction.checkToken(vnd::Token{vnd::TokenType::DOUBLE, "", 0, 3});
-    instruction.checkToken(vnd::Token{vnd::TokenType::COMMA, "", 0, 4});
+    instruction.checkToken(vnd::Token{vnd::TokenType::DOUBLE, "", vnd::CodeSourceLocation("unkown.vn",0, 3)});
+    instruction.checkToken(vnd::Token{vnd::TokenType::COMMA, "", vnd::CodeSourceLocation("unkown.vn",0, 4)});
     REQUIRE(instruction.getLastType() == vnd::InstructionType::FOR_CONDITION);
-    instruction.checkToken(vnd::Token{vnd::TokenType::DOUBLE, "", 0, colum2});
-    instruction.checkToken(vnd::Token{vnd::TokenType::COMMA, "", 0, colum});
+    instruction.checkToken(vnd::Token{vnd::TokenType::DOUBLE, "", vnd::CodeSourceLocation("unkown.vn",0, colum2)});
+    instruction.checkToken(vnd::Token{vnd::TokenType::COMMA, "", vnd::CodeSourceLocation("unkown.vn",0, colum)});
     REQUIRE(instruction.getLastType() == vnd::InstructionType::FOR_STEP);
 }
 
 TEST_CASE("Parser emit number node", "[parser]"){
-    vnd::Parser parser("1");
+    vnd::Parser parser("1","unkown.vn");
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Number);
@@ -503,7 +503,7 @@ TEST_CASE("Parser emit number node", "[parser]"){
 }
 
 TEST_CASE("Parser emit number node print", "[parser]"){
-    vnd::Parser parser("1");
+    vnd::Parser parser("1","unkown.vn");
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Number);
@@ -514,7 +514,7 @@ TEST_CASE("Parser emit number node print", "[parser]"){
 }
 
 TEST_CASE("Parser emit number node compat print", "[parser]"){
-    vnd::Parser parser("1");
+    vnd::Parser parser("1","unkown.vn");
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Number);
@@ -525,7 +525,7 @@ TEST_CASE("Parser emit number node compat print", "[parser]"){
 }
 
 TEST_CASE("Parser emit variable node", "[parser]"){
-    vnd::Parser parser("y");
+    vnd::Parser parser("y","unkown.vn");
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Variable);
@@ -535,7 +535,7 @@ TEST_CASE("Parser emit variable node", "[parser]"){
 }
 
 TEST_CASE("Parser emit number node double", "[parser]"){
-    vnd::Parser parser("1.5");
+    vnd::Parser parser("1.5","unkown.vn");
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Number);
@@ -545,7 +545,7 @@ TEST_CASE("Parser emit number node double", "[parser]"){
 }
 
 TEST_CASE("Parser emit number node double print", "[parser]"){
-    vnd::Parser parser("1.5");
+    vnd::Parser parser("1.5","unkown.vn");
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Number);
@@ -556,7 +556,7 @@ TEST_CASE("Parser emit number node double print", "[parser]"){
 }
 
 TEST_CASE("Parser emit number node double compat print", "[parser]"){
-    vnd::Parser parser("1.5");
+    vnd::Parser parser("1.5","unkown.vn");
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Number);
@@ -568,7 +568,7 @@ TEST_CASE("Parser emit number node double compat print", "[parser]"){
 
 
 TEST_CASE("Parser emit variable node print", "[parser]"){
-    vnd::Parser parser("y");
+    vnd::Parser parser("y","unkown.vn");
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Variable);
@@ -579,7 +579,7 @@ TEST_CASE("Parser emit variable node print", "[parser]"){
 }
 
 TEST_CASE("Parser emit variable node compat print", "[parser]"){
-    vnd::Parser parser("y");
+    vnd::Parser parser("y","unkown.vn");
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Variable);
@@ -590,7 +590,7 @@ TEST_CASE("Parser emit variable node compat print", "[parser]"){
 }
 
 TEST_CASE("Parser emit unary expression node", "[parser]") {
-    vnd::Parser parser("-x");
+    vnd::Parser parser("-x","unkown.vn");
     auto ast = parser.parse();
 
     REQUIRE(ast != nullptr);
@@ -611,7 +611,7 @@ TEST_CASE("Parser emit unary expression node", "[parser]") {
 }
 
 TEST_CASE("Parser emit unary expression node print", "[parser]") {
-    vnd::Parser parser("-x");
+    vnd::Parser parser("-x","unkown.vn");
     auto ast = parser.parse();
 
     REQUIRE(ast != nullptr);
@@ -633,7 +633,7 @@ TEST_CASE("Parser emit unary expression node print", "[parser]") {
 }
 
 TEST_CASE("Parser emit unary expression node compat print", "[parser]") {
-    vnd::Parser parser("-x");
+    vnd::Parser parser("-x","unkown.vn");
     auto ast = parser.parse();
 
     REQUIRE(ast != nullptr);
@@ -657,7 +657,7 @@ TEST_CASE("Parser emit unary expression node compat print", "[parser]") {
 
 
 TEST_CASE("Parser emit binary expression node", "[parser]") {
-    vnd::Parser parser("1 + 2");
+    vnd::Parser parser("1 + 2","unkown.vn");
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::BinaryExpression);
@@ -681,7 +681,7 @@ TEST_CASE("Parser emit binary expression node", "[parser]") {
 }
 
 TEST_CASE("Parser emit binary expression node multiply", "[parser]") {
-    vnd::Parser parser("1 * 2");
+    vnd::Parser parser("1 * 2","unkown.vn");
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::BinaryExpression);
@@ -705,7 +705,7 @@ TEST_CASE("Parser emit binary expression node multiply", "[parser]") {
 }
 
 TEST_CASE("Parser emit binary expression node divide", "[parser]") {
-    vnd::Parser parser("1 / 2");
+    vnd::Parser parser("1 / 2","unkown.vn");
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::BinaryExpression);
@@ -729,7 +729,7 @@ TEST_CASE("Parser emit binary expression node divide", "[parser]") {
 }
 
 TEST_CASE("Parser emit binary expression node multiply print", "[parser]") {
-    vnd::Parser parser("1 * 2");
+    vnd::Parser parser("1 * 2","unkown.vn");
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::BinaryExpression);
@@ -754,7 +754,7 @@ TEST_CASE("Parser emit binary expression node multiply print", "[parser]") {
 }
 
 TEST_CASE("Parser emit binary expression node divide print", "[parser]") {
-    vnd::Parser parser("1 / 2");
+    vnd::Parser parser("1 / 2","unkown.vn");
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::BinaryExpression);
@@ -779,7 +779,7 @@ TEST_CASE("Parser emit binary expression node divide print", "[parser]") {
 }
 
 TEST_CASE("Parser emit binary expression node multiply comp print", "[parser]") {
-    vnd::Parser parser("1 * 2");
+    vnd::Parser parser("1 * 2","unkown.vn");
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::BinaryExpression);
@@ -804,7 +804,7 @@ TEST_CASE("Parser emit binary expression node multiply comp print", "[parser]") 
 }
 
 TEST_CASE("Parser emit binary expression node divide comp print", "[parser]") {
-    vnd::Parser parser("1 / 2");
+    vnd::Parser parser("1 / 2","unkown.vn");
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::BinaryExpression);
@@ -829,7 +829,7 @@ TEST_CASE("Parser emit binary expression node divide comp print", "[parser]") {
 }
 
 TEST_CASE("Parser emit binary expression node print", "[parser]") {
-    vnd::Parser parser("1 + 2");
+    vnd::Parser parser("1 + 2","unkown.vn");
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::BinaryExpression);
@@ -853,7 +853,7 @@ TEST_CASE("Parser emit binary expression node print", "[parser]") {
 }
 
 TEST_CASE("Parser emit binary expression node compact print", "[parser]") {
-    vnd::Parser parser("1 + 2");
+    vnd::Parser parser("1 + 2","unkown.vn");
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::BinaryExpression);
@@ -877,7 +877,7 @@ TEST_CASE("Parser emit binary expression node compact print", "[parser]") {
 }
 
 TEST_CASE("Parser emit binary expression node parentesis", "[parser]") {
-    vnd::Parser parser("1 + (2 + 3)");
+    vnd::Parser parser("1 + (2 + 3)","unkown.vn");
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::BinaryExpression);
@@ -906,7 +906,7 @@ TEST_CASE("Parser emit binary expression node parentesis", "[parser]") {
 }
 
 TEST_CASE("Parser emit binary expression node parentesis 2", "[parser]") {
-    vnd::Parser parser("(2 + 3) + 1");
+    vnd::Parser parser("(2 + 3) + 1","unkown.vn");
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::BinaryExpression);
@@ -936,7 +936,7 @@ TEST_CASE("Parser emit binary expression node parentesis 2", "[parser]") {
 
 
 TEST_CASE("Parser emit binary expression node parentesis print", "[parser]") {
-    vnd::Parser parser("1 + (2 + 3)");
+    vnd::Parser parser("1 + (2 + 3)","unkown.vn");
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::BinaryExpression);
@@ -966,7 +966,7 @@ TEST_CASE("Parser emit binary expression node parentesis print", "[parser]") {
 }
 
 TEST_CASE("Parser emit binary expression node parentesis 2 print", "[parser]") {
-    vnd::Parser parser("(2 + 3) + 1");
+    vnd::Parser parser("(2 + 3) + 1","unkown.vn");
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::BinaryExpression);
@@ -997,7 +997,7 @@ TEST_CASE("Parser emit binary expression node parentesis 2 print", "[parser]") {
 
 
 TEST_CASE("Parser emit binary expression node parentesis compat print", "[parser]") {
-    vnd::Parser parser("1 + (2 + 3)");
+    vnd::Parser parser("1 + (2 + 3)","unkown.vn");
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::BinaryExpression);
@@ -1027,7 +1027,7 @@ TEST_CASE("Parser emit binary expression node parentesis compat print", "[parser
 }
 
 TEST_CASE("Parser emit binary expression node parentesis 2 compat print", "[parser]") {
-    vnd::Parser parser("(2 + 3) + 1");
+    vnd::Parser parser("(2 + 3) + 1","unkown.vn");
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::BinaryExpression);
