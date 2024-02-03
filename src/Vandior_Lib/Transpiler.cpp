@@ -97,7 +97,7 @@ namespace vnd {
         if(i != tokens.end() && i->getType() == TokenType::EQUAL_OPERATOR) {
             i++;
             while(i != tokens.end()) {
-                if(std::string error = factory.parse(TokenType::COMMA); error != "") {
+                if(std::string error = factory.parse({TokenType::COMMA}); error != "") {
                     throw TranspilerException(error, instruction);
                 }
                 if(i != tokens.end()) { i++; }

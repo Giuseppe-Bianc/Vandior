@@ -12,7 +12,7 @@ namespace vnd {
         [[nodiscard]] static ExpressionFactory create(std::vector<Token>::iterator &iterator, std::vector<Token>::iterator end,
                                                       std::shared_ptr<Scope> scope) noexcept;
         [[nodiscard]] static bool isNumber(const std::string &type) noexcept;
-        [[nodiscard]] std::string parse(const TokenType &endToken) noexcept;
+        [[nodiscard]] std::string parse(const std::vector<TokenType> &endToken) noexcept;
         [[nodiscard]] std::size_t size() const noexcept;
         [[nodiscard]] bool empty() const noexcept;
         [[nodiscard]] Expression getExpression() noexcept;
@@ -28,8 +28,10 @@ namespace vnd {
         std::vector<Expression> _expressions;
         char _lastOperator;
         [[nodiscard]] std::string_view getTokenType(const Token &token) const noexcept;
-        void emplaceToken(const Token &token) noexcept;
-        [[nodiscard]] std::string writeToken(const Token &token) noexcept;
+        void emplaceToken() noexcept;
+        [[nodiscard]] std::string writeToken() noexcept;
+        [[nodiscard]] std::string handleInnerExpression(std::tuple<bool, bool, std::string> &type) noexcept;
+        [[nodiscard]] std::string handleToken(std::tuple<bool, bool, std::string>& type) noexcept;
     };
 
 }  // namespace vnd
