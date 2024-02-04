@@ -14,8 +14,8 @@ namespace vnd {
         _text += "#include <cmath>\n";
         _text += "#include <vector>\n";
         _text += "using std::string;\n";
-        _text += "int test() {return 0;}\n";
-        _text += "int testPar(int a, int b) {return a + b;}\n";
+        _text += "int _test() {return 0;}\n";
+        _text += "int _testPar(int a, int b) {return a + b;}\n";
         try {
             for(const Instruction &instruction : _instructions) {
                 _text += std::string(C_ST(_tabs), '\t');

@@ -160,7 +160,11 @@ namespace vnd {
         _iterator++;
         while(_iterator->getType() != TokenType::CLOSE_PARENTESIS) {
             _iterator++;
-            if(std::string error = factory.parse({TokenType::COMMA, TokenType::CLOSE_PARENTESIS}); !error.empty()) { return error; }
+            if(_iterator->getType() != TokenType::CLOSE_PARENTESIS) {
+                if(std::string error = factory.parse({TokenType::COMMA, TokenType::CLOSE_PARENTESIS}); !error.empty()) {
+                    return error;
+                }
+            }
         }
         _iterator++;
         expressions = factory.getExpressions();
@@ -168,9 +172,11 @@ namespace vnd {
         if(newType == "") { return FORMAT("Function {} not found", identifier); }
         if(std::string error = ExpressionFactory::checkType(type, newType); error != "") { return error; }
         for(Expression expression : expressions) { text += expression.getText() + ","; }
-        text.erase(0, 1);
-        text.pop_back();
-        _text.emplace_back(" " + std::string{identifier} + "(" + text + ")");
+        if(expressions.size() > 0 && !text.empty()) {
+            if(text[0] == ' ') { text.erase(0, 1); }
+            text.pop_back();
+        }
+        _text.emplace_back(" _" + std::string{identifier} + "(" + text + ")");
         if(_lastOperator != '\0') {
             _text.emplace_back(")");
             _lastOperator = '\0';
