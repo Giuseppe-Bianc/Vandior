@@ -49,7 +49,7 @@ namespace vnd {
             _output << _text;
             _output.close();
             LINFO("Transpiling successfull");
-        } catch(TranspilerException &e) {
+        } catch(const TranspilerException &e) {
             LERROR("{}", e.what());
             _output.close();
         }
@@ -59,9 +59,7 @@ namespace vnd {
         if(instruction.getTokens().back().getType() == TokenType::CLOSE_CUR_PARENTESIS) {
             if(_main == 1 && _scope->getParent() && _scope->getParent()->isMainScope()) {
                 if(instruction.getLastType() == InstructionType::MAIN) { _text += "\n"; }
-                _text += std::string(C_ST(_tabs), '\t');
-                _text += "return 0;\n";
-                _text += std::string(C_ST(_tabs - 1), '\t');
+                _text += FORMAT("{:\t^{}}return 0;\n{:\t^{}}", "", C_ST(_tabs), "", C_ST(_tabs) - 1);
                 _main = -1;
             }
             _text += "}";
@@ -76,7 +74,7 @@ namespace vnd {
         _text += "int main(int argc, char **argv) {\n";
         _main = 1;
         openScope();
-        _text += std::string(C_ST(_tabs), '\t') + "std::vector<string> _args(argv, argv + argc);";
+        _text += FORMAT("{:\t^{}}std::vector<string> _args(argv, argv + argc);", "", C_ST(_tabs));
         _scope->addVariable("args", "std::vector<string>", true);
         checkTrailingBracket(instruction);
     }
@@ -91,13 +89,10 @@ namespace vnd {
         type = (++iterator)->getValue();
         if(!_scope->checkType(type)) { throw TranspilerException(FORMAT("Type {} not valid", type), instruction); }
         while(iterator != tokens.end() && iterator->getType() != TokenType::EQUAL_OPERATOR) {
-            if(iterator->getType() == TokenType::OPEN_SQ_PARENTESIS) {
-                type = std::string("std::vector<").append(type).append(">");
-            }
+            if(iterator->getType() == TokenType::OPEN_SQ_PARENTESIS) { type = FORMAT("std::vector<{}>", type); }
             iterator++;
         }
-        _text += type;
-        _text += " ";
+        _text += FORMAT("{} ", type);
         if(iterator != tokens.end() && iterator->getType() == TokenType::EQUAL_OPERATOR) {
             iterator++;
             while(iterator != tokens.end()) {
@@ -112,15 +107,13 @@ namespace vnd {
                 FORMAT("Uninitialized constant: {} values for {} constants", factory.size(), variables.size()), instruction);
         }
         for(std::string_view jvar : variables) {
-            _text += "_";
-            _text += jvar;
+            _text += FORMAT("_{}", jvar);
             if(!factory.empty()) {
                 Expression expression = factory.getExpression();
                 if(!Scope::canAssign(type, expression.getType())) {
                     throw TranspilerException(FORMAT("Cannot assign {} to {}", expression.getType(), type), instruction);
                 }
-                _text += " =";
-                _text += expression.getText();
+                _text += FORMAT(" ={}", expression.getText());
             }
             auto [check, shadowing] = _scope->checkVariable(jvar);
             if(check) {

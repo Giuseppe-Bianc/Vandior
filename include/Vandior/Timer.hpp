@@ -70,8 +70,7 @@ public:
      * @brief A more elaborate print function for Timer class.
      */
     static const std::string Big(const std::string &title, const std::string &time) {
-        return FORMAT("-----------------------------------------\n| {} | Time = {}\n-----------------------------------------",
-                      title, time);
+        return FORMAT("{0:-^{1}}\n| {2} | Time = {3}\n{0:-^{1}}", "", 41 ,title, time);
     }
     // NOLINTEND
 

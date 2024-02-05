@@ -3,10 +3,11 @@
 
 namespace vnd {
     const std::vector<TokenType> Instruction::_expressionStartTokens = {
-        TokenType::IDENTIFIER,      TokenType::INTEGER,           TokenType::DOUBLE,         TokenType::CHAR,
-        TokenType::STRING,          TokenType::BOOLEAN,           TokenType::MINUS_OPERATOR, TokenType::NOT_OPERATOR,
-        TokenType::OPEN_PARENTESIS, TokenType::OPEN_CUR_PARENTESIS
-    };
+        TokenType::IDENTIFIER,      TokenType::INTEGER,
+        TokenType::DOUBLE,          TokenType::CHAR,
+        TokenType::STRING,          TokenType::BOOLEAN,
+        TokenType::MINUS_OPERATOR,  TokenType::NOT_OPERATOR,
+        TokenType::OPEN_PARENTESIS, TokenType::OPEN_CUR_PARENTESIS};
 
     Instruction::Instruction(const std::string_view filename) noexcept
       : _allowedTokens({TokenType::K_MAIN, TokenType::K_VAR, TokenType::K_STRUCTURE, TokenType::K_FOR, TokenType::K_FUN,
@@ -39,7 +40,7 @@ namespace vnd {
     std::string Instruction::toString() const noexcept {
         std::string result;
         if(_tokens.empty()) { return ""; }
-        result += std::to_string(_tokens[0].getLine()).append("\t");
+        result += FORMAT("{}\t", _tokens[0].getLine());
         for(const Token &iter : _tokens) {
             if(iter.getType() == TokenType::CHAR) {
                 result += std::string("'").append(std::string{iter.getValue()}).append("' ");
