@@ -5,14 +5,14 @@ namespace vnd {
     // NOLINTNEXTLINE
     std::vector<std::string> Scope::_numberTypes = {"int", "float"};
 
-    Scope::Scope(std::shared_ptr<Scope> parent) noexcept : _vars({}), _consts({}), _funs({}), _parent(std::move(parent)) {}
+    Scope::Scope(std::shared_ptr<Scope> parent) noexcept : _parent(std::move(parent)) {}
 
     std::shared_ptr<Scope> Scope::create(std::shared_ptr<Scope> parent) noexcept {
         return std::make_shared<Scope>(Scope(std::move(parent)));
     }
 
     std::shared_ptr<Scope> Scope::createMain() noexcept {
-        std::shared_ptr<Scope> mainScope = std::make_shared<Scope>(Scope(nullptr));
+        auto mainScope = std::make_shared<Scope>(Scope(nullptr));
         mainScope->addType("int");
         mainScope->addType("float");
         mainScope->addType("double");
@@ -37,9 +37,7 @@ namespace vnd {
 
     void Scope::removeParent() noexcept { _parent = nullptr; }
 
-    void Scope::addType(const std::string_view type) noexcept {
-        _types.emplace(type);
-    }
+    void Scope::addType(const std::string_view type) noexcept { _types.emplace(type); }
 
     void Scope::addVariable(const std::string_view identifier, const std::string_view type, const bool isConst) noexcept {
         if(isConst) {
@@ -50,7 +48,7 @@ namespace vnd {
     }
 
     void Scope::addFun(const std::string_view identifier, const FunType &fun) noexcept {
-        std::string key = std::string{identifier};
+        auto key = std::string{identifier};
         if(_funs.find(key) == _funs.end()) { _funs[key] = {}; }
         _funs[key].emplace_back(fun);
     }
@@ -80,21 +78,19 @@ namespace vnd {
     }
 
     std::string Scope::getFunType(const std::string_view identifier, const std::vector<Expression> &expressions) const noexcept {  // NOLINT(*-no-recursion)
-        std::string_view result;
-        bool found;
+        [[maybe_unused]] std::string_view result;
+        bool found = false;
         if(_funs.find(std::string{identifier}) != _funs.end()) {
-            for(FunType fun : _funs.at(std::string{identifier})) {
+            for(const FunType &fun : _funs.at(std::string{identifier})) {
                 found = true;
-                if(std::get<1>(fun).size() != expressions.size()) {
+                if(std::get<1>(fun).size() != expressions.size()) [[likely]] {
                     found = false;
                 } else {
                     for(size_t par = 0; par != std::get<1>(fun).size(); par++) {
                         if(!Scope::canAssign(get<1>(fun).at(par), expressions.at(par).getType())) { found = false; }
                     }
                 }
-                if(found) {
-                    return std::string{std::get<0>(fun)};
-                }
+                if(found) { return std::string{std::get<0>(fun)}; }
             }
         }
         if(_parent) { return _parent->getFunType(identifier, expressions); }

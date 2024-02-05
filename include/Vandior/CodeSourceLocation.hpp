@@ -26,7 +26,7 @@ namespace vnd {
          * @param line The line number in the source file.
          * @param column The column number in the source file.
          */
-        CodeSourceLocation(const std::string_view &fileName, std::size_t line, std::size_t column)
+        CodeSourceLocation(const std::string_view &fileName, std::size_t line, std::size_t column) noexcept
           : _fileName(fileName), _line(line), _column(column) {}
 
         /**
@@ -82,19 +82,19 @@ namespace vnd {
          * @brief Setter method for file name.
          * @return The file name as a string view.
          */
-        void setFileName(const std::string_view &fileName) { _fileName = fileName; }
+        void setFileName(const std::string_view &fileName) noexcept { _fileName = fileName; }
 
         /**
          * @brief Setter method for line number.
          * @return The line number.
          */
-        void setLine(size_t line) { _line = line; }
+        void setLine(size_t line) noexcept { _line = line; }
 
         /**
          * @brief Setter method for column number.
          * @return The column number.
          */
-        void setColumn(size_t column) { _column = column;}
+        void setColumn(size_t column) noexcept { _column = column; }
 
         /**
          * @brief Creates a CodeSourceLocation object representing an unknown location.
@@ -123,15 +123,15 @@ namespace vnd {
          */
         auto operator<=>(const CodeSourceLocation &other) const noexcept = default;
 
-        std::string toString() const noexcept { return FORMAT("(file:{}, line:{}, column:{})",_fileName,_line,_column);}
+        std::string toString() const noexcept { return FORMAT("(file:{}, line:{}, column:{})", _fileName, _line, _column); }
+
     private:
         std::string_view _fileName;  ///< The name of the source file.
-        std::size_t _line{};           ///< The line number in the source file.
-        std::size_t _column{};         ///< The column number in the source file.
+        std::size_t _line{};         ///< The line number in the source file.
+        std::size_t _column{};       ///< The column number in the source file.
     };
 
 }  // namespace vnd
-
 
 template <> struct fmt::formatter<vnd::CodeSourceLocation> : fmt::formatter<std::string_view> {  // NOLINT(*-include-cleaner)
     template <typename FormatContext> auto format(const vnd::CodeSourceLocation &val, FormatContext &ctx) {
