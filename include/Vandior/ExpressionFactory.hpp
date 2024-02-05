@@ -20,7 +20,6 @@ namespace vnd {
         ExpressionFactory(std::vector<Token>::iterator &iterator, std::vector<Token>::iterator end,
                           std::shared_ptr<Scope> scope) noexcept;
         using TupType = std::tuple<bool, bool, std::string>;
-        [[nodiscard]] static std::string checkType(TupType &oldType, const std::string_view newType) noexcept;
         std::vector<Token>::iterator &_iterator;
         std::vector<Token>::iterator _end;
         std::shared_ptr<Scope> _scope;
@@ -28,12 +27,16 @@ namespace vnd {
         std::vector<Expression> _expressions;
         int _power;
         bool _divide;
+        bool _dot;
+        std::string _types;
+        std::string _temp;
         [[nodiscard]] std::string_view getTokenType(const Token &token) const noexcept;
-        void emplaceToken() noexcept;
+        void emplaceToken(const std::string_view &type) noexcept;
         [[nodiscard]] std::string writeToken() noexcept;
         [[nodiscard]] std::string handleFun(TupType &type) noexcept;
         [[nodiscard]] std::string handleInnerExpression(TupType &type) noexcept;
         [[nodiscard]] std::string handleToken(TupType &type) noexcept;
+        [[nodiscard]] std::string checkType(TupType &oldType, const std::string_view newType) noexcept;
         void checkOperators(std::string &value) noexcept;
         void write(std::string value, const std::string_view &type) noexcept;
     };
