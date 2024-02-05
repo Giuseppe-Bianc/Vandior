@@ -3,14 +3,11 @@
 
 namespace vnd {
 
-    // NOLINTNEXTLINE
-    std::vector<std::string> ExpressionFactory::_numberTypes = {"int", "float"};
-
     // NOLINTBEGIN
     ExpressionFactory::ExpressionFactory(std::vector<Token>::iterator &iterator,
                                          std::vector<Token>::iterator end,
                                          std::shared_ptr<Scope> scope) noexcept
-      : _iterator(iterator), _end(end), _scope(std::move(scope)), _text({}), _expressions({}), _lastOperator('\0') {}
+      : _iterator(iterator), _end(end), _scope(std::move(scope)), _text({}), _expressions({}), _power(0), _divide(false) {}
 
     ExpressionFactory ExpressionFactory::create(std::vector<Token>::iterator &iterator, std::vector<Token>::iterator end,
                                                 std::shared_ptr<Scope> scope) noexcept {
@@ -18,18 +15,13 @@ namespace vnd {
     }
     // NOLINTEND
 
-    bool ExpressionFactory::isNumber(const std::string &type) noexcept {
-        return std::ranges::find(ExpressionFactory::_numberTypes, type) != ExpressionFactory::_numberTypes.end();
-    }
-
     std::string ExpressionFactory::checkType(TupType &oldType, const std::string_view newType) noexcept {
         if(std::get<2>(oldType).empty()) {
             std::get<2>(oldType) = newType;
             return "";
         }
         if(std::get<2>(oldType) == newType) { return ""; }
-        if(ExpressionFactory::isNumber(std::get<2>(oldType)) &&
-           (ExpressionFactory::isNumber(std::string{newType}) || newType == "operator")) {
+        if(Scope::isNumber(std::get<2>(oldType)) && (Scope::isNumber(std::string{newType}) || newType == "operator")) {
             return "";
         }
         if(newType == "boolean") {
@@ -52,7 +44,10 @@ namespace vnd {
         _text = {};
         std::tuple<bool, bool, std::string> type = std::make_tuple(false, false, "");
         while(_iterator != _end && std::ranges::find(endToken, _iterator->getType()) == endToken.end()) {
-            if(_iterator->getType() == TokenType::OPEN_PARENTESIS) {
+            if(_iterator->getType() == TokenType::IDENTIFIER && _iterator + 1 != _end &&
+               (_iterator + 1)->getType() == TokenType::OPEN_PARENTESIS) {
+                if(std::string error = handleFun(type); !error.empty()) { return error; }
+            } else if(_iterator->getType() == TokenType::OPEN_PARENTESIS) {
                 if(std::string error = handleInnerExpression(type); !error.empty()) { return error; }
             } else {
                 if(std::string error = handleToken(type); !error.empty()) { return error; }
@@ -69,6 +64,12 @@ namespace vnd {
     Expression ExpressionFactory::getExpression() noexcept {
         Expression result = *_expressions.begin();
         _expressions.erase(_expressions.begin());
+        return result;
+    }
+
+    std::vector<Expression> ExpressionFactory::getExpressions() noexcept {
+        std::vector<Expression> result = _expressions;
+        _expressions = {};
         return result;
     }
 
@@ -119,25 +120,16 @@ namespace vnd {
         if(value == "^") {
             _text.emplace(_text.end() - 2, "std::pow(");
             _text.emplace_back(",");
-            _lastOperator = '^';
+            _power++;
             return;
         }
         _text.emplace_back(writeToken());
-        if(_lastOperator != '\0') {
-            _text.emplace_back(")");
-            _lastOperator = '\0';
-            return;
-        }
-        if(value == "/") {
-            _text.emplace_back(" double(");
-            _lastOperator = '/';
-        }
+        if(value == "/") { _divide = true; }
     }
 
     std::string ExpressionFactory::writeToken() noexcept {
         std::string value = std::string{_iterator->getValue()};
 
-        if(_lastOperator == '/') { _text.pop_back(); }
         if(_iterator->getType() == TokenType::IDENTIFIER) { return "_" + value; }
         if(_iterator->getType() == TokenType::INTEGER && value[0] == '#') {
             value.erase(0, 1);
@@ -147,26 +139,54 @@ namespace vnd {
             }
             return "0x" + value;
         }
+        checkOperators(value);
         return value;
     }
 
+    std::string ExpressionFactory::handleFun(TupType &type) noexcept {  // NOLINT(*-no-recursion)
+        std::string_view identifier = _iterator->getValue();
+        ExpressionFactory factory = ExpressionFactory::create(_iterator, _end, _scope);
+        std::vector<Expression> expressions;
+        std::string newType;
+        std::string text = "";
+        _iterator++;
+        while(_iterator->getType() != TokenType::CLOSE_PARENTESIS) {
+            _iterator++;
+            if(_iterator->getType() != TokenType::CLOSE_PARENTESIS) {
+                if(std::string error = factory.parse({TokenType::COMMA, TokenType::CLOSE_PARENTESIS}); !error.empty()) {
+                    return error;
+                }
+            }
+        }
+        _iterator++;
+        expressions = factory.getExpressions();
+        newType = _scope->getFunType(identifier, expressions);
+        if(newType == "") { return FORMAT("Function {} not found", identifier); }
+        if(std::string error = ExpressionFactory::checkType(type, newType); error != "") { return error; }
+        for(Expression expression : expressions) { text += expression.getText() + ","; }
+        if(expressions.size() > 0 && !text.empty()) {
+            if(text[0] == ' ') { text.erase(0, 1); }
+            text.pop_back();
+        }
+        text = " _" + std::string{identifier} + "(" + text + ")";
+        checkOperators(text);
+        _text.emplace_back(text);
+        return "";
+    }
+
     std::string ExpressionFactory::handleInnerExpression(TupType &type) noexcept {  // NOLINT(*-no-recursion)
-        std::string error;
         std::string newType;
         ExpressionFactory factory = ExpressionFactory::create(_iterator, _end, _scope);
         _iterator++;
-        if(error = factory.parse({TokenType::CLOSE_PARENTESIS}); !error.empty()) { return error; }
+        if(std::string error = factory.parse({TokenType::CLOSE_PARENTESIS}); !error.empty()) { return error; }
         _iterator++;
         Expression expression = factory.getExpression();
         newType = expression.getType();
         if(newType.empty()) { return FORMAT("Identifier {} not found", expression.getType()); }
-        if(error = ExpressionFactory::checkType(type, newType); !error.empty()) { return error; }
-        _text.emplace_back(" ");
-        _text.emplace_back("(" + expression.getText().substr(1) + ")");
-        if(_lastOperator != '\0') {
-            _text.emplace_back(")");
-            _lastOperator = '\0';
-        }
+        if(std::string error = ExpressionFactory::checkType(type, newType); !error.empty()) { return error; }
+        std::string text = " (" + expression.getText().substr(1) + ")";
+        checkOperators(text);
+        _text.emplace_back(text);
         return "";
     }
 
@@ -178,6 +198,17 @@ namespace vnd {
         emplaceToken();
         _iterator++;
         return "";
+    }
+
+    void ExpressionFactory::checkOperators(std::string &value) noexcept {
+        if(_divide) {
+            value = "double(" + value + ")";
+            _divide = false;
+        }
+        if(_power != 0 && ((_iterator + 1) == _end || (_iterator + 1)->getValue() != "^")) {
+            value = value + std::string(_power, ')');
+            _power = 0;
+        }
     }
 
 }  // namespace vnd

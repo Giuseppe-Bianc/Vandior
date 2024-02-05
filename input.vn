@@ -1,9 +1,12 @@
 const variable, variable2: bool = 1 == #f2 && 1 + 3 <= -6.57 + #o7 ^ 2 || false, true <= false
-const intVar: int = 2
+const intVar: int = 2 + testPar(test() ^ 7 / 6, 78.78)
 main {
-	var v1, v2: float = 1 + 2, 2 * 56 *(65 + 8.98 ^ (35 + 56 -67 / 7)) + 2 / intVar
+	var v1, v2: float = 1 + 2 + testPar(intVar, intVar), 2 * 56 *(65 + 8.98 ^ 1 + testPar(6 / 7 + testPar(1, 3), 1 + 5) + (35 + 56 -67 / 7)) + 2 / intVar
 	const variable, variable2: char = 'c', 'V'
-	var s, s2: string = "Ciao", "Text"
+	var s, s2: string = "Ciao"
+	var s3, s4: int = testPar(s), testPar("Text")
+	var pow, div: float = 1 ^ 2 ^ 3, 1 / 2 / 3
+	var powDiv, divPow: int = 1 ^ 2 / 3 ^ 4 / 5, 1 / 2 ^ 3 / 4 ^ 5 ^ 8.98 ^ 67
 	{
 	}
 }

@@ -6,10 +6,6 @@ namespace vnd {
 
     Transpiler Transpiler::create(std::vector<Instruction> instructions) noexcept { return {std::move(instructions)}; }
 
-    bool Transpiler::canAssign(const std::string &left, const std::string &right) noexcept {
-        return (ExpressionFactory::isNumber(left) && ExpressionFactory::isNumber(right)) || left == right;
-    }
-
     void Transpiler::transpile() {
         using enum TokenType;
         using enum InstructionType;
@@ -18,6 +14,9 @@ namespace vnd {
         _text += "#include <cmath>\n";
         _text += "#include <vector>\n";
         _text += "using std::string;\n";
+        _text += "int _test() {return 0;}\n";
+        _text += "int _testPar(int a, int b) {return a + b;}\n";
+        _text += "int _testPar(string s) {return s.size();}\n";
         try {
             for(const Instruction &instruction : _instructions) {
                 _text += std::string(C_ST(_tabs), '\t');
@@ -92,7 +91,6 @@ namespace vnd {
         while(iterator != tokens.end() && iterator->getType() != TokenType::EQUAL_OPERATOR) {
             if(iterator->getType() == TokenType::OPEN_SQ_PARENTESIS) {
                 type = std::string("std::vector<").append(type).append(">");
-                ;
             }
             iterator++;
         }
@@ -116,7 +114,7 @@ namespace vnd {
             _text += jvar;
             if(!factory.empty()) {
                 Expression expression = factory.getExpression();
-                if(!Transpiler::canAssign(type, expression.getType())) {
+                if(!Scope::canAssign(type, expression.getType())) {
                     throw TranspilerException(FORMAT("Cannot assign {} to {}", expression.getType(), type), instruction);
                 }
                 _text += " =";
