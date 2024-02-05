@@ -158,7 +158,6 @@ namespace vnd {
                 }
             }
         }
-        _iterator++;
         expressions = factory.getExpressions();
         newType = _scope->getFunType(identifier, expressions);
         if(newType == "") { return FORMAT("Function {} not found", identifier); }
@@ -171,6 +170,7 @@ namespace vnd {
         text = " _" + std::string{identifier} + "(" + text + ")";
         checkOperators(text);
         _text.emplace_back(text);
+        _iterator++;
         return "";
     }
 
@@ -179,7 +179,6 @@ namespace vnd {
         ExpressionFactory factory = ExpressionFactory::create(_iterator, _end, _scope);
         _iterator++;
         if(std::string error = factory.parse({TokenType::CLOSE_PARENTESIS}); !error.empty()) { return error; }
-        _iterator++;
         Expression expression = factory.getExpression();
         newType = expression.getType();
         if(newType.empty()) { return FORMAT("Identifier {} not found", expression.getType()); }
@@ -187,6 +186,7 @@ namespace vnd {
         std::string text = " (" + expression.getText().substr(1) + ")";
         checkOperators(text);
         _text.emplace_back(text);
+        _iterator++;
         return "";
     }
 
