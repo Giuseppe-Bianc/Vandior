@@ -35,6 +35,7 @@ namespace vnd {
         [[nodiscard]] std::string handleInnerExpression(TupType &type) noexcept;
         [[nodiscard]] std::string handleToken(TupType &type) noexcept;
         void checkOperators(std::string &value) noexcept;
+        void write(std::string value, const std::string_view &type) noexcept;
     };
 
 }  // namespace vnd

@@ -1,5 +1,6 @@
 #include "Vandior/ExpressionFactory.hpp"
 #include <algorithm>
+#include "Vandior/Log.hpp"
 
 namespace vnd {
 
@@ -168,10 +169,7 @@ namespace vnd {
             if(text[0] == ' ') { text.erase(0, 1); }
             text.pop_back();
         }
-        text = FORMAT(" _{}({})", std::string{identifier}, text);
-        checkOperators(text);
-        _text.emplace_back(text);
-        _iterator++;
+        write(FORMAT(" _{}({})", std::string{identifier}, text), newType);
         return "";
     }
 
@@ -184,10 +182,7 @@ namespace vnd {
         newType = expression.getType();
         if(newType.empty()) { return FORMAT("Identifier {} not found", expression.getType()); }
         if(std::string error = ExpressionFactory::checkType(type, newType); !error.empty()) { return error; }
-        std::string text = FORMAT(" ({})", expression.getText().substr(1));
-        checkOperators(text);
-        _text.emplace_back(text);
-        _iterator++;
+        write(FORMAT(" ({})", expression.getText().substr(1)), newType);
         return "";
     }
 
@@ -210,6 +205,13 @@ namespace vnd {
             value = FORMAT("{}{:)^{}}", value, "", _power);  // value = value + std::string(_power, ')');
             _power = 0;
         }
+    }
+
+    void ExpressionFactory::write(std::string value, const std::string_view &type) noexcept {
+        checkOperators(value);
+        _text.emplace_back(value);
+        _iterator++;
+        LINFO("{}", type);
     }
 
 }  // namespace vnd
