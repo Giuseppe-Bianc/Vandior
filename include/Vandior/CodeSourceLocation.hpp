@@ -80,19 +80,16 @@ namespace vnd {
 
         /**
          * @brief Setter method for file name.
-         * @return The file name as a string view.
          */
         void setFileName(const std::string_view &fileName) noexcept { _fileName = fileName; }
 
         /**
          * @brief Setter method for line number.
-         * @return The line number.
          */
         void setLine(size_t line) noexcept { _line = line; }
 
         /**
          * @brief Setter method for column number.
-         * @return The column number.
          */
         void setColumn(size_t column) noexcept { _column = column; }
 

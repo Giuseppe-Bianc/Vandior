@@ -1,12 +1,12 @@
 #pragma once
-#include <vector>
-#include "Token.hpp"
-#include "InstructionType.hpp"
 #include "InstructionException.hpp"
+#include "InstructionType.hpp"
+#include "Token.hpp"
+#include <vector>
 
 namespace vnd {
     class Instruction {
-	public:
+    public:
         [[nodiscard]] static Instruction create(const std::string_view filename) noexcept;
         [[nodiscard]] std::vector<Token> getTokens() const noexcept;
         [[nodiscard]] InstructionType getLastType() const noexcept;
@@ -14,6 +14,7 @@ namespace vnd {
         void checkToken(const Token &token);
         [[nodiscard]] bool canTerminate() const noexcept;
         [[nodiscard]] std::string toString() const noexcept;
+
     private:
         Instruction(const std::string_view filename) noexcept;
         static const std::vector<TokenType> _expressionStartTokens;
@@ -43,7 +44,7 @@ namespace vnd {
         void removeType() noexcept;
         [[nodiscard]] inline bool lastTypeIs(const InstructionType &type) const noexcept;
         [[nodiscard]] inline bool getLastBooleanOperator() const noexcept;
-        void setLastBooleanOperator(const bool present) noexcept; 
+        void setLastBooleanOperator(const bool present) noexcept;
         void addBooleanOperator() noexcept;
         void removeBooleanOperator() noexcept;
         [[nodiscard]] TokenType getLastTokenType() const noexcept;
@@ -56,5 +57,11 @@ namespace vnd {
         inline void emplaceBooleanOperator() noexcept;
         inline bool emplaceForTokens() noexcept;
         inline void emplaceUnaryOperator(const TokenType &type) noexcept;
-	};
-}
+    };
+}  // namespace vnd
+
+template <> struct fmt::formatter<vnd::Instruction> : fmt::formatter<std::string_view> {  // NOLINT(*-include-cleaner)
+    template <typename FormatContext> auto format(const vnd::Instruction &val, FormatContext &ctx) {
+        return fmt::formatter<std::string_view>::format(val.toString(), ctx);
+    }
+};

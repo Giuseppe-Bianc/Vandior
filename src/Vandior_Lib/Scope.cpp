@@ -19,9 +19,9 @@ namespace vnd {
         mainScope->addType("char");
         mainScope->addType("bool");
         mainScope->addType("string");
-        mainScope->addFun("test", std::make_tuple<std::string, std::vector<std::string>>("int", {}));
-        mainScope->addFun("testPar", std::make_tuple<std::string, std::vector<std::string>>("int", {"int", "int"}));
-        mainScope->addFun("testPar", std::make_tuple<std::string, std::vector<std::string>>("int", {"string"}));
+        mainScope->addFun("test", make_FunType("int", {}));
+        mainScope->addFun("testPar", make_FunType("int", {"int", "int"}));
+        mainScope->addFun("testPar", make_FunType("int", {"string"}));
         return mainScope;
     }
 
@@ -85,7 +85,7 @@ namespace vnd {
                 found = true;
                 if(std::get<1>(fun).size() != expressions.size()) [[likely]] {
                     found = false;
-                } else {
+                } else [[unlikely]] {
                     for(size_t par = 0; par != std::get<1>(fun).size(); par++) {
                         if(!Scope::canAssign(get<1>(fun).at(par), expressions.at(par).getType())) { found = false; }
                     }

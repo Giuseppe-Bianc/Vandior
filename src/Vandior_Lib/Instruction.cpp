@@ -42,12 +42,12 @@ namespace vnd {
         if(_tokens.empty()) { return ""; }
         result += FORMAT("{}\t", _tokens[0].getLine());
         for(const Token &iter : _tokens) {
-            if(iter.getType() == TokenType::CHAR) {
-                result += std::string("'").append(std::string{iter.getValue()}).append("' ");
-            } else if(iter.getType() == TokenType::STRING) {
-                result += std::string("\"").append(std::string{iter.getValue()}).append("\" ");
-            } else {
-                result += std::string(iter.getValue()).append(" ");
+            if(iter.getType() == TokenType::CHAR) [[likely]] {
+                result += FORMAT("'{}'",iter.getValue());
+            } else if(iter.getType() == TokenType::STRING) [[likely]] {
+                result += FORMAT(R"("{}")",iter.getValue());
+            } else [[unlikely]] {
+                result += FORMAT("{} ",iter.getValue());
             }
         }
         return result;

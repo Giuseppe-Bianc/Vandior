@@ -113,6 +113,13 @@ namespace vnd {
          * @return True if the character is a octal digit, false otherwise.
          */
         [[nodiscard]] static bool isOctalDigit(const char &cha) noexcept;
+        
+        /**
+         * @brief Check if the character is a Hasterisc.
+         * @param cha The input character.
+         * @return True if the character is a Hasterisc, false otherwise.
+         */
+        [[nodiscard]]static bool isHasterisc(const char &cha) noexcept;
     };
 
 }  // namespace vnd
