@@ -7,7 +7,7 @@ namespace vnd {
     ExpressionFactory::ExpressionFactory(std::vector<Token>::iterator &iterator,
                                          std::vector<Token>::iterator end,
                                          std::shared_ptr<Scope> scope) noexcept
-      : _iterator(iterator), _end(end), _scope(std::move(scope)), _text({}), _expressions({}), _lastOperator('\0') {}
+      : _iterator(iterator), _end(end), _scope(std::move(scope)), _text({}), _expressions({}), _power(0), _divide(false) {}
 
     ExpressionFactory ExpressionFactory::create(std::vector<Token>::iterator &iterator, std::vector<Token>::iterator end,
                                                 std::shared_ptr<Scope> scope) noexcept {
@@ -120,25 +120,16 @@ namespace vnd {
         if(value == "^") {
             _text.emplace(_text.end() - 2, "std::pow(");
             _text.emplace_back(",");
-            _lastOperator = '^';
+            _power++;
             return;
         }
         _text.emplace_back(writeToken());
-        if(_lastOperator != '\0') {
-            _text.emplace_back(")");
-            _lastOperator = '\0';
-            return;
-        }
-        if(value == "/") {
-            _text.emplace_back(" double(");
-            _lastOperator = '/';
-        }
+        if(value == "/") { _divide = true; }
     }
 
     std::string ExpressionFactory::writeToken() noexcept {
         std::string value = std::string{_iterator->getValue()};
 
-        if(_lastOperator == '/') { _text.pop_back(); }
         if(_iterator->getType() == TokenType::IDENTIFIER) { return "_" + value; }
         if(_iterator->getType() == TokenType::INTEGER && value[0] == '#') {
             value.erase(0, 1);
@@ -148,6 +139,7 @@ namespace vnd {
             }
             return "0x" + value;
         }
+        checkOperators(value);
         return value;
     }
 
@@ -176,11 +168,9 @@ namespace vnd {
             if(text[0] == ' ') { text.erase(0, 1); }
             text.pop_back();
         }
-        _text.emplace_back(" _" + std::string{identifier} + "(" + text + ")");
-        if(_lastOperator != '\0') {
-            _text.emplace_back(")");
-            _lastOperator = '\0';
-        }
+        text = " _" + std::string{identifier} + "(" + text + ")";
+        checkOperators(text);
+        _text.emplace_back(text);
         return "";
     }
 
@@ -194,12 +184,9 @@ namespace vnd {
         newType = expression.getType();
         if(newType.empty()) { return FORMAT("Identifier {} not found", expression.getType()); }
         if(std::string error = ExpressionFactory::checkType(type, newType); !error.empty()) { return error; }
-        _text.emplace_back(" ");
-        _text.emplace_back("(" + expression.getText().substr(1) + ")");
-        if(_lastOperator != '\0') {
-            _text.emplace_back(")");
-            _lastOperator = '\0';
-        }
+        std::string text = " (" + expression.getText().substr(1) + ")";
+        checkOperators(text);
+        _text.emplace_back(text);
         return "";
     }
 
@@ -211,6 +198,17 @@ namespace vnd {
         emplaceToken();
         _iterator++;
         return "";
+    }
+
+    void ExpressionFactory::checkOperators(std::string &value) noexcept {
+        if(_divide) {
+            value = "double(" + value + ")";
+            _divide = false;
+        }
+        if(_power != 0 && ((_iterator + 1) == _end || (_iterator + 1)->getValue() != "^")) {
+            value = value + std::string(_power, ')');
+            _power = 0;
+        }
     }
 
 }  // namespace vnd

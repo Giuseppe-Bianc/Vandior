@@ -16,6 +16,7 @@ namespace vnd {
         _text += "using std::string;\n";
         _text += "int _test() {return 0;}\n";
         _text += "int _testPar(int a, int b) {return a + b;}\n";
+        _text += "int _testPar(string s) {return s.size();}\n";
         try {
             for(const Instruction &instruction : _instructions) {
                 _text += std::string(C_ST(_tabs), '\t');

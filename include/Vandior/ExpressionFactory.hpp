@@ -26,13 +26,15 @@ namespace vnd {
         std::shared_ptr<Scope> _scope;
         std::vector<std::string> _text;
         std::vector<Expression> _expressions;
-        char _lastOperator;
+        int _power;
+        bool _divide;
         [[nodiscard]] std::string_view getTokenType(const Token &token) const noexcept;
         void emplaceToken() noexcept;
         [[nodiscard]] std::string writeToken() noexcept;
         [[nodiscard]] std::string handleFun(TupType &type) noexcept;
         [[nodiscard]] std::string handleInnerExpression(TupType &type) noexcept;
         [[nodiscard]] std::string handleToken(TupType &type) noexcept;
+        void checkOperators(std::string &value) noexcept;
     };
 
 }  // namespace vnd

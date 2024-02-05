@@ -21,6 +21,7 @@ namespace vnd {
         mainScope->addType("string");
         mainScope->addFun("test", std::make_tuple<std::string, std::vector<std::string>>("int", {}));
         mainScope->addFun("testPar", std::make_tuple<std::string, std::vector<std::string>>("int", {"int", "int"}));
+        mainScope->addFun("testPar", std::make_tuple<std::string, std::vector<std::string>>("int", {"string"}));
         return mainScope;
     }
 
