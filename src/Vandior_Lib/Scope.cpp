@@ -19,9 +19,12 @@ namespace vnd {
         mainScope->addType("char");
         mainScope->addType("bool");
         mainScope->addType("string");
+        mainScope->addType("Object");
+        mainScope->addVariable("Object.a", "int", false);
         mainScope->addFun("test", std::make_tuple<std::string, std::vector<std::string>>("int", {}));
         mainScope->addFun("testPar", std::make_tuple<std::string, std::vector<std::string>>("int", {"int", "int"}));
         mainScope->addFun("testPar", std::make_tuple<std::string, std::vector<std::string>>("int", {"string"}));
+        mainScope->addFun("createObject", std::make_tuple<std::string, std::vector<std::string>>("Object", {}));
         return mainScope;
     }
 
