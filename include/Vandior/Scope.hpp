@@ -12,6 +12,9 @@ namespace vnd {
     class Scope {
     public:
         using FunType = std::tuple<std::string, std::vector<std::string>>;
+        static FunType make_FunType(const std::string &first, const std::vector<std::string> &second) {
+            return std::make_tuple(first, second);
+        }
         [[nodiscard]] static std::shared_ptr<Scope> create(std::shared_ptr<Scope> parent) noexcept;
         [[nodiscard]] static std::shared_ptr<Scope> createMain() noexcept;
         [[nodiscard]] static bool isNumber(const std::string &type) noexcept;

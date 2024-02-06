@@ -14,11 +14,6 @@ DISABLE_WARNINGS_POP()
 #include <internal_use_only/config.hpp>
 
 namespace {
-    auto setupSpdlog() -> void {
-        spdlog::set_pattern(R"(%^[%T] [%l] %v%$)");
-        const auto console = spdlog::stdout_color_mt(R"(console)");
-        spdlog::set_default_logger(console);
-    }
     auto timeTokenizer(vnd::Tokenizer &tokenizer, std::vector<vnd::Token> &tokens) -> void {
         tokens.clear();
         AutoTimer timer("tokenizer.tokenize()");
@@ -64,7 +59,7 @@ constexpr std::string_view filename = "../../../input.vn";  // Linux and Unix
 #endif
 auto main(int argc, const char *const argv[]) -> int {
     // NOLINTNEXTLINE
-    setupSpdlog();
+    INIT_LOG();
     std::string str;
     try {
         str = readFromFile(filename.data());
