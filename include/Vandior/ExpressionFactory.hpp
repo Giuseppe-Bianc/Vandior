@@ -102,21 +102,28 @@ namespace vnd {
         /**
          * @brief Handles a function during parsing.
          * @param type Tuple representing the type information.
-         * @return Parsed string.
+         * @return Parsed string if there is an error.
          */
         [[nodiscard]] std::string handleFun(TupType &type) noexcept;
 
         /**
          * @brief Handles an inner expression during parsing.
          * @param type Tuple representing the type information.
-         * @return Parsed string.
+         * @return Parsed string if there is an error.
          */
         [[nodiscard]] std::string handleInnerExpression(TupType &type) noexcept;
 
         /**
+         * @brief Handles an inner expression for array indexing during parsing.
+         * @param type Tuple representing the type information.
+         * @return Parsed string if there is an error.
+         */
+        [[nodiscard]] std::string handleSquareExpression(TupType &type) noexcept;
+
+        /**
          * @brief Handles a token during parsing.
          * @param type Tuple representing the type information.
-         * @return Parsed string.
+         * @return Parsed string if there is an error.
          */
         [[nodiscard]] std::string handleToken(TupType &type) noexcept;
 
@@ -124,9 +131,16 @@ namespace vnd {
          * @brief Checks the type during parsing.
          * @param oldType Tuple representing the previous type.
          * @param newType The new type to check.
-         * @return Checked type as a string.
+         * @return Checked type as a string if there is an error.
          */
         [[nodiscard]] std::string checkType(TupType &oldType, const std::string_view newType) noexcept;
+
+        /**
+        * @brief Checks the presence of . or [ as next token.
+        * @param type String representing the type of the value.
+        * @param value Bool if the next token is . or [.
+        */
+        [[nodiscard]] bool checkNextToken(const std::string &type, const std::string &value) noexcept;
 
         /**
          * @brief Checks and processes operators in the parsed value.
