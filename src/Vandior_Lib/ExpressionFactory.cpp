@@ -118,7 +118,7 @@ namespace vnd {
 
     std::string ExpressionFactory::writeToken() noexcept {
         auto value = std::string{_iterator->getValue()};
-        if(_iterator->getType() == TokenType::STRING) { value = FORMAT(R"("{}")", std::string{_iterator->getValue()}); }
+        if(_iterator->getType() == TokenType::STRING) { value = FORMAT(R"(string("{}"))", std::string{_iterator->getValue()}); }
         if(_iterator->getType() == TokenType::IDENTIFIER) { value = FORMAT("_{}", value); }
         if(_iterator->getType() == TokenType::INTEGER && value[0] == '#') {
             value.erase(0, 1);
