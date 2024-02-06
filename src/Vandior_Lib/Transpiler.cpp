@@ -17,7 +17,7 @@ namespace vnd {
         _text += "int _test() {return 0;}\n";
         _text += "int _testPar(int a, int b) {return a + b;}\n";
         _text += "int _testPar(string s) {return s.size();}\n";
-        _text += "class Object { public: int _a; };\n";
+        _text += "class Object { public: int _a; string _s; float _f(float b) { return std::pow(b, 2); }; string _fs() { return \"\"; } };\n";
         _text += "Object _createObject() { return Object(); }\n";
         try {
             for(const Instruction &instruction : _instructions) {

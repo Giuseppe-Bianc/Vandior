@@ -78,7 +78,7 @@ namespace vnd {
         int _power;                               ///< Power value used during parsing.
         bool _divide;                             ///< Flag indicating division operation during parsing.
         bool _dot;
-        std::string _types;
+        std::string _type;
         std::string _temp;
         /**
          * @brief Gets the type of a token.
