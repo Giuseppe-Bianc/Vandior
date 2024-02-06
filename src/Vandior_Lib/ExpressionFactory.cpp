@@ -107,20 +107,22 @@ namespace vnd {
             _text.emplace_back(FORMAT(R"("{}")", std::string{_iterator->getValue()}));
             return;
         }
+        _text.emplace_back(" ");
         if(value == "^") {
             _text.emplace(_text.end() - 2, "std::pow(");
             _text.emplace_back(",");
             _power++;
             return;
         }
-        _text.emplace_back(_temp + writeToken());
+        std::string text = _temp + writeToken();
+        checkOperators(text);
+        _text.emplace_back(text);
         if(value == "/") { _divide = true; }
     }
 
     std::string ExpressionFactory::writeToken() noexcept {
         auto value = std::string{_iterator->getValue()};
-
-        if(_iterator->getType() == TokenType::IDENTIFIER) { return FORMAT("_{}", value); }
+        if(_iterator->getType() == TokenType::IDENTIFIER) { value = FORMAT("_{}", value); }
         if(_iterator->getType() == TokenType::INTEGER && value[0] == '#') {
             value.erase(0, 1);
             if(!value.empty() && value[0] == 'o') {
@@ -129,7 +131,6 @@ namespace vnd {
             }
             return FORMAT("0x{}", value);
         }
-        checkOperators(value);
         return value;
     }
 
@@ -178,7 +179,6 @@ namespace vnd {
         const auto newType = ExpressionFactory::getTokenType(*_iterator);
         if(newType.empty()) { return FORMAT("Identifier {} not found", _iterator->getValue()); }
         if(std::string error = ExpressionFactory::checkType(type, newType); !error.empty()) { return error; }
-        _text.emplace_back(" ");
         emplaceToken(newType);
         _iterator++;
         return "";
@@ -211,6 +211,7 @@ namespace vnd {
     }
 
     void ExpressionFactory::checkOperators(std::string &value) noexcept {
+        if(_iterator->getType() == TokenType::MINUS_OPERATOR) { return; }
         if(_divide) {
             value = FORMAT("double({})", value);
             _divide = false;

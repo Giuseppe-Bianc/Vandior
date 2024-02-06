@@ -6,9 +6,9 @@ main {
 	const variable, variable2: char = 'c', 'V'
 	var s, s2: string = "Ciao"
 	var s3, s4: int = testPar(s), testPar("Text")
-	var pow, div: float = 1 ^ 2 ^ 3, 1 / 2 / 3
+	var pow, div: float = 1 ^ 2 ^ 3, 1 / 2 / s4 + 5
 	var powDiv, divPow: int = 1 ^ 2 / 3 ^ 4 / 5, 1 / 2 ^ testPar("Ciao") / (4.5 + 7) ^ (5 ^ 8) ^ testPar("a") ^ 8.98 ^ 67
-	var testObj: int = obj.a + createObject().a
+	var testObj: int = obj.a + createObject().a + - obj.a ^ -2 ^ -3 + - 1 / obj.a / -3
 	{
 	}
 }

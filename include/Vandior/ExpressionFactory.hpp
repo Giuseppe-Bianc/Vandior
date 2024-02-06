@@ -89,6 +89,7 @@ namespace vnd {
 
         /**
          * @brief Emplaces the current token into the parsed text vector.
+         * @param type String_view representing the type of the token.
          */
         void emplaceToken(const std::string_view &type) noexcept;
 
@@ -132,6 +133,12 @@ namespace vnd {
          * @param value Parsed value to check for operators.
          */
         void checkOperators(std::string &value) noexcept;
+
+        /**
+         * @brief Writes the value to the parsed text.
+         * @param value String to write.
+         * @param type String_view representing the type of the value.
+         */
         void write(std::string value, const std::string_view &type) noexcept;
 
     };
