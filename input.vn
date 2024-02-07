@@ -1,7 +1,7 @@
 const variable, variable2: bool = 1 == #f2 && 1 + 3 <= -6.57 + #o7 ^ 2 || false, true <= false
 const intVar: int = 2 + testPar(test() ^ 7 / 6, 78.78)
 main {
-	var array: int[]
+	var array: int[][]
 	var obj: Object = createObject()
 	var v1, v2: float = 1 + 2 + testPar(-intVar, intVar), 2 * 56 *(65 + 8.98 ^ 1 + testPar(6 / 7 + testPar(1, 3), 1 + 5) + (35 + 56 -67 / 7)) + 2 / intVar
 	const variable, variable2: char = 'c', 'V'
@@ -11,7 +11,7 @@ main {
 	var powDiv, divPow: int = 1 ^ 2 / 3 ^ 4 / 5, 1 / 2 ^ testPar("Ciao") / (4.5 + 7) ^ (5 ^ 8) ^ testPar("a") ^ 8.98 ^ 67
 	var testObj: int = obj.a ^ createObject().a + - obj.a ^ -2 ^ -3 + - 1 / createObject().a / -3
 	var testObjFun: float = obj.f(pow) + createObject().f(67.5) ^ - obj.f(-56) ^ -2 ^ -3 + - 1 / createObject().f(-div) / -3
-	var testSize: int = obj.s.size() + "Ciao".size() + obj.fs().size() + array[1 + array[4 - 7]]
+	var testSize: int = obj.s.size() + "Ciao".size() + obj.fs().size() - ("Ciao").size() + array[1  / 3 + array[1 - 7][6 ^ 7] ^ "Ciao".size() / s3 ^ createObject().a][1]
 	{
 	}
 }

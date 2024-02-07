@@ -5,14 +5,17 @@ namespace vnd {
 
     // NOLINTBEGIN
     ExpressionFactory::ExpressionFactory(std::vector<Token>::iterator &iterator, std::vector<Token>::iterator end,
-                                         std::shared_ptr<Scope> scope) noexcept
-      : _iterator(iterator), _end(end), _scope(std::move(scope)), _text({}), _expressions({}), _power(0), _divide(false), _dot(false) {}
+                                         std::shared_ptr<Scope> scope, bool sq) noexcept
+      : _iterator(iterator), _end(end), _scope(std::move(scope)), _text({}), _expressions({}), _power(0), _divide(false), _dot(false), _sq(sq),
+        _type(""), _temp("") {}
 
     ExpressionFactory ExpressionFactory::create(std::vector<Token>::iterator &iterator, std::vector<Token>::iterator end,
-                                                std::shared_ptr<Scope> scope) noexcept {
-        return {iterator, end, std::move(scope)};
+                                                std::shared_ptr<Scope> scope, bool sq) noexcept {
+        return {iterator, end, std::move(scope), sq};
     }
     // NOLINTEND
+
+    bool ExpressionFactory::isSquareType(const std::string_view &type) noexcept { return type == "int" || type == "operator"; }
 
     std::string ExpressionFactory::parse(const std::vector<TokenType> &endToken) noexcept {  // NOLINT(*-no-recursion)
         _text = {};
@@ -104,7 +107,11 @@ namespace vnd {
         }
         _text.emplace_back(" ");
         if(value == "^") {
-            _text.emplace(_text.end() - 2, "std::pow(");
+            if(_sq) {
+                _text.emplace(_text.end() - 2, "int(std::pow(");
+            } else {
+                _text.emplace(_text.end() - 2, "std::pow(");
+            }
             _text.emplace_back(",");
             _power++;
             _iterator++;
@@ -113,14 +120,16 @@ namespace vnd {
         std::string text = _temp + writeToken();
         checkOperators(text);
         _text.emplace_back(text);
-        if(value == "/") { _divide = true; }
+        if(value == "/" && !_sq) { _divide = true; }
         _iterator++;
     }
 
     std::string ExpressionFactory::writeToken() noexcept {
         auto value = std::string{_iterator->getValue()};
         if(_iterator->getType() == TokenType::STRING) { value = FORMAT(R"(string("{}"))", std::string{_iterator->getValue()}); }
-        if(_iterator->getType() == TokenType::IDENTIFIER) { value = FORMAT("_{}", value); }
+        if(_iterator->getType() == TokenType::IDENTIFIER) {
+            if(_temp.empty()) { value = FORMAT("_{}", value); }
+        }
         if(_iterator->getType() == TokenType::INTEGER && value[0] == '#') {
             value.erase(0, 1);
             if(!value.empty() && value[0] == 'o') {
@@ -156,20 +165,26 @@ namespace vnd {
             if(text[0] == ' ') { text.erase(0, 1); }
             text.pop_back();
         }
-        write(FORMAT(" _{}({})", std::string{identifier}, text), newType);
+        std::string value = FORMAT(" {}({})", std::string{identifier}, text);
+        if(_temp.empty()) {
+            value.erase(0, 1);
+            value = FORMAT(" _{}", value);
+        }
+        write(value, newType);
         return "";
     }
 
     std::string ExpressionFactory::handleSquareExpression(TupType &type) noexcept {
         std::string newType;
-        ExpressionFactory factory = ExpressionFactory::create(_iterator, _end, _scope);
+        if(!checkVector()) { return FORMAT("Indexing not allowed for {} type", _type); }
+        ExpressionFactory factory = ExpressionFactory::create(_iterator, _end, _scope, true);
         _iterator++;
         if(std::string error = factory.parse({TokenType::CLOSE_SQ_PARENTESIS}); !error.empty()) { return error; }
         Expression expression = factory.getExpression();
         newType = expression.getType();
-        if(newType.empty()) { return FORMAT("Identifier {}.{} not found", _type, expression.getType()); }
-        if(std::string error = ExpressionFactory::checkType(type, newType); !error.empty()) { return error; }
-        write(FORMAT("[{}]", expression.getText().substr(1)), newType);
+        if(newType != "int") { return FORMAT("{} index not allowed", newType); }
+        if(std::string error = ExpressionFactory::checkType(type, _type); !error.empty()) { return error; }
+        write(FORMAT("at({})", expression.getText().substr(1)), _type);
         return "";
     }
 
@@ -194,9 +209,20 @@ namespace vnd {
         return "";
     }
 
+    bool ExpressionFactory::checkVector() noexcept {
+        if(_type.starts_with("std::vector<")) {
+            _type.erase(0, std::string_view("std::vector<").size());
+            _type.pop_back();
+            if(_type.back() == '>') { _type.pop_back(); }
+            return true;
+        }
+        return false;
+    }
+
     std::string ExpressionFactory::checkType(TupType &oldType, const std::string_view newType) noexcept {
         if(newType == "dot" || ((_iterator + 1) != _end && (_iterator + 1)->getType() == TokenType::DOT_OPERATOR)) { return ""; }
         if(((_iterator + 1) != _end && (_iterator + 1)->getType() == TokenType::OPEN_SQ_PARENTESIS)) { return ""; }
+        if(_sq && !isSquareType(newType)) { return FORMAT("Type not allowed {}", newType); }
         if(std::get<2>(oldType).empty()) {
             if(newType == "operator") {
                 std::get<2>(oldType) = "int";
@@ -226,21 +252,13 @@ namespace vnd {
     }
 
     bool ExpressionFactory::checkNextToken(const std::string &type, const std::string &value) noexcept {
-        if((_iterator + 1) != _end) {
-            if((_iterator + 1)->getType() == TokenType::DOT_OPERATOR) {
-                _type = type + ".";
-                _temp += value + ".";
-                _dot = true;
-                _iterator++;
-                return true;
-            }
-            if((_iterator + 1)->getType() == TokenType::OPEN_SQ_PARENTESIS) {
-                _type = type;
-                _temp += value;
-                _dot = true;
-                _iterator++;
-                return true;
-            }
+        if((_iterator + 1) != _end && ((_iterator + 1)->getType() == TokenType::DOT_OPERATOR ||
+            (_iterator + 1)->getType() == TokenType::OPEN_SQ_PARENTESIS)) {
+            _type = type + ".";
+            _temp += value + ".";
+            _dot = true;
+            _iterator++;
+            return true;
         }
         return false;
     }
@@ -253,6 +271,9 @@ namespace vnd {
         }
         if(_power != 0 && ((_iterator + 1) == _end || (_iterator + 1)->getValue() != "^")) {
             value = FORMAT("{}{:)^{}}", value, "", _power);
+            if(_sq) {
+                value = FORMAT("{}{:)^{}}", value, "", _power);
+            }
             _power = 0;
         }
     }

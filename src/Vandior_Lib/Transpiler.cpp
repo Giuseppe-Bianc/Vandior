@@ -13,11 +13,11 @@ namespace vnd {
         _text += "#include <iostream>\n";
         _text += "#include <cmath>\n";
         _text += "#include <vector>\n";
-        _text += "class string : private std::string { public: string(): std::string(\"\") {}; string(std::string s): std::string(s) {}; int _size() { return this->size(); } };\n";
+        _text += "using string = std::string_view;\n";
         _text += "int _test() {return 0;}\n";
         _text += "int _testPar(int a, int b) {return a + b;}\n";
-        _text += "int _testPar(string s) {return s._size();}\n";
-        _text += "class Object { public: int _a; string _s; float _f(float b) { return std::pow(b, 2); }; string _fs() { return string(); } };\n";
+        _text += "int _testPar(string s) {return s.size();}\n";
+        _text += "class Object { public: int a; string s; float f(float b) { return std::pow(b, 2); }; string fs() { return string(); } };\n";
         _text += "Object _createObject() { return Object(); }\n";
         try {
             for(const Instruction &instruction : _instructions) {

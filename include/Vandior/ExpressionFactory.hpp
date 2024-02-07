@@ -22,7 +22,7 @@ namespace vnd {
          * @return ExpressionFactory instance.
          */
         [[nodiscard]] static ExpressionFactory create(std::vector<Token>::iterator &iterator, std::vector<Token>::iterator end,
-                                                      std::shared_ptr<Scope> scope) noexcept;
+                                                      std::shared_ptr<Scope> scope, bool sq = false) noexcept;
 
         /**
          * @brief Parses the token sequence until reaching the specified end tokens.
@@ -63,7 +63,7 @@ namespace vnd {
          * @param scope Shared pointer to the current scope.
          */
         ExpressionFactory(std::vector<Token>::iterator &iterator, std::vector<Token>::iterator end,
-                          std::shared_ptr<Scope> scope) noexcept;
+                          std::shared_ptr<Scope> scope, bool sq) noexcept;
 
         /**
          * @brief Type definition for a tuple used during parsing.
@@ -78,8 +78,17 @@ namespace vnd {
         int _power;                               ///< Power value used during parsing.
         bool _divide;                             ///< Flag indicating division operation during parsing.
         bool _dot;
+        bool _sq;
         std::string _type;
         std::string _temp;
+
+        /**
+         * @brief Checks if the type of a token is allowed for array indexing.
+         * @param type String_view representing the token type.
+         * @return Bool indicating if the type is allowed.
+         */
+        [[nodiscard]] static bool isSquareType(const std::string_view &type) noexcept;
+
         /**
          * @brief Gets the type of a token.
          * @param token The token to get the type from.
@@ -126,6 +135,13 @@ namespace vnd {
          * @return Parsed string if there is an error.
          */
         [[nodiscard]] std::string handleToken(TupType &type) noexcept;
+
+        
+        /**
+         * @brief Checks if the _temp type is a vector type.
+         * @return Bool indicating if the type is a vector type.
+         */
+        [[nodiscard]] bool checkVector() noexcept;
 
         /**
          * @brief Checks the type during parsing.
