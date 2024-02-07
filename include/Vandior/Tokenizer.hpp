@@ -23,6 +23,7 @@ namespace vnd {
 
         [[nodiscard]] bool positionIsInText() const noexcept;
         [[nodiscard]] Token handleAlpha();
+        [[nodiscard]] Token handleUnderscoreAlpha();
         [[nodiscard]] Token handleDigits();
         [[nodiscard]] Token handleComment();
         [[nodiscard]] Token handleSingleLineComment();

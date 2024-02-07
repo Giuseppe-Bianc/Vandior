@@ -10,6 +10,10 @@ namespace vnd {
                 tokens.emplace_back(handleAlpha());
             } else if(std::isdigit(currentChar)) [[likely]] {
                 tokens.emplace_back(handleDigits());
+            }else if(currentChar == '_') [[likely]] {
+                Token token;
+                token = handleUnderscoreAlpha();
+                tokens.emplace_back(token);
             } else if (vnd::TokenizerUtility::isHasterisc(currentChar)) [[likely]] {
                 tokens.emplace_back(handleHexadecimalOrOctal());
             } else if(std::isspace(currentChar)) [[likely]] {
@@ -43,13 +47,22 @@ namespace vnd {
     }
     bool Tokenizer::positionIsInText() const noexcept { return position < _inputSize; }
 
+
+
     Token Tokenizer::handleAlpha() {
         const auto start = position;
         TokenType type = TokenType::IDENTIFIER;
-        while(positionIsInText() && TokenizerUtility::isalnumUnderscore(_input[position])) { incPosAndColumn(); }
+        while(positionIsInText() && (TokenizerUtility::isalnumUnderscore(_input[position]))) { incPosAndColumn(); }
         const auto value = _input.substr(start, position - start);
         kewordType(value, type);
         return {type, value, {_filename,line, column - value.size()}};
+    }
+    Token Tokenizer::handleUnderscoreAlpha() {
+        const auto start = position;
+        incPosAndColumn();
+        while(positionIsInText() && (TokenizerUtility::isalnumUnderscore(_input[position]))) { incPosAndColumn(); }
+        const auto value = _input.substr(start, position - start);
+        return {TokenType::IDENTIFIER, value, {_filename,line, column - value.size()}};
     }
     void Tokenizer::kewordType(const std::string_view &value, TokenType &type) noexcept {
         using enum TokenType;
