@@ -8,7 +8,6 @@
 namespace vnd {
     /**
      * @brief Represents the source location in code (file, line, column).
-     *
      * This class provides a representation of the source location in code, including
      * the file name, line number, and column number.
      */
@@ -28,6 +27,16 @@ namespace vnd {
          */
         CodeSourceLocation(const std::string_view &fileName, std::size_t line, std::size_t column) noexcept
           : _fileName(fileName), _line(line), _column(column) {}
+
+        /**
+         * @brief Perfect forwarding constructor.
+         * @param fileName The name of the source file.
+         * @param line The line number in the source file.
+         * @param column The column number in the source file.
+         */
+        template <typename FileNameT, typename = std::enable_if_t<std::is_convertible_v<FileNameT, std::string_view>>>
+        CodeSourceLocation(FileNameT &&fileName, std::size_t line, std::size_t column) noexcept
+          : _fileName(std::forward<FileNameT>(fileName)), _line(line), _column(column) {}
 
         /**
          * @brief Copy constructor.
