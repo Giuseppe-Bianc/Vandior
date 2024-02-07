@@ -1,4 +1,4 @@
-/**ì
+/**ï¿½
  * @brief Defines the ExpressionFactory class for parsing and creating expressions.
  */
 #pragma once
@@ -29,7 +29,7 @@ namespace vnd {
          * @param endToken Vector of token types indicating the end of parsing.
          * @return Parsed string.
          */
-        [[nodiscard]] std::string parse(const std::vector<TokenType> &endToken) noexcept;
+        std::string parse(const std::vector<TokenType> &endToken) noexcept;
 
         /**
          * @brief Gets the size of the parsed text.
@@ -169,7 +169,7 @@ namespace vnd {
          * @param value String to write.
          * @param type String_view representing the type of the value.
          */
-        void write(std::string value, const std::string_view &type) noexcept;
+        void write(const std::string &value, const std::string_view &type) noexcept;
 
     };
 

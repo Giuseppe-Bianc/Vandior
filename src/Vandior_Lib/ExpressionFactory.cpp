@@ -174,6 +174,7 @@ namespace vnd {
         return "";
     }
 
+    // NOLINTNEXTLINE(*-no-recursion)
     std::string ExpressionFactory::handleSquareExpression(TupType &type) noexcept {
         std::string newType;
         if(!checkVector()) { return FORMAT("Indexing not allowed for {} type", _type); }
@@ -285,7 +286,7 @@ namespace vnd {
         }
     }
 
-    void ExpressionFactory::write(std::string value, const std::string_view &type) noexcept {
+    void ExpressionFactory::write(const std::string &value, const std::string_view &type) noexcept {
         if(!_dot) {
             _type.clear();
             _temp.clear();

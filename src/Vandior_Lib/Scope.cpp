@@ -86,8 +86,9 @@ namespace vnd {
         return "";
     }
 
+    // NOLINTNEXTLINE(*-no-recursion)
     std::string Scope::getFunType(const std::string &type, const std::string_view &identifier,
-                                  const std::vector<Expression> &expressions) const noexcept {  // NOLINT(*-no-recursion)
+                                  const std::vector<Expression> &expressions) const noexcept {
         std::string key = Scope::getType(type) + std::string(identifier);
         bool found = false;
         if(_funs.find(key) != _funs.end()) {
