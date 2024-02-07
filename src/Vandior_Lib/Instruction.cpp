@@ -410,7 +410,7 @@ namespace vnd {
     }
 
     void Instruction::setLastType(const InstructionType &type) noexcept {
-        if(_types.empty()) { return; }
+        if(_types.empty()) [[unlikely]]  { return; }
         _types.pop_back();
         _types.emplace_back(type);
     }
@@ -418,24 +418,24 @@ namespace vnd {
     void Instruction::addType(const InstructionType &type) noexcept { _types.emplace_back(type); }
 
     void Instruction::removeType() noexcept {
-        if(_types.empty()) { return; }
+        if(_types.empty()) [[unlikely]]  { return; }
         _types.pop_back();
     }
 
     TokenType Instruction::getLastTokenType() const noexcept {
-        if(_tokens.empty()) { return TokenType::UNKNOWN; }
+        if(_tokens.empty())  [[unlikely]]  { return TokenType::UNKNOWN; }
         return _tokens.back().getType();
     }
 
-    inline bool Instruction::lastTypeIs(const InstructionType &type) const noexcept { return getLastType() == type; }
+    bool Instruction::lastTypeIs(const InstructionType &type) const noexcept { return getLastType() == type; }
 
-    [[nodiscard]] inline bool Instruction::getLastBooleanOperator() const noexcept {
-        if(_booleanOperators.empty()) { return false; }
+    bool Instruction::getLastBooleanOperator() const noexcept {
+        if(_booleanOperators.empty()) [[unlikely]]  { return false; }
         return _booleanOperators.back();
     }
 
     void Instruction::setLastBooleanOperator(const bool present) noexcept {
-        if(_booleanOperators.empty()) { return; }
+        if(_booleanOperators.empty())  [[unlikely]] { return; }
         _booleanOperators.pop_back();
         _booleanOperators.emplace_back(present);
     }
@@ -443,11 +443,11 @@ namespace vnd {
     void Instruction::addBooleanOperator() noexcept { _booleanOperators.emplace_back(false); }
 
     void Instruction::removeBooleanOperator() noexcept {
-        if(_booleanOperators.empty()) { return; }
+        if(_booleanOperators.empty()) [[unlikely]] { return; }
         _booleanOperators.pop_back();
     }
 
-    inline bool Instruction::isEmpty() const noexcept { return _tokens.empty(); }
+    bool Instruction::isEmpty() const noexcept { return _tokens.empty(); }
 
     bool Instruction::isExpression() const noexcept {
         using enum InstructionType;
@@ -461,8 +461,8 @@ namespace vnd {
         return lastTypeIs(FOR_INITIALIZATION) || lastTypeIs(FOR_CONDITION) || lastTypeIs(FOR_STEP);
     }
 
-    inline bool Instruction::emplaceTokenType(const InstructionType &instruction, const TokenType token) noexcept {
-        if(lastTypeIs(instruction)) {
+    bool Instruction::emplaceTokenType(const InstructionType &instruction, const TokenType token) noexcept {
+        if(lastTypeIs(instruction)) [[likely]] {
             _allowedTokens.emplace_back(token);
             return true;
         }
@@ -499,7 +499,7 @@ namespace vnd {
     }
 
     inline bool Instruction::emplaceForTokens() noexcept {
-        if(isForExpression()) {
+        if(isForExpression()) [[likely]] {
             _allowedTokens.emplace_back(TokenType::OPEN_CUR_PARENTESIS);
             if(!lastTypeIs(InstructionType::FOR_STEP)) { _allowedTokens.emplace_back(TokenType::COMMA); };
             return true;
