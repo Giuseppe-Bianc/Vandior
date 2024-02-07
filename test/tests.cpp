@@ -1115,3 +1115,83 @@ TEST_CASE("Parser emit binary expression node parentesis 2 compat print", "[pars
     REQUIRE(rightNumber->getValue() == lfh);
     REQUIRE(binaryNode->comp_print()== "BINE(op:\"+\" l:BINE(op:\"+\" l:NUM(2), r:NUM(3)), r:NUM(1))");
 }
+
+TEST_CASE("ExpressionFactory emit int type", "[factory]") {
+    std::vector<vnd::Token> tokens = {
+        {inte, "1", vnd::CodeSourceLocation(filename, 1, 0)},
+        {oper, "+", vnd::CodeSourceLocation(filename, 1, 1)},
+        {inte, "2", vnd::CodeSourceLocation(filename, 1, 2)},
+    };
+    std::shared_ptr<vnd::Scope> scope = vnd::Scope::createMain();
+    auto iterator = tokens.begin();
+    vnd::ExpressionFactory factory = vnd::ExpressionFactory::create(iterator, tokens.end(), scope);
+    factory.parse({});
+    std::vector<vnd::Expression> expressions = factory.getExpressions();
+    REQUIRE(factory.size() == 1);
+    REQUIRE(factory.getExpression().getType() == "int");
+}
+
+TEST_CASE("ExpressionFactory emit double type", "[factory]") {
+    std::vector<vnd::Token> tokens = {
+        {doub, "1", vnd::CodeSourceLocation(filename, 1, 0)},
+        {oper, "+", vnd::CodeSourceLocation(filename, 1, 1)},
+        {inte, "2", vnd::CodeSourceLocation(filename, 1, 2)},
+    };
+    std::shared_ptr<vnd::Scope> scope = vnd::Scope::createMain();
+    auto iterator = tokens.begin();
+    vnd::ExpressionFactory factory = vnd::ExpressionFactory::create(iterator, tokens.end(), scope);
+    factory.parse({});
+    std::vector<vnd::Expression> expressions = factory.getExpressions();
+    REQUIRE(factory.size() == 1);
+    REQUIRE(factory.getExpression().getType() == "double");
+}
+
+TEST_CASE("ExpressionFactory emit array index type", "[factory]") {
+    std::vector<vnd::Token> tokens = {
+        {vnd::TokenType::OPEN_PARENTESIS, "[", vnd::CodeSourceLocation(filename, 1, 0)},
+        {inte, "1", vnd::CodeSourceLocation(filename, 1, 0)},
+        {oper, "/", vnd::CodeSourceLocation(filename, 1, 1)},
+        {inte, "2", vnd::CodeSourceLocation(filename, 1, 2)},
+        {vnd::TokenType::CLOSE_PARENTESIS, "]", vnd::CodeSourceLocation(filename, 1, 6)},
+    };
+    std::shared_ptr<vnd::Scope> scope = vnd::Scope::createMain();
+    auto iterator = tokens.begin();
+    vnd::ExpressionFactory factory = vnd::ExpressionFactory::create(iterator, tokens.end(), scope);
+    factory.parse({vnd::TokenType::OPEN_SQ_PARENTESIS});
+    std::vector<vnd::Expression> expressions = factory.getExpressions();
+    REQUIRE(factory.size() == 1);
+    REQUIRE(factory.getExpression().getType() == "int");
+}
+
+TEST_CASE("ExpressionFactory emit bool type", "[factory]") {
+    std::vector<vnd::Token> tokens = {
+        {vnd::TokenType::OPEN_PARENTESIS, "(", vnd::CodeSourceLocation(filename, 1, 0)},
+        {doub, "true", vnd::CodeSourceLocation(filename, 1, 1)},
+        {vnd::TokenType::LOGICAL_OPERATOR, "||", vnd::CodeSourceLocation(filename, 1, 2)},
+        {inte, "false", vnd::CodeSourceLocation(filename, 1, 5)},
+        {vnd::TokenType::CLOSE_PARENTESIS, ")", vnd::CodeSourceLocation(filename, 1, 6)},
+    };
+    std::shared_ptr<vnd::Scope> scope = vnd::Scope::createMain();
+    auto iterator = tokens.begin();
+    vnd::ExpressionFactory factory = vnd::ExpressionFactory::create(iterator, tokens.end(), scope);
+    factory.parse({vnd::TokenType::CLOSE_PARENTESIS});
+    std::vector<vnd::Expression> expressions = factory.getExpressions();
+    REQUIRE(factory.size() == 1);
+    REQUIRE(factory.getExpression().getType() == "bool");
+}
+
+TEST_CASE("ExpressionFactory emit function type", "[factory]") {
+    std::vector<vnd::Token> tokens = {
+        {vnd::TokenType::IDENTIFIER, "testPar", vnd::CodeSourceLocation(filename, 1, 0)},
+        {vnd::TokenType::OPEN_PARENTESIS, "(", vnd::CodeSourceLocation(filename, 1, 1)},
+        {vnd::TokenType::STRING, "Hello", vnd::CodeSourceLocation(filename, 1, 3)},
+        {vnd::TokenType::CLOSE_PARENTESIS, ")", vnd::CodeSourceLocation(filename, 1, 8)},
+    };
+    std::shared_ptr<vnd::Scope> scope = vnd::Scope::createMain();
+    auto iterator = tokens.begin();
+    vnd::ExpressionFactory factory = vnd::ExpressionFactory::create(iterator, tokens.end(), scope);
+    factory.parse({vnd::TokenType::CLOSE_PARENTESIS});
+    std::vector<vnd::Expression> expressions = factory.getExpressions();
+    REQUIRE(factory.size() == 1);
+    REQUIRE(factory.getExpression().getType() == "int");
+}

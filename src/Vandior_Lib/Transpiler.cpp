@@ -13,10 +13,12 @@ namespace vnd {
         _text += "#include <iostream>\n";
         _text += "#include <cmath>\n";
         _text += "#include <vector>\n";
-        _text += "using std::string;\n";
+        _text += "using string = std::string_view;\n";
         _text += "int _test() {return 0;}\n";
         _text += "int _testPar(int a, int b) {return a + b;}\n";
         _text += "int _testPar(string s) {return s.size();}\n";
+        _text += "class Object { public: int a; string s; float f(float b) { return std::pow(b, 2); }; string fs() { return string(); } };\n";
+        _text += "Object _createObject() { return Object(); }\n";
         try {
             for(const Instruction &instruction : _instructions) {
                 _text += std::string(C_ST(_tabs), '\t');
@@ -81,8 +83,8 @@ namespace vnd {
         std::vector<Token> tokens = instruction.getTokens();
         std::string type;
         auto iterator = tokens.begin();
-        const bool isConst = iterator->getValue() == "const";
-        std::vector<std::string_view> variables = extractVariables(iterator);
+        bool isConst = iterator->getValue() == "const";
+        std::vector<std::string_view> variables = extractVariables(iterator, instruction);
         ExpressionFactory factory = ExpressionFactory::create(iterator, tokens.end(), _scope);
         type = (++iterator)->getValue();
         if(!_scope->checkType(type)) { throw TranspilerException(FORMAT("Type {} not valid", type), instruction); }
@@ -123,12 +125,17 @@ namespace vnd {
         }
     }
 
-    std::vector<std::string_view> Transpiler::extractVariables(std::vector<Token>::iterator &iterator) noexcept {
+    std::vector<std::string_view> Transpiler::extractVariables(std::vector<Token>::iterator &iterator, const Instruction &instruction) {
         using enum TokenType;
         std::vector<std::string_view> result;
         if(iterator->getValue() == "const") { _text += "const "; }
         while(iterator->getType() != COLON) {
-            if(iterator->getType() == IDENTIFIER) { result.emplace_back(iterator->getValue()); }
+            if(iterator->getType() == IDENTIFIER) {
+                if(_scope->checkType(iterator->getValue())) {
+                    throw TranspilerException(FORMAT("Indentifier {} not allowed", iterator->getValue()), instruction);
+                }
+                result.emplace_back(iterator->getValue());
+            }
             iterator++;
         }
         return result;

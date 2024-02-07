@@ -27,10 +27,12 @@ namespace vnd {
         [[nodiscard]] bool isMainScope() const noexcept;
         [[nodiscard]] bool checkType(const std::string_view type) const noexcept;
         [[nodiscard]] std::pair<bool, bool> checkVariable(const std::string_view identifier, const bool shadowing = false) const noexcept;
-        [[nodiscard]] std::string_view getVariableType(const std::string_view identifier) const noexcept;
-        [[nodiscard]] std::string getFunType(const std::string_view identifier, const std::vector<Expression> &expressions) const noexcept;
+        [[nodiscard]] std::string_view getVariableType(const std::string &type, const std::string_view &identifier) const noexcept;
+        [[nodiscard]] std::string getFunType(const std::string &type, const std::string_view &identifier,
+                                             const std::vector<Expression> &expressions) const noexcept;
     private:
         Scope(std::shared_ptr<Scope> parent) noexcept;
+        static std::string getType(const std::string &type) noexcept;
         static std::vector<std::string> _numberTypes;
         std::unordered_map<std::string, std::string> _vars;
         std::unordered_map<std::string, std::string> _consts;

@@ -19,9 +19,17 @@ namespace vnd {
         mainScope->addType("char");
         mainScope->addType("bool");
         mainScope->addType("string");
+        mainScope->addType("Object");
+        mainScope->addVariable("Object.a", "int", false);
+        mainScope->addVariable("Object.s", "string", false);
         mainScope->addFun("test", make_FunType("int", {}));
         mainScope->addFun("testPar", make_FunType("int", {"int", "int"}));
         mainScope->addFun("testPar", make_FunType("int", {"string"}));
+        mainScope->addFun("createObject", make_FunType("Object", {}));
+        mainScope->addFun("vector.size", make_FunType("int", {}));
+        mainScope->addFun("string.size", make_FunType("int", {}));
+        mainScope->addFun("Object.f", make_FunType("float", {"float"}));
+        mainScope->addFun("Object.fs", make_FunType("string", {}));
         return mainScope;
     }
 
@@ -70,18 +78,20 @@ namespace vnd {
         return {false, false};
     }
 
-    std::string_view Scope::getVariableType(const std::string_view identifier) const noexcept {  // NOLINT(*-no-recursion)
-        if(_vars.find(std::string{identifier}) != _vars.end()) { return _vars.at(std::string{identifier}); }
-        if(_consts.find(std::string{identifier}) != _consts.end()) { return _consts.at(std::string{identifier}); }
-        if(_parent) { return _parent->getVariableType(identifier); }
+    std::string_view Scope::getVariableType(const std::string &type, const std::string_view &identifier) const noexcept {  // NOLINT(*-no-recursion)
+        std::string key = Scope::getType(type) + std::string(identifier);
+        if(_vars.find(key) != _vars.end()) { return _vars.at(key); }
+        if(_consts.find(key) != _consts.end()) { return _consts.at(key); }
+        if(_parent) { return _parent->getVariableType(type, identifier); }
         return "";
     }
 
-    std::string Scope::getFunType(const std::string_view identifier, const std::vector<Expression> &expressions) const noexcept {  // NOLINT(*-no-recursion)
-        [[maybe_unused]] std::string_view result;
+    std::string Scope::getFunType(const std::string &type, const std::string_view &identifier,
+                                  const std::vector<Expression> &expressions) const noexcept {  // NOLINT(*-no-recursion)
+        std::string key = Scope::getType(type) + std::string(identifier);
         bool found = false;
-        if(_funs.find(std::string{identifier}) != _funs.end()) {
-            for(const FunType &fun : _funs.at(std::string{identifier})) {
+        if(_funs.find(key) != _funs.end()) {
+            for(const FunType &fun : _funs.at(key)) {
                 found = true;
                 if(std::get<1>(fun).size() != expressions.size()) [[likely]] {
                     found = false;
@@ -93,8 +103,15 @@ namespace vnd {
                 if(found) { return std::string{std::get<0>(fun)}; }
             }
         }
-        if(_parent) { return _parent->getFunType(identifier, expressions); }
+        if(_parent) { return _parent->getFunType(type, identifier, expressions); }
         return "";
+    }
+
+    std::string Scope::getType(const std::string &type) noexcept {
+        if(type.starts_with("std::vector<")) {
+            return "vector.";
+        }
+        return type;
     }
 
 }  // namespace vnd
