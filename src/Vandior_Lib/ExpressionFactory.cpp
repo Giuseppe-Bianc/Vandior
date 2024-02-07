@@ -231,6 +231,13 @@ namespace vnd {
             std::get<2>(oldType) = newType;
             return "";
         }
+        if(std::get<2>(oldType) == "not" && newType == "bool") {
+            std::get<2>(oldType) = newType;
+            return "";
+        }
+        if(std::get<2>(oldType) == "bool" && newType == "not") {
+            return "";
+        }
         if(std::get<2>(oldType) == newType) { return ""; }
         if(Scope::isNumber(std::get<2>(oldType)) && (Scope::isNumber(std::string{newType}) || newType == "operator")) {
             return "";

@@ -26,6 +26,7 @@ namespace vnd {
         mainScope->addFun("testPar", make_FunType("int", {"int", "int"}));
         mainScope->addFun("testPar", make_FunType("int", {"string"}));
         mainScope->addFun("createObject", make_FunType("Object", {}));
+        mainScope->addFun("vector.size", make_FunType("int", {}));
         mainScope->addFun("string.size", make_FunType("int", {}));
         mainScope->addFun("Object.f", make_FunType("float", {"float"}));
         mainScope->addFun("Object.fs", make_FunType("string", {}));
@@ -78,7 +79,7 @@ namespace vnd {
     }
 
     std::string_view Scope::getVariableType(const std::string &type, const std::string_view &identifier) const noexcept {  // NOLINT(*-no-recursion)
-        std::string key = type + std::string(identifier);
+        std::string key = Scope::getType(type) + std::string(identifier);
         if(_vars.find(key) != _vars.end()) { return _vars.at(key); }
         if(_consts.find(key) != _consts.end()) { return _consts.at(key); }
         if(_parent) { return _parent->getVariableType(type, identifier); }
@@ -87,7 +88,7 @@ namespace vnd {
 
     std::string Scope::getFunType(const std::string &type, const std::string_view &identifier,
                                   const std::vector<Expression> &expressions) const noexcept {  // NOLINT(*-no-recursion)
-        std::string key = type + std::string(identifier);
+        std::string key = Scope::getType(type) + std::string(identifier);
         bool found = false;
         if(_funs.find(key) != _funs.end()) {
             for(const FunType &fun : _funs.at(key)) {
@@ -104,6 +105,13 @@ namespace vnd {
         }
         if(_parent) { return _parent->getFunType(type, identifier, expressions); }
         return "";
+    }
+
+    std::string Scope::getType(const std::string &type) noexcept {
+        if(type.starts_with("std::vector<")) {
+            return "vector.";
+        }
+        return type;
     }
 
 }  // namespace vnd

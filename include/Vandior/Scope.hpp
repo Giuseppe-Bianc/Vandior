@@ -32,6 +32,7 @@ namespace vnd {
                                              const std::vector<Expression> &expressions) const noexcept;
     private:
         Scope(std::shared_ptr<Scope> parent) noexcept;
+        static std::string getType(const std::string &type) noexcept;
         static std::vector<std::string> _numberTypes;
         std::unordered_map<std::string, std::string> _vars;
         std::unordered_map<std::string, std::string> _consts;
