@@ -129,7 +129,7 @@ namespace vnd {
             checkKReturn();
             break;
         default:
-            _tokens = {};
+            _allowedTokens = {};
             break;
         }
         _tokens.emplace_back(token);
