@@ -1,5 +1,8 @@
 #include "Vandior/Scope.hpp"
 
+DISABLE_WARNINGS_PUSH(
+    4005 4201 4459 4514 4625 4626 4820 6244 6285 6385 6386 26409 26415 26418 26429 26432 26437 26438 26440 26446 26447 26450 26451 26455 26457 26459 26460 26461 26467 26472 26473 26474 26475 26481 26482 26485 26490 26491 26493 26494 26495 26496 26497 26498 26800 26814 26818 26826)
+
 namespace vnd {
 
     // NOLINTNEXTLINE
@@ -8,11 +11,11 @@ namespace vnd {
     Scope::Scope(std::shared_ptr<Scope> parent) noexcept : _parent(std::move(parent)) {}
 
     std::shared_ptr<Scope> Scope::create(std::shared_ptr<Scope> parent) noexcept {
-        return std::make_shared<Scope>(Scope(std::move(parent)));
+        return std::make_shared<Scope>(Scope{std::move(parent)});
     }
 
     std::shared_ptr<Scope> Scope::createMain() noexcept {
-        auto mainScope = std::make_shared<Scope>(Scope(nullptr));
+        auto mainScope = std::make_shared<Scope>(Scope{nullptr});
         mainScope->addType("int");
         mainScope->addType("float");
         mainScope->addType("double");
@@ -57,7 +60,7 @@ namespace vnd {
 
     void Scope::addFun(const std::string_view identifier, const FunType &fun) noexcept {
         auto key = std::string{identifier};
-        if(_funs.find(key) == _funs.end()) { _funs[key] = {}; }
+        if(!_funs.contains(key)) { _funs.try_emplace(key); }
         _funs[key].emplace_back(fun);
     }
 
@@ -78,7 +81,8 @@ namespace vnd {
         return {false, false};
     }
 
-    std::string_view Scope::getVariableType(const std::string &type, const std::string_view &identifier) const noexcept {  // NOLINT(*-no-recursion)
+    // NOLINTNEXTLINE(*-no-recursion)
+    std::string_view Scope::getVariableType(const std::string &type, const std::string_view &identifier) const noexcept {
         std::string key = Scope::getType(type) + std::string(identifier);
         if(_vars.find(key) != _vars.end()) { return _vars.at(key); }
         if(_consts.find(key) != _consts.end()) { return _consts.at(key); }
@@ -109,10 +113,10 @@ namespace vnd {
     }
 
     std::string Scope::getType(const std::string &type) noexcept {
-        if(type.starts_with("std::vector<")) {
-            return "vector.";
-        }
+        if(type.starts_with("std::vector<")) { return "vector."; }
         return type;
     }
 
 }  // namespace vnd
+
+DISABLE_WARNINGS_POP()

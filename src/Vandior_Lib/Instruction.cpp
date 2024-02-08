@@ -32,22 +32,22 @@ namespace vnd {
     std::vector<std::string> Instruction::typeToString() const noexcept {
         std::vector<std::string> result;
         result.reserve(_types.size());
-        std::transform(_types.begin(), _types.end(), std::back_inserter(result),
-                       [](const InstructionType &instruction) { return FORMAT("{}", instruction); });
+        std::ranges::transform(_types, std::back_inserter(result),
+                               [](const InstructionType &instruction) { return FORMAT("{}", instruction); });
         return result;
     }
 
     std::string Instruction::toString() const noexcept {
         std::string result;
         if(_tokens.empty()) { return ""; }
-        result += FORMAT("{}\t", _tokens[0].getLine());
+        result += FORMAT("{}\t", _tokens.at(0).getLine());
         for(const Token &iter : _tokens) {
             if(iter.getType() == TokenType::CHAR) [[likely]] {
-                result += FORMAT("'{}'",iter.getValue());
+                result += FORMAT("'{}'", iter.getValue());
             } else if(iter.getType() == TokenType::STRING) [[likely]] {
-                result += FORMAT(R"("{}")",iter.getValue());
+                result += FORMAT(R"("{}")", iter.getValue());
             } else [[unlikely]] {
-                result += FORMAT("{} ",iter.getValue());
+                result += FORMAT("{} ", iter.getValue());
             }
         }
         return result;
@@ -410,7 +410,7 @@ namespace vnd {
     }
 
     void Instruction::setLastType(const InstructionType &type) noexcept {
-        if(_types.empty()) [[unlikely]]  { return; }
+        if(_types.empty()) [[unlikely]] { return; }
         _types.pop_back();
         _types.emplace_back(type);
     }
@@ -418,24 +418,24 @@ namespace vnd {
     void Instruction::addType(const InstructionType &type) noexcept { _types.emplace_back(type); }
 
     void Instruction::removeType() noexcept {
-        if(_types.empty()) [[unlikely]]  { return; }
+        if(_types.empty()) [[unlikely]] { return; }
         _types.pop_back();
     }
 
     TokenType Instruction::getLastTokenType() const noexcept {
-        if(_tokens.empty())  [[unlikely]]  { return TokenType::UNKNOWN; }
+        if(_tokens.empty()) [[unlikely]] { return TokenType::UNKNOWN; }
         return _tokens.back().getType();
     }
 
     bool Instruction::lastTypeIs(const InstructionType &type) const noexcept { return getLastType() == type; }
 
     bool Instruction::getLastBooleanOperator() const noexcept {
-        if(_booleanOperators.empty()) [[unlikely]]  { return false; }
+        if(_booleanOperators.empty()) [[unlikely]] { return false; }
         return _booleanOperators.back();
     }
 
     void Instruction::setLastBooleanOperator(const bool present) noexcept {
-        if(_booleanOperators.empty())  [[unlikely]] { return; }
+        if(_booleanOperators.empty()) [[unlikely]] { return; }
         _booleanOperators.pop_back();
         _booleanOperators.emplace_back(present);
     }

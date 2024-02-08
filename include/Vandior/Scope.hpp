@@ -1,11 +1,7 @@
 #pragma once
-#include "Vandior/Expression.hpp"
+#include "Expression.hpp"
 #include <iostream>
-#include <memory>
-#include <vector>
-#include <unordered_map>
-#include <unordered_set>
-#include <tuple>
+#include "headers.hpp"
 
 namespace vnd {
 
@@ -26,10 +22,13 @@ namespace vnd {
         void addFun(const std::string_view identifier, const FunType &fun) noexcept;
         [[nodiscard]] bool isMainScope() const noexcept;
         [[nodiscard]] bool checkType(const std::string_view type) const noexcept;
-        [[nodiscard]] std::pair<bool, bool> checkVariable(const std::string_view identifier, const bool shadowing = false) const noexcept;
-        [[nodiscard]] std::string_view getVariableType(const std::string &type, const std::string_view &identifier) const noexcept;
+        [[nodiscard]] std::pair<bool, bool> checkVariable(const std::string_view identifier,
+                                                          const bool shadowing = false) const noexcept;
+        [[nodiscard]] std::string_view getVariableType(const std::string &type,
+                                                       const std::string_view &identifier) const noexcept;
         [[nodiscard]] std::string getFunType(const std::string &type, const std::string_view &identifier,
                                              const std::vector<Expression> &expressions) const noexcept;
+
     private:
         Scope(std::shared_ptr<Scope> parent) noexcept;
         static std::string getType(const std::string &type) noexcept;

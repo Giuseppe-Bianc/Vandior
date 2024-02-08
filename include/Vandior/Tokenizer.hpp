@@ -11,7 +11,7 @@ namespace vnd {
     public:
         explicit Tokenizer(const std::string_view &input, const std::string_view &fileName = "unknown.vn") noexcept
           : _input(input), _filename(fileName), _inputSize(input.size()) {}  // NOLINT(*-include-cleaner)
-        [[nodiscard]] std::vector<Token> tokenize();    // NOLINT(*-include-cleaner)
+        [[nodiscard]] std::vector<Token> tokenize();                         // NOLINT(*-include-cleaner)
 
     private:
         std::string_view _input;

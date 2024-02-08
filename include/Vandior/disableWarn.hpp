@@ -6,7 +6,7 @@
 
 #ifdef _MSC_VER
 // Microsoft Visual C++ Compiler
-//NOLINTBEGIN
+// NOLINTBEGIN
 /**
  * @def DISABLE_WARNINGS_PUSH(...)
  * @brief Pushes a warning suppression for Microsoft Visual C++ Compiler.
@@ -19,7 +19,7 @@
  * @brief Pops the previously pushed warning suppression for Microsoft Visual C++ Compiler.
  */
 #define DISABLE_WARNINGS_POP() __pragma(warning(pop))
-//NOLINTEND
+// NOLINTEND
 #else
 /**
  * @def DISABLE_WARNINGS_PUSH(...)

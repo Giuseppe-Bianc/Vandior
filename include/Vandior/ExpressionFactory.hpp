@@ -62,8 +62,8 @@ namespace vnd {
          * @param end Iterator pointing to the end of the token sequence.
          * @param scope Shared pointer to the current scope.
          */
-        ExpressionFactory(std::vector<Token>::iterator &iterator, std::vector<Token>::iterator end,
-                          std::shared_ptr<Scope> scope, bool sq) noexcept;
+        ExpressionFactory(std::vector<Token>::iterator &iterator, std::vector<Token>::iterator end, std::shared_ptr<Scope> scope,
+                          bool sq) noexcept;
 
         /**
          * @brief Type definition for a tuple used during parsing.
@@ -136,7 +136,6 @@ namespace vnd {
          */
         [[nodiscard]] std::string handleToken(TupType &type) noexcept;
 
-        
         /**
          * @brief Checks if the _temp type is a vector type.
          * @return Bool indicating if the type is a vector type.
@@ -152,10 +151,10 @@ namespace vnd {
         [[nodiscard]] std::string checkType(TupType &oldType, const std::string_view newType) noexcept;
 
         /**
-        * @brief Checks the presence of . or [ as next token.
-        * @param type String representing the type of the value.
-        * @param value Bool if the next token is . or [.
-        */
+         * @brief Checks the presence of . or [ as next token.
+         * @param type String representing the type of the value.
+         * @param value Bool if the next token is . or [.
+         */
         [[nodiscard]] bool checkNextToken(const std::string &type, const std::string &value) noexcept;
 
         /**
@@ -170,7 +169,6 @@ namespace vnd {
          * @param type String_view representing the type of the value.
          */
         void write(const std::string &value, const std::string_view &type) noexcept;
-
     };
 
 }  // namespace vnd

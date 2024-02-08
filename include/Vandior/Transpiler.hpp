@@ -1,12 +1,10 @@
 #pragma once
-#include <vector>
-#include <fstream>
-#include <memory>
-#include "Vandior/Instruction.hpp"
-#include "Vandior/TranspilerException.hpp"
-#include "Vandior/Scope.hpp"
-#include "Vandior/ExpressionFactory.hpp"
 #include "Vandior/Expression.hpp"
+#include "Vandior/ExpressionFactory.hpp"
+#include "Vandior/Instruction.hpp"
+#include "Vandior/Scope.hpp"
+#include "Vandior/TranspilerException.hpp"
+#include <fstream>
 
 namespace vnd {
 
@@ -14,6 +12,7 @@ namespace vnd {
     public:
         [[nodiscard]] static Transpiler create(std::vector<Instruction> instructions) noexcept;
         void transpile();
+
     private:
         Transpiler(std::vector<Instruction> _instructions) noexcept;
         int _tabs;
@@ -25,7 +24,8 @@ namespace vnd {
         void checkTrailingBracket(const Instruction &instruction);
         void transpileMain(const Instruction &i);
         void transpileDeclaration(const Instruction &i);
-        [[nodiscard]] std::vector<std::string_view> extractVariables(std::vector<Token>::iterator &iterator, const Instruction &instruction);
+        [[nodiscard]] std::vector<std::string_view> extractVariables(std::vector<Token>::iterator &iterator,
+                                                                     const Instruction &instruction);
         void openScope() noexcept;
         void closeScope() noexcept;
         void emplaceCommaColon(const bool colon) noexcept;

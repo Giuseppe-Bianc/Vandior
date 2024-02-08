@@ -7,6 +7,9 @@
 #include "Log.hpp"
 #include "headers.hpp"
 
+DISABLE_WARNINGS_PUSH(
+    4005 4201 4459 4514 4625 4626 4820 6244 6285 6385 6386 26409 26415 26418 26429 26432 26437 26438 26440 26445 26446 26447 26450 26451 26455 26457 26459 26460 26461 26467 26472 26473 26474 26475 26481 26482 26485 26490 26491 26493 26494 26495 26496 26497 26498 26800 26814 26818 26826)
+
 /**
  * @brief Enum representing different types of AST nodes.
  */
@@ -57,7 +60,7 @@ public:
      * @brief Gets the type of the AST node.
      * @return NodeType enumeration value.
      */
-    [[nodiscard]]virtual NodeType getType() const = 0;
+    [[nodiscard]] virtual NodeType getType() const = 0;
     /**
      * @brief Returns a string representation of the AST node.
      * @return String representation of the AST node.
@@ -116,7 +119,9 @@ public:
       : op(_op), operand(std::move(_operand)) {}
 
     [[nodiscard]] NodeType getType() const noexcept override { return NodeType::UnaryExpression; }
-    [[nodiscard]] std::string print() const override { return FORMAT("{}(op:\"{}\" operand:{})", getType(), op, operand->print()); }
+    [[nodiscard]] std::string print() const override {
+        return FORMAT("{}(op:\"{}\" operand:{})", getType(), op, operand->print());
+    }
     [[nodiscard]] std::string comp_print() const override { return FORMAT("UNE(op:\"{}\" opr:{})", op, operand->comp_print()); }
     [[nodiscard]] const std::string_view &getOp() const noexcept { return op; }
     [[nodiscard]] const std::unique_ptr<ASTNode> &getOperand() const noexcept { return operand; }
@@ -199,7 +204,7 @@ static inline constexpr void print_indent_dl(int indent, const auto &label, cons
  * @param node The root of the AST to be pretty printed.
  * @param indent Number of spaces for indentation.
  */
- //NOLINTNEXTLINE(misc-no-recursion)
+// NOLINTNEXTLINE(misc-no-recursion)
 static inline constexpr void prettyPrint(const ASTNode &node, int indent = 0) {
     // Recursively print children for Binary and Unary expression nodes
     if(const auto *binaryNode = dynamic_cast<const BinaryExpressionNode *>(&node)) {
@@ -216,3 +221,5 @@ static inline constexpr void prettyPrint(const ASTNode &node, int indent = 0) {
         print_indent(indent, "Node", FORMAT("(Type: {}, value:{})", node.getType(), variableNode->getName()));
     }
 }
+
+DISABLE_WARNINGS_POP()

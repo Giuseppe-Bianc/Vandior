@@ -16,8 +16,9 @@ namespace vnd {
         _text += "using string = std::string_view;\n";
         _text += "int _test() {return 0;}\n";
         _text += "int _testPar(int a, int b) {return a + b;}\n";
-        _text += "int _testPar(string s) {return s.size();}\n";
-        _text += "class Object { public: int a; string s; float f(float b) { return std::pow(b, 2); }; string fs() { return string(); } };\n";
+        _text += "std::size_t _testPar(string s) {return s.size();}\n";
+        _text += "class Object {\npublic:\n\tint a;\n\tstd::string s;\n\tdouble f(double b) { return std::pow(b, 2); "
+                 "}\n\tstd::string fs() { return std::string(); }\n};\n";
         _text += "Object _createObject() { return Object(); }\n";
         try {
             for(const Instruction &instruction : _instructions) {
@@ -48,7 +49,7 @@ namespace vnd {
             if(!_scope->isMainScope()) { throw TranspilerException("Expected }", Instruction::create("")); }
             _output << _text;
             _output.close();
-            LINFO("Transpiling successfull");
+            LINFO("Transpiling successfully");
         } catch(const TranspilerException &e) {
             LERROR("{}", e.what());
             _output.close();
@@ -83,7 +84,7 @@ namespace vnd {
         std::vector<Token> tokens = instruction.getTokens();
         std::string type;
         auto iterator = tokens.begin();
-        bool isConst = iterator->getValue() == "const";
+        const auto isConst = iterator->getValue() == "const";
         std::vector<std::string_view> variables = extractVariables(iterator, instruction);
         ExpressionFactory factory = ExpressionFactory::create(iterator, tokens.end(), _scope);
         type = (++iterator)->getValue();
@@ -125,14 +126,15 @@ namespace vnd {
         }
     }
 
-    std::vector<std::string_view> Transpiler::extractVariables(std::vector<Token>::iterator &iterator, const Instruction &instruction) {
+    std::vector<std::string_view> Transpiler::extractVariables(std::vector<Token>::iterator &iterator,
+                                                               const Instruction &instruction) {
         using enum TokenType;
         std::vector<std::string_view> result;
         if(iterator->getValue() == "const") { _text += "const "; }
         while(iterator->getType() != COLON) {
             if(iterator->getType() == IDENTIFIER) {
                 if(_scope->checkType(iterator->getValue())) {
-                    throw TranspilerException(FORMAT("Indentifier {} not allowed", iterator->getValue()), instruction);
+                    throw TranspilerException(FORMAT("Identifier {} not allowed", iterator->getValue()), instruction);
                 }
                 result.emplace_back(iterator->getValue());
             }

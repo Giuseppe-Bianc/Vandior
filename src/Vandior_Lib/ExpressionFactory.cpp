@@ -6,8 +6,8 @@ namespace vnd {
     // NOLINTBEGIN
     ExpressionFactory::ExpressionFactory(std::vector<Token>::iterator &iterator, std::vector<Token>::iterator end,
                                          std::shared_ptr<Scope> scope, bool sq) noexcept
-      : _iterator(iterator), _end(end), _scope(std::move(scope)), _text({}), _expressions({}), _power(0), _divide(false), _dot(false), _sq(sq),
-        _type(""), _temp("") {}
+      : _iterator(iterator), _end(end), _scope(std::move(scope)), _text({}), _expressions({}), _power(0), _divide(false),
+        _dot(false), _sq(sq), _type(""), _temp("") {}
 
     ExpressionFactory ExpressionFactory::create(std::vector<Token>::iterator &iterator, std::vector<Token>::iterator end,
                                                 std::shared_ptr<Scope> scope, bool sq) noexcept {
@@ -99,7 +99,7 @@ namespace vnd {
         }
         if(checkNextToken(std::string{type}, writeToken())) { return; }
         _dot = false;
-        std::string_view value = _iterator->getValue();
+        const auto value = _iterator->getValue();
         if(_iterator->getType() == CHAR) {
             _text.emplace_back(FORMAT("'{}'", std::string{_iterator->getValue()}));
             _iterator++;
@@ -236,9 +236,7 @@ namespace vnd {
             std::get<2>(oldType) = newType;
             return "";
         }
-        if(std::get<2>(oldType) == "bool" && newType == "not") {
-            return "";
-        }
+        if(std::get<2>(oldType) == "bool" && newType == "not") { return ""; }
         if(std::get<2>(oldType) == newType) { return ""; }
         if(Scope::isNumber(std::get<2>(oldType)) && (Scope::isNumber(std::string{newType}) || newType == "operator")) {
             return "";
@@ -261,7 +259,7 @@ namespace vnd {
 
     bool ExpressionFactory::checkNextToken(const std::string &type, const std::string &value) noexcept {
         if((_iterator + 1) != _end && ((_iterator + 1)->getType() == TokenType::DOT_OPERATOR ||
-            (_iterator + 1)->getType() == TokenType::OPEN_SQ_PARENTESIS)) {
+                                       (_iterator + 1)->getType() == TokenType::OPEN_SQ_PARENTESIS)) {
             _type = type + ".";
             _temp += value + ".";
             _dot = true;
@@ -279,9 +277,7 @@ namespace vnd {
         }
         if(_power != 0 && ((_iterator + 1) == _end || (_iterator + 1)->getValue() != "^")) {
             value = FORMAT("{}{:)^{}}", value, "", _power);
-            if(_sq) {
-                value = FORMAT("{}{:)^{}}", value, "", _power);
-            }
+            if(_sq) { value = FORMAT("{}{:)^{}}", value, "", _power); }
             _power = 0;
         }
     }

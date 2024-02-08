@@ -52,7 +52,7 @@ namespace vnd {
 
         return 0.0;
     }
-    std::unique_ptr<ASTNode> Parser::parsePrimary() { // NOLINT(*-no-recursion)
+    std::unique_ptr<ASTNode> Parser::parsePrimary() {  // NOLINT(*-no-recursion)
         const Token &currentToken = getCurrentToken();
         const auto &currentType = currentToken.getType();
         const auto &currentValue = currentToken.getValue();
@@ -66,10 +66,10 @@ namespace vnd {
         } else if(currentType == TokenType::IDENTIFIER) {
             consumeToken();
             return std::make_unique<VariableNode>(currentValue);
-        } else if (currentToken.getValue() == "(") {
+        } else if(currentToken.getValue() == "(") {
             consumeToken();
             auto expression = parseExpression();
-            if (getCurrentToken().getValue() == ")") {
+            if(getCurrentToken().getValue() == ")") {
                 consumeToken();
                 return expression;
             } else {
@@ -93,7 +93,7 @@ namespace vnd {
             return parsePrimary();
         }
     }
-    std::unique_ptr<ASTNode> Parser::parseBinary(int precedence) { // NOLINT(*-no-recursion)
+    std::unique_ptr<ASTNode> Parser::parseBinary(int precedence) {  // NOLINT(*-no-recursion)
         auto left = parseUnary();
         while(getOperatorPrecedence(getCurrentToken()) > precedence) {
             const Token &opToken = getCurrentToken();
@@ -104,5 +104,5 @@ namespace vnd {
 
         return left;
     }
-    std::unique_ptr<ASTNode> Parser::parseExpression() { return parseBinary(0); } // NOLINT(*-no-recursion)
+    std::unique_ptr<ASTNode> Parser::parseExpression() { return parseBinary(0); }  // NOLINT(*-no-recursion)
 }  // namespace vnd

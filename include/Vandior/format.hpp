@@ -9,7 +9,7 @@
 
 #include <fmt/core.h>    // NOLINT(*-include-cleaner)
 #include <fmt/format.h>  // NOLINT(*-include-cleaner)
-//NOLINTBEGIN
+// NOLINTBEGIN
 /**
  * @def FORMAT(...)
  * @brief Macro for formatting strings using the fmt library.
@@ -37,4 +37,4 @@
  * @return The joined string.
  */
 #define FMT_JOIN(container, delimiter) fmt::join(container, delimiter)
-//NOLINTEND
+// NOLINTEND

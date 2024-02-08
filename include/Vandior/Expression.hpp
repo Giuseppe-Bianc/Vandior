@@ -43,8 +43,8 @@ namespace vnd {
          */
         Expression(const std::vector<std::string> &text, const std::string type) noexcept;
 
-        std::vector<std::string> _text; ///< Vector of strings representing the expression.
-        std::string _type;              ///< Type of the expression
+        std::vector<std::string> _text;  ///< Vector of strings representing the expression.
+        std::string _type;               ///< Type of the expression
     };
 
 }  // namespace vnd

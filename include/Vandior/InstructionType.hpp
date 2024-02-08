@@ -1,7 +1,6 @@
 #pragma once
-#include <stdexcept>
-#include "headers.hpp"
 #include "Token.hpp"
+#include "headers.hpp"
 
 namespace vnd {
     enum class InstructionType : short {
