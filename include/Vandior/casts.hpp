@@ -486,7 +486,6 @@
 #define NC_CPCU32T(x) gsl::narrow_cast<const uint32_t *>(static_cast<const void *>(x))
 #define BC_CPCU32T(x) std::bit_cast<const uint32_t *>(x)
 
-// NOLINTEND
 /** @} */  // end of TypeCastingMacros group
 /**
  * @brief Namespace containing sizes of various types.
@@ -585,4 +584,5 @@ namespace TypeSizes {
     /// Size of a UTF-32 encoded string view.
     static inline constexpr std::size_t sizeOfU32StringView = sizeof(std::u32string_view);
 }  // namespace TypeSizes
+// NOLINTEND
 /** @} */  // end of TypeSizes namespace

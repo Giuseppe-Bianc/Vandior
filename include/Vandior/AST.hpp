@@ -184,6 +184,7 @@ private:
  * @param label Label for the printed information.
  * @param value Value to be printed.
  */
+// NOLINTNEXTLINE
 static inline constexpr void print_indent(int indent, const auto &label, const auto &value) {
     LINFO("{: ^{}}{}: {}", "", indent, label, value);
 }
@@ -194,6 +195,7 @@ static inline constexpr void print_indent(int indent, const auto &label, const a
  * @param value Value to be printed.
  * @param labelnl Label for the new line.
  */
+// NOLINTNEXTLINE
 static inline constexpr void print_indent_dl(int indent, const auto &label, const auto &value, const auto &labelnl) {
     print_indent(indent, label, value);
     LINFO("{: ^{}}{}:", "", indent, labelnl);
