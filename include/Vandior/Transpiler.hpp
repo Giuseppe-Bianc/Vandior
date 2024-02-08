@@ -26,6 +26,8 @@ namespace vnd {
         void transpileDeclaration(const Instruction &i);
         [[nodiscard]] std::vector<std::string_view> extractVariables(std::vector<Token>::iterator &iterator,
                                                                      const Instruction &instruction);
+        [[nodiscard]] std::string transpileType(std::vector<Token>::iterator &iterator, const std::vector<Token>::iterator end,
+                                                    const std::vector<TokenType> &endTokens, const Instruction &instruction);
         void openScope() noexcept;
         void closeScope() noexcept;
         void emplaceCommaColon(const bool colon) noexcept;

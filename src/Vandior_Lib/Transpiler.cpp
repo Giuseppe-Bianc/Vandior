@@ -12,6 +12,7 @@ namespace vnd {
         _output.open("output.cpp");
         _text += "#include <iostream>\n";
         _text += "#include <cmath>\n";
+        _text += "#include <array>\n";
         _text += "#include <vector>\n";
         _text += "using string = std::string_view;\n";
         _text += "int v_test() {return 0;}\n";
@@ -87,12 +88,7 @@ namespace vnd {
         const auto isConst = iterator->getValue() == "const";
         std::vector<std::string_view> variables = extractVariables(iterator, instruction);
         ExpressionFactory factory = ExpressionFactory::create(iterator, tokens.end(), _scope);
-        type = (++iterator)->getValue();
-        if(!_scope->checkType(type)) { throw TranspilerException(FORMAT("Type {} not valid", type), instruction); }
-        while(iterator != tokens.end() && iterator->getType() != TokenType::EQUAL_OPERATOR) {
-            if(iterator->getType() == TokenType::OPEN_SQ_PARENTESIS) { type = FORMAT("std::vector<{}>", type); }
-            iterator++;
-        }
+        type = transpileType(iterator, tokens.end(), {TokenType::EQUAL_OPERATOR}, instruction);
         _text += FORMAT("{} ", type);
         if(iterator != tokens.end() && iterator->getType() == TokenType::EQUAL_OPERATOR) {
             iterator++;
@@ -145,6 +141,33 @@ namespace vnd {
             iterator++;
         }
         return result;
+    }
+
+    std::string Transpiler::transpileType(std::vector<Token>::iterator &iterator, const std::vector<Token>::iterator end,
+                                          const std::vector<TokenType> &endTokens, const Instruction &instruction) {
+        std::string type;
+        std::string prefix = "";
+        std::string suffix = "";
+        type = (++iterator)->getValue();
+        if(!_scope->checkType(type)) { throw TranspilerException(FORMAT("Type {} not valid", type), instruction); }
+        while(iterator != end && std::ranges::find(endTokens, iterator->getType()) == endTokens.end()) {
+            if(iterator->getType() == TokenType::OPEN_SQ_PARENTESIS) {
+                if((iterator + 1)->getType() == TokenType::CLOSE_SQ_PARENTESIS) {
+                    prefix += "std::vector<";
+                    suffix = ">" + suffix;
+                } else {
+                    iterator++;
+                    ExpressionFactory factory = ExpressionFactory::create(iterator, end, _scope, true);
+                    if(std::string error = factory.parse({TokenType::CLOSE_SQ_PARENTESIS, TokenType::EQUAL_OPERATOR}); error != "") {
+                        throw new TranspilerException(error, instruction);
+                    };
+                    prefix += "std::array<";
+                    suffix = FORMAT(", {}>{}", factory.getExpression().getText(), suffix);
+                }
+            }
+            iterator++;
+        }
+        return prefix + type + suffix;
     }
 
     void Transpiler::openScope() noexcept {

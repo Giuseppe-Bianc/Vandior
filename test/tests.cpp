@@ -1118,7 +1118,6 @@ TEST_CASE("Parser emit binary expression node parentesis 2 compat print", "[pars
     REQUIRE(binaryNode->comp_print()== "BINE(op:\"+\" l:BINE(op:\"+\" l:NUM(2), r:NUM(3)), r:NUM(1))");
 }
 
-/*
 TEST_CASE("ExpressionFactory emit int type", "[factory]") {
     std::vector<vnd::Token> tokens = {
         {inte, "1", vnd::CodeSourceLocation(filename, 1, 0)},
@@ -1193,4 +1192,4 @@ TEST_CASE("ExpressionFactory emit function type", "[factory]") {
     factory.parse({vnd::TokenType::CLOSE_PARENTESIS});
     REQUIRE(factory.size() == 1);
     REQUIRE(factory.getExpression().getType() == "int");
-}*/
+}
