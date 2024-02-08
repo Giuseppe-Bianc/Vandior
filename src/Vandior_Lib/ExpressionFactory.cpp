@@ -128,7 +128,13 @@ namespace vnd {
         auto value = std::string{_iterator->getValue()};
         if(_iterator->getType() == TokenType::STRING) { value = FORMAT(R"(string("{}"))", std::string{_iterator->getValue()}); }
         if(_iterator->getType() == TokenType::IDENTIFIER) {
-            if(_temp.empty()) { value = FORMAT("_{}", value); }
+            if(_temp.empty()) {
+                if(!value.empty() && value.at(0) == '_') {
+                    value = FORMAT("v{}", value);
+                } else {
+                    value = FORMAT(" _{}", value);
+                }
+            }
         }
         if(_iterator->getType() == TokenType::INTEGER && value[0] == '#') {
             value.erase(0, 1);
@@ -168,7 +174,11 @@ namespace vnd {
         std::string value = FORMAT(" {}({})", std::string{identifier}, text);
         if(_temp.empty()) {
             value.erase(0, 1);
-            value = FORMAT(" _{}", value);
+            if(!value.empty() && value.at(0) == '_') {
+                value = FORMAT("v{}", value);
+            } else {
+                value = FORMAT(" _{}", value);
+            }
         }
         write(value, newType);
         return "";
@@ -215,6 +225,10 @@ namespace vnd {
             _type.erase(0, std::string_view("std::vector<").size());
             _type.pop_back();
             if(_type.back() == '>') { _type.pop_back(); }
+            return true;
+        }
+        if(_type == "string.") {
+            _type = "char";
             return true;
         }
         return false;

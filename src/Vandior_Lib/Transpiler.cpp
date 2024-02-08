@@ -14,7 +14,7 @@ namespace vnd {
         _text += "#include <cmath>\n";
         _text += "#include <vector>\n";
         _text += "using string = std::string_view;\n";
-        _text += "int _test() {return 0;}\n";
+        _text += "int v_test() {return 0;}\n";
         _text += "int _testPar(int a, int b) {return a + b;}\n";
         _text += "std::size_t _testPar(string s) {return s.size();}\n";
         _text += "class Object {\npublic:\n\tint a;\n\tstd::string s;\n\tdouble f(double b) { return std::pow(b, 2); "
@@ -108,7 +108,11 @@ namespace vnd {
                 FORMAT("Uninitialized constant: {} values for {} constants", factory.size(), variables.size()), instruction);
         }
         for(std::string_view jvar : variables) {
-            _text += FORMAT("_{}", jvar);
+            if(!jvar.empty() && jvar.at(0) == '_') {
+                _text += FORMAT("v{}", jvar);
+            } else {
+                _text += FORMAT("_{}", jvar);
+            }
             if(!factory.empty()) {
                 Expression expression = factory.getExpression();
                 if(!Scope::canAssign(type, expression.getType())) {

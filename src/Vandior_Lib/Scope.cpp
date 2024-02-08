@@ -25,7 +25,7 @@ namespace vnd {
         mainScope->addType("Object");
         mainScope->addVariable("Object.a", "int", false);
         mainScope->addVariable("Object.s", "string", false);
-        mainScope->addFun("test", make_FunType("int", {}));
+        mainScope->addFun("_test", make_FunType("int", {}));
         mainScope->addFun("testPar", make_FunType("int", {"int", "int"}));
         mainScope->addFun("testPar", make_FunType("int", {"string"}));
         mainScope->addFun("createObject", make_FunType("Object", {}));
