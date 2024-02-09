@@ -83,9 +83,9 @@ namespace vnd {
 
     // NOLINTNEXTLINE(*-no-recursion)
     std::string_view Scope::getVariableType(const std::string &type, const std::string_view &identifier) const noexcept {
-        std::string key = Scope::getType(type) + std::string(identifier);
-        if(_vars.find(key) != _vars.end()) { return _vars.at(key); }
-        if(_consts.find(key) != _consts.end()) { return _consts.at(key); }
+        auto key = FORMAT("{}{}", Scope::getType(type), std::string(identifier));
+        if(_vars.contains(key)) { return _vars.at(key); }
+        if(_consts.contains(key)) { return _consts.at(key); }
         if(_parent) { return _parent->getVariableType(type, identifier); }
         return "";
     }
@@ -93,19 +93,19 @@ namespace vnd {
     // NOLINTNEXTLINE(*-no-recursion)
     std::string Scope::getFunType(const std::string &type, const std::string_view &identifier,
                                   const std::vector<Expression> &expressions) const noexcept {
-        std::string key = Scope::getType(type) + std::string(identifier);
+        auto key = FORMAT("{}{}", Scope::getType(type), std::string(identifier));
         bool found = false;
         if(_funs.find(key) != _funs.end()) {
-            for(const FunType &fun : _funs.at(key)) {
+            for(const auto &[first, second] : _funs.at(key)) {
                 found = true;
-                if(std::get<1>(fun).size() != expressions.size()) [[likely]] {
+                if(second.size() != expressions.size()) [[likely]] {
                     found = false;
                 } else [[unlikely]] {
-                    for(size_t par = 0; par != std::get<1>(fun).size(); par++) {
-                        if(!Scope::canAssign(get<1>(fun).at(par), expressions.at(par).getType())) { found = false; }
+                    for(size_t par = 0; par != second.size(); par++) {
+                        if(!Scope::canAssign(second.at(par), expressions.at(par).getType())) { found = false; }
                     }
                 }
-                if(found) { return std::string{std::get<0>(fun)}; }
+                if(found) { return first; }
             }
         }
         if(_parent) { return _parent->getFunType(type, identifier, expressions); }
@@ -113,7 +113,7 @@ namespace vnd {
     }
 
     std::string Scope::getType(const std::string &type) noexcept {
-        if(type.starts_with("std::vector<")) { return "vector."; }
+        if(type.starts_with("std::vector<")) [[unlikely]] { return "vector."; }
         return type;
     }
 

@@ -1,15 +1,15 @@
 #pragma once
 #include "Expression.hpp"
-#include <iostream>
 #include "headers.hpp"
+#include <iostream>
 
 namespace vnd {
 
     class Scope {
     public:
-        using FunType = std::tuple<std::string, std::vector<std::string>>;
+        using FunType = std::pair<std::string, std::vector<std::string>>;
         static FunType make_FunType(const std::string &first, const std::vector<std::string> &second) {
-            return std::make_tuple(first, second);
+            return std::make_pair(first, second);
         }
         [[nodiscard]] static std::shared_ptr<Scope> create(std::shared_ptr<Scope> parent) noexcept;
         [[nodiscard]] static std::shared_ptr<Scope> createMain() noexcept;

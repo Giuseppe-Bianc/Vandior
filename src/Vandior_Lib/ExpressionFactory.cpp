@@ -130,9 +130,9 @@ namespace vnd {
         if(_iterator->getType() == TokenType::IDENTIFIER) {
             if(_temp.empty()) { value = FORMAT("_{}", value); }
         }
-        if(_iterator->getType() == TokenType::INTEGER && value[0] == '#') {
+        if(_iterator->getType() == TokenType::INTEGER && value.at(0) == '#') {
             value.erase(0, 1);
-            if(!value.empty() && value[0] == 'o') {
+            if(!value.empty() && value.at(0) == 'o') {
                 value.erase(0, 1);
                 return FORMAT("0{}", value);
             }
@@ -162,7 +162,7 @@ namespace vnd {
         if(std::string error = ExpressionFactory::checkType(type, newType); !error.empty()) { return error; }
         for(const Expression &expression : expressions) { text += expression.getText() + ","; }
         if(!expressions.empty() && !text.empty()) {
-            if(text[0] == ' ') { text.erase(0, 1); }
+            if(text.at(0) == ' ') { text.erase(0, 1); }
             text.pop_back();
         }
         std::string value = FORMAT(" {}({})", std::string{identifier}, text);
