@@ -1,6 +1,5 @@
 #include "Vandior/ExpressionFactory.hpp"
 #include <algorithm>
-#include <Vandior/Log.hpp>
 
 namespace vnd {
 
@@ -229,8 +228,17 @@ namespace vnd {
             return true;
         }
         if(_type.starts_with("std::array<")) {
+            int par = 0;
             _type.erase(0, std::string_view("std::array<").size());
-            _type.erase(_type.find_last_of(","));
+            while(_type.back() != ',' || par != 0) {
+                if(_type.back() == '(') {
+                    par--;
+                } else if(_type.back() == ')') {
+                    par++;
+                }
+                _type.pop_back();
+            }
+            _type.pop_back();
             return true;
         }
         if(_type == "string.") {

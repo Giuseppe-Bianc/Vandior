@@ -132,7 +132,7 @@ namespace vnd {
             _allowedTokens = {};
             break;
         }
-        _tokens.emplace_back(token);
+        if(token.getType() != eofTokenType) { _tokens.emplace_back(token); }
     }
 
     bool Instruction::canTerminate() const noexcept {

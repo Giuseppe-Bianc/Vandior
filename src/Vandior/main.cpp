@@ -91,7 +91,7 @@ auto main(int argc, const char *const argv[]) -> int {
         AutoTimer tim("tokenizer total time");
         size_t line = tokens.at(0).getLine();
         for(const vnd::Token &token : tokens) {
-            if(token.getType() == vnd::TokenType::COMMENT || token.getType() == vnd::eofTokenType) [[unlikely]] { continue; }
+            if(token.getType() == vnd::TokenType::COMMENT) [[unlikely]] { continue; }
             if(token.getLine() >= line) [[likely]] {
                 if(instructions.empty() || instructions.back().canTerminate()) [[likely]] {
                     if(!instructions.empty()) { LINFO("{}", instructions.back().getLastType()); }
