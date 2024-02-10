@@ -36,9 +36,7 @@ namespace vnd {
         return mainScope;
     }
 
-    bool Scope::isNumber(const std::string &type) noexcept {
-        return std::ranges::find(Scope::_numberTypes, type) != Scope::_numberTypes.end();
-    }
+    bool Scope::isNumber(const std::string &type) noexcept { return std::ranges::contains(Scope::_numberTypes, type); }
 
     bool Scope::canAssign(const std::string &left, const std::string &right) noexcept {
         return (Scope::isNumber(left) && Scope::isNumber(right)) || left == right;
@@ -67,16 +65,14 @@ namespace vnd {
     bool Scope::isMainScope() const noexcept { return _parent == nullptr; }
 
     bool Scope::checkType(const std::string_view type) const noexcept {  // NOLINT(*-no-recursion)
-        if(_types.find(std::string{type}) != _types.end()) { return true; }
+        if(_types.contains(std::string{type})) { return true; }
         if(_parent) { return _parent->checkType(type); }
         return false;
     }
 
     // NOLINTNEXTLINE
     std::pair<bool, bool> Scope::checkVariable(const std::string_view identifier, const bool shadowing) const noexcept {
-        if(_vars.find(std::string{identifier}) != _vars.end() || _consts.find(std::string{identifier}) != _consts.end()) {
-            return {true, shadowing};
-        }
+        if(_vars.contains(std::string{identifier}) || _consts.contains(std::string{identifier})) { return {true, shadowing}; }
         if(_parent) { return _parent->checkVariable(identifier, true); }
         return {false, false};
     }
@@ -95,7 +91,7 @@ namespace vnd {
                                   const std::vector<Expression> &expressions) const noexcept {
         auto key = FORMAT("{}{}", Scope::getType(type), std::string(identifier));
         bool found = false;
-        if(_funs.find(key) != _funs.end()) {
+        if(_funs.contains(key)) {
             for(const auto &[first, second] : _funs.at(key)) {
                 found = true;
                 if(second.size() != expressions.size()) [[likely]] {

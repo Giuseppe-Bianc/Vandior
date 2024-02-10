@@ -1,10 +1,10 @@
 #include "Vandior/Transpiler.hpp"
 
 namespace vnd {
-    Transpiler::Transpiler(std::vector<Instruction> instructions) noexcept
+    Transpiler::Transpiler(const std::vector<Instruction> &instructions) noexcept
       : _tabs(0), _instructions(std::move(instructions)), _scope(Scope::createMain()), _main(0) {}
 
-    Transpiler Transpiler::create(std::vector<Instruction> instructions) noexcept { return {std::move(instructions)}; }
+    Transpiler Transpiler::create(const std::vector<Instruction> &instructions) noexcept { return {std::move(instructions)}; }
 
     void Transpiler::transpile() {
         using enum TokenType;
@@ -29,6 +29,7 @@ namespace vnd {
                     transpileMain(instruction);
                     break;
                 case DECLARATION:
+                    [[fallthrough]];
                 case INITIALIZATION:
                     transpileDeclaration(instruction);
                     break;
@@ -59,7 +60,8 @@ namespace vnd {
 
     void Transpiler::checkTrailingBracket(const Instruction &instruction) {
         if(instruction.getTokens().back().getType() == TokenType::CLOSE_CUR_PARENTESIS) {
-            if(_main == 1 && _scope->getParent() && _scope->getParent()->isMainScope()) {
+            auto parent = _scope->getParent();
+            if(_main == 1 && parent && parent->isMainScope()) {
                 if(instruction.getLastType() == InstructionType::MAIN) { _text += "\n"; }
                 _text += FORMAT("{:\t^{}}return 0;\n{:\t^{}}", "", C_ST(_tabs), "", C_ST(_tabs) - 1);
                 _main = -1;
@@ -83,28 +85,31 @@ namespace vnd {
         checkTrailingBracket(instruction);
     }
 
-    void Transpiler::transpileDeclaration(const Instruction &instruction) {  // NOLINT(*-function-cognitive-complexity)
-        std::vector<Token> tokens = instruction.getTokens();
+    void Transpiler::transpileDeclaration(const Instruction &instruction) {
+        auto tokens = instruction.getTokens();
         std::string type;
         auto iterator = tokens.begin();
         const auto isConst = iterator->getValue() == "const";
         std::vector<std::string_view> variables = extractVariables(iterator, instruction);
+        auto endToken = tokens.end();
         ExpressionFactory factory = ExpressionFactory::create(iterator, tokens.end(), _scope);
         type = transpileType(iterator, tokens.end(), {TokenType::EQUAL_OPERATOR}, instruction);
         _text += FORMAT("{} ", type);
-        if(iterator != tokens.end() && iterator->getType() == TokenType::EQUAL_OPERATOR) {
+        // Handle initialization
+        if(iterator != endToken && iterator->getType() == TokenType::EQUAL_OPERATOR) {
             iterator++;
-            while(iterator != tokens.end()) {
+            while(iterator != endToken) {
                 if(std::string error = factory.parse({TokenType::COMMA}); !error.empty()) {
                     throw TranspilerException(error, instruction);
                 }
-                if(iterator != tokens.end()) { iterator++; }
+                if(iterator != endToken) { iterator++; }
             }
         }
         if(isConst && variables.size() > factory.size()) {
             throw TranspilerException(
                 FORMAT("Uninitialized constant: {} values for {} constants", factory.size(), variables.size()), instruction);
         }
+
         for(std::string_view jvar : variables) {
             if(!jvar.empty() && jvar.at(0) == '_') {
                 _text += FORMAT("v{}", jvar);
@@ -112,7 +117,7 @@ namespace vnd {
                 _text += FORMAT("_{}", jvar);
             }
             if(!factory.empty()) {
-                Expression expression = factory.getExpression();
+                auto expression = factory.getExpression();
                 if(!Scope::canAssign(type, expression.getType())) {
                     throw TranspilerException(FORMAT("Cannot assign {} to {}", expression.getType(), type), instruction);
                 }
@@ -181,13 +186,13 @@ namespace vnd {
     }
 
     void Transpiler::openScope() noexcept {
-        std::shared_ptr<Scope> newScope = Scope::create(_scope);
+        auto newScope = Scope::create(_scope);
         _scope = newScope;
         _tabs++;
     }
 
     void Transpiler::closeScope() noexcept {
-        std::shared_ptr<Scope> oldScope = _scope;
+        auto oldScope = _scope;
         _scope = _scope->getParent();
         oldScope->removeParent();
         _tabs--;
