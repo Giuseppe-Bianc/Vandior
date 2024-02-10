@@ -18,5 +18,5 @@ main {
 	{
 	}
 }
-var ar: int[]
-var a: int = ar[1]
+var ar: int[][] = {{_test(), 2, 3, 6}, {"Ciao".size(), -4}}
+var a: int = ar[1][7]

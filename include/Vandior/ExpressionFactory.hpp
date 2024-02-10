@@ -130,6 +130,13 @@ namespace vnd {
         [[nodiscard]] std::string handleSquareExpression(TupType &type) noexcept;
 
         /**
+         * @brief Handles a vector initialization.
+         * @param type Tuple representing the type information.
+         * @return Parsed string if there is an error.
+         */
+        [[nodiscard]] std::string handleVectorInitialization(TupType &type) noexcept;
+
+        /**
          * @brief Handles a token during parsing.
          * @param type Tuple representing the type information.
          * @return Parsed string if there is an error.

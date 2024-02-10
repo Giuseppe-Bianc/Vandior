@@ -28,8 +28,10 @@ namespace vnd {
                 if(std::string error = handleInnerExpression(type); !error.empty()) { return error; }
             } else if(_iterator->getType() == TokenType::OPEN_SQ_PARENTESIS) {
                 if(std::string error = handleSquareExpression(type); !error.empty()) { return error; }
-            } else {
-                if(std::string error = handleToken(type); !error.empty()) { return error; }
+            } else if(_iterator->getType() == TokenType::OPEN_CUR_PARENTESIS) {
+                if(std::string error = handleVectorInitialization(type); !error.empty()) { return error; }
+            } else if(std::string error = handleToken(type); !error.empty()) {
+                return error;
             }
         }
         _expressions.emplace_back(Expression::create(_text, std::get<2>(type)));
@@ -196,6 +198,39 @@ namespace vnd {
         if(newType != "int") { return FORMAT("{} index not allowed", newType); }
         if(std::string error = ExpressionFactory::checkType(type, _type); !error.empty()) { return error; }
         write(FORMAT("at({})", expression.getText().substr(1)), _type);
+        return "";
+    }
+
+    // NOLINTNEXTLINE(*-no-recursion)
+    std::string ExpressionFactory::handleVectorInitialization(TupType& type) noexcept {
+        std::string oldType = std::get<2>(type);
+        std::string vectorType;
+        std::string value;
+        std::vector<Expression> expressions;
+        ExpressionFactory factory = ExpressionFactory::create(_iterator, _end, _scope);
+        while(_iterator->getType() != TokenType::CLOSE_CUR_PARENTESIS) {
+            _iterator++;
+            if(_iterator->getType() != TokenType::CLOSE_CUR_PARENTESIS) {
+                if(std::string error = factory.parse({TokenType::COMMA, TokenType::CLOSE_CUR_PARENTESIS}); !error.empty()) {
+                    return error;
+                }
+            }
+        }
+        for(Expression& expression : factory.getExpressions()) {
+            if(vectorType == "") {
+                vectorType = expression.getType();
+            } else if(!Scope::canAssign(vectorType, expression.getType())) {
+                return FORMAT("Incompatible types in vector {}, {}", vectorType, expression.getType());
+            }
+            value += FORMAT("{},", expression.getText());
+        }
+        if(!value.empty()) {
+            value.pop_back();
+            if(value[0] == ' ') { value.erase(0, 1); }
+        }
+        vectorType = FORMAT("std::vector<{}>", vectorType);
+        if(std::string error = checkType(type, vectorType); !error.empty()) { return error; }
+        write(FORMAT("{{{}}}", value), vectorType);
         return "";
     }
 
