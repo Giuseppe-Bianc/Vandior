@@ -27,8 +27,8 @@ namespace {
         if(!std::filesystem::is_regular_file(filePath)) { throw FILEREADEREERRORF("Path is not a regular file: {}", filename); }
 
         std::stringstream buffer;
-
-        if(std::ifstream fileStream{filePath, std::ios::in | std::ios::binary}; fileStream.is_open()) {  // NOLINT(*-include-cleaner,  hicpp-signed-bitwise)
+        // NOLINTNEXTLINE(*-include-cleaner,  hicpp-signed-bitwise)
+        if(std::ifstream fileStream{filePath, std::ios::in | std::ios::binary}; fileStream.is_open()) {
             // Ensure
             // that the file is opened securely
             fileStream.exceptions(std::ios::failbit | std::ios::badbit);  // NOLINT(hicpp-signed-bitwise)
@@ -53,9 +53,13 @@ namespace {
 DISABLE_WARNINGS_PUSH(26461 26821)
 // NOLINTNEXTLINE(bugprone-exception-escape, readability-function-cognitive-complexity)
 #ifdef _WIN32  // Windows
+#ifdef __MINGW32__
+constexpr std::string_view filename = "../../../../input.vn";  // windows mingw form editor, use this when building for mingw
+#else
 constexpr std::string_view filename = "../../../input.vn";
+#endif
 #elif defined __unix__  // Linux and Unix-like systems
-//constexpr std::string_view filename = "../../../../input.vn";  // Linux and Unix  form editor
+// constexpr std::string_view filename = "../../../../input.vn";  // Linux and Unix  form editor
 constexpr std::string_view filename = "../../../input.vn";  // Linux and Unix
 #endif
 auto main(int argc, const char *const argv[]) -> int {
