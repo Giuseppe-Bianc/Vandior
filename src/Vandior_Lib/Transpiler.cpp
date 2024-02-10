@@ -70,14 +70,16 @@ namespace vnd {
     }
 
     void Transpiler::transpileMain(const Instruction &instruction) {
+        std::string value;
         if(!_scope->isMainScope()) { throw TranspilerException("Cannot declare main here", instruction); }
         if(_main == -1) { throw TranspilerException("Main already declared", instruction); }
         if(_scope->getParent() != nullptr) { throw TranspilerException("Cannot declare main here", instruction); }
         _text += "int main(int argc, char **argv) {\n";
         _main = 1;
         openScope();
-        _text += FORMAT("{:\t^{}}std::vector<string> _args(argv, argv + argc);", "", C_ST(_tabs));
-        _scope->addVariable("args", "std::vector<string>", true);
+        value = FORMAT("{:\t^{}}std::vector<string> _args(argv, argv + argc);", "", C_ST(_tabs));;
+        _text += value;
+        _scope->addConstant("args", "std::vector<string>", value);
         checkTrailingBracket(instruction);
     }
 
@@ -114,14 +116,22 @@ namespace vnd {
                 if(!Scope::canAssign(type, expression.getType())) {
                     throw TranspilerException(FORMAT("Cannot assign {} to {}", expression.getType(), type), instruction);
                 }
-                _text += FORMAT(" ={}", expression.getText());
+                if(isConst) {
+                    if(expression.isConst()) {
+                        _text += FORMAT(" = {}", expression.getValue());
+                    } else {
+                        throw TranspilerException(FORMAT("Cannot evaluate {} at compile time", jvar), instruction);
+                    }
+                } else {
+                    _text += FORMAT(" ={}", expression.getText());
+                }
             }
             auto [check, shadowing] = _scope->checkVariable(jvar);
             if(check) {
                 if(!shadowing) { throw TranspilerException(FORMAT("{} already defined", jvar), instruction); }
                 LWARN("{} already defined", jvar);
             }
-            _scope->addVariable(jvar, type, isConst);
+            _scope->addVariable(jvar, type);
             emplaceCommaColon(jvar == variables.back());
         }
     }

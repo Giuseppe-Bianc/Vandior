@@ -2,6 +2,7 @@
 
 #include "Token.hpp"
 #include <vector>
+#include <any>
 
 namespace vnd {
 
@@ -20,7 +21,8 @@ namespace vnd {
          * @param type The type of the expression.
          * @return An Expression object.
          */
-        [[nodiscard]] static Expression create(const std::vector<std::string> &text, const std::string &type) noexcept;
+        [[nodiscard]] static Expression create(const std::vector<std::string> &text, const std::string &type, const bool isConst,
+                                                const std::string &value) noexcept;
 
         /**
          * @brief Gets the text representation of the expression.
@@ -34,6 +36,10 @@ namespace vnd {
          */
         std::string getType() const noexcept;
 
+        bool isConst() const noexcept;
+
+        std::string getValue() const noexcept;
+
     private:
         /**
          * @brief Private constructor for creating Expression objects.
@@ -41,10 +47,13 @@ namespace vnd {
          * @param text The vector of strings representing the expression.
          * @param type The type of the expression.
          */
-        Expression(const std::vector<std::string> &text, const std::string type) noexcept;
+        Expression(const std::vector<std::string> &text, const std::string type, const bool isConst,
+                   const std::string &value) noexcept;
 
         std::vector<std::string> _text;  ///< Vector of strings representing the expression.
         std::string _type;               ///< Type of the expression
+        bool _const;
+        std::string _value;
     };
 
 }  // namespace vnd

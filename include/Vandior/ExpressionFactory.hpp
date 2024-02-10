@@ -5,6 +5,7 @@
 
 #include "Expression.hpp"
 #include "Scope.hpp"
+#include "exprtk.hpp"
 #include "Token.hpp"
 
 namespace vnd {
@@ -79,6 +80,8 @@ namespace vnd {
         bool _divide;                             ///< Flag indicating division operation during parsing.
         bool _dot;
         bool _sq;
+        bool _const;
+        std::string _expressionText;
         std::string _type;
         std::string _temp;
 
@@ -94,7 +97,7 @@ namespace vnd {
          * @param token The token to get the type from.
          * @return Type of the token as a string.
          */
-        [[nodiscard]] std::string_view getTokenType(const Token &token) const noexcept;
+        [[nodiscard]] std::string_view getTokenType(const Token &token) noexcept;
 
         /**
          * @brief Emplaces the current token into the parsed text vector.

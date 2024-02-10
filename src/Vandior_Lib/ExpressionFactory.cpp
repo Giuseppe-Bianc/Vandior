@@ -1,5 +1,4 @@
 #include "Vandior/ExpressionFactory.hpp"
-//#include "Vandior/exprtk.hpp"
 #include <algorithm>
 
 namespace vnd {
@@ -8,32 +7,10 @@ namespace vnd {
     ExpressionFactory::ExpressionFactory(std::vector<Token>::iterator &iterator, std::vector<Token>::iterator end,
                                          std::shared_ptr<Scope> scope, bool sq) noexcept
       : _iterator(iterator), _end(end), _scope(std::move(scope)), _text({}), _expressions({}), _power(), _divide(false),
-        _dot(false), _sq(sq), _type(""), _temp("") {}
+        _dot(false), _sq(sq), _const(true), _expressionText(""), _type(""), _temp("") {}
 
     ExpressionFactory ExpressionFactory::create(std::vector<Token>::iterator &iterator, std::vector<Token>::iterator end,
                                                 std::shared_ptr<Scope> scope, bool sq) noexcept {
-        /* std::string expression_str = "x^2";
-        double x = 2;
-        double y = 1.2;
-
-        // Define symbol tables and initialize variables
-        exprtk::symbol_table<double> symbol_table;
-        symbol_table.add_variable("x", x);
-        symbol_table.add_variable("y", y);
-
-        // Define the expression
-        exprtk::expression<double> expression;
-        expression.register_symbol_table(symbol_table);
-
-        // Parse and compile the expression
-        exprtk::parser<double> parser;
-        parser.compile(expression_str, expression);
-
-        // Evaluate the expression
-        double result = expression.value();
-
-        // Output the result
-        LINFO("Result of expression '{}' with x={} and y={}: {}", expression_str, x, y, result);*/
         return {iterator, end, std::move(scope), sq};
     }
     // NOLINTEND
@@ -42,7 +19,10 @@ namespace vnd {
 
     std::string ExpressionFactory::parse(const std::vector<TokenType> &endToken) noexcept {  // NOLINT(*-no-recursion)
         _text = {};
+        _expressionText = "";
         std::tuple<bool, bool, std::string> type = std::make_tuple(false, false, "");
+        exprtk::expression<double> expression;
+        exprtk::parser<double> parser;
         while(_iterator != _end && std::ranges::find(endToken, _iterator->getType()) == endToken.end()) {
             if(_iterator->getType() == TokenType::IDENTIFIER && _iterator + 1 != _end &&
                (_iterator + 1)->getType() == TokenType::OPEN_PARENTESIS) {
@@ -57,7 +37,14 @@ namespace vnd {
                 return error;
             }
         }
-        _expressions.emplace_back(Expression::create(_text, std::get<2>(type)));
+        if(Scope::isNumber(std::get<2>(type))) {
+            bool ok = parser.compile(_expressionText, expression);
+            std::string value = std::to_string(expression.value());
+            _expressions.emplace_back(
+                Expression::create(_text, std::get<2>(type), _const && ok, value));
+        } else {
+            _expressions.emplace_back(Expression::create(_text, std::get<2>(type), _const, _expressionText));
+        }
         return "";
     }
 
@@ -77,7 +64,7 @@ namespace vnd {
         return result;
     }
 
-    std::string_view ExpressionFactory::getTokenType(const Token &token) const noexcept {
+    std::string_view ExpressionFactory::getTokenType(const Token &token) noexcept {
         using enum TokenType;
         // NOLINTBEGIN
         switch(token.getType()) {
@@ -92,6 +79,7 @@ namespace vnd {
         case STRING:
             return "string";
         case IDENTIFIER:
+            _const = false;
             return _scope->getVariableType(_type, token.getValue());
         case OPERATOR:
             [[fallthrough]];
@@ -127,6 +115,7 @@ namespace vnd {
         const auto value = _iterator->getValue();
         if(_iterator->getType() == CHAR) {
             _text.emplace_back(FORMAT("'{}'", std::string{_iterator->getValue()}));
+            _expressionText += FORMAT("'{}'", std::string{_iterator->getValue()});
             _iterator++;
             return;
         }
@@ -143,6 +132,7 @@ namespace vnd {
             return;
         }
         std::string text = _temp + writeToken();
+        _expressionText += text;
         checkOperators(text);
         _text.emplace_back(text);
         if(value == "/" && !_sq) { _divide = true; }
@@ -179,6 +169,7 @@ namespace vnd {
         std::string newType;
         std::string text;
         _iterator++;
+        _const = false;
         while(_iterator->getType() != TokenType::CLOSE_PARENTESIS) {
             _iterator++;
             if(_iterator->getType() != TokenType::CLOSE_PARENTESIS) {
@@ -218,6 +209,7 @@ namespace vnd {
         if(std::string error = factory.parse({TokenType::CLOSE_SQ_PARENTESIS}); !error.empty()) { return error; }
         Expression expression = factory.getExpression();
         newType = expression.getType();
+        if(!expression.isConst()) { _const = false; }
         if(newType != "int") { return FORMAT("{} index not allowed", newType); }
         if(std::string error = ExpressionFactory::checkType(type, _type); !error.empty()) { return error; }
         write(FORMAT("at({})", expression.getText().substr(1)), _type);
@@ -245,6 +237,7 @@ namespace vnd {
             } else if(!Scope::canAssign(vectorType, expression.getType())) {
                 return FORMAT("Incompatible types in vector {}, {}", vectorType, expression.getType());
             }
+            if(!expression.isConst()) { _const = false; }
             value += FORMAT("{},", expression.getText());
         }
         if(!value.empty()) {
@@ -369,11 +362,11 @@ namespace vnd {
     }
 
     void ExpressionFactory::write(const std::string &value, const std::string_view &type) noexcept {
+        _expressionText += _temp + value;
         if(!_dot) {
             _type.clear();
             _temp.clear();
         }
-        //LINFO("{}", value);
         if(checkNextToken(std::string{type}, value)) { return; }
         std::string text = _temp + value;
         checkOperators(text);
