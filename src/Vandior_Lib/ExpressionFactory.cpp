@@ -1,4 +1,5 @@
 #include "Vandior/ExpressionFactory.hpp"
+//#include "Vandior/exprtk.hpp"
 #include <algorithm>
 
 namespace vnd {
@@ -6,11 +7,33 @@ namespace vnd {
     // NOLINTBEGIN
     ExpressionFactory::ExpressionFactory(std::vector<Token>::iterator &iterator, std::vector<Token>::iterator end,
                                          std::shared_ptr<Scope> scope, bool sq) noexcept
-      : _iterator(iterator), _end(end), _scope(std::move(scope)), _text({}), _expressions({}), _power(0), _divide(false),
+      : _iterator(iterator), _end(end), _scope(std::move(scope)), _text({}), _expressions({}), _power(), _divide(false),
         _dot(false), _sq(sq), _type(""), _temp("") {}
 
     ExpressionFactory ExpressionFactory::create(std::vector<Token>::iterator &iterator, std::vector<Token>::iterator end,
                                                 std::shared_ptr<Scope> scope, bool sq) noexcept {
+        /* std::string expression_str = "x^2";
+        double x = 2;
+        double y = 1.2;
+
+        // Define symbol tables and initialize variables
+        exprtk::symbol_table<double> symbol_table;
+        symbol_table.add_variable("x", x);
+        symbol_table.add_variable("y", y);
+
+        // Define the expression
+        exprtk::expression<double> expression;
+        expression.register_symbol_table(symbol_table);
+
+        // Parse and compile the expression
+        exprtk::parser<double> parser;
+        parser.compile(expression_str, expression);
+
+        // Evaluate the expression
+        double result = expression.value();
+
+        // Output the result
+        LINFO("Result of expression '{}' with x={} and y={}: {}", expression_str, x, y, result);*/
         return {iterator, end, std::move(scope), sq};
     }
     // NOLINTEND
@@ -109,13 +132,13 @@ namespace vnd {
         }
         _text.emplace_back(" ");
         if(value == "^") {
+            if(!_power.has_value()) { _power = _text.size() - 2; }
             if(_sq) {
-                _text.emplace(_text.end() - 2, "int(std::pow(");
+                _text.emplace(_text.begin() + _power.value(), "int(std::pow(");
             } else {
-                _text.emplace(_text.end() - 2, "std::pow(");
+                _text.emplace(_text.begin() + _power.value(), "std::pow(");
             }
             _text.emplace_back(",");
-            _power++;
             _iterator++;
             return;
         }
@@ -338,11 +361,11 @@ namespace vnd {
             value = FORMAT("double({})", value);
             _divide = false;
         }
-        if(_power != 0 && ((_iterator + 1) == _end || (_iterator + 1)->getValue() != "^")) {
-            value = FORMAT("{}{:)^{}}", value, "", _power);
-            if(_sq) { value = FORMAT("{}{:)^{}}", value, "", _power); }
-            _power = 0;
+        if(_power.has_value()) {
+            value = FORMAT("{})", value);
+            if(_sq) { value = FORMAT("{})", value); }
         }
+        if(((_iterator + 1) == _end || (_iterator + 1)->getValue() != "^")) { _power.reset(); }
     }
 
     void ExpressionFactory::write(const std::string &value, const std::string_view &type) noexcept {
@@ -350,6 +373,7 @@ namespace vnd {
             _type.clear();
             _temp.clear();
         }
+        //LINFO("{}", value);
         if(checkNextToken(std::string{type}, value)) { return; }
         std::string text = _temp + value;
         checkOperators(text);

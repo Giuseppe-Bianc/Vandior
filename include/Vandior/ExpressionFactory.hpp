@@ -75,7 +75,7 @@ namespace vnd {
         std::shared_ptr<Scope> _scope;            ///< Shared pointer to the current scope.
         std::vector<std::string> _text;           ///< Vector storing the parsed text.
         std::vector<Expression> _expressions;     ///< Vector storing the created expressions.
-        int _power;                               ///< Power value used during parsing.
+        std::optional<size_t> _power;             ///< Power value used during parsing.
         bool _divide;                             ///< Flag indicating division operation during parsing.
         bool _dot;
         bool _sq;
