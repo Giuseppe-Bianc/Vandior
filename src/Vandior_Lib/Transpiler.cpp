@@ -18,7 +18,7 @@ namespace vnd {
         _text += "int v_test() {return 0;}\n";
         _text += "int _testPar(int a, int b) {return a + b;}\n";
         _text += "std::size_t _testPar(string s) {return s.size();}\n";
-        _text += "class Object {\npublic:\n\tint a;\n\tstd::string s;\n\tdouble f(double b) { return std::pow(b, 2); "
+        _text += "class Object {\npublic:\n\tint a;\n\tstd::string s;\n\tconst int c = 2;\n\tdouble f(double b) { return std::pow(b, 2); "
                  "}\n\tstd::string fs() { return std::string(); }\n};\n";
         _text += "Object _createObject() { return Object(); }\n";
         try {
@@ -79,7 +79,7 @@ namespace vnd {
         _text += "int main(int argc, char **argv) {\n";
         _main = 1;
         openScope();
-        value = FORMAT("{:\t^{}}std::vector<string> _args(argv, argv + argc);", "", C_ST(_tabs));;
+        value = FORMAT("{:\t^{}}const std::vector<string> _args(argv, argv + argc);", "", C_ST(_tabs));;
         _text += value;
         _scope->addConstant("args", "std::vector<string>", value);
         checkTrailingBracket(instruction);
@@ -111,6 +111,7 @@ namespace vnd {
         }
 
         for(std::string_view jvar : variables) {
+            std::string value;
             if(!jvar.empty() && jvar.at(0) == '_') {
                 _text += FORMAT("v{}", jvar);
             } else {
@@ -123,7 +124,8 @@ namespace vnd {
                 }
                 if(isConst) {
                     if(expression.isConst()) {
-                        _text += FORMAT(" = {}", expression.getValue());
+                        value = expression.getValue();
+                        _text += FORMAT(" = {}", value);
                     } else {
                         throw TranspilerException(FORMAT("Cannot evaluate {} at compile time", jvar), instruction);
                     }
@@ -136,7 +138,11 @@ namespace vnd {
                 if(!shadowing) { throw TranspilerException(FORMAT("{} already defined", jvar), instruction); }
                 LWARN("{} already defined", jvar);
             }
-            _scope->addVariable(jvar, type);
+            if(isConst) {
+                _scope->addConstant(jvar, type, value);
+            } else {
+                _scope->addVariable(jvar, type);
+            }
             emplaceCommaColon(jvar == variables.back());
         }
     }

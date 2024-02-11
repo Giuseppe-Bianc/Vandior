@@ -25,6 +25,7 @@ namespace vnd {
         mainScope->addType("Object");
         mainScope->addVariable("Object.a", "int");
         mainScope->addVariable("Object.s", "string");
+        mainScope->addConstant("Object.c", "int", "2");
         mainScope->addFun("_test", make_FunType("int", {}));
         mainScope->addFun("testPar", make_FunType("int", {"int", "int"}));
         mainScope->addFun("testPar", make_FunType("int", {"string"}));
@@ -113,9 +114,10 @@ namespace vnd {
         return type;
     }
 
-    bool Scope::isConst(const std::string& type, const std::string_view& identifier) const noexcept {
+    std::string Scope::getConstValue(const std::string& type, const std::string_view& identifier) const noexcept {
         auto key = std::string{type} + std::string{identifier};
-        return _consts.find(key) != _consts.end();
+        if(_consts.find(key) == _consts.end()) { return ""; }
+        return _consts.at(key).second;
     }
 
 }  // namespace vnd

@@ -29,8 +29,7 @@ namespace vnd {
                                                        const std::string_view &identifier) const noexcept;
         [[nodiscard]] std::string getFunType(const std::string &type, const std::string_view &identifier,
                                              const std::vector<Expression> &expressions) const noexcept;
-        [[nodiscard]] bool isConst(const std::string &type, const std::string_view &identifier) const noexcept;
-
+        [[nodiscard]] std::string getConstValue(const std::string &type, const std::string_view &identifier) const noexcept;
     private:
         Scope(std::shared_ptr<Scope> parent) noexcept;
         static std::string getType(const std::string &type) noexcept;
