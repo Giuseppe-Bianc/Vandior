@@ -23,7 +23,7 @@ namespace vnd {
          * @return ExpressionFactory instance.
          */
         [[nodiscard]] static ExpressionFactory create(std::vector<Token>::iterator &iterator, std::vector<Token>::iterator end,
-                                                      std::shared_ptr<Scope> scope, bool sq = false) noexcept;
+                                                      std::shared_ptr<Scope> scope, const bool isConst, const bool sq = false) noexcept;
 
         /**
          * @brief Parses the token sequence until reaching the specified end tokens.
@@ -64,7 +64,7 @@ namespace vnd {
          * @param scope Shared pointer to the current scope.
          */
         ExpressionFactory(std::vector<Token>::iterator &iterator, std::vector<Token>::iterator end, std::shared_ptr<Scope> scope,
-                          bool sq) noexcept;
+                          const bool isConst, const bool sq) noexcept;
 
         /**
          * @brief Type definition for a tuple used during parsing.

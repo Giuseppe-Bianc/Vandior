@@ -92,7 +92,7 @@ namespace vnd {
         const auto isConst = iterator->getValue() == "const";
         std::vector<std::string_view> variables = extractVariables(iterator, instruction);
         auto endToken = tokens.end();
-        ExpressionFactory factory = ExpressionFactory::create(iterator, tokens.end(), _scope);
+        ExpressionFactory factory = ExpressionFactory::create(iterator, tokens.end(), _scope, isConst);
         type = transpileType(iterator, tokens.end(), {TokenType::EQUAL_OPERATOR}, instruction);
         _text += FORMAT("{} ", type);
         // Handle initialization
@@ -125,6 +125,7 @@ namespace vnd {
                 if(isConst) {
                     if(expression.isConst()) {
                         value = expression.getValue();
+                        if(type == "int") { value = FORMAT("{}", value.substr(0, value.find('.'))); }
                         _text += FORMAT(" = {}", value);
                     } else {
                         throw TranspilerException(FORMAT("Cannot evaluate {} at compile time", jvar), instruction);
@@ -178,12 +179,17 @@ namespace vnd {
                     suffix = ">" + suffix;
                 } else {
                     iterator++;
-                    ExpressionFactory factory = ExpressionFactory::create(iterator, end, _scope, true);
+                    ExpressionFactory factory = ExpressionFactory::create(iterator, end, _scope, true, true);
                     if(std::string error = factory.parse({TokenType::CLOSE_SQ_PARENTESIS, TokenType::EQUAL_OPERATOR}); error != "") {
                         throw new TranspilerException(error, instruction);
                     };
+                    Expression expression = factory.getExpression();
+                    if(!expression.isConst()) {
+                        throw TranspilerException("Canno evaluate array dimension at compile time", instruction);
+                    }
                     prefix += "std::array<";
-                    suffix = FORMAT(", {}>{}", factory.getExpression().getText(), suffix);
+                    suffix = FORMAT(", {}>{}", expression.getValue().substr(0, expression.getValue().find('.')),
+                                    suffix);
                 }
             }
             iterator++;

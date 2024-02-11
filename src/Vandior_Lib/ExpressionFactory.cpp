@@ -5,13 +5,13 @@ namespace vnd {
 
     // NOLINTBEGIN
     ExpressionFactory::ExpressionFactory(std::vector<Token>::iterator &iterator, std::vector<Token>::iterator end,
-                                         std::shared_ptr<Scope> scope, bool sq) noexcept
+                                         std::shared_ptr<Scope> scope, const bool isConst, const bool sq) noexcept
       : _iterator(iterator), _end(end), _scope(std::move(scope)), _text({}), _expressions({}), _power(), _divide(false),
-        _dot(false), _sq(sq), _const(true), _expressionText(""), _type(""), _temp("") {}
+        _dot(false), _sq(sq), _const(isConst), _expressionText(""), _type(""), _temp("") {}
 
     ExpressionFactory ExpressionFactory::create(std::vector<Token>::iterator &iterator, std::vector<Token>::iterator end,
-                                                std::shared_ptr<Scope> scope, bool sq) noexcept {
-        return {iterator, end, std::move(scope), sq};
+                                                std::shared_ptr<Scope> scope, const bool isConst, bool sq) noexcept {
+        return {iterator, end, std::move(scope), isConst, sq};
     }
     // NOLINTEND
 
@@ -38,7 +38,10 @@ namespace vnd {
             }
         }
         if(Scope::isNumber(std::get<2>(type))) {
-            bool ok = parser.compile(_expressionText, expression);
+            bool ok = false;
+            if(_const) {
+                ok = parser.compile(_expressionText, expression);
+            }
             std::string value = std::to_string(expression.value());
             _expressions.emplace_back(
                 Expression::create(_text, std::get<2>(type), _const && ok, value));
@@ -127,6 +130,7 @@ namespace vnd {
                 _text.emplace(_text.begin() + _power.value(), "std::pow(");
             }
             _text.emplace_back(",");
+            _expressionText += value;
             _iterator++;
             return;
         }
@@ -174,12 +178,11 @@ namespace vnd {
 
     std::string ExpressionFactory::handleFun(TupType &type) noexcept {  // NOLINT(*-no-recursion)
         std::string_view identifier = _iterator->getValue();
-        ExpressionFactory factory = ExpressionFactory::create(_iterator, _end, _scope);
+        ExpressionFactory factory = ExpressionFactory::create(_iterator, _end, _scope, false);
         std::vector<Expression> expressions;
         std::string newType;
         std::string text;
         _iterator++;
-        _const = false;
         while(_iterator->getType() != TokenType::CLOSE_PARENTESIS) {
             _iterator++;
             if(_iterator->getType() != TokenType::CLOSE_PARENTESIS) {
@@ -188,6 +191,7 @@ namespace vnd {
                 }
             }
         }
+        if((_iterator + 1) == _end || (_iterator + 1)->getType() != TokenType::DOT_OPERATOR) { _const = false; }
         expressions = factory.getExpressions();
         newType = _scope->getFunType(_type, identifier, expressions);
         if(newType.empty()) { return FORMAT("Function {}.{} not found", _type, identifier); }
@@ -214,7 +218,7 @@ namespace vnd {
     std::string ExpressionFactory::handleSquareExpression(TupType &type) noexcept {
         std::string newType;
         if(!checkVector()) { return FORMAT("Indexing not allowed for {} type", _type); }
-        ExpressionFactory factory = ExpressionFactory::create(_iterator, _end, _scope, true);
+        ExpressionFactory factory = ExpressionFactory::create(_iterator, _end, _scope, _const, true);
         _iterator++;
         if(std::string error = factory.parse({TokenType::CLOSE_SQ_PARENTESIS}); !error.empty()) { return error; }
         Expression expression = factory.getExpression();
@@ -232,7 +236,7 @@ namespace vnd {
         std::string vectorType;
         std::string value;
         std::vector<Expression> expressions;
-        ExpressionFactory factory = ExpressionFactory::create(_iterator, _end, _scope);
+        ExpressionFactory factory = ExpressionFactory::create(_iterator, _end, _scope, _const);
         while(_iterator->getType() != TokenType::CLOSE_CUR_PARENTESIS) {
             _iterator++;
             if(_iterator->getType() != TokenType::CLOSE_CUR_PARENTESIS) {
@@ -262,7 +266,7 @@ namespace vnd {
 
     std::string ExpressionFactory::handleInnerExpression(TupType &type) noexcept {  // NOLINT(*-no-recursion)
         std::string newType;
-        auto factory = ExpressionFactory::create(_iterator, _end, _scope);
+        auto factory = ExpressionFactory::create(_iterator, _end, _scope, _const);
         _iterator++;
         if(std::string error = factory.parse({TokenType::CLOSE_PARENTESIS}); !error.empty()) { return error; }
         auto expression = factory.getExpression();
