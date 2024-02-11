@@ -10,7 +10,7 @@ namespace vnd {
         using enum TokenType;
         using enum InstructionType;
         _output.open("output.cpp");
-        _text += "#include \"../../../base.hpp\"\n";
+        _text += "#include \"../../../base.hpp\"\n\n";
         try {
             for(const Instruction &instruction : _instructions) {
                 _text += std::string(C_ST(_tabs), '\t');
