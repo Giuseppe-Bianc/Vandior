@@ -20,6 +20,8 @@ namespace vnd {
          * @param iterator Reference to the iterator pointing to the current position in the token sequence.
          * @param end Iterator pointing to the end of the token sequence.
          * @param scope Shared pointer to the current scope.
+         * @param isConst Bool indicating if it's a const expression.
+         * @param sq Bool indicating if it's a square expression.
          * @return ExpressionFactory instance.
          */
         [[nodiscard]] static ExpressionFactory create(std::vector<Token>::iterator &iterator, std::vector<Token>::iterator end,
@@ -62,6 +64,8 @@ namespace vnd {
          * @param iterator Reference to the iterator pointing to the current position in the token sequence.
          * @param end Iterator pointing to the end of the token sequence.
          * @param scope Shared pointer to the current scope.
+         * @param isConst Bool indicating if it's a const expression.
+         * @param sq Bool indicating if it's a square expression.
          */
         ExpressionFactory(std::vector<Token>::iterator &iterator, std::vector<Token>::iterator end, std::shared_ptr<Scope> scope,
                           const bool isConst, const bool sq) noexcept;

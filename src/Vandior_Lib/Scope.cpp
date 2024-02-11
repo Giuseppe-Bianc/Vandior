@@ -30,7 +30,7 @@ namespace vnd {
         mainScope->addFun("testPar", make_FunType("int", {"int", "int"}));
         mainScope->addFun("testPar", make_FunType("int", {"string"}));
         mainScope->addFun("createObject", make_FunType("Object", {}));
-        mainScope->addFun("vector.size", make_FunType("int", {}));
+        mainScope->addFun("vnd::vector.size", make_FunType("int", {}));
         mainScope->addFun("string.size", make_FunType("int", {}));
         mainScope->addFun("Object.f", make_FunType("float", {"float"}));
         mainScope->addFun("Object.fs", make_FunType("string", {}));
@@ -110,7 +110,7 @@ namespace vnd {
     }
 
     std::string Scope::getType(const std::string &type) noexcept {
-        if(type.starts_with("vector<") || type.starts_with("array<")) [[unlikely]] { return "vector."; }
+        if(type.starts_with("vnd::vector<") || type.starts_with("vnd::array<")) [[unlikely]] { return "vnd::vector."; }
         return type;
     }
 

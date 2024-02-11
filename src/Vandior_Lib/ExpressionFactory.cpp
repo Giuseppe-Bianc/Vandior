@@ -258,7 +258,7 @@ namespace vnd {
             value.pop_back();
             if(value.at(0) == ' ') { value.erase(0, 1); }
         }
-        vectorType = FORMAT("vector<{}>", vectorType);
+        vectorType = FORMAT("vnd::vector<{}>", vectorType);
         if(std::string error = checkType(type, vectorType); !error.empty()) { return error; }
         write(FORMAT("{{{}}}", value), vectorType);
         return {};
@@ -291,15 +291,15 @@ namespace vnd {
     }
 
     bool ExpressionFactory::checkVector() noexcept {
-        if(_type.starts_with("vector<")) {
-            _type.erase(0, std::string_view("vector<").size());
+        if(_type.starts_with("vnd::vector<")) {
+            _type.erase(0, std::string_view("vnd::vector<").size());
             _type.pop_back();
             if(_type.back() == '>') { _type.pop_back(); }
             return true;
         }
-        if(_type.starts_with("array<")) {
+        if(_type.starts_with("vnd::array<")) {
             int par = 0;
-            _type.erase(0, std::string_view("array<").size());
+            _type.erase(0, std::string_view("vnd::array<").size());
             while(_type.back() != ',' || par != 0) {
                 if(_type.back() == '(') {
                     par--;
