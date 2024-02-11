@@ -632,6 +632,14 @@ TEST_CASE("Instruction toString()", "[Instruction]") {
     REQUIRE(instruction.toString() == "0\t  ");
 }
 
+TEST_CASE("Instruction getTokens()", "[Instruction]") {
+    vnd::Instruction instruction = vnd::Instruction::create(filename);
+    instruction.checkToken(vnd::Token{vnd::TokenType::K_MAIN, "", vnd::CodeSourceLocation(filename, 0, 0)});
+    instruction.checkToken(vnd::Token{vnd::TokenType::OPEN_CUR_PARENTESIS, "", vnd::CodeSourceLocation(filename, 0, 1)});
+    REQUIRE(!instruction.getTokens().empty());
+    REQUIRE(instruction.getTokens().size() == 2);
+}
+
 TEST_CASE("Instruction toString() FMT", "[Instruction]") {
     vnd::Instruction instruction = vnd::Instruction::create(filename);
     instruction.checkToken(vnd::Token{vnd::TokenType::K_MAIN, "", vnd::CodeSourceLocation(filename, 0, 0)});
