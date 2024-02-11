@@ -110,7 +110,7 @@ namespace vnd {
     }
 
     std::string Scope::getType(const std::string &type) noexcept {
-        if(type.starts_with("std::vector<") || type.starts_with("std::array<")) [[unlikely]] { return "vector."; }
+        if(type.starts_with("vector<") || type.starts_with("array<")) [[unlikely]] { return "vector."; }
         return type;
     }
 

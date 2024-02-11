@@ -38,13 +38,13 @@ namespace vnd {
             }
         }
         if(Scope::isNumber(std::get<2>(type))) {
-            bool ok = false;
+            std::string value;
             if(_const) {
-                ok = parser.compile(_expressionText, expression);
+                parser.compile(_expressionText, expression);
             }
-            std::string value = std::to_string(expression.value());
+            value = std::to_string(expression.value());
             _expressions.emplace_back(
-                Expression::create(_text, std::get<2>(type), _const && ok, value));
+                Expression::create(_text, std::get<2>(type), _const, value));
         } else {
             _expressions.emplace_back(Expression::create(_text, std::get<2>(type), _const, _expressionText));
         }
@@ -258,7 +258,7 @@ namespace vnd {
             value.pop_back();
             if(value.at(0) == ' ') { value.erase(0, 1); }
         }
-        vectorType = FORMAT("std::vector<{}>", vectorType);
+        vectorType = FORMAT("vector<{}>", vectorType);
         if(std::string error = checkType(type, vectorType); !error.empty()) { return error; }
         write(FORMAT("{{{}}}", value), vectorType);
         return {};
@@ -291,15 +291,15 @@ namespace vnd {
     }
 
     bool ExpressionFactory::checkVector() noexcept {
-        if(_type.starts_with("std::vector<")) {
-            _type.erase(0, std::string_view("std::vector<").size());
+        if(_type.starts_with("vector<")) {
+            _type.erase(0, std::string_view("vector<").size());
             _type.pop_back();
             if(_type.back() == '>') { _type.pop_back(); }
             return true;
         }
-        if(_type.starts_with("std::array<")) {
+        if(_type.starts_with("array<")) {
             int par = 0;
-            _type.erase(0, std::string_view("std::array<").size());
+            _type.erase(0, std::string_view("array<").size());
             while(_type.back() != ',' || par != 0) {
                 if(_type.back() == '(') {
                     par--;

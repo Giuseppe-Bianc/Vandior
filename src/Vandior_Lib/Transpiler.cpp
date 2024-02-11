@@ -10,17 +10,7 @@ namespace vnd {
         using enum TokenType;
         using enum InstructionType;
         _output.open("output.cpp");
-        _text += "#include <iostream>\n";
-        _text += "#include <cmath>\n";
-        _text += "#include <array>\n";
-        _text += "#include <vector>\n";
-        _text += "using string = std::string_view;\n";
-        _text += "int v_test() {return 0;}\n";
-        _text += "int _testPar(int a, int b) {return a + b;}\n";
-        _text += "std::size_t _testPar(string s) {return s.size();}\n";
-        _text += "class Object {\npublic:\n\tint a;\n\tstd::string s;\n\tconst int c = 2;\n\tdouble f(double b) { return std::pow(b, 2); "
-                 "}\n\tstd::string fs() { return std::string(); }\n};\n";
-        _text += "Object _createObject() { return Object(); }\n";
+        _text += "#include \"../../../base.hpp\"\n";
         try {
             for(const Instruction &instruction : _instructions) {
                 _text += std::string(C_ST(_tabs), '\t');
@@ -79,9 +69,9 @@ namespace vnd {
         _text += "int main(int argc, char **argv) {\n";
         _main = 1;
         openScope();
-        value = FORMAT("{:\t^{}}const std::vector<string> _args(argv, argv + argc);", "", C_ST(_tabs));;
+        value = FORMAT("{:\t^{}}const vector<string> _args(argv, argv + argc);", "", C_ST(_tabs));;
         _text += value;
-        _scope->addConstant("args", "std::vector<string>", value);
+        _scope->addConstant("args", "vector<string>", value);
         checkTrailingBracket(instruction);
     }
 
@@ -175,7 +165,7 @@ namespace vnd {
         while(iterator != end && std::ranges::find(endTokens, iterator->getType()) == endTokens.end()) {
             if(iterator->getType() == TokenType::OPEN_SQ_PARENTESIS) {
                 if((iterator + 1)->getType() == TokenType::CLOSE_SQ_PARENTESIS) {
-                    prefix += "std::vector<";
+                    prefix += "vector<";
                     suffix = ">" + suffix;
                 } else {
                     iterator++;
@@ -187,7 +177,7 @@ namespace vnd {
                     if(!expression.isConst()) {
                         throw TranspilerException("Canno evaluate array dimension at compile time", instruction);
                     }
-                    prefix += "std::array<";
+                    prefix += "array<";
                     suffix = FORMAT(", {}>{}", expression.getValue().substr(0, expression.getValue().find('.')),
                                     suffix);
                 }
