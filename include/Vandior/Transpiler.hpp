@@ -64,6 +64,18 @@ namespace vnd {
          */
         [[nodiscard]] std::vector<std::string_view> extractVariables(std::vector<Token>::iterator &iterator,
                                                                      const Instruction &instruction);
+
+        /**
+        * @brief Transpile a type name.
+        * @param iterator Iterator to the instruction.
+        * @param end Iterator pointing to the end of the token sequence.
+        * @param endTokens Vector of token types indicating the end of parsing.
+        * @param instruction The instruction to extract type from.
+        * @return String that indicates if there is an error.
+        */
+        [[nodiscard]] std::string transpileType(std::vector<Token>::iterator &iterator, const std::vector<Token>::iterator end,
+                                                    const std::vector<TokenType> &endTokens, const Instruction &instruction);
+
         /**
          * @brief Opens a new scope.
          */

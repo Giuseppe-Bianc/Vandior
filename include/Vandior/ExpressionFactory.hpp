@@ -5,6 +5,7 @@
 
 #include "Expression.hpp"
 #include "Scope.hpp"
+#include "exprtk.hpp"
 #include "Token.hpp"
 
 namespace vnd {
@@ -19,10 +20,12 @@ namespace vnd {
          * @param iterator Reference to the iterator pointing to the current position in the token sequence.
          * @param end Iterator pointing to the end of the token sequence.
          * @param scope Shared pointer to the current scope.
+         * @param isConst Bool indicating if it's a const expression.
+         * @param sq Bool indicating if it's a square expression.
          * @return ExpressionFactory instance.
          */
         [[nodiscard]] static ExpressionFactory create(std::vector<Token>::iterator &iterator, std::vector<Token>::iterator end,
-                                                      std::shared_ptr<Scope> scope, bool sq = false) noexcept;
+                                                      std::shared_ptr<Scope> scope, const bool isConst, const bool sq = false) noexcept;
 
         /**
          * @brief Parses the token sequence until reaching the specified end tokens.
@@ -61,9 +64,11 @@ namespace vnd {
          * @param iterator Reference to the iterator pointing to the current position in the token sequence.
          * @param end Iterator pointing to the end of the token sequence.
          * @param scope Shared pointer to the current scope.
+         * @param isConst Bool indicating if it's a const expression.
+         * @param sq Bool indicating if it's a square expression.
          */
         ExpressionFactory(std::vector<Token>::iterator &iterator, std::vector<Token>::iterator end, std::shared_ptr<Scope> scope,
-                          bool sq) noexcept;
+                          const bool isConst, const bool sq) noexcept;
 
         /**
          * @brief Type definition for a tuple used during parsing.
@@ -75,10 +80,12 @@ namespace vnd {
         std::shared_ptr<Scope> _scope;            ///< Shared pointer to the current scope.
         std::vector<std::string> _text;           ///< Vector storing the parsed text.
         std::vector<Expression> _expressions;     ///< Vector storing the created expressions.
-        int _power;                               ///< Power value used during parsing.
+        std::optional<size_t> _power;             ///< Power value used during parsing.
         bool _divide;                             ///< Flag indicating division operation during parsing.
         bool _dot;
         bool _sq;
+        bool _const;
+        std::string _expressionText;
         std::string _type;
         std::string _temp;
 
@@ -94,7 +101,7 @@ namespace vnd {
          * @param token The token to get the type from.
          * @return Type of the token as a string.
          */
-        [[nodiscard]] std::string_view getTokenType(const Token &token) const noexcept;
+        [[nodiscard]] std::string_view getTokenType(const Token &token) noexcept;
 
         /**
          * @brief Emplaces the current token into the parsed text vector.
@@ -128,6 +135,13 @@ namespace vnd {
          * @return Parsed string if there is an error.
          */
         [[nodiscard]] std::string handleSquareExpression(TupType &type) noexcept;
+
+        /**
+         * @brief Handles a vector initialization.
+         * @param type Tuple representing the type information.
+         * @return Parsed string if there is an error.
+         */
+        [[nodiscard]] std::string handleVectorInitialization(TupType &type) noexcept;
 
         /**
          * @brief Handles a token during parsing.

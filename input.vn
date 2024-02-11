@@ -1,77 +1,26 @@
+var obj: Object = createObject()
 const variable, variable2: bool = 1 == #f2 && 1 + 3 <= -6.57 + #o7 ^ 2 || false, !true <= false
-const intVar: int = 2 + testPar(test() ^ 7 / 6, 78.78)
+const testConstInt1, testConstInt2: int = 1 + 2 ^ 5 / (6 - 7), 56 + createObject().c	
+const testConstFloat1, testConstFloa2: float = 1.3 + 2 ^ 5 * 3 + testConstInt2 + (- testConstInt2 + 1), 10 ^ obj.c
+const testConstChar: char = 'a'
+const testConstString: string = "Ciao"
+var intVar: int = 2 + testPar(_test() ^ 7 + 6, 78.78) ^ testConstInt1
+var _var: int
 main {
-	var array: int[][]
-	var obj: Object = createObject()
-	var v1, v2: float = 1 + 2 + testPar(-intVar, intVar), 2 * 56 *(65 + 8.98 ^ 1 + testPar(6 / 7 + testPar(1, 3), 1 + 5) + (35 + 56 -67 / 7)) + 2 / intVar
+	var testArray: int[1 + 2]
+	var array: int[][5 - 1 ^ 4]
+	var v1, v2: float = 1 + 2 + _var + testPar(-intVar, intVar), 2 * 56 *(65 + 8.98 ^ 1 + testPar(6 / 7 + testPar(1, 3), 1 + 5) + (35 + 56 -67 / 7)) + 2 / intVar
 	const variable, variable2: char = 'c', 'V'
-	var s, s2: string = "Ciao"
+	var s, s2: string = "Ciao", args[0]
+	var c1, c2: char = s[0], "Ciao"[1 ^ -5]
 	var s3, s4: int = testPar(s), testPar("Text")
-	var pow, div: float = 1 ^ 2 ^ 3, 1 / 2 / s4 + 5
+	var pow, div: float = 1 ^ 2 ^ 3 ^ (1 + 5) ^ _test()	, 1 / 2 / s4 + 5
 	var powDiv, divPow: int = 1 ^ 2 / 3 ^ 4 / 5, 1 / 2 ^ testPar("Ciao") / (4.5 + 7) ^ (5 ^ 8) ^ testPar("a") ^ 8.98 ^ 67
 	var testObj: int = obj.a ^ createObject().a + - obj.a ^ -2 ^ -3 + - 1 / createObject().a / -3
-	var testObjFun: float = obj.f(pow) + createObject().f(67.5) ^ - obj.f(-56) ^ -2 ^ -3 + - 1 / createObject().f(-div) / -3
+	var testObjFun: float = obj.f(pow) + createObject().f(67.5) ^ - obj.f(-56) ^ -2 ^ -3 + - 1 / createObject().f(-div) / -3 ^ obj.f(4)
 	var testSize: int = obj.s.size() + "Ciao".size() + obj.fs().size() - ("Ciao").size() + array[1  / 3 + array[1 - 7][6 ^ 7] ^ "Ciao".size() / s3 ^ createObject().a][1] + array.size() / array[1].size()
 	{
 	}
 }
-/*main {
-	var variable: bool
-	variable = .1
-	const constant: int[] = [12, "Ciao", true || 12 > variable + (12 / 3 * true), variable--], [[12, 5], [7, 6, 'b'], []]
-	var num1, num2: type[12 + a / 2][] = 1 + 1 + "AAAA".len(), variable.method("Ciao", .24e-15) * -5 + "String"[variable.m() - 1 + "Ciao"[0]]
-	variable = 42 * -y + 1. + 1.0 + 1e+1 + "10"
-	variable[1]++ = -4
-}
-//main {}
-variable.method().a++, variable2--, ciao.a()
-
-var variable2, variable3: type = variable[0 + true && (!false || '\n')] == -4, !variable[2][true]['a' / "HELLO"]-- && 7.2
-variable = variable < -4
-variable += 4
-variable.len().a, variable2[0], variable3, function(1, 2).method()[0]()[2][1]('c')[0].b[0] = function().method()[0]()[2][1]('\r', false), 1, 2, variable2[0][3].method(params)
-//Comment
-variable -= -4. + ( // Single line comment
-	12 + 56 && (1 + 2) == 3 &&
-	variable2++ == true ||
-	!variable >= 10
-)
-variable = variable-- && -4.5
-variable = true
-{
-	variable = !false || !true
-	variable = ''
-	variable = '\n'
-	variable = 'n'
-	variable, variable2 = !l > 2 && l <= !10 || !10 && 4 > 10, -2 && true
-	{
-		variable = !a + (12 - 34) / (12) && () + (-12 * 5.6) ^ ((!12) -12 + 12)
-	}
-	const variable, variable2: type = 7 * 5 != (1 <= (4 == !5) * 1 && (12 != b)), 12
-}
-if(a + (b * C) || (a >= v)) {
-	a = a + (!b && c)
-}
-a, b = "Ciao
-adqdqw
-dqwd" + 1, true -
-"CIAOdq
-dqd"
-while(true) {
-}
-for i = [1, 3] {
-}
-for var i: int = 1 + a[2] - (10 / -20 * 30 -a[2][4] && !b), 12 - i {
-}
-for var i: int = (1 * (1 || b)), [1, 2, 3], 5 {}
-function(1, b(345)[1], !variable, a || b[1][3]((9-8) ^ -3, [1, 2, 3], a - b ^ c(4, 5)))
-a, b, c = function() + function("Ciao", 2 == 1, f > c), -function(45) && !function('A') * d, d
-fun function() {
-	return 1, a < 2, function(10)[12], [4, 5, 6], 5 && (12 < 7) || !12 < function(12) - b
-}
-fun function(var1: type, var2: type): type1, type2 {
-	variable = 12
-	return
-}
-variable = function().method().a
-variable %= a[0].method(-45, true, function().b[0], [1, 2, 4, variable[1]][0].value([1, 2, [4, 5]], 4, [[2, 2], [3, 3]])) % 2*/
+var ar: int[][] = {{_test(), 2, 3, 6}, {"Ciao".size(), -4}}
+var a: int = ar[1 ^ 4 ^ testPar(1, 4)][7]

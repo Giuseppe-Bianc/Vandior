@@ -5,13 +5,13 @@ namespace vnd {
 
     // NOLINTBEGIN
     ExpressionFactory::ExpressionFactory(std::vector<Token>::iterator &iterator, std::vector<Token>::iterator end,
-                                         std::shared_ptr<Scope> scope, bool sq) noexcept
-      : _iterator(iterator), _end(end), _scope(std::move(scope)), _text({}), _expressions({}), _power(0), _divide(false),
-        _dot(false), _sq(sq), _type(""), _temp("") {}
+                                         std::shared_ptr<Scope> scope, const bool isConst, const bool sq) noexcept
+      : _iterator(iterator), _end(end), _scope(std::move(scope)), _text({}), _expressions({}), _power(), _divide(false),
+        _dot(false), _sq(sq), _const(isConst), _expressionText(""), _type(""), _temp("") {}
 
     ExpressionFactory ExpressionFactory::create(std::vector<Token>::iterator &iterator, std::vector<Token>::iterator end,
-                                                std::shared_ptr<Scope> scope, bool sq) noexcept {
-        return {iterator, end, std::move(scope), sq};
+                                                std::shared_ptr<Scope> scope, const bool isConst, bool sq) noexcept {
+        return {iterator, end, std::move(scope), isConst, sq};
     }
     // NOLINTEND
 
@@ -19,20 +19,35 @@ namespace vnd {
 
     std::string ExpressionFactory::parse(const std::vector<TokenType> &endToken) noexcept {  // NOLINT(*-no-recursion)
         _text = {};
+        _expressionText = "";
+        exprtk::expression<double> expression;
+        exprtk::parser<double> parser;
         std::tuple<bool, bool, std::string> type = std::make_tuple(false, false, std::string{});
         while(_iterator != _end && std::ranges::find(endToken, _iterator->getType()) == endToken.end()) {
             if(_iterator->getType() == TokenType::IDENTIFIER && std::next(_iterator) != _end &&
                std::next(_iterator)->getType() == TokenType::OPEN_PARENTESIS) {
-                if(auto error = handleFun(type); !error.empty()) return error;
+                if(auto error = handleFun(type); !error.empty()) { return error; };
             } else if(_iterator->getType() == TokenType::OPEN_PARENTESIS) {
                 if(auto error = handleInnerExpression(type); !error.empty()) return error;
             } else if(_iterator->getType() == TokenType::OPEN_SQ_PARENTESIS) {
-                if(auto error = handleSquareExpression(type); !error.empty()) return error;
-            } else {
-                if(auto error = handleToken(type); !error.empty()) return error;
+                if(std::string error = handleSquareExpression(type); !error.empty()) { return error; }
+            } else if(_iterator->getType() == TokenType::OPEN_CUR_PARENTESIS) {
+                if(std::string error = handleVectorInitialization(type); !error.empty()) { return error; }
+            } else if(std::string error = handleToken(type); !error.empty()) {
+                return error;
             }
         }
-        _expressions.emplace_back(Expression::create(_text, std::get<2>(type)));
+        if(Scope::isNumber(std::get<2>(type))) {
+            std::string value;
+            if(_const) {
+                parser.compile(_expressionText, expression);
+            }
+            value = std::to_string(expression.value());
+            _expressions.emplace_back(
+                Expression::create(_text, std::get<2>(type), _const, value));
+        } else {
+            _expressions.emplace_back(Expression::create(_text, std::get<2>(type), _const, _expressionText));
+        }
         return {};
     }
 
@@ -52,7 +67,7 @@ namespace vnd {
         return result;
     }
 
-    std::string_view ExpressionFactory::getTokenType(const Token &token) const noexcept {
+    std::string_view ExpressionFactory::getTokenType(const Token &token) noexcept {
         using enum TokenType;
         // NOLINTBEGIN
         switch(token.getType()) {
@@ -84,7 +99,7 @@ namespace vnd {
             break;
         }
         // NOLINTEND
-        return "";
+        return {};
     }
 
     void ExpressionFactory::emplaceToken(const std::string_view &type) noexcept {
@@ -102,23 +117,36 @@ namespace vnd {
         const auto value = _iterator->getValue();
         if(_iterator->getType() == CHAR) {
             _text.emplace_back(FORMAT("'{}'", std::string{value}));
+            _expressionText += FORMAT("'{}'", std::string{value});
             _iterator++;
             return;
         }
         _text.emplace_back(" ");
         if(value == "^") {
-            auto textendm2 = _text.end() - 2;
+            if(!_power.has_value()) { _power = _text.size() - 2; }
             if(_sq) {
-                _text.emplace(textendm2, "int(std::pow(");
+                _text.emplace(_text.begin() + _power.value(), "int(std::pow(");
             } else {
-                _text.emplace(textendm2, "std::pow(");
+                _text.emplace(_text.begin() + _power.value(), "std::pow(");
             }
             _text.emplace_back(",");
-            _power++;
+            _expressionText += value;
             _iterator++;
             return;
         }
         std::string text = _temp + writeToken();
+        if(_const) {
+            if(_iterator->getType() == TokenType::IDENTIFIER) {
+                std::string constValue = _scope->getConstValue(_type, _iterator->getValue());
+                if(value == "") {
+                    _const = false;
+                } else {
+                    _expressionText += constValue;
+                }
+            } else {
+                _expressionText += text;
+            }
+        }
         checkOperators(text);
         _text.emplace_back(text);
         if(value == "/" && !_sq) { _divide = true; }
@@ -129,7 +157,13 @@ namespace vnd {
         auto value = std::string{_iterator->getValue()};
         if(_iterator->getType() == TokenType::STRING) { value = FORMAT(R"(string("{}"))", std::string{_iterator->getValue()}); }
         if(_iterator->getType() == TokenType::IDENTIFIER) {
-            if(_temp.empty()) { value = FORMAT("_{}", value); }
+            if(_temp.empty()) {
+                if(!value.empty() && value.at(0) == '_') {
+                    value = FORMAT("v{}", value);
+                } else {
+                    value = FORMAT(" _{}", value);
+                }
+            }
         }
         if(_iterator->getType() == TokenType::INTEGER && value.at(0) == '#') {
             value.erase(0, 1);
@@ -144,7 +178,7 @@ namespace vnd {
 
     std::string ExpressionFactory::handleFun(TupType &type) noexcept {  // NOLINT(*-no-recursion)
         std::string_view identifier = _iterator->getValue();
-        ExpressionFactory factory = ExpressionFactory::create(_iterator, _end, _scope);
+        ExpressionFactory factory = ExpressionFactory::create(_iterator, _end, _scope, false);
         std::vector<Expression> expressions;
         std::string newType;
         std::string text;
@@ -157,6 +191,7 @@ namespace vnd {
                 }
             }
         }
+        if((_iterator + 1) == _end || (_iterator + 1)->getType() != TokenType::DOT_OPERATOR) { _const = false; }
         expressions = factory.getExpressions();
         newType = _scope->getFunType(_type, identifier, expressions);
         if(newType.empty()) { return FORMAT("Function {}.{} not found", _type, identifier); }
@@ -169,38 +204,82 @@ namespace vnd {
         std::string value = FORMAT(" {}({})", std::string{identifier}, text);
         if(_temp.empty()) {
             value.erase(0, 1);
-            value = FORMAT(" _{}", value);
+            if(!value.empty() && value.at(0) == '_') {
+                value = FORMAT("v{}", value);
+            } else {
+                value = FORMAT(" _{}", value);
+            }
         }
         write(value, newType);
-        return "";
+        return {};
     }
 
     // NOLINTNEXTLINE(*-no-recursion)
     std::string ExpressionFactory::handleSquareExpression(TupType &type) noexcept {
         std::string newType;
         if(!checkVector()) { return FORMAT("Indexing not allowed for {} type", _type); }
-        ExpressionFactory factory = ExpressionFactory::create(_iterator, _end, _scope, true);
+        ExpressionFactory factory = ExpressionFactory::create(_iterator, _end, _scope, _const, true);
         _iterator++;
         if(std::string error = factory.parse({TokenType::CLOSE_SQ_PARENTESIS}); !error.empty()) { return error; }
         Expression expression = factory.getExpression();
         newType = expression.getType();
+        if(!expression.isConst()) { _const = false; }
         if(newType != "int") { return FORMAT("{} index not allowed", newType); }
         if(auto error = ExpressionFactory::checkType(type, _type); !error.empty()) { return error; }
         write(FORMAT("at({})", expression.getText().substr(1)), _type);
-        return "";
+        return {};
+    }
+
+    // NOLINTNEXTLINE(*-no-recursion)
+    std::string ExpressionFactory::handleVectorInitialization(TupType& type) noexcept {
+        std::string oldType = std::get<2>(type);
+        std::string vectorType;
+        std::string value;
+        std::vector<Expression> expressions;
+        ExpressionFactory factory = ExpressionFactory::create(_iterator, _end, _scope, _const);
+        while(_iterator->getType() != TokenType::CLOSE_CUR_PARENTESIS) {
+            _iterator++;
+            if(_iterator->getType() != TokenType::CLOSE_CUR_PARENTESIS) {
+                if(std::string error = factory.parse({TokenType::COMMA, TokenType::CLOSE_CUR_PARENTESIS}); !error.empty()) {
+                    return error;
+                }
+            }
+        }
+        for(Expression& expression : factory.getExpressions()) {
+            if(vectorType == "") {
+                vectorType = expression.getType();
+            } else if(!Scope::canAssign(vectorType, expression.getType())) {
+                return FORMAT("Incompatible types in vector {}, {}", vectorType, expression.getType());
+            }
+            if(!expression.isConst()) { _const = false; }
+            value += FORMAT("{},", expression.getText());
+        }
+        if(!value.empty()) {
+            value.pop_back();
+            if(value.at(0) == ' ') { value.erase(0, 1); }
+        }
+        vectorType = FORMAT("vnd::vector<{}>", vectorType);
+        if(std::string error = checkType(type, vectorType); !error.empty()) { return error; }
+        write(FORMAT("{{{}}}", value), vectorType);
+        return {};
     }
 
     std::string ExpressionFactory::handleInnerExpression(TupType &type) noexcept {  // NOLINT(*-no-recursion)
         std::string newType;
-        auto factory = ExpressionFactory::create(_iterator, _end, _scope);
+        auto factory = ExpressionFactory::create(_iterator, _end, _scope, _const);
         _iterator++;
         if(std::string error = factory.parse({TokenType::CLOSE_PARENTESIS}); !error.empty()) { return error; }
         auto expression = factory.getExpression();
         newType = expression.getType();
+        if(expression.isConst()) {
+            _expressionText += expression.getValue();
+        } else {
+            _const = false;
+        }
         if(newType.empty()) { return FORMAT("Identifier {}.{} not found", _type, expression.getType()); }
         if(auto error = ExpressionFactory::checkType(type, newType); !error.empty()) { return error; }
         write(FORMAT(" ({})", expression.getText().substr(1)), newType);
-        return "";
+        return {};
     }
 
     std::string ExpressionFactory::handleToken(TupType &type) noexcept {
@@ -208,14 +287,32 @@ namespace vnd {
         if(newType.empty()) { return FORMAT("Identifier {}.{} not found", _type, _iterator->getValue()); }
         if(auto error = ExpressionFactory::checkType(type, newType); !error.empty()) { return error; }
         emplaceToken(newType);
-        return "";
+        return {};
     }
 
     bool ExpressionFactory::checkVector() noexcept {
-        if(_type.starts_with("std::vector<")) {
-            _type.erase(0, std::string_view("std::vector<").size());
+        if(_type.starts_with("vnd::vector<")) {
+            _type.erase(0, std::string_view("vnd::vector<").size());
             _type.pop_back();
             if(_type.back() == '>') { _type.pop_back(); }
+            return true;
+        }
+        if(_type.starts_with("vnd::array<")) {
+            int par = 0;
+            _type.erase(0, std::string_view("vnd::array<").size());
+            while(_type.back() != ',' || par != 0) {
+                if(_type.back() == '(') {
+                    par--;
+                } else if(_type.back() == ')') {
+                    par++;
+                }
+                _type.pop_back();
+            }
+            _type.pop_back();
+            return true;
+        }
+        if(_type == "string.") {
+            _type = "char";
             return true;
         }
         return false;
@@ -223,37 +320,37 @@ namespace vnd {
 
     std::string ExpressionFactory::checkType(TupType &oldType, const std::string_view newType) noexcept {
         if(newType == "dot" || (std::next(_iterator) != _end && std::next(_iterator)->getType() == TokenType::DOT_OPERATOR)) {
-            return "";
+            return {};
         }
         if((std::next(_iterator) != _end && std::next(_iterator)->getType() == TokenType::OPEN_SQ_PARENTESIS)) { return ""; }
         if(_sq && !isSquareType(newType)) { return FORMAT("Type not allowed {}", newType); }
         if(std::get<2>(oldType).empty()) {
             if(newType == "operator") {
                 std::get<2>(oldType) = "int";
-                return "";
+                return {};
             }
             std::get<2>(oldType) = newType;
-            return "";
+            return {};
         }
         if(std::get<2>(oldType) == "not" && newType == "bool") {
             std::get<2>(oldType) = newType;
-            return "";
+            return {};
         }
         if(std::get<2>(oldType) == "bool" && newType == "not") { return ""; }
         if(std::get<2>(oldType) == newType) { return ""; }
         if(Scope::isNumber(std::get<2>(oldType)) && (Scope::isNumber(std::string{newType}) || newType == "operator")) {
-            return "";
+            return {};
         }
         if(newType == "boolean") {
             std::get<0>(oldType) = true;
-            return "";
+            return {};
         }
         if(newType == "logical") {
             if(std::get<2>(oldType) == "bool" || std::get<0>(oldType) == true) {
                 std::get<0>(oldType) = false;
                 std::get<1>(oldType) = true;
                 std::get<2>(oldType) = "";
-                return "";
+                return {};
             }
             return FORMAT("Cannot apply operator for {} type", std::get<2>(oldType));
         }
@@ -278,11 +375,11 @@ namespace vnd {
             value = FORMAT("double({})", value);
             _divide = false;
         }
-        if(_power != 0 && (std::next(_iterator) == _end || std::next(_iterator)->getValue() != "^")) {
-            value = FORMAT("{}{:)^{}}", value, "", _power);
-            if(_sq) { value = FORMAT("{}{:)^{}}", value, "", _power); }
-            _power = 0;
+        if(_power.has_value()) {
+            value = FORMAT("{})", value);
+            if(_sq) { value = FORMAT("{})", value); }
         }
+        if(((_iterator + 1) == _end || (_iterator + 1)->getValue() != "^")) { _power.reset(); }
     }
 
     void ExpressionFactory::write(const std::string &value, const std::string_view &type) noexcept {

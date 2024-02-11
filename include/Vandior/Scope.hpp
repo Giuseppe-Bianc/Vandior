@@ -17,8 +17,9 @@ namespace vnd {
         [[nodiscard]] static bool canAssign(const std::string &left, const std::string &right) noexcept;
         [[nodiscard]] std::shared_ptr<Scope> getParent() const noexcept;
         void removeParent() noexcept;
-        void addType(const std::string_view type) noexcept;
-        void addVariable(const std::string_view identifier, const std::string_view type, const bool isConst) noexcept;
+        void addType(const std::string_view &type) noexcept;
+        void addConstant(const std::string_view &identifier, const std::string_view &type, const std::string &value) noexcept;
+        void addVariable(const std::string_view &identifier, const std::string_view &type) noexcept;
         void addFun(const std::string_view identifier, const FunType &fun) noexcept;
         [[nodiscard]] bool isMainScope() const noexcept;
         [[nodiscard]] bool checkType(const std::string_view type) const noexcept;
@@ -28,13 +29,13 @@ namespace vnd {
                                                        const std::string_view &identifier) const noexcept;
         [[nodiscard]] std::string getFunType(const std::string &type, const std::string_view &identifier,
                                              const std::vector<Expression> &expressions) const noexcept;
-
+        [[nodiscard]] std::string getConstValue(const std::string &type, const std::string_view &identifier) const noexcept;
     private:
         Scope(std::shared_ptr<Scope> parent) noexcept;
         static std::string getType(const std::string &type) noexcept;
         static std::vector<std::string> _numberTypes;
         std::unordered_map<std::string, std::string> _vars;
-        std::unordered_map<std::string, std::string> _consts;
+        std::unordered_map<std::string, std::pair<std::string, std::string>> _consts;
         std::unordered_set<std::string> _types;
         std::unordered_map<std::string, std::vector<FunType>> _funs;
         std::shared_ptr<Scope> _parent;

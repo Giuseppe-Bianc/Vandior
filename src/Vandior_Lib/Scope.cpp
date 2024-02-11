@@ -23,13 +23,14 @@ namespace vnd {
         mainScope->addType("bool");
         mainScope->addType("string");
         mainScope->addType("Object");
-        mainScope->addVariable("Object.a", "int", false);
-        mainScope->addVariable("Object.s", "string", false);
-        mainScope->addFun("test", make_FunType("int", {}));
+        mainScope->addVariable("Object.a", "int");
+        mainScope->addVariable("Object.s", "string");
+        mainScope->addConstant("Object.c", "int", "2");
+        mainScope->addFun("_test", make_FunType("int", {}));
         mainScope->addFun("testPar", make_FunType("int", {"int", "int"}));
         mainScope->addFun("testPar", make_FunType("int", {"string"}));
         mainScope->addFun("createObject", make_FunType("Object", {}));
-        mainScope->addFun("vector.size", make_FunType("int", {}));
+        mainScope->addFun("vnd::vector.size", make_FunType("int", {}));
         mainScope->addFun("string.size", make_FunType("int", {}));
         mainScope->addFun("Object.f", make_FunType("float", {"float"}));
         mainScope->addFun("Object.fs", make_FunType("string", {}));
@@ -48,13 +49,13 @@ namespace vnd {
 
     void Scope::removeParent() noexcept { _parent = nullptr; }
 
-    void Scope::addType(const std::string_view type) noexcept { _types.emplace(type); }
+    void Scope::addType(const std::string_view &type) noexcept { _types.emplace(type); }
 
-    void Scope::addVariable(const std::string_view identifier, const std::string_view type, const bool isConst) noexcept {
-        if(isConst) {
-            _consts[std::string{identifier}] = std::string{type};
-            return;
-        }
+    void Scope::addConstant(const std::string_view &identifier, const std::string_view &type, const std::string &value) noexcept {
+        _consts[std::string{identifier}] = std::make_pair(type, value);
+    }
+
+    void Scope::addVariable(const std::string_view &identifier, const std::string_view &type) noexcept {
         _vars[std::string{identifier}] = type;
     }
 
@@ -83,7 +84,7 @@ namespace vnd {
     std::string_view Scope::getVariableType(const std::string &type, const std::string_view &identifier) const noexcept {
         auto key = FORMAT("{}{}", Scope::getType(type), std::string(identifier));
         if(_vars.contains(key)) { return _vars.at(key); }
-        if(_consts.contains(key)) { return _consts.at(key); }
+        if(_consts.contains(key)) { return _consts.at(key).first; }
         if(_parent) { return _parent->getVariableType(type, identifier); }
         return "";
     }
@@ -111,8 +112,14 @@ namespace vnd {
     }
 
     std::string Scope::getType(const std::string &type) noexcept {
-        if(type.starts_with("std::vector<")) [[unlikely]] { return "vector."; }
+        if(type.starts_with("vnd::vector<") || type.starts_with("vnd::array<")) [[unlikely]] { return "vnd::vector."; }
         return type;
+    }
+
+    std::string Scope::getConstValue(const std::string& type, const std::string_view& identifier) const noexcept {
+        auto key = std::string{type} + std::string{identifier};
+        if(_consts.find(key) == _consts.end()) { return ""; }
+        return _consts.at(key).second;
     }
 
 }  // namespace vnd
