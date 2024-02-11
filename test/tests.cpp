@@ -83,7 +83,6 @@ TEST_CASE("Timer: PrintTimer FMT", "[timer]") {
 TEST_CASE("Timer: TimeItTimer", "[timer]") {
     vnd::Timer timer;
     std::string output = timer.time_it([]() { std::this_thread::sleep_for(std::chrono::milliseconds(5)); }, .01);
-    LINFO("{}", output);
     REQUIRE(output.find("ns") != std::string::npos);
 }
 
@@ -487,6 +486,7 @@ TEST_CASE("tokenizer emit unknown token on non closed string token", "[tokenizer
     REQUIRE(tokens.size() == 2);
     REQUIRE(tokens[0] == Token(TokenType::UNKNOWN, R"(a')", vnd::CodeSourceLocation(filename,1, 2)));
 }*/
+
 TEST_CASE("corrected format for InstructionType", "[Instruction_type]") {
     using enum vnd::InstructionType;
     REQ_FORMAT(PARAMETER_EXPRESSION, "PARAMETER_EXPRESSION");
@@ -615,7 +615,29 @@ TEST_CASE("Corrected type of for instruction", "[Instruction]") {
     instruction.checkToken(vnd::Token{vnd::TokenType::COMMA, "", vnd::CodeSourceLocation(filename, 0, colum)});
     REQUIRE(instruction.getLastType() == vnd::InstructionType::FOR_STEP);
 }
+TEST_CASE("Instruction toString() Empty tokens", "[Instruction]") {
+    vnd::Instruction instruction = vnd::Instruction::create(filename);
+    REQUIRE(instruction.toString() == "");
+}
 
+TEST_CASE("Instruction toString() Empty tokens FMT", "[Instruction]") {
+    vnd::Instruction instruction = vnd::Instruction::create(filename);
+    REQ_FORMAT(instruction, "");
+}
+
+TEST_CASE("Instruction toString()", "[Instruction]") {
+    vnd::Instruction instruction = vnd::Instruction::create(filename);
+    instruction.checkToken(vnd::Token{vnd::TokenType::K_MAIN, "", vnd::CodeSourceLocation(filename, 0, 0)});
+    instruction.checkToken(vnd::Token{vnd::TokenType::OPEN_CUR_PARENTESIS, "", vnd::CodeSourceLocation(filename, 0, 1)});
+    REQUIRE(instruction.toString() == "0\t  ");
+}
+
+TEST_CASE("Instruction toString() FMT", "[Instruction]") {
+    vnd::Instruction instruction = vnd::Instruction::create(filename);
+    instruction.checkToken(vnd::Token{vnd::TokenType::K_MAIN, "", vnd::CodeSourceLocation(filename, 0, 0)});
+    instruction.checkToken(vnd::Token{vnd::TokenType::OPEN_CUR_PARENTESIS, "", vnd::CodeSourceLocation(filename, 0, 1)});
+    REQ_FORMAT(instruction, "0\t  ");
+}
 TEST_CASE("Parser emit number node", "[parser]") {
     vnd::Parser parser("1", filename);
     auto ast = parser.parse();
