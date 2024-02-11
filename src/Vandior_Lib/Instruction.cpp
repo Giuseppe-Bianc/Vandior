@@ -54,7 +54,7 @@ namespace vnd {
     }
 
     void Instruction::checkToken(const Token &token) {
-        if(!std::ranges::contains(_allowedTokens, token.getType())) { throw InstructionException(token); }
+        if(std::ranges::find(_allowedTokens, token.getType()) == _allowedTokens.end()) { throw InstructionException(token); }
         switch(token.getType()) {
             using enum TokenType;
         case IDENTIFIER:

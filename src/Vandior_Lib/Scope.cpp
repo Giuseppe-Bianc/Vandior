@@ -36,7 +36,9 @@ namespace vnd {
         return mainScope;
     }
 
-    bool Scope::isNumber(const std::string &type) noexcept { return std::ranges::contains(Scope::_numberTypes, type); }
+    bool Scope::isNumber(const std::string &type) noexcept {
+        return std::ranges::find(Scope::_numberTypes, type) != Scope::_numberTypes.end();
+    }
 
     bool Scope::canAssign(const std::string &left, const std::string &right) noexcept {
         return (Scope::isNumber(left) && Scope::isNumber(right)) || left == right;
