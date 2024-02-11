@@ -16,11 +16,11 @@ DISABLE_WARNINGS_POP()
 namespace {
     auto timeTokenizer(vnd::Tokenizer &tokenizer, std::vector<vnd::Token> &tokens) -> void {
         tokens.clear();
-        AutoTimer timer("tokenizer.tokenize()");
+        vnd::AutoTimer timer("tokenizer.tokenize()");
         tokens = tokenizer.tokenize();
     }
     auto readFromFile(const std::string &filename) -> std::string {
-        AutoTimer timer("readFromFile");
+        vnd::AutoTimer timer("readFromFile");
         std::filesystem::path filePath = filename;
 
         if(!std::filesystem::exists(filePath)) { throw FILEREADEREERRORF("File not found: {}", filename); }
@@ -92,7 +92,7 @@ auto main(int argc, const char *const argv[]) -> int {
         timeTokenizer(tokenizer, tokens);
         for(const auto &item : tokens) { LINFO("{}", item); }
         std::vector<vnd::Instruction> instructions;
-        AutoTimer tim("tokenizer total time");
+        vnd::AutoTimer tim("tokenizer total time");
         size_t line = tokens.at(0).getLine();
         for(const vnd::Token &token : tokens) {
             if(token.getType() == vnd::TokenType::COMMENT) [[unlikely]] { continue; }
