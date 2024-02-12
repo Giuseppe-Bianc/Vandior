@@ -151,12 +151,6 @@ namespace vnd {
         [[nodiscard]] std::string handleToken(TupType &type) noexcept;
 
         /**
-         * @brief Checks if the _temp type is a vector type.
-         * @return Bool indicating if the type is a vector type.
-         */
-        [[nodiscard]] bool checkVector() noexcept;
-
-        /**
          * @brief Checks the type during parsing.
          * @param oldType Tuple representing the previous type.
          * @param newType The new type to check.

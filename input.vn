@@ -4,6 +4,8 @@ const testConstInt1, testConstInt2: int = 1 + 2 ^ 5 / (6 - 7), 56 + createObject
 const testConstFloat1, testConstFloa2: float = 1.3 + 2 ^ 5 * 3 + testConstInt2 + (- testConstInt2 + 1), 10 ^ obj.c
 const testConstChar: char = 'a'
 const testConstString: string = "Ciao"
+const testArray: int[2] = {1, 2, 3}
+const testArray1: int[] = testArray
 var intVar: int = 2 + testPar(_test() ^ 7 + 6, 78.78) ^ testConstInt1
 var _var: int
 main {

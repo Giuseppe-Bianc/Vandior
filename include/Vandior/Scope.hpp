@@ -15,6 +15,7 @@ namespace vnd {
         [[nodiscard]] static std::shared_ptr<Scope> createMain() noexcept;
         [[nodiscard]] static bool isNumber(const std::string &type) noexcept;
         [[nodiscard]] static bool canAssign(const std::string &left, const std::string &right) noexcept;
+        [[nodiscard]] static bool checkVector(std::string &type) noexcept;
         [[nodiscard]] std::shared_ptr<Scope> getParent() const noexcept;
         void removeParent() noexcept;
         void addType(const std::string_view &type) noexcept;

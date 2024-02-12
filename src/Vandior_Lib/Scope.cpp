@@ -42,7 +42,41 @@ namespace vnd {
     }
 
     bool Scope::canAssign(const std::string &left, const std::string &right) noexcept {
-        return (Scope::isNumber(left) && Scope::isNumber(right)) || left == right;
+        if((Scope::isNumber(left) && Scope::isNumber(right)) || left == right) { return true; }
+        std::pair<std::string, std::string> types = {left, right};
+        if((types.first.starts_with("vnd::vector<") || types.second.starts_with("vnd::vector<")) &&
+           Scope::checkVector(types.first) && Scope::checkVector(types.second)) {
+            return Scope::canAssign(types.first, types.second);
+        }
+        return false;
+    }
+
+    bool Scope::checkVector(std::string &type) noexcept {
+        if(type.starts_with("vnd::vector<")) {
+            type.erase(0, std::string_view("vnd::vector<").size());
+            type.pop_back();
+            if(type.back() == '>') { type.pop_back(); }
+            return true;
+        }
+        if(type.starts_with("vnd::array<")) {
+            int par = 0;
+            type.erase(0, std::string_view("vnd::array<").size());
+            while(type.back() != ',' || par != 0) {
+                if(type.back() == '(') {
+                    par--;
+                } else if(type.back() == ')') {
+                    par++;
+                }
+                type.pop_back();
+            }
+            type.pop_back();
+            return true;
+        }
+        if(type == "string.") {
+            type = "char";
+            return true;
+        }
+        return false;
     }
 
     std::shared_ptr<Scope> Scope::getParent() const noexcept { return _parent; }

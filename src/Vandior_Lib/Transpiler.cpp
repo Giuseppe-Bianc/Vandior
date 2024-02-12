@@ -168,17 +168,20 @@ namespace vnd {
                     prefix += "vnd::vector<";
                     suffix = ">" + suffix;
                 } else {
+                    std::string size;
                     iterator++;
                     ExpressionFactory factory = ExpressionFactory::create(iterator, end, _scope, true, true);
                     if(std::string error = factory.parse({TokenType::CLOSE_SQ_PARENTESIS, TokenType::EQUAL_OPERATOR}); error != "") {
-                        throw new TranspilerException(error, instruction);
+                        throw TranspilerException(error, instruction);
                     };
                     Expression expression = factory.getExpression();
                     if(!expression.isConst()) {
                         throw TranspilerException("Canno evaluate array dimension at compile time", instruction);
                     }
+                    size = expression.getValue().substr(0, expression.getValue().find('.'));
+                    if(std::stoi(size) < 0) { throw TranspilerException("Array cannot have negative size", instruction); }
                     prefix += "vnd::array<";
-                    suffix = FORMAT(", {}>{}", expression.getValue().substr(0, expression.getValue().find('.')),
+                    suffix = FORMAT(", {}>{}", size,
                                     suffix);
                 }
             }
