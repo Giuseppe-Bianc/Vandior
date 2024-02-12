@@ -80,9 +80,11 @@ namespace vnd {
         std::string type;
         auto iterator = tokens.begin();
         const auto isConst = iterator->getValue() == "const";
+        const auto isVal = iterator->getValue() == "val";
         std::vector<std::string_view> variables = extractVariables(iterator, instruction);
         auto endToken = tokens.end();
         ExpressionFactory factory = ExpressionFactory::create(iterator, tokens.end(), _scope, isConst);
+        if(isConst || isVal) { _text += "const "; }
         type = transpileType(iterator, tokens.end(), {TokenType::EQUAL_OPERATOR}, instruction);
         _text += FORMAT("{} ", type);
         // Handle initialization
@@ -95,7 +97,7 @@ namespace vnd {
                 if(iterator != endToken) { iterator++; }
             }
         }
-        if(isConst && variables.size() > factory.size()) {
+        if((isConst || isVal) && variables.size() > factory.size()) {
             throw TranspilerException(
                 FORMAT("Uninitialized constant: {} values for {} constants", factory.size(), variables.size()), instruction);
         }
@@ -142,7 +144,6 @@ namespace vnd {
                                                                const Instruction &instruction) {
         using enum TokenType;
         std::vector<std::string_view> result;
-        if(iterator->getValue() == "const") { _text += "const "; }
         while(iterator->getType() != COLON) {
             if(iterator->getType() == IDENTIFIER) {
                 if(_scope->checkType(iterator->getValue())) {
