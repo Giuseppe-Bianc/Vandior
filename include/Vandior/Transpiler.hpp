@@ -46,24 +46,40 @@ namespace vnd {
 
         /**
          * @brief Transpile the main part of the instruction.
-         * @param i The instruction to transpile.
+         * @param instruction The instruction to transpile.
          */
-        void transpileMain(const Instruction &i);
+        void transpileMain(const Instruction &instruction);
 
         /**
          * @brief Transpile the declaration part of the instruction.
-         * @param i The instruction to transpile.
+         * @param instruction The instruction to transpile.
          */
-        void transpileDeclaration(const Instruction &i);
+        void transpileDeclaration(const Instruction &instruction);
+
+        /**
+         * @brief Transpile the assignation part of the instruction.
+         * @param instruction The instruction to transpile.
+         */
+        void transpileAssignation(const Instruction &instruction);
+
+        /**
+         * @brief Extracts identifiers of declared variables from the declaration instruction.
+         * @param iterator The iterator to the instruction.
+         * @param instruction The instruction to extract variables from.
+         * @return Vector of extracted identifiers.
+         */
+        [[nodiscard]] std::vector<std::string_view> extractIdenfifiers(std::vector<Token>::iterator &iterator,
+                                                                     const Instruction &instruction) const;
 
         /**
          * @brief Extracts variables from the instruction.
          * @param iterator The iterator to the instruction.
+         * @param end Iterator pointing to the end of the token sequence.
          * @param instruction The instruction to extract variables from.
          * @return Vector of extracted variables.
          */
-        [[nodiscard]] std::vector<std::string_view> extractVariables(std::vector<Token>::iterator &iterator,
-                                                                     const Instruction &instruction);
+        [[nodiscard]] std::vector<std::pair<std::string_view, std::string>> extractvariables(std::vector<Token>::iterator &iterator,
+                                                                       const std::vector<Token>::iterator &end, const Instruction &instruction) const;
 
         /**
         * @brief Transpile a type name.

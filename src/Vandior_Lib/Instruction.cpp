@@ -143,7 +143,7 @@ namespace vnd {
         using enum TokenType;
         using enum InstructionType;
         if(isExpression()) {
-            _allowedTokens = {OPERATOR, MINUS_OPERATOR, LOGICAL_OPERATOR, DOT_OPERATOR, OPEN_PARENTESIS, OPEN_SQ_PARENTESIS};
+            _allowedTokens = {OPERATOR, MINUS_OPERATOR, LOGICAL_OPERATOR};
             emplaceUnaryOperator(type);
             emplaceExpressionTokens();
             return;
@@ -152,8 +152,7 @@ namespace vnd {
         case BLANK:
         case OPERATION:
             setLastType(OPERATION);
-            _allowedTokens = {EQUAL_OPERATOR,  OPERATION_EQUAL,    DOT_OPERATOR, COMMA,
-                              OPEN_PARENTESIS, OPEN_SQ_PARENTESIS, eofTokenType};
+            _allowedTokens = {EQUAL_OPERATOR,  OPERATION_EQUAL, COMMA, eofTokenType};
             emplaceUnaryOperator(type);
             break;
         case DECLARATION:
@@ -508,6 +507,11 @@ namespace vnd {
     }
 
     inline void Instruction::emplaceUnaryOperator(const TokenType &type) noexcept {
+        if(type == TokenType::IDENTIFIER) {
+            _allowedTokens.emplace_back(TokenType::DOT_OPERATOR);
+            _allowedTokens.emplace_back(TokenType::OPEN_PARENTESIS);
+            _allowedTokens.emplace_back(TokenType::OPEN_SQ_PARENTESIS);
+        }
         if(type != TokenType::UNARY_OPERATOR) { _allowedTokens.emplace_back(TokenType::UNARY_OPERATOR); }
     }
 

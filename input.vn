@@ -9,6 +9,8 @@ const testArray1: int[] = testArray
 var intVar: int = 2 + testPar(_test() ^ 7 + 6, 78.78) ^ testConstInt1
 var _var: int
 main {
+	_var, intVar = 2, 10
+	intVar++
 	var testArray: int[1 + 2]
 	var array: int[][5 - 1 ^ 4]
 	var v1, v2: float = 1 + 2 + _var + testPar(-intVar, intVar), 2 * 56 *(65 + 8.98 ^ 1 + testPar(6 / 7 + testPar(1, 3), 1 + 5) + (35 + 56 -67 / 7)) + 2 / intVar

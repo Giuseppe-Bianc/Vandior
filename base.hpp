@@ -2,6 +2,8 @@
 #include <cmath>
 #include <array>
 #include <vector>
+#include <unordered_map>
+#include <any>
 #include <cstdint>
 
 class string: public std::string_view {
@@ -50,7 +52,8 @@ namespace vnd {
 				return std::vector<T>::at(index);
 			}
 	};
-}
+	std::unordered_map<std::string, std::any> tmp;
+} 
 
 int v_test() { return 0; }
 int _testPar(int a, int b) { return a + b; }

@@ -23,6 +23,9 @@ namespace vnd {
                 case INITIALIZATION:
                     transpileDeclaration(instruction);
                     break;
+                case ASSIGNATION:
+                    transpileAssignation(instruction);
+                    break;
                 case OPEN_SCOPE:
                     _text += "{";
                     openScope();
@@ -81,7 +84,7 @@ namespace vnd {
         auto iterator = tokens.begin();
         const auto isConst = iterator->getValue() == "const";
         const auto isVal = iterator->getValue() == "val";
-        std::vector<std::string_view> variables = extractVariables(iterator, instruction);
+        std::vector<std::string_view> variables = extractIdenfifiers(iterator, instruction);
         auto endToken = tokens.end();
         ExpressionFactory factory = ExpressionFactory::create(iterator, tokens.end(), _scope, isConst);
         if(isConst || isVal) { _text += "const "; }
@@ -140,8 +143,14 @@ namespace vnd {
         }
     }
 
-    std::vector<std::string_view> Transpiler::extractVariables(std::vector<Token>::iterator &iterator,
-                                                               const Instruction &instruction) {
+    void Transpiler::transpileAssignation(const Instruction &instruction) {
+        auto tokens = instruction.getTokens();
+        auto iterator = tokens.begin();
+        std::vector<std::pair<std::string_view, std::string>> variables = extractvariables(iterator, tokens.end(), instruction);
+    }
+
+    std::vector<std::string_view> Transpiler::extractIdenfifiers(std::vector<Token>::iterator &iterator,
+                                                               const Instruction &instruction) const {
         using enum TokenType;
         std::vector<std::string_view> result;
         while(iterator->getType() != COLON) {
@@ -153,6 +162,26 @@ namespace vnd {
             }
             iterator++;
         }
+        return result;
+    }
+
+    std::vector<std::pair<std::string_view, std::string>> Transpiler::extractvariables(std::vector<Token>::iterator &iterator,
+                                                                        const std::vector<Token>::iterator &end,const Instruction &instruction) const {
+        using enum TokenType;
+        std::vector<std::pair<std::string_view, std::string>> result;
+        while(iterator != end && iterator->getType() != EQUAL_OPERATOR) {
+            LINFO("{} {}", instruction.getLastType(), iterator->getValue());
+            iterator++;
+        }
+        /*while(iterator->getType() != COLON) {
+            if(iterator->getType() == IDENTIFIER) {
+                if(_scope->checkType(iterator->getValue())) {
+                    throw TranspilerException(FORMAT("Identifier {} not allowed", iterator->getValue()), instruction);
+                }
+                result.emplace_back(iterator->getValue());
+            }
+            iterator++;
+        }*/
         return result;
     }
 
