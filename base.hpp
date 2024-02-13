@@ -2,6 +2,7 @@
 #include <cmath>
 #include <array>
 #include <vector>
+#include <memory>
 #include <unordered_map>
 #include <any>
 #include <cstdint>

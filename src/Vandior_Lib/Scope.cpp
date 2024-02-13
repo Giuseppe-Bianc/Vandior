@@ -155,13 +155,16 @@ namespace vnd {
 
     std::string Scope::getConstValue(const std::string& type, const std::string_view& identifier) const noexcept {
         auto key = type + std::string{identifier};
-        if(!_consts.contains(key)) { return ""; }
-        return _consts.at(key).second;
+        if(_consts.contains(key)) { return _consts.at(key).second; }
+        if(_parent) { return _parent->getConstValue(type, identifier); }
+        return "";
     }
 
     bool Scope::isConstant(const std::string &type, const std::string_view &identifier) const noexcept {
         auto key = type + std::string{identifier};
-        return _consts.contains(key) || _vals.contains(key);
+        if(_consts.contains(key) || _vals.contains(key)) { return true; }
+        if(_parent) { return _parent->isConstant(type, identifier); }
+        return false;
     }
 
 }  // namespace vnd

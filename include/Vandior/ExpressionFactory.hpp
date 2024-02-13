@@ -97,11 +97,10 @@ namespace vnd {
         [[nodiscard]] static bool isSquareType(const std::string_view &type) noexcept;
 
         /**
-         * @brief Gets the type of a token.
-         * @param token The token to get the type from.
+         * @brief Gets the type of the current token.
          * @return Type of the token as a string.
          */
-        [[nodiscard]] std::string_view getTokenType(const Token &token) noexcept;
+        [[nodiscard]] std::string_view getTokenType() noexcept;
 
         /**
          * @brief Emplaces the current token into the parsed text vector.
@@ -164,6 +163,8 @@ namespace vnd {
          * @param value Bool if the next token is . or [.
          */
         [[nodiscard]] bool checkNextToken(const std::string &type, const std::string &value) noexcept;
+
+        bool checkUnaryOperator(const std::string_view &type) const noexcept;
 
         /**
          * @brief Checks and processes operators in the parsed value.

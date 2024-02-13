@@ -23,7 +23,6 @@ namespace vnd {
         _power.reset();
         _divide = false;
         _dot = false;
-        _expressionText = "";
         _type = "";
         _temp = "";
         exprtk::expression<double> expression;
@@ -73,10 +72,10 @@ namespace vnd {
         return result;
     }
 
-    std::string_view ExpressionFactory::getTokenType(const Token &token) noexcept {
+    std::string_view ExpressionFactory::getTokenType() noexcept {
         using enum TokenType;
         // NOLINTBEGIN
-        switch(token.getType()) {
+        switch(_iterator->getType()) {
         case INTEGER:
             return "int";
         case DOUBLE:
@@ -88,10 +87,11 @@ namespace vnd {
         case STRING:
             return "string";
         case IDENTIFIER:
-            return _scope->getVariableType(_type, token.getValue());
+            return _scope->getVariableType(_type, _iterator->getValue());
         case OPERATOR:
             [[fallthrough]];
         case MINUS_OPERATOR:
+        case UNARY_OPERATOR:
             return "operator";
         case DOT_OPERATOR:
             return "dot";
@@ -144,7 +144,7 @@ namespace vnd {
         if(_const) {
             if(_iterator->getType() == TokenType::IDENTIFIER) {
                 std::string constValue = _scope->getConstValue(_type, _iterator->getValue());
-                if(value == "") {
+                if(constValue.empty()) {
                     _const = false;
                 } else {
                     _expressionText += constValue;
@@ -156,6 +156,7 @@ namespace vnd {
         checkOperators(text);
         _text.emplace_back(text);
         if(value == "/" && !_sq) { _divide = true; }
+        if((_iterator + 1) != _end && (_iterator + 1)->getType() == TokenType::UNARY_OPERATOR) { _iterator++; }
         _iterator++;
     }
 
@@ -169,6 +170,9 @@ namespace vnd {
                 } else {
                     value = FORMAT(" _{}", value);
                 }
+            }
+            if((_iterator + 1) != _end && (_iterator + 1)->getType() == TokenType::UNARY_OPERATOR) {
+                value += (_iterator + 1)->getValue();
             }
         }
         if(_iterator->getType() == TokenType::INTEGER && value.at(0) == '#') {
@@ -304,7 +308,8 @@ namespace vnd {
     }
 
     std::string ExpressionFactory::handleToken(TupType &type) noexcept {
-        const auto newType = ExpressionFactory::getTokenType(*_iterator);
+        const auto newType = ExpressionFactory::getTokenType();
+        if(!checkUnaryOperator(newType)) { return FORMAT("Cannot apply unary operator for {}", _iterator->getValue()); }
         if(newType.empty()) { return FORMAT("Identifier {}.{} not found", _type, _iterator->getValue()); }
         if(auto error = ExpressionFactory::checkType(type, newType); !error.empty()) { return error; }
         emplaceToken(newType);
@@ -360,6 +365,13 @@ namespace vnd {
             return true;
         }
         return false;
+    }
+
+    bool ExpressionFactory::checkUnaryOperator(const std::string_view& type) const noexcept {
+        return _iterator->getType() != TokenType::IDENTIFIER || (_iterator + 1) == _end ||
+               (_iterator + 1)->getType() != TokenType::UNARY_OPERATOR ||
+               (type == "int" && !_scope->isConstant(_type, _iterator->getValue()));
+
     }
 
     void ExpressionFactory::checkOperators(std::string &value) noexcept {
