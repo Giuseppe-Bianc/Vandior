@@ -23,8 +23,8 @@ namespace vnd {
         mainScope->addType("bool");
         mainScope->addType("string");
         mainScope->addType("Object");
-        mainScope->addVariable("Object.a", "int");
-        mainScope->addVariable("Object.s", "string");
+        mainScope->addVariable("Object.a", "int", false);
+        mainScope->addVariable("Object.s", "string", false);
         mainScope->addConstant("Object.c", "int", "2");
         mainScope->addFun("_test", make_FunType("int", {}));
         mainScope->addFun("testPar", make_FunType("int", {"int", "int"}));
@@ -89,7 +89,8 @@ namespace vnd {
         _consts[std::string{identifier}] = std::make_pair(type, value);
     }
 
-    void Scope::addVariable(const std::string_view &identifier, const std::string_view &type) noexcept {
+    void Scope::addVariable(const std::string_view &identifier, const std::string_view &type, const bool isVal) noexcept {
+        if(isVal) { _vals[std::string{identifier}] = type; }
         _vars[std::string{identifier}] = type;
     }
 
@@ -109,7 +110,8 @@ namespace vnd {
 
     // NOLINTNEXTLINE
     std::pair<bool, bool> Scope::checkVariable(const std::string_view identifier, const bool shadowing) const noexcept {
-        if(_vars.contains(std::string{identifier}) || _consts.contains(std::string{identifier})) { return {true, shadowing}; }
+        if(_vars.contains(std::string{identifier}) || _vals.contains(std::string{identifier}) ||
+            _consts.contains(std::string{identifier})) { return {true, shadowing}; }
         if(_parent) { return _parent->checkVariable(identifier, true); }
         return {false, false};
     }
@@ -118,6 +120,7 @@ namespace vnd {
     std::string_view Scope::getVariableType(const std::string &type, const std::string_view &identifier) const noexcept {
         auto key = FORMAT("{}{}", Scope::getType(type), std::string(identifier));
         if(_vars.contains(key)) { return _vars.at(key); }
+        if(_vals.contains(key)) { return _vals.at(key); }
         if(_consts.contains(key)) { return _consts.at(key).first; }
         if(_parent) { return _parent->getVariableType(type, identifier); }
         return "";
@@ -151,9 +154,14 @@ namespace vnd {
     }
 
     std::string Scope::getConstValue(const std::string& type, const std::string_view& identifier) const noexcept {
-        auto key = std::string{type} + std::string{identifier};
-        if(_consts.find(key) == _consts.end()) { return ""; }
+        auto key = type + std::string{identifier};
+        if(!_consts.contains(key)) { return ""; }
         return _consts.at(key).second;
+    }
+
+    bool Scope::isConstant(const std::string &type, const std::string_view &identifier) const noexcept {
+        auto key = type + std::string{identifier};
+        return _consts.contains(key) || _vals.contains(key);
     }
 
 }  // namespace vnd

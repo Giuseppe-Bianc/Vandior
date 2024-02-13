@@ -20,6 +20,12 @@ namespace vnd {
     std::string ExpressionFactory::parse(const std::vector<TokenType> &endToken) noexcept {  // NOLINT(*-no-recursion)
         _text = {};
         _expressionText = "";
+        _power.reset();
+        _divide = false;
+        _dot = false;
+        _expressionText = "";
+        _type = "";
+        _temp = "";
         exprtk::expression<double> expression;
         exprtk::parser<double> parser;
         std::tuple<bool, bool, std::string> type = std::make_tuple(false, false, std::string{});
@@ -231,6 +237,7 @@ namespace vnd {
             _const = false;
         }*/
         _const = false;
+        //_iterator--;
         write(FORMAT("at({})", expression.getText().substr(1)), _type);
         return {};
     }

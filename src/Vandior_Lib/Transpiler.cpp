@@ -137,16 +137,18 @@ namespace vnd {
             if(isConst) {
                 _scope->addConstant(jvar, type, value);
             } else {
-                _scope->addVariable(jvar, type);
+                _scope->addVariable(jvar, type, isVal);
             }
             emplaceCommaColon(jvar == variables.back());
         }
     }
 
     void Transpiler::transpileAssignation(const Instruction &instruction) {
-        auto tokens = instruction.getTokens();
-        auto iterator = tokens.begin();
-        std::vector<std::pair<std::string_view, std::string>> variables = extractvariables(iterator, tokens.end(), instruction);
+        //auto tokens = instruction.getTokens();
+        //auto iterator = tokens.begin();
+        //bool assignable = true;
+        //std::vector<std::pair<std::string_view, std::string>> variables = extractvariables(iterator, tokens.end(), instruction, assignable);
+        LINFO("{}", instruction.getLastType());
     }
 
     std::vector<std::string_view> Transpiler::extractIdenfifiers(std::vector<Token>::iterator &iterator,
@@ -165,25 +167,50 @@ namespace vnd {
         return result;
     }
 
-    std::vector<std::pair<std::string_view, std::string>> Transpiler::extractvariables(std::vector<Token>::iterator &iterator,
-                                                                        const std::vector<Token>::iterator &end,const Instruction &instruction) const {
+    /*std::vector<std::pair<std::string_view, std::string>> Transpiler::extractvariables(
+        std::vector<Token>::iterator &iterator,
+                                                            const std::vector<Token>::iterator &end,const Instruction &instruction, bool &assignable) const {
         using enum TokenType;
         std::vector<std::pair<std::string_view, std::string>> result;
+        std::string currentVariable;
+        bool currentAssignable = true;
+        std::string types;
         while(iterator != end && iterator->getType() != EQUAL_OPERATOR) {
-            LINFO("{} {}", instruction.getLastType(), iterator->getValue());
-            iterator++;
-        }
-        /*while(iterator->getType() != COLON) {
             if(iterator->getType() == IDENTIFIER) {
-                if(_scope->checkType(iterator->getValue())) {
-                    throw TranspilerException(FORMAT("Identifier {} not allowed", iterator->getValue()), instruction);
+                if((iterator + 1) != end && (iterator + 1)->getType() == OPEN_PARENTESIS) {
+                } else {
+                    auto [type, current] = checkIdentifier(types, iterator->getValue());
+                    if(type.empty()) { throw TranspilerException("Cannot find identifier", instruction); }
+                    types = FORMAT("{}.", type);
+                    if(!current) { currentAssignable = false; }
+                    currentVariable += FORMAT("{}.", iterator->getValue());
                 }
-                result.emplace_back(iterator->getValue());
             }
-            iterator++;
-        }*/
+            if(iterator->getType() == COLON) {
+                if(!currentAssignable) {
+                    assignable = false;
+                }
+                currentVariable.pop_back();
+                types.pop_back();
+                result.emplace_back(std::make_pair(currentVariable, types));
+                currentVariable.clear();
+                types.clear();
+                currentAssignable = true;
+            }
+        }
+        currentVariable.pop_back();
+        types.pop_back();
+        result.emplace_back(std::make_pair(currentVariable, types));
+        currentVariable.clear();
+        if(!currentAssignable) {
+            assignable = false;
+        }
         return result;
     }
+
+    std::pair<std::string, bool> Transpiler::checkIdentifier(const std::string &type, const std::string_view &identifier) const {
+        return std::mak
+    }*/
 
     std::string Transpiler::transpileType(std::vector<Token>::iterator &iterator, const std::vector<Token>::iterator end,
                                           const std::vector<TokenType> &endTokens, const Instruction &instruction) {
