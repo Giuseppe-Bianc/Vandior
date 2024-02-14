@@ -29,6 +29,10 @@ namespace vnd {
         exprtk::parser<double> parser;
         std::tuple<bool, bool, std::string> type = std::make_tuple(false, false, std::string{});
         while(_iterator != _end && std::ranges::find(endToken, _iterator->getType()) == endToken.end()) {
+            if(_iterator->getType() == TokenType::UNARY_OPERATOR) {
+                _iterator++;
+                continue;
+            }
             if(_iterator->getType() == TokenType::IDENTIFIER && std::next(_iterator) != _end &&
                std::next(_iterator)->getType() == TokenType::OPEN_PARENTESIS) {
                 if(auto error = handleFun(type); !error.empty()) { return error; };
@@ -156,7 +160,6 @@ namespace vnd {
         checkOperators(text);
         _text.emplace_back(text);
         if(value == "/" && !_sq) { _divide = true; }
-        if((_iterator + 1) != _end && (_iterator + 1)->getType() == TokenType::UNARY_OPERATOR) { _iterator++; }
         _iterator++;
     }
 
@@ -279,7 +282,7 @@ namespace vnd {
             value.pop_back();
             if(value.at(0) == ' ') { value.erase(0, 1); }
         }
-        vectorType = FORMAT("vnd::vector<{}>", vectorType);
+        vectorType += "[]";
         if(std::string error = checkType(type, vectorType); !error.empty()) { return error; }
         if(_const) {
             if(!constValue.empty()) { constValue.pop_back(); }
@@ -359,7 +362,7 @@ namespace vnd {
         if(std::next(_iterator) != _end && (std::next(_iterator)->getType() == TokenType::DOT_OPERATOR ||
                                             std::next(_iterator)->getType() == TokenType::OPEN_SQ_PARENTESIS)) {
             _type = type + ".";
-            if(type.starts_with("vnd::vector<") || type.starts_with("vnd::array<") || type == "string") {
+            if(type == "string" || type.back() == ']') {
                 _temp += value + ".";
             } else {
                 _temp += value + "->";

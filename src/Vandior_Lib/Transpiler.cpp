@@ -74,7 +74,7 @@ namespace vnd {
         openScope();
         value = FORMAT("{:\t^{}}const vnd::vector<string> _args(argv, argv + argc);", "", C_ST(_tabs));;
         _text += value;
-        _scope->addConstant("args", "vnd::vector<string>", value);
+        _scope->addConstant("args", "string[]", value);
         checkTrailingBracket(instruction);
     }
 
@@ -226,6 +226,7 @@ namespace vnd {
                 if((iterator + 1)->getType() == TokenType::CLOSE_SQ_PARENTESIS) {
                     prefix += "vnd::vector<";
                     suffix = ">" + suffix;
+                    type += "[]";
                 } else {
                     std::string size;
                     iterator++;
@@ -242,11 +243,12 @@ namespace vnd {
                     prefix += "vnd::array<";
                     suffix = FORMAT(", {}>{}", size,
                                     suffix);
+                    type += FORMAT("[{}]", size);
                 }
             }
             iterator++;
         }
-        return {prefix + type + suffix, prefix + typeValue + suffix};
+        return {type, prefix + typeValue + suffix};
     }
 
     void Transpiler::openScope() noexcept {

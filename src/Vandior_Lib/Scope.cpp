@@ -31,7 +31,7 @@ namespace vnd {
         mainScope->addFun("testPar", make_FunType("int", {"int", "int"}));
         mainScope->addFun("testPar", make_FunType("int", {"string"}));
         mainScope->addFun("createObject", make_FunType("Object", {}));
-        mainScope->addFun("vnd::vector.size", make_FunType("int", {}));
+        mainScope->addFun("[].size", make_FunType("int", {}));
         mainScope->addFun("string.size", make_FunType("int", {}));
         mainScope->addFun("Object.f", make_FunType("float", {"float"}));
         mainScope->addFun("Object.fs", make_FunType("string", {}));
@@ -49,7 +49,7 @@ namespace vnd {
     bool Scope::canAssign(const std::string &left, const std::string &right) noexcept {
         if((Scope::isNumber(left) && Scope::isNumber(right)) || left == right) { return true; }
         std::pair<std::string, std::string> types = {left, right};
-        if((types.first.starts_with("vnd::vector<") || types.second.starts_with("vnd::vector<")) &&
+        if((types.first.ends_with("[]") || types.second.ends_with("[]")) &&
            Scope::checkVector(types.first) && Scope::checkVector(types.second)) {
             return Scope::canAssign(types.first, types.second);
         }
@@ -57,31 +57,15 @@ namespace vnd {
     }
 
     bool Scope::checkVector(std::string &type) noexcept {
-        if(type.starts_with("vnd::vector<")) {
-            type.erase(0, std::string_view("vnd::vector<").size());
-            type.pop_back();
-            if(type.back() == '>') { type.pop_back(); }
-            return true;
-        }
-        if(type.starts_with("vnd::array<")) {
-            int par = 0;
-            type.erase(0, std::string_view("vnd::array<").size());
-            while(type.back() != ',' || par != 0) {
-                if(type.back() == '(') {
-                    par--;
-                } else if(type.back() == ')') {
-                    par++;
-                }
-                type.pop_back();
-            }
-            type.pop_back();
-            return true;
-        }
-        if(type == "string.") {
+        if(type.back() == '.') { type.pop_back(); }
+        if(type == "string") {
             type = "char";
             return true;
         }
-        return false;
+        if(type.back() != ']') { return false; }
+        while(type.back() != '[') { type.pop_back(); }
+        type.pop_back();
+        return true;
     }
 
     std::shared_ptr<Scope> Scope::getParent() const noexcept { return _parent; }
@@ -154,7 +138,7 @@ namespace vnd {
     }
 
     std::string Scope::getType(const std::string &type) noexcept {
-        if(type.starts_with("vnd::vector<") || type.starts_with("vnd::array<")) [[unlikely]] { return "vnd::vector."; }
+        if(type.ends_with("].")) [[unlikely]] { return "[]."; }
         return type;
     }
 
