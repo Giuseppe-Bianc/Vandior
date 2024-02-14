@@ -211,6 +211,7 @@ namespace vnd {
                 }
             }
         }
+        if((_iterator + 1) == _end || (_iterator + 1)->getType() != TokenType::DOT_OPERATOR) { _const = false; }
         expressions = factory.getExpressions();
         newType = _scope->getFunType(_type, identifier, expressions);
         if(newType.empty()) { return FORMAT("Function {}.{} not found", _type, identifier); }

@@ -64,7 +64,7 @@ class Object {
 	public: int getA() { return a; };
 	public: float getTest() { return test; }
 	public: string getS() { return s; }
-	public: f(double b) { return std::pow(b, 2); }
+	public: float f(double b) { return std::pow(b, 2); }
 	public: std::string fs() { return std::string(); }
 private:
 	const int c = 2;
