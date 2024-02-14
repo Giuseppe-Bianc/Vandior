@@ -6,7 +6,7 @@ const testConstChar: char = 'a'
 const testConstString: string = "Ciao"
 const testArray: int[] = {1, 2, 3, -5}
 const testArray1: int[4] = testArray
-var intVar: int = 2 + testPar(_test() ^ 7 + 6, 78.78) ^ testConstInt1
+var intVar: int = 2 + testPar(_test() ^ 7 + 6, 78.78) ^ testConstInt1 + testArray[1]
 var _var: int = 1, obj.a, testArray1[2]
 main {
 	var _var2, intVar2: int = 2, 10 / _var++

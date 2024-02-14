@@ -85,6 +85,7 @@ namespace vnd {
         bool _dot;
         bool _sq;
         bool _const;
+        bool _currentConst;
         std::string _expressionText;
         std::string _type;
         std::string _temp;
