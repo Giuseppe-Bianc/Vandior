@@ -7,6 +7,7 @@ namespace vnd {
 
     // NOLINTNEXTLINE
     std::vector<std::string> Scope::_numberTypes = {"int", "float"};
+    std::vector<std::string> Scope::_primitiveTypes = {"int", "float", "double", "char", "bool", "string"};
 
     Scope::Scope(std::shared_ptr<Scope> parent) noexcept : _parent(std::move(parent)) {}
 
@@ -39,6 +40,10 @@ namespace vnd {
 
     bool Scope::isNumber(const std::string &type) noexcept {
         return std::ranges::find(Scope::_numberTypes, type) != Scope::_numberTypes.end();
+    }
+
+    bool Scope::isPrimitive(const std::string &type) noexcept {
+        return std::ranges::find(Scope::_primitiveTypes, type) != Scope::_primitiveTypes.end();
     }
 
     bool Scope::canAssign(const std::string &left, const std::string &right) noexcept {

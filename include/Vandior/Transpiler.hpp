@@ -96,9 +96,9 @@ namespace vnd {
         * @param end Iterator pointing to the end of the token sequence.
         * @param endTokens Vector of token types indicating the end of parsing.
         * @param instruction The instruction to extract type from.
-        * @return String that indicates if there is an error.
+        * @return Pair that represent the type and the value to transpile.
         */
-        [[nodiscard]] std::string transpileType(std::vector<Token>::iterator &iterator, const std::vector<Token>::iterator end,
+        [[nodiscard]] std::pair<std::string, std::string> transpileType(std::vector<Token>::iterator &iterator, const std::vector<Token>::iterator end,
                                                     const std::vector<TokenType> &endTokens, const Instruction &instruction);
 
         /**

@@ -9,7 +9,7 @@ const testArray1: int[] = testArray
 var intVar: int = 2 + testPar(_test() ^ 7 + 6, 78.78) ^ testConstInt1
 var _var: int = 1, obj.a, testArray1[2]
 main {
-	var _var2, intVar2: int = 2, 10 / _var++, 12 ^ _var-- + intVar++
+	var _var2, intVar2: int = 2, 10 / _var++ + testArray.size(), 12 ^ _var-- + intVar++ 
 	intVar++
 	var t: int = intVar2 -- ^ - obj.a--
 	var testArray: int[1 + 2] = {1, 2, 3}, {1, 2}
@@ -29,3 +29,4 @@ main {
 }
 var ar: int[][] = {{_test(), 2, 3, 6}, {"Ciao".size(), -4}}
 var a: int = ar[1 ^ 4 ^ testPar(1, 4)][7]
+var objArray: Object[] = { createObject(), createObject() }

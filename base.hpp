@@ -67,4 +67,4 @@ public:
 	double f(double b) { return std::pow(b, 2); }
 	std::string fs() { return std::string(); }
 };
-Object _createObject() { return {}; }
+std::shared_ptr<Object> _createObject() { return std::make_shared<Object>(); }

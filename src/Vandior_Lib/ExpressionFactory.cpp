@@ -359,7 +359,11 @@ namespace vnd {
         if(std::next(_iterator) != _end && (std::next(_iterator)->getType() == TokenType::DOT_OPERATOR ||
                                             std::next(_iterator)->getType() == TokenType::OPEN_SQ_PARENTESIS)) {
             _type = type + ".";
-            _temp += value + ".";
+            if(type.starts_with("vnd::vector<") || type.starts_with("vnd::array<") || type == "string") {
+                _temp += value + ".";
+            } else {
+                _temp += value + "->";
+            }
             _dot = true;
             ++_iterator;
             return true;

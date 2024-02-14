@@ -14,6 +14,7 @@ namespace vnd {
         [[nodiscard]] static std::shared_ptr<Scope> create(std::shared_ptr<Scope> parent) noexcept;
         [[nodiscard]] static std::shared_ptr<Scope> createMain() noexcept;
         [[nodiscard]] static bool isNumber(const std::string &type) noexcept;
+        [[nodiscard]] static bool isPrimitive(const std::string &type) noexcept;
         [[nodiscard]] static bool canAssign(const std::string &left, const std::string &right) noexcept;
         [[nodiscard]] static bool checkVector(std::string &type) noexcept;
         [[nodiscard]] std::shared_ptr<Scope> getParent() const noexcept;
@@ -34,8 +35,9 @@ namespace vnd {
         [[nodiscard]] bool isConstant(const std::string &type, const std::string_view &identifier) const noexcept;
     private:
         Scope(std::shared_ptr<Scope> parent) noexcept;
-        static std::string getType(const std::string &type) noexcept;
         static std::vector<std::string> _numberTypes;
+        static std::vector<std::string> _primitiveTypes;
+        static std::string getType(const std::string &type) noexcept;
         std::unordered_map<std::string, std::string> _vars;
         std::unordered_map<std::string, std::string> _vals;
         std::unordered_map<std::string, std::pair<std::string, std::string>> _consts;

@@ -80,7 +80,6 @@ namespace vnd {
 
     void Transpiler::transpileDeclaration(const Instruction &instruction) {
         auto tokens = instruction.getTokens();
-        std::string type;
         auto iterator = tokens.begin();
         const auto isConst = iterator->getValue() == "const";
         const auto isVal = iterator->getValue() == "val";
@@ -88,8 +87,8 @@ namespace vnd {
         auto endToken = tokens.end();
         ExpressionFactory factory = ExpressionFactory::create(iterator, tokens.end(), _scope, isConst);
         if(isConst || isVal) { _text += "const "; }
-        type = transpileType(iterator, tokens.end(), {TokenType::EQUAL_OPERATOR}, instruction);
-        _text += FORMAT("{} ", type);
+        auto [type, typeValue] = transpileType(iterator, tokens.end(), {TokenType::EQUAL_OPERATOR}, instruction);
+        _text += FORMAT("{} ", typeValue);
         // Handle initialization
         if(iterator != endToken && iterator->getType() == TokenType::EQUAL_OPERATOR) {
             iterator++;
@@ -212,13 +211,16 @@ namespace vnd {
         return std::mak
     }*/
 
-    std::string Transpiler::transpileType(std::vector<Token>::iterator &iterator, const std::vector<Token>::iterator end,
+    std::pair<std::string, std::string> Transpiler::transpileType(std::vector<Token>::iterator &iterator, const std::vector<Token>::iterator end,
                                           const std::vector<TokenType> &endTokens, const Instruction &instruction) {
         std::string type;
+        std::string typeValue; 
         std::string prefix = "";
         std::string suffix = "";
         type = (++iterator)->getValue();
+        typeValue = type;
         if(!_scope->checkType(type)) { throw TranspilerException(FORMAT("Type {} not valid", type), instruction); }
+        if(!_scope->isPrimitive(type)) { typeValue = FORMAT("std::shared_ptr<{}>", type); }
         while(iterator != end && std::ranges::find(endTokens, iterator->getType()) == endTokens.end()) {
             if(iterator->getType() == TokenType::OPEN_SQ_PARENTESIS) {
                 if((iterator + 1)->getType() == TokenType::CLOSE_SQ_PARENTESIS) {
@@ -244,7 +246,7 @@ namespace vnd {
             }
             iterator++;
         }
-        return prefix + type + suffix;
+        return {prefix + type + suffix, prefix + typeValue + suffix};
     }
 
     void Transpiler::openScope() noexcept {
