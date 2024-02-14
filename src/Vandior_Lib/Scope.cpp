@@ -25,6 +25,7 @@ namespace vnd {
         mainScope->addType("string");
         mainScope->addType("Object");
         mainScope->addVariable("Object.a", "int", false);
+        mainScope->addVariable("Object.test", "float", true);
         mainScope->addVariable("Object.s", "string", false);
         mainScope->addConstant("Object.c", "int", "2");
         mainScope->addFun("_test", make_FunType("int", {}));

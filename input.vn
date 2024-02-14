@@ -1,17 +1,17 @@
 var obj: Object = createObject()
 const variable, variable2: bool = 1 == #f2 && 1 + 3 <= -6.57 + #o7 ^ 2 || false, !true <= false
-const testConstInt1, testConstInt2: int = 1 + 2 ^ 5 / (6 - 7), 56 + createObject().c
+const testConstInt1, testConstInt2: int = 1 + 2 ^ 5 / (6 - 7), (56 / 28) ^ createObject().c
 const testConstFloat1, testConstFloa2: float = 1.3 + 2 ^ 5 * 3 + testConstInt2 + (- testConstInt2 + 1), 10 ^ obj.c
 const testConstChar: char = 'a'
 const testConstString: string = "Ciao"
-const testArray: int[] = {1, 2, 3}
+const testArray: int[] = {1, 2, 3, -5}
 const testArray1: int[4] = testArray
 var intVar: int = 2 + testPar(_test() ^ 7 + 6, 78.78) ^ testConstInt1
 var _var: int = 1, obj.a, testArray1[2]
 main {
 	var _var2, intVar2: int = 2, 10 / _var++
 	intVar++
-	var t: int = intVar2 -- ^ - obj.a--
+	var t: int = intVar2 -- ^ (- obj.a * obj.test)
 	var testArray: int[1 + 2] = {1, 2, 3}, {1, 2}
 	var array: int[][5 - 1 ^ 4]
 	var v1, v2: float = 1 + 2 + _var + testPar(-intVar, intVar), 2 * 56 *(65 + 8.98 ^ 1 + testPar(6 / 7 + testPar(1, 3), 1 + 5) + (35 + 56 -67 / 7)) + 2 / intVar
@@ -28,6 +28,6 @@ main {
 	}
 }
 var ar: int[][] = {{_test(), 2, 3, 6}, {"Ciao".size(), -4}}
-var a: int = ar[1 ^ 4 ^ testPar(1, 4)][7]
+var a: int = ar[1 ^ 4 ^ testPar(1, 4)][7] + ar[0].size()
 var objArray: Object[] = { createObject(), createObject() }
 var _a: int = objArray[0].c

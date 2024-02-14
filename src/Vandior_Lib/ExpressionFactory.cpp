@@ -173,6 +173,8 @@ namespace vnd {
                 } else {
                     value = FORMAT(" _{}", value);
                 }
+            } else {
+                value = FORMAT("get{}{}()", char(std::toupper(value[0])), value.substr(1));
             }
             if((_iterator + 1) != _end && (_iterator + 1)->getType() == TokenType::UNARY_OPERATOR) {
                 value += (_iterator + 1)->getValue();
@@ -238,13 +240,7 @@ namespace vnd {
         newType = expression.getType();
         if(newType != "int") { return FORMAT("{} index not allowed", newType); }
         if(auto error = ExpressionFactory::checkType(type, _type); !error.empty()) { return error; }
-        /*if(expression.isConst()) {
-            _expressionText += FORMAT("[{}]", expression.getValue().substr(0, expression.getValue().find('.')));
-        } else {
-            _const = false;
-        }*/
         _const = false;
-        //_iterator--;
         write(FORMAT("at({})", expression.getText().substr(1)), _type);
         return {};
     }
@@ -377,7 +373,7 @@ namespace vnd {
     bool ExpressionFactory::checkUnaryOperator(const std::string_view& type) const noexcept {
         return _iterator->getType() != TokenType::IDENTIFIER || (_iterator + 1) == _end ||
                (_iterator + 1)->getType() != TokenType::UNARY_OPERATOR ||
-               (type == "int" && !_scope->isConstant(_type, _iterator->getValue()));
+               (_temp.empty() && type == "int" && !_scope->isConstant(_type, _iterator->getValue()));
 
     }
 

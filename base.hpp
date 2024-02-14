@@ -60,11 +60,16 @@ int v_test() { return 0; }
 int _testPar(int a, int b) { return a + b; }
 size_t _testPar(string s) { return s.size(); }
 class Object {
-public:
-	int a;
-	std::string s;
+	public: int getC() { return c; };
+	public: int getA() { return a; };
+	public: float getTest() { return test; }
+	public: string getS() { return s; }
+	public: f(double b) { return std::pow(b, 2); }
+	public: std::string fs() { return std::string(); }
+private:
 	const int c = 2;
-	double f(double b) { return std::pow(b, 2); }
-	std::string fs() { return std::string(); }
+	int a;
+	bool test;
+	const string s;
 };
 std::shared_ptr<Object> _createObject() { return std::make_shared<Object>(); }
