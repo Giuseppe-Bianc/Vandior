@@ -78,7 +78,7 @@ class Object {
 	private:
 		const int c = 2;
 		int a;
-		bool test;
+		float test;
 		const string s;
 };
 class Derived: public Object {

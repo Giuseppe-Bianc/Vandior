@@ -37,7 +37,8 @@ namespace vnd {
         Scope(std::shared_ptr<Scope> parent) noexcept;
         static std::vector<std::string> _numberTypes;
         static std::vector<std::string> _primitiveTypes;
-        static std::string getType(const std::string &type) noexcept;
+        [[nodiscard]] static std::string getKey(const std::string &type, const std::string_view &identifier) noexcept;
+        [[nodiscard]] static std::string getType(const std::string &type) noexcept;
         std::unordered_map<std::string, std::string> _vars;
         std::unordered_map<std::string, std::string> _vals;
         std::unordered_map<std::string, std::pair<std::string, std::string>> _consts;

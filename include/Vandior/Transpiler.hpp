@@ -79,8 +79,8 @@ namespace vnd {
          * @param assignable Bool indicating if the variables can be assignated.
          * @return Vector of extracted variables and their types.
          */
-        [[nodiscard]] std::vector<std::pair<std::string_view, std::string>> extractvariables(std::vector<Token>::iterator &iterator,
-                                                        const std::vector<Token>::iterator &end, const Instruction &instruction, bool &assignable) const;
+        //[[nodiscard]] std::vector<std::pair<std::string_view, std::string>> extractvariables(std::vector<Token>::iterator &iterator,
+                                                        //const std::vector<Token>::iterator &end, const Instruction &instruction, bool &assignable) const;
 
         /**
         * @brief checks the type and the assignability of a variable.
@@ -88,7 +88,7 @@ namespace vnd {
         * @param Identifier String_view conatining the variable identifier to check.
         * @return the type of the variable and its assignability.
         */
-        [[nodiscard]] std::pair<std::string, bool> checkIdentifier(const std::string &type, const std::string_view &identifier) const;
+        //[[nodiscard]] std::pair<std::string, bool> checkIdentifier(const std::string &type, const std::string_view &identifier) const;
 
         /**
         * @brief Transpile a type name.

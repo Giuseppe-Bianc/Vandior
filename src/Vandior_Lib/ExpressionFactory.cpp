@@ -214,7 +214,7 @@ namespace vnd {
         if((_iterator + 1) == _end || (_iterator + 1)->getType() != TokenType::DOT_OPERATOR) { _const = false; }
         expressions = factory.getExpressions();
         newType = _scope->getFunType(_type, identifier, expressions);
-        if(newType.empty()) { return FORMAT("Function {}{} not found", _type, identifier); }
+        if(newType.empty()) { return FORMAT("Function {}.{} not found", _type, identifier); }
         if(std::string error = ExpressionFactory::checkType(type, newType); !error.empty()) { return error; }
         for(const Expression &expression : expressions) { text += expression.getText() + ","; }
         if(!expressions.empty() && !text.empty()) {
@@ -300,7 +300,7 @@ namespace vnd {
         if(std::string error = factory.parse({TokenType::CLOSE_PARENTESIS}); !error.empty()) { return error; }
         auto expression = factory.getExpression();
         newType = expression.getType();
-        if(newType.empty()) { return FORMAT("Identifier {}{} not found", _type, expression.getType()); }
+        if(newType.empty()) { return FORMAT("Identifier {}.{} not found", _type, expression.getType()); }
         if(auto error = ExpressionFactory::checkType(type, newType); !error.empty()) { return error; }
         if(expression.isConst()) {
             _expressionText += expression.getValue();
@@ -314,7 +314,7 @@ namespace vnd {
     std::string ExpressionFactory::handleToken(TupType &type) noexcept {
         const auto newType = ExpressionFactory::getTokenType();
         if(!checkUnaryOperator(newType)) { return FORMAT("Cannot apply unary operator for {}", _iterator->getValue()); }
-        if(newType.empty()) { return FORMAT("Identifier {}{} not found", _type, _iterator->getValue()); }
+        if(newType.empty()) { return FORMAT("Identifier {}.{} not found", _type, _iterator->getValue()); }
         if(auto error = ExpressionFactory::checkType(type, newType); !error.empty()) { return error; }
         emplaceToken(newType);
         return {};
@@ -362,7 +362,7 @@ namespace vnd {
     bool ExpressionFactory::checkNextToken(const std::string &type, const std::string &value) noexcept {
         if(std::next(_iterator) != _end && (std::next(_iterator)->getType() == TokenType::DOT_OPERATOR ||
                                             std::next(_iterator)->getType() == TokenType::OPEN_SQ_PARENTESIS)) {
-            _type = type + ".";
+            _type = type;
             if(type == "string" || type.back() == ']') {
                 _temp += value + ".";
             } else {

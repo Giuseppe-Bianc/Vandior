@@ -53,7 +53,6 @@ namespace vnd {
     }
 
     bool Scope::checkVector(std::string &type) noexcept {
-        if(type.back() == '.') { type.pop_back(); }
         if(type == "string") {
             type = "char";
             return true;
@@ -62,6 +61,16 @@ namespace vnd {
         while(type.back() != '[') { type.pop_back(); }
         type.pop_back();
         return true;
+    }
+
+    std::string Scope::getKey(const std::string& type, const std::string_view& identifier) noexcept {
+        if(type.empty()) { return std::string(identifier); }
+        return FORMAT("{}.{}", type, identifier);
+    }
+
+    std::string Scope::getType(const std::string &type) noexcept {
+        if(type.ends_with("]")) [[unlikely]] { return "[]"; }
+        return type;
     }
 
     std::shared_ptr<Scope> Scope::getParent() const noexcept { return _parent; }
@@ -103,10 +112,16 @@ namespace vnd {
 
     // NOLINTNEXTLINE(*-no-recursion)
     std::string_view Scope::getVariableType(const std::string &type, const std::string_view &identifier) const noexcept {
-        auto key = FORMAT("{}{}", Scope::getType(type), std::string(identifier));
+        auto key = Scope::getKey(type, identifier);
         if(_vars.contains(key)) { return _vars.at(key); }
         if(_vals.contains(key)) { return _vals.at(key); }
         if(_consts.contains(key)) { return _consts.at(key).first; }
+        if(_types.contains(type)) {
+            for(std::string i : _types.at(type)) {
+                std::string_view result = getVariableType(i, identifier);
+                if(!result.empty()) { return result; }
+            }
+        }
         if(_parent) { return _parent->getVariableType(type, identifier); }
         return "";
     }
@@ -114,7 +129,7 @@ namespace vnd {
     // NOLINTNEXTLINE(*-no-recursion)
     std::string Scope::getFunType(const std::string &type, const std::string_view &identifier,
                                   const std::vector<Expression> &expressions) const noexcept {
-        auto key = FORMAT("{}{}", Scope::getType(type), std::string(identifier));
+        auto key = Scope::getKey(Scope::getType(type), identifier);
         bool found = false;
         if(_funs.contains(key)) {
             for(const auto &[first, second] : _funs.at(key)) {
@@ -129,25 +144,38 @@ namespace vnd {
                 if(found) { return first; }
             }
         }
+        if(_types.contains(type)) {
+            for(std::string i : _types.at(type)) {
+                std::string result = getFunType(i, identifier, expressions);
+                if(!result.empty()) { return result; }
+            }
+        }
         if(_parent) { return _parent->getFunType(type, identifier, expressions); }
         return "";
     }
 
-    std::string Scope::getType(const std::string &type) noexcept {
-        if(type.ends_with("].")) [[unlikely]] { return "[]."; }
-        return type;
-    }
-
     std::string Scope::getConstValue(const std::string& type, const std::string_view& identifier) const noexcept {
-        auto key = type + std::string{identifier};
+        auto key = Scope::getKey(type, identifier);
         if(_consts.contains(key)) { return _consts.at(key).second; }
+        if(_types.contains(type)) {
+            for(std::string i : _types.at(type)) {
+                std::string result = getConstValue(i, identifier);
+                if(!result.empty()) { return result; }
+            }
+        }
         if(_parent) { return _parent->getConstValue(type, identifier); }
         return "";
     }
 
     bool Scope::isConstant(const std::string &type, const std::string_view &identifier) const noexcept {
-        auto key = type + std::string{identifier};
+        auto key = Scope::getKey(type, identifier);
         if(_consts.contains(key) || _vals.contains(key)) { return true; }
+        if(_types.contains(type)) {
+            for(std::string i : _types.at(type)) {
+                bool result = isConstant(i, identifier);
+                if(result) { return result; }
+            }
+        }
         if(_parent) { return _parent->isConstant(type, identifier); }
         return false;
     }
