@@ -15,7 +15,6 @@ namespace vnd {
         [[nodiscard]] static std::shared_ptr<Scope> createMain() noexcept;
         [[nodiscard]] static bool isNumber(const std::string &type) noexcept;
         [[nodiscard]] static bool isPrimitive(const std::string &type) noexcept;
-        [[nodiscard]] static bool canAssign(const std::string &left, const std::string &right) noexcept;
         [[nodiscard]] static bool checkVector(std::string &type) noexcept;
         [[nodiscard]] std::shared_ptr<Scope> getParent() const noexcept;
         void removeParent() noexcept;
@@ -33,6 +32,7 @@ namespace vnd {
                                              const std::vector<Expression> &expressions) const noexcept;
         [[nodiscard]] std::string getConstValue(const std::string &type, const std::string_view &identifier) const noexcept;
         [[nodiscard]] bool isConstant(const std::string &type, const std::string_view &identifier) const noexcept;
+        [[nodiscard]] bool canAssign(const std::string &left, const std::string &right) const noexcept;
     private:
         Scope(std::shared_ptr<Scope> parent) noexcept;
         static std::vector<std::string> _numberTypes;

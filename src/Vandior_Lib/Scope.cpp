@@ -52,16 +52,6 @@ namespace vnd {
         return std::ranges::find(Scope::_primitiveTypes, type) != Scope::_primitiveTypes.end();
     }
 
-    bool Scope::canAssign(const std::string &left, const std::string &right) noexcept {
-        if((Scope::isNumber(left) && Scope::isNumber(right)) || left == right) { return true; }
-        std::pair<std::string, std::string> types = {left, right};
-        if((types.first.ends_with("[]") || types.second.ends_with("[]")) &&
-           Scope::checkVector(types.first) && Scope::checkVector(types.second)) {
-            return Scope::canAssign(types.first, types.second);
-        }
-        return false;
-    }
-
     bool Scope::checkVector(std::string &type) noexcept {
         if(type.back() == '.') { type.pop_back(); }
         if(type == "string") {
@@ -133,7 +123,7 @@ namespace vnd {
                     found = false;
                 } else [[unlikely]] {
                     for(size_t par = 0; par != second.size(); par++) {
-                        if(!Scope::canAssign(second.at(par), expressions.at(par).getType())) { found = false; }
+                        if(!canAssign(second.at(par), expressions.at(par).getType())) { found = false; }
                     }
                 }
                 if(found) { return first; }
@@ -159,6 +149,19 @@ namespace vnd {
         auto key = type + std::string{identifier};
         if(_consts.contains(key) || _vals.contains(key)) { return true; }
         if(_parent) { return _parent->isConstant(type, identifier); }
+        return false;
+    }
+
+    bool Scope::canAssign(const std::string &left, const std::string &right) const noexcept {
+        if((Scope::isNumber(left) && Scope::isNumber(right)) || left == right) { return true; }
+        std::pair<std::string, std::string> types = {left, right};
+        if((types.first.ends_with("[]") || types.second.ends_with("[]")) && Scope::checkVector(types.first) &&
+           Scope::checkVector(types.second)) {
+            return canAssign(types.first, types.second);
+        }
+        for(std::string i : _types.at(right)) {
+            if(canAssign(left, i)) { return true; }
+        }
         return false;
     }
 

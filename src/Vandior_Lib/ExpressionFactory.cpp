@@ -214,7 +214,7 @@ namespace vnd {
         if((_iterator + 1) == _end || (_iterator + 1)->getType() != TokenType::DOT_OPERATOR) { _const = false; }
         expressions = factory.getExpressions();
         newType = _scope->getFunType(_type, identifier, expressions);
-        if(newType.empty()) { return FORMAT("Function {}.{} not found", _type, identifier); }
+        if(newType.empty()) { return FORMAT("Function {}{} not found", _type, identifier); }
         if(std::string error = ExpressionFactory::checkType(type, newType); !error.empty()) { return error; }
         for(const Expression &expression : expressions) { text += expression.getText() + ","; }
         if(!expressions.empty() && !text.empty()) {
@@ -269,7 +269,7 @@ namespace vnd {
         for(Expression& expression : factory.getExpressions()) {
             if(vectorType == "") {
                 vectorType = expression.getType();
-            } else if(!Scope::canAssign(vectorType, expression.getType())) {
+            } else if(!_scope->canAssign(vectorType, expression.getType())) {
                 return FORMAT("Incompatible types in vector {}, {}", vectorType, expression.getType());
             }
             if(expression.isConst()) {
@@ -300,7 +300,7 @@ namespace vnd {
         if(std::string error = factory.parse({TokenType::CLOSE_PARENTESIS}); !error.empty()) { return error; }
         auto expression = factory.getExpression();
         newType = expression.getType();
-        if(newType.empty()) { return FORMAT("Identifier {}.{} not found", _type, expression.getType()); }
+        if(newType.empty()) { return FORMAT("Identifier {}{} not found", _type, expression.getType()); }
         if(auto error = ExpressionFactory::checkType(type, newType); !error.empty()) { return error; }
         if(expression.isConst()) {
             _expressionText += expression.getValue();
@@ -314,7 +314,7 @@ namespace vnd {
     std::string ExpressionFactory::handleToken(TupType &type) noexcept {
         const auto newType = ExpressionFactory::getTokenType();
         if(!checkUnaryOperator(newType)) { return FORMAT("Cannot apply unary operator for {}", _iterator->getValue()); }
-        if(newType.empty()) { return FORMAT("Identifier {}.{} not found", _type, _iterator->getValue()); }
+        if(newType.empty()) { return FORMAT("Identifier {}{} not found", _type, _iterator->getValue()); }
         if(auto error = ExpressionFactory::checkType(type, newType); !error.empty()) { return error; }
         emplaceToken(newType);
         return {};

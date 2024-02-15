@@ -113,7 +113,7 @@ namespace vnd {
             }
             if(!factory.empty()) {
                 auto expression = factory.getExpression();
-                if(!Scope::canAssign(type, expression.getType())) {
+                if(!_scope->canAssign(type, expression.getType())) {
                     throw TranspilerException(FORMAT("Cannot assign {} to {}", expression.getType(), type), instruction);
                 }
                 if(isConst) {
