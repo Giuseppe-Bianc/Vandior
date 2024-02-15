@@ -17,25 +17,30 @@ namespace vnd {
 
     std::shared_ptr<Scope> Scope::createMain() noexcept {
         auto mainScope = std::make_shared<Scope>(Scope{nullptr});
-        mainScope->addType("int");
-        mainScope->addType("float");
-        mainScope->addType("double");
-        mainScope->addType("char");
-        mainScope->addType("bool");
-        mainScope->addType("string");
-        mainScope->addType("Object");
+        mainScope->addType("int", {});
+        mainScope->addType("float", {});
+        mainScope->addType("double", {});
+        mainScope->addType("char", {});
+        mainScope->addType("bool", {});
+        mainScope->addType("string", {});
+        mainScope->addType("Object", {});
+        mainScope->addType("Derived", {"Object"});
         mainScope->addVariable("Object.a", "int", false);
         mainScope->addVariable("Object.test", "float", true);
         mainScope->addVariable("Object.s", "string", false);
+        mainScope->addVariable("Derived._derivedProperty", "bool", false);
         mainScope->addConstant("Object.c", "int", "2");
+        mainScope->addConstant("Derived._derivedConst", "bool", "true");
         mainScope->addFun("_test", make_FunType("int", {}));
         mainScope->addFun("testPar", make_FunType("int", {"int", "int"}));
         mainScope->addFun("testPar", make_FunType("int", {"string"}));
         mainScope->addFun("createObject", make_FunType("Object", {}));
+        mainScope->addFun("createDerived", make_FunType("Derived", {}));
         mainScope->addFun("[].size", make_FunType("int", {}));
         mainScope->addFun("string.size", make_FunType("int", {}));
         mainScope->addFun("Object.f", make_FunType("float", {"float"}));
         mainScope->addFun("Object.fs", make_FunType("string", {}));
+        mainScope->addFun("Derived.derivedFun", make_FunType("bool", {"Object"}));
         return mainScope;
     }
 
@@ -73,7 +78,7 @@ namespace vnd {
 
     void Scope::removeParent() noexcept { _parent = nullptr; }
 
-    void Scope::addType(const std::string_view &type) noexcept { _types.emplace(type); }
+    void Scope::addType(const std::string_view &type, const std::vector<std::string> &assignable) noexcept { _types[std::string(type)] = assignable; }
 
     void Scope::addConstant(const std::string_view &identifier, const std::string_view &type, const std::string &value) noexcept {
         _consts[std::string{identifier}] = std::make_pair(type, value);

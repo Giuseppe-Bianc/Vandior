@@ -19,7 +19,7 @@ namespace vnd {
         [[nodiscard]] static bool checkVector(std::string &type) noexcept;
         [[nodiscard]] std::shared_ptr<Scope> getParent() const noexcept;
         void removeParent() noexcept;
-        void addType(const std::string_view &type) noexcept;
+        void addType(const std::string_view &type, const std::vector<std::string> &assignable) noexcept;
         void addConstant(const std::string_view &identifier, const std::string_view &type, const std::string &value) noexcept;
         void addVariable(const std::string_view &identifier, const std::string_view &type, const bool isVal) noexcept;
         void addFun(const std::string_view identifier, const FunType &fun) noexcept;
@@ -41,7 +41,7 @@ namespace vnd {
         std::unordered_map<std::string, std::string> _vars;
         std::unordered_map<std::string, std::string> _vals;
         std::unordered_map<std::string, std::pair<std::string, std::string>> _consts;
-        std::unordered_set<std::string> _types;
+        std::unordered_map<std::string, std::vector<std::string>> _types;
         std::unordered_map<std::string, std::vector<FunType>> _funs;
         std::shared_ptr<Scope> _parent;
     };

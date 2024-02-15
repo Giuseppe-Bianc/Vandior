@@ -24,6 +24,14 @@ namespace vnd {
 	class array: public std::array<T, N> {
 		public:
 			array(): std::array<T, N>() {};
+			array(const std::vector<T>& vec) {
+				if (vec.size() == N) {
+					std::copy(vec.begin(), vec.end(), this->begin());
+				} else {
+					// Handle the case where the vector size is not equal to array size
+					throw std::invalid_argument("Vector size does not match array size");
+				}
+			}
 			array(std::initializer_list<T> init) : std::array<T, N>() {
 				if (init.size() != N) {
 					throw std::runtime_error("Initializer list size does not match array size.");
@@ -54,22 +62,35 @@ namespace vnd {
 			}
 	};
 	std::unordered_map<std::string, std::any> tmp;
-} 
+}
 
 int v_test() { return 0; }
 int _testPar(int a, int b) { return a + b; }
 size_t _testPar(string s) { return s.size(); }
 class Object {
-	public: int getC() { return c; };
-	public: int getA() { return a; };
-	public: float getTest() { return test; }
-	public: string getS() { return s; }
-	public: float f(double b) { return std::pow(b, 2); }
-	public: std::string fs() { return std::string(); }
-private:
-	const int c = 2;
-	int a;
-	bool test;
-	const string s;
+	public:
+		int getC() { return c; };
+		int getA() { return a; };
+		float getTest() { return test; }
+		string getS() { return s; }
+		float f(double b) { return std::pow(b, 2); }
+		std::string fs() { return std::string(); }
+	private:
+		const int c = 2;
+		int a;
+		bool test;
+		const string s;
+};
+class Derived: public Object {
+	public:
+		bool get_derivedProperty() { return _derivedProperty; }
+		bool get_derivedConst() { return _derivedConst; }
+		bool derivedFun(std::shared_ptr<Object> obj) {
+			return obj->getS().empty();
+		}
+	private:
+		const bool _derivedConst = true;
+		bool _derivedProperty;
 };
 std::shared_ptr<Object> _createObject() { return std::make_shared<Object>(); }
+std::shared_ptr<Derived> _createDerived() { return std::make_shared<Derived>(); }
