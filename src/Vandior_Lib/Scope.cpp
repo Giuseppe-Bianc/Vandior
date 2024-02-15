@@ -31,16 +31,16 @@ namespace vnd {
         mainScope->addVariable("Derived._derivedProperty", "bool", false);
         mainScope->addConstant("Object.c", "int", "2");
         mainScope->addConstant("Derived._derivedConst", "bool", "true");
-        mainScope->addFun("_test", make_FunType("int", {}));
-        mainScope->addFun("testPar", make_FunType("int", {"int", "int"}));
-        mainScope->addFun("testPar", make_FunType("int", {"string"}));
-        mainScope->addFun("createObject", make_FunType("Object", {}));
-        mainScope->addFun("createDerived", make_FunType("Derived", {}));
-        mainScope->addFun("[].size", make_FunType("int", {}));
-        mainScope->addFun("string.size", make_FunType("int", {}));
-        mainScope->addFun("Object.f", make_FunType("float", {"float"}));
-        mainScope->addFun("Object.fs", make_FunType("string", {}));
-        mainScope->addFun("Derived.derivedFun", make_FunType("bool", {"Object"}));
+        mainScope->addFun("_test", FunType::create("int", {}));
+        mainScope->addFun("testPar", FunType::create("int", {"int", "int"}));
+        mainScope->addFun("testPar", FunType::create("int", {"string"}));
+        mainScope->addFun("createObject", FunType::create("Object", {}));
+        mainScope->addFun("createDerived", FunType::create("Derived", {}));
+        mainScope->addFun("[].size", FunType::create("int", {}));
+        mainScope->addFun("string.size", FunType::create("int", {}));
+        mainScope->addFun("Object.f", FunType::create("float", {"float"}));
+        mainScope->addFun("Object.fs", FunType::create("string", {}));
+        mainScope->addFun("Derived.derivedFun", FunType::create("bool", {"Object"}));
         return mainScope;
     }
 
@@ -132,16 +132,17 @@ namespace vnd {
         auto key = Scope::getKey(Scope::getType(type), identifier);
         bool found = false;
         if(_funs.contains(key)) {
-            for(const auto &[first, second] : _funs.at(key)) {
+            for(const auto &i : _funs.at(key)) {
+                auto params = i.getParams();
                 found = true;
-                if(second.size() != expressions.size()) [[likely]] {
+                if(params.size() != expressions.size()) [[likely]] {
                     found = false;
                 } else [[unlikely]] {
-                    for(size_t par = 0; par != second.size(); par++) {
-                        if(!canAssign(second.at(par), expressions.at(par).getType())) { found = false; }
+                    for(size_t par = 0; par != params.size(); par++) {
+                        if(!canAssign(params.at(par), expressions.at(par).getType())) { found = false; }
                     }
                 }
-                if(found) { return first; }
+                if(found) { return i.getReturnType(); }
             }
         }
         if(_types.contains(type)) {
