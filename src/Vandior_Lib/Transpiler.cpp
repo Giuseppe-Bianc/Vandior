@@ -89,6 +89,7 @@ namespace vnd {
         if(isConst || isVal) { _text += "const "; }
         auto [type, typeValue] = transpileType(iterator, tokens.end(), {TokenType::EQUAL_OPERATOR}, instruction);
         _text += FORMAT("{} ", typeValue);
+        if(isConst && !Scope::isPrimitive(type)) { throw TranspilerException(FORMAT("Cannot declare const variables of {} type", type), instruction); }
         // Handle initialization
         if(iterator != endToken && iterator->getType() == TokenType::EQUAL_OPERATOR) {
             iterator++;
@@ -103,7 +104,6 @@ namespace vnd {
             throw TranspilerException(
                 FORMAT("Uninitialized constant: {} values for {} constants", factory.size(), variables.size()), instruction);
         }
-
         for(std::string_view jvar : variables) {
             std::string value;
             if(!jvar.empty() && jvar.at(0) == '_') {
@@ -125,7 +125,7 @@ namespace vnd {
                         throw TranspilerException(FORMAT("Cannot evaluate {} at compile time", jvar), instruction);
                     }
                 } else {
-                    _text += FORMAT(" ={}", expression.getText());
+                    _text += FORMAT(" = {}", expression.getText());
                 }
             }
             auto [check, shadowing] = _scope->checkVariable(jvar);

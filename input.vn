@@ -1,4 +1,4 @@
-var obj: Object = createObject()
+val obj: Object = createObject()
 var der1: Derived
 var der: Derived = createDerived()
 var pol: Object = createDerived()
@@ -7,7 +7,7 @@ const testConstInt1, testConstInt2: int = 1 + 2 ^ 5 / (6 - 7), (56 / 28) ^ creat
 const testConstFloat1, testConstFloa2: float = 1.3 + 2 ^ 5 * 3 + testConstInt2 + (- testConstInt2 + 1), 10 ^ obj.c + createDerived().c
 const testConstChar: char = 'a'
 const testConstString: string = "Ciao"
-const testArray: int[] = {1, 2, 3, -5}
+val testArray: int[] = {1, 2, 3, -5}
 val testArray1: int[4] = testArray
 val vec: int[] = testArray
 var intVar: int = 2 + testPar(_test() ^ 7 + 6, 78.78) ^ testConstInt1 + testArray[1] + testArray1.size()
