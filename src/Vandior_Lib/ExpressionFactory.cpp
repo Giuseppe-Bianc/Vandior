@@ -7,7 +7,7 @@ namespace vnd {
     ExpressionFactory::ExpressionFactory(std::vector<Token>::iterator &iterator, std::vector<Token>::iterator end,
                                          std::shared_ptr<Scope> scope, const bool isConst, const bool sq) noexcept
       : _iterator(iterator), _end(end), _scope(std::move(scope)), _text({}), _expressions({}), _power(), _divide(false),
-        _dot(false), _sq(sq), _const(isConst), _currentConst(false), _expressionText(""), _type(""), _temp("") {}
+        _dot(false), _sq(sq), _const(isConst), _expressionText(""), _type(""), _temp("") {}
 
     ExpressionFactory ExpressionFactory::create(std::vector<Token>::iterator &iterator, std::vector<Token>::iterator end,
                                                 std::shared_ptr<Scope> scope, const bool isConst, bool sq) noexcept {
@@ -23,7 +23,6 @@ namespace vnd {
         _power.reset();
         _divide = false;
         _dot = false;
-        _currentConst = false;
         _type = "";
         _temp = "";
         exprtk::expression<double> expression;
@@ -123,9 +122,6 @@ namespace vnd {
             _iterator++;
             return;
         }
-        if(_iterator->getType() == IDENTIFIER && !_scope->getConstValue(_temp, _iterator->getValue()).empty()) {
-            _currentConst = true;
-        }
         if(checkNextToken(std::string{type}, writeToken())) { return; }
         _dot = false;
         const auto value = _iterator->getValue();
@@ -199,9 +195,8 @@ namespace vnd {
         std::string_view identifier = _iterator->getValue();
         ExpressionFactory factory = ExpressionFactory::create(_iterator, _end, _scope, false);
         std::vector<Expression> expressions;
-        std::string newType;
         std::string text;
-        if(_currentConst) { return "Cannot call methods on const value"; }
+        if(_const && !_temp.empty()) { return "Cannot call methods on const value"; }
         _iterator++;
         while(_iterator->getType() != TokenType::CLOSE_PARENTESIS) {
             _iterator++;
@@ -213,7 +208,7 @@ namespace vnd {
         }
         if((_iterator + 1) == _end || (_iterator + 1)->getType() != TokenType::DOT_OPERATOR) { _const = false; }
         expressions = factory.getExpressions();
-        newType = _scope->getFunType(_type, identifier, expressions);
+        auto [newType, constructor] = _scope->getFunType(_type, identifier, expressions);
         if(newType.empty()) { return FORMAT("Function {}.{} not found", _type, identifier); }
         if(std::string error = ExpressionFactory::checkType(type, newType); !error.empty()) { return error; }
         for(const Expression &expression : expressions) { text += expression.getText() + ","; }
@@ -224,7 +219,9 @@ namespace vnd {
         std::string value = FORMAT(" {}({})", std::string{identifier}, text);
         if(_temp.empty()) {
             value.erase(0, 1);
-            if(!value.empty() && value.at(0) == '_') {
+            if(constructor) {
+                value = FORMAT("std::make_shared<{}>({})", newType, text);
+            } else if(!value.empty() && value.at(0) == '_') {
                 value = FORMAT("v{}", value);
             } else {
                 value = FORMAT(" _{}", value);
@@ -393,8 +390,6 @@ namespace vnd {
             if(_sq) { value = FORMAT("{})", value); }
         }
         if(((_iterator + 1) == _end || (_iterator + 1)->getValue() != "^")) { _power.reset(); }
-        if(((_iterator + 1) == _end || ((_iterator + 1)->getType() != TokenType::DOT_OPERATOR) &&
-            (_iterator + 1)->getType() != TokenType::OPEN_SQ_PARENTESIS)) { _currentConst = false; }
     }
 
     void ExpressionFactory::write(const std::string &value, const std::string_view &type) noexcept {

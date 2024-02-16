@@ -35,6 +35,9 @@ namespace vnd {
         mainScope->addFun("testPar", FunType::create("int", {"int", "int"}));
         mainScope->addFun("testPar", FunType::create("int", {"string"}));
         mainScope->addFun("createObject", FunType::create("Object", {}));
+        mainScope->addFun("Object", FunType::create("Object", {}, true));
+        mainScope->addFun("Derived", FunType::create("Derived", {}, true));
+        mainScope->addFun("Derived", FunType::create("Derived", {"bool"}, true));
         mainScope->addFun("createDerived", FunType::create("Derived", {}));
         mainScope->addFun("[].size", FunType::create("int", {}));
         mainScope->addFun("string.size", FunType::create("int", {}));
@@ -127,7 +130,7 @@ namespace vnd {
     }
 
     // NOLINTNEXTLINE(*-no-recursion)
-    std::string Scope::getFunType(const std::string &type, const std::string_view &identifier,
+    std::pair<std::string, bool> Scope::getFunType(const std::string &type, const std::string_view &identifier,
                                   const std::vector<Expression> &expressions) const noexcept {
         auto key = Scope::getKey(Scope::getType(type), identifier);
         bool found = false;
@@ -142,17 +145,17 @@ namespace vnd {
                         if(!canAssign(params.at(par), expressions.at(par).getType())) { found = false; }
                     }
                 }
-                if(found) { return i.getReturnType(); }
+                if(found) { return { i.getReturnType(), i.isContructor() }; }
             }
         }
         if(_types.contains(type)) {
             for(std::string i : _types.at(type)) {
-                std::string result = getFunType(i, identifier, expressions);
-                if(!result.empty()) { return result; }
+                auto [result, constructor]= getFunType(i, identifier, expressions);
+                if(!result.empty()) { return {result, constructor}; }
             }
         }
         if(_parent) { return _parent->getFunType(type, identifier, expressions); }
-        return "";
+        return {"", false};
     }
 
     std::string Scope::getConstValue(const std::string& type, const std::string_view& identifier) const noexcept {

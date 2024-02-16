@@ -83,6 +83,8 @@ class Object {
 };
 class Derived: public Object {
 	public:
+		Derived() {}
+		Derived(bool derivedProperty): _derivedProperty(derivedProperty) {}
 		bool get_derivedProperty() { return _derivedProperty; }
 		bool get_derivedConst() { return _derivedConst; }
 		bool derivedFun(std::shared_ptr<Object> obj) {
