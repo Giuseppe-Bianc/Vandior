@@ -46,24 +46,49 @@ namespace vnd {
 
         /**
          * @brief Transpile the main part of the instruction.
-         * @param i The instruction to transpile.
+         * @param instruction The instruction to transpile.
          */
-        void transpileMain(const Instruction &i);
+        void transpileMain(const Instruction &instruction);
 
         /**
          * @brief Transpile the declaration part of the instruction.
-         * @param i The instruction to transpile.
+         * @param instruction The instruction to transpile.
          */
-        void transpileDeclaration(const Instruction &i);
+        void transpileDeclaration(const Instruction &instruction);
+
+        /**
+         * @brief Transpile the assignation part of the instruction.
+         * @param instruction The instruction to transpile.
+         */
+        void transpileAssignation(const Instruction &instruction);
+
+        /**
+         * @brief Extracts identifiers of declared variables from the declaration instruction.
+         * @param iterator The iterator to the instruction.
+         * @param instruction The instruction to extract variables from.
+         * @return Vector of extracted identifiers.
+         */
+        [[nodiscard]] std::vector<std::string_view> extractIdenfifiers(std::vector<Token>::iterator &iterator,
+                                                                     const Instruction &instruction) const;
 
         /**
          * @brief Extracts variables from the instruction.
          * @param iterator The iterator to the instruction.
+         * @param end Iterator pointing to the end of the token sequence.
          * @param instruction The instruction to extract variables from.
-         * @return Vector of extracted variables.
+         * @param assignable Bool indicating if the variables can be assignated.
+         * @return Vector of extracted variables and their types.
          */
-        [[nodiscard]] std::vector<std::string_view> extractVariables(std::vector<Token>::iterator &iterator,
-                                                                     const Instruction &instruction);
+        //[[nodiscard]] std::vector<std::pair<std::string_view, std::string>> extractvariables(std::vector<Token>::iterator &iterator,
+                                                        //const std::vector<Token>::iterator &end, const Instruction &instruction, bool &assignable) const;
+
+        /**
+        * @brief checks the type and the assignability of a variable.
+        * @param type the type of the thr object holfing the variable.
+        * @param Identifier String_view conatining the variable identifier to check.
+        * @return the type of the variable and its assignability.
+        */
+        //[[nodiscard]] std::pair<std::string, bool> checkIdentifier(const std::string &type, const std::string_view &identifier) const;
 
         /**
         * @brief Transpile a type name.
@@ -71,9 +96,9 @@ namespace vnd {
         * @param end Iterator pointing to the end of the token sequence.
         * @param endTokens Vector of token types indicating the end of parsing.
         * @param instruction The instruction to extract type from.
-        * @return String that indicates if there is an error.
+        * @return Pair that represent the type and the value to transpile.
         */
-        [[nodiscard]] std::string transpileType(std::vector<Token>::iterator &iterator, const std::vector<Token>::iterator end,
+        [[nodiscard]] std::pair<std::string, std::string> transpileType(std::vector<Token>::iterator &iterator, const std::vector<Token>::iterator end,
                                                     const std::vector<TokenType> &endTokens, const Instruction &instruction);
 
         /**

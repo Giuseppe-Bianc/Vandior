@@ -63,7 +63,7 @@ namespace vnd {
     void Tokenizer::kewordType(const std::string_view &value, TokenType &type) noexcept {
         using enum TokenType;
         if(value == "main") { type = K_MAIN; }
-        if(value == "var" || value == "const") { type = K_VAR; }
+        if(value == "var" || value == "val" || value == "const") { type = K_VAR; }
         if(value == "if" || value == "while") { type = K_STRUCTURE; }
         if(value == "for") { type = K_FOR; }
         if(value == "fun") { type = K_FUN; }

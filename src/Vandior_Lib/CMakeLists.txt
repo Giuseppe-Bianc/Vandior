@@ -8,6 +8,7 @@ add_library(vandior_lib vandior.cpp
         InstructionException.cpp
         Instruction.cpp
         Parser.cpp
+        FunType.cpp
         Scope.cpp
         ExpressionFactory.cpp
         Expression.cpp

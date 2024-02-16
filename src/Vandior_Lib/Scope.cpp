@@ -7,6 +7,7 @@ namespace vnd {
 
     // NOLINTNEXTLINE
     std::vector<std::string> Scope::_numberTypes = {"int", "float"};
+    std::vector<std::string> Scope::_primitiveTypes = {"int", "float", "double", "char", "bool", "string"};
 
     Scope::Scope(std::shared_ptr<Scope> parent) noexcept : _parent(std::move(parent)) {}
 
@@ -16,24 +17,33 @@ namespace vnd {
 
     std::shared_ptr<Scope> Scope::createMain() noexcept {
         auto mainScope = std::make_shared<Scope>(Scope{nullptr});
-        mainScope->addType("int");
-        mainScope->addType("float");
-        mainScope->addType("double");
-        mainScope->addType("char");
-        mainScope->addType("bool");
-        mainScope->addType("string");
-        mainScope->addType("Object");
-        mainScope->addVariable("Object.a", "int");
-        mainScope->addVariable("Object.s", "string");
+        mainScope->addType("int", {});
+        mainScope->addType("float", {});
+        mainScope->addType("double", {});
+        mainScope->addType("char", {});
+        mainScope->addType("bool", {});
+        mainScope->addType("string", {});
+        mainScope->addType("Object", {});
+        mainScope->addType("Derived", {"Object"});
+        mainScope->addVariable("Object.a", "int", false);
+        mainScope->addVariable("Object.test", "float", true);
+        mainScope->addVariable("Object.s", "string", false);
+        mainScope->addVariable("Derived._derivedProperty", "bool", false);
         mainScope->addConstant("Object.c", "int", "2");
-        mainScope->addFun("_test", make_FunType("int", {}));
-        mainScope->addFun("testPar", make_FunType("int", {"int", "int"}));
-        mainScope->addFun("testPar", make_FunType("int", {"string"}));
-        mainScope->addFun("createObject", make_FunType("Object", {}));
-        mainScope->addFun("vnd::vector.size", make_FunType("int", {}));
-        mainScope->addFun("string.size", make_FunType("int", {}));
-        mainScope->addFun("Object.f", make_FunType("float", {"float"}));
-        mainScope->addFun("Object.fs", make_FunType("string", {}));
+        mainScope->addConstant("Derived._derivedConst", "bool", "true");
+        mainScope->addFun("_test", FunType::create("int", {}));
+        mainScope->addFun("testPar", FunType::create("int", {"int", "int"}));
+        mainScope->addFun("testPar", FunType::create("int", {"string"}));
+        mainScope->addFun("createObject", FunType::create("Object", {}));
+        mainScope->addFun("Object", FunType::create("Object", {}, true));
+        mainScope->addFun("Derived", FunType::create("Derived", {}, true));
+        mainScope->addFun("Derived", FunType::create("Derived", {"bool"}, true));
+        mainScope->addFun("createDerived", FunType::create("Derived", {}));
+        mainScope->addFun("[].size", FunType::create("int", {}));
+        mainScope->addFun("string.size", FunType::create("int", {}));
+        mainScope->addFun("Object.f", FunType::create("float", {"float"}));
+        mainScope->addFun("Object.fs", FunType::create("string", {}));
+        mainScope->addFun("Derived.derivedFun", FunType::create("bool", {"Object"}));
         return mainScope;
     }
 
@@ -41,21 +51,43 @@ namespace vnd {
         return std::ranges::find(Scope::_numberTypes, type) != Scope::_numberTypes.end();
     }
 
-    bool Scope::canAssign(const std::string &left, const std::string &right) noexcept {
-        return (Scope::isNumber(left) && Scope::isNumber(right)) || left == right;
+    bool Scope::isPrimitive(const std::string &type) noexcept {
+        return std::ranges::find(Scope::_primitiveTypes, type) != Scope::_primitiveTypes.end();
+    }
+
+    bool Scope::checkVector(std::string &type) noexcept {
+        if(type == "string") {
+            type = "char";
+            return true;
+        }
+        if(type.back() != ']') { return false; }
+        while(type.back() != '[') { type.pop_back(); }
+        type.pop_back();
+        return true;
+    }
+
+    std::string Scope::getKey(const std::string& type, const std::string_view& identifier) noexcept {
+        if(type.empty()) { return std::string(identifier); }
+        return FORMAT("{}.{}", type, identifier);
+    }
+
+    std::string Scope::getType(const std::string &type) noexcept {
+        if(type.ends_with("]")) [[unlikely]] { return "[]"; }
+        return type;
     }
 
     std::shared_ptr<Scope> Scope::getParent() const noexcept { return _parent; }
 
     void Scope::removeParent() noexcept { _parent = nullptr; }
 
-    void Scope::addType(const std::string_view &type) noexcept { _types.emplace(type); }
+    void Scope::addType(const std::string_view &type, const std::vector<std::string> &assignable) noexcept { _types[std::string(type)] = assignable; }
 
     void Scope::addConstant(const std::string_view &identifier, const std::string_view &type, const std::string &value) noexcept {
         _consts[std::string{identifier}] = std::make_pair(type, value);
     }
 
-    void Scope::addVariable(const std::string_view &identifier, const std::string_view &type) noexcept {
+    void Scope::addVariable(const std::string_view &identifier, const std::string_view &type, const bool isVal) noexcept {
+        if(isVal) { _vals[std::string{identifier}] = type; }
         _vars[std::string{identifier}] = type;
     }
 
@@ -75,51 +107,94 @@ namespace vnd {
 
     // NOLINTNEXTLINE
     std::pair<bool, bool> Scope::checkVariable(const std::string_view identifier, const bool shadowing) const noexcept {
-        if(_vars.contains(std::string{identifier}) || _consts.contains(std::string{identifier})) { return {true, shadowing}; }
+        if(_vars.contains(std::string{identifier}) || _vals.contains(std::string{identifier}) ||
+            _consts.contains(std::string{identifier})) { return {true, shadowing}; }
         if(_parent) { return _parent->checkVariable(identifier, true); }
         return {false, false};
     }
 
     // NOLINTNEXTLINE(*-no-recursion)
     std::string_view Scope::getVariableType(const std::string &type, const std::string_view &identifier) const noexcept {
-        auto key = FORMAT("{}{}", Scope::getType(type), std::string(identifier));
+        auto key = Scope::getKey(type, identifier);
         if(_vars.contains(key)) { return _vars.at(key); }
+        if(_vals.contains(key)) { return _vals.at(key); }
         if(_consts.contains(key)) { return _consts.at(key).first; }
+        if(_types.contains(type)) {
+            for(std::string i : _types.at(type)) {
+                std::string_view result = getVariableType(i, identifier);
+                if(!result.empty()) { return result; }
+            }
+        }
         if(_parent) { return _parent->getVariableType(type, identifier); }
         return "";
     }
 
     // NOLINTNEXTLINE(*-no-recursion)
-    std::string Scope::getFunType(const std::string &type, const std::string_view &identifier,
+    std::pair<std::string, bool> Scope::getFunType(const std::string &type, const std::string_view &identifier,
                                   const std::vector<Expression> &expressions) const noexcept {
-        auto key = FORMAT("{}{}", Scope::getType(type), std::string(identifier));
+        auto key = Scope::getKey(Scope::getType(type), identifier);
         bool found = false;
         if(_funs.contains(key)) {
-            for(const auto &[first, second] : _funs.at(key)) {
+            for(const auto &i : _funs.at(key)) {
+                auto params = i.getParams();
                 found = true;
-                if(second.size() != expressions.size()) [[likely]] {
+                if(params.size() != expressions.size()) [[likely]] {
                     found = false;
                 } else [[unlikely]] {
-                    for(size_t par = 0; par != second.size(); par++) {
-                        if(!Scope::canAssign(second.at(par), expressions.at(par).getType())) { found = false; }
+                    for(size_t par = 0; par != params.size(); par++) {
+                        if(!canAssign(params.at(par), expressions.at(par).getType())) { found = false; }
                     }
                 }
-                if(found) { return first; }
+                if(found) { return { i.getReturnType(), i.isContructor() }; }
+            }
+        }
+        if(_types.contains(type)) {
+            for(std::string i : _types.at(type)) {
+                auto [result, constructor]= getFunType(i, identifier, expressions);
+                if(!result.empty()) { return {result, constructor}; }
             }
         }
         if(_parent) { return _parent->getFunType(type, identifier, expressions); }
-        return "";
-    }
-
-    std::string Scope::getType(const std::string &type) noexcept {
-        if(type.starts_with("vnd::vector<") || type.starts_with("vnd::array<")) [[unlikely]] { return "vnd::vector."; }
-        return type;
+        return {"", false};
     }
 
     std::string Scope::getConstValue(const std::string& type, const std::string_view& identifier) const noexcept {
-        auto key = std::string{type} + std::string{identifier};
-        if(_consts.find(key) == _consts.end()) { return ""; }
-        return _consts.at(key).second;
+        auto key = Scope::getKey(type, identifier);
+        if(_consts.contains(key)) { return _consts.at(key).second; }
+        if(_types.contains(type)) {
+            for(std::string i : _types.at(type)) {
+                std::string result = getConstValue(i, identifier);
+                if(!result.empty()) { return result; }
+            }
+        }
+        if(_parent) { return _parent->getConstValue(type, identifier); }
+        return "";
+    }
+
+    bool Scope::isConstant(const std::string &type, const std::string_view &identifier) const noexcept {
+        auto key = Scope::getKey(type, identifier);
+        if(_consts.contains(key) || _vals.contains(key)) { return true; }
+        if(_types.contains(type)) {
+            for(std::string i : _types.at(type)) {
+                bool result = isConstant(i, identifier);
+                if(result) { return result; }
+            }
+        }
+        if(_parent) { return _parent->isConstant(type, identifier); }
+        return false;
+    }
+
+    bool Scope::canAssign(const std::string &left, const std::string &right) const noexcept {
+        if((Scope::isNumber(left) && Scope::isNumber(right)) || left == right) { return true; }
+        std::pair<std::string, std::string> types = {left, right};
+        if((types.first.ends_with("[]") || types.second.ends_with("[]")) && Scope::checkVector(types.first) &&
+           Scope::checkVector(types.second)) {
+            return canAssign(types.first, types.second);
+        }
+        for(std::string i : _types.at(right)) {
+            if(canAssign(left, i)) { return true; }
+        }
+        return false;
     }
 
 }  // namespace vnd
