@@ -8,6 +8,7 @@
     #define POPEN popen
     #define PCLOSE pclose
 #endif
+
 namespace vnd {
 
     // NOLINTBEGIN

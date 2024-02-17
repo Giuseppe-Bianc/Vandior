@@ -29,6 +29,7 @@ namespace vnd {
         mainScope->addVariable("Object.test", "float", true);
         mainScope->addVariable("Object.s", "string", false);
         mainScope->addVariable("Derived._derivedProperty", "bool", false);
+        mainScope->addVariable("Derived.obj", "Object", false);
         mainScope->addConstant("Object.c", "int", "2");
         mainScope->addConstant("Derived._derivedConst", "bool", "true");
         mainScope->addFun("_test", FunType::create("int", {}));
@@ -37,7 +38,7 @@ namespace vnd {
         mainScope->addFun("createObject", FunType::create("Object", {}));
         mainScope->addFun("Object", FunType::create("Object", {}, true));
         mainScope->addFun("Derived", FunType::create("Derived", {}, true));
-        mainScope->addFun("Derived", FunType::create("Derived", {"bool"}, true));
+        mainScope->addFun("Derived", FunType::create("Derived", {"Object", "bool"}, true));
         mainScope->addFun("createDerived", FunType::create("Derived", {}));
         mainScope->addFun("[].size", FunType::create("int", {}));
         mainScope->addFun("string.size", FunType::create("int", {}));
@@ -191,9 +192,12 @@ namespace vnd {
            Scope::checkVector(types.second)) {
             return canAssign(types.first, types.second);
         }
-        for(std::string i : _types.at(right)) {
-            if(canAssign(left, i)) { return true; }
+        if(_types.contains(right)) {
+            for(std::string i : _types.at(right)) {
+                if(canAssign(left, i)) { return true; }
+            }
         }
+        if(_parent) { return _parent->canAssign(left, right); }
         return false;
     }
 

@@ -161,8 +161,10 @@ namespace vnd {
             }
             if(iterator != endToken) { iterator++; }
         }
+        if(variables.size() != factory.size()) {
+            throw TranspilerException( FORMAT("Unconsistent assignation: {} values for {} variables", factory.size(), variables.size()), instruction);
+        }
         for(auto& var : variables) {
-            if(factory.empty()) { return; }
             Expression expression = factory.getExpression();
             if(equalToken.getType() == TokenType::OPERATION_EQUAL && !Scope::isNumber(var.second)) {
                 throw TranspilerException(FORMAT("incompatible operator {} for {} type", equalToken.getValue(), var.second), instruction);
@@ -175,7 +177,18 @@ namespace vnd {
             } else {
                 var.first = FORMAT("_{}", var.first);
             }
-            if(var.first.contains('.')) {
+            if(var.first.contains("->")) {
+                if(equalToken.getType() == TokenType::EQUAL_OPERATOR) {
+                     _text += FORMAT("{}{}); ", var.first, expression.getText());
+                } else if(equalToken.getValue() == "^=") {
+                    std::string getter = FORMAT("{})", var.first);
+                    getter.replace(getter.find("->set"), 5, "->get");
+                    _text += FORMAT("{}std::pow({},{})); ", var.first, getter, expression.getText());
+                } else {
+                    std::string getter = FORMAT("{})", var.first);
+                    getter.replace(getter.find("->set"), 5, "->get");
+                    _text += FORMAT("{}{}{}{}); ", var.first, getter, equalToken.getValue().at(0), expression.getText());
+                }
             } else {
                 if(equalToken.getValue() != "^=") {
                     _text += FORMAT("{} {} {}; ", var.first, equalToken.getValue(), expression.getText());
@@ -212,7 +225,6 @@ namespace vnd {
         while(iterator != end && iterator->getType() != EQUAL_OPERATOR && iterator->getType() != OPERATION_EQUAL) {
             const std::string_view value = iterator->getValue();
             const std::vector<Token>::iterator next = iterator + 1;
-            LWARN("{} {}", iterator->getValue(), _scope->getConstValue(type, value).empty());
             if (iterator->getType() == IDENTIFIER) {
                 if (next != end && next->getType() == OPEN_PARENTESIS) {
                 }
@@ -227,11 +239,11 @@ namespace vnd {
                     if(!assignable) { throw TranspilerException(FORMAT("Cannot assign {}.{}", type, value), instruction); }
                     type = newType;
                     if(currentVariable.empty()) {
-                        currentVariable += FORMAT("{}.", value);
+                        currentVariable += FORMAT("{}->", value);
                     } else if(next != end && next->getType() == DOT_OPERATOR) {
-                        currentVariable += FORMAT("get{}{}().", char(std::toupper(value[0])), value.substr(1));
+                        currentVariable += FORMAT("get{}{}()->", char(std::toupper(value[0])), value.substr(1));
                     } else {
-                        currentVariable += FORMAT("set{}{}(.", char(std::toupper(value[0])), value.substr(1));
+                        currentVariable += FORMAT("set{}{}(", char(std::toupper(value[0])), value.substr(1));
                     }
                 }
             }
@@ -239,14 +251,20 @@ namespace vnd {
                 throw TranspilerException(FORMAT("Cannot use {} at the left side of an assignation", value), instruction);
             }
             if(iterator->getType() == COMMA) {
-                currentVariable.pop_back();
+                if(currentVariable.ends_with("->")) {
+                    currentVariable.pop_back();
+                    currentVariable.pop_back();
+                }
                 result.emplace_back(std::make_pair(currentVariable, type));
                 currentVariable.clear();
                 type.clear();
             }
             iterator++;
         }
-        currentVariable.pop_back();
+        if(currentVariable.ends_with("->")) {
+            currentVariable.pop_back();
+            currentVariable.pop_back();
+        }
         result.emplace_back(std::make_pair(currentVariable, type));
         return result;
     }

@@ -28,7 +28,6 @@ namespace vnd {
 				if (vec.size() == N) {
 					std::copy(vec.begin(), vec.end(), this->begin());
 				} else {
-					// Handle the case where the vector size is not equal to array size
 					throw std::invalid_argument("Vector size does not match array size");
 				}
 			}
@@ -71,21 +70,26 @@ class Object {
 	public:
 		int getC() { return c; };
 		int getA() { return a; };
+		void setA(int _a) { a = _a; };
 		float getTest() { return test; }
 		string getS() { return s; }
+		void setS(string _s) { s = _s; }
 		float f(double b) { return std::pow(b, 2); }
 		std::string fs() { return std::string(); }
 	private:
 		const int c = 2;
+		const float test = 0;
 		int a;
-		float test;
-		const string s;
+		string s;
 };
 class Derived: public Object {
 	public:
-		Derived() {}
-		Derived(bool derivedProperty): _derivedProperty(derivedProperty) {}
+		Derived(): obj(std::make_shared<Object>()) {}
+		Derived(std::shared_ptr<Object> _obj, bool derivedProperty): _derivedProperty(derivedProperty), obj(std::make_shared<Object>()) {}
 		bool get_derivedProperty() { return _derivedProperty; }
+		void set_derivedProperty(bool derivedProperty) { _derivedProperty = derivedProperty; }
+		std::shared_ptr<Object> getObj() { return obj; }
+		void setObj(std::shared_ptr<Object> _obj) { obj = _obj; }
 		bool get_derivedConst() { return _derivedConst; }
 		bool derivedFun(std::shared_ptr<Object> obj) {
 			return obj->getS().empty();
@@ -93,6 +97,7 @@ class Derived: public Object {
 	private:
 		const bool _derivedConst = true;
 		bool _derivedProperty;
+		std::shared_ptr<Object> obj;
 };
 std::shared_ptr<Object> _createObject() { return std::make_shared<Object>(); }
 std::shared_ptr<Derived> _createDerived() { return std::make_shared<Derived>(); }
