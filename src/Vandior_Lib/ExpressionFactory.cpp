@@ -1,6 +1,13 @@
 #include "Vandior/ExpressionFactory.hpp"
 #include <algorithm>
 
+#ifdef _MSC_VER
+    #define POPEN _popen
+    #define PCLOSE _pclose
+#else
+    #define POPEN popen
+    #define PCLOSE pclose
+#endif
 namespace vnd {
 
     // NOLINTBEGIN
@@ -17,6 +24,18 @@ namespace vnd {
 
     bool ExpressionFactory::isSquareType(const std::string_view &type) noexcept { return type == "int" || type == "operator"; }
 
+    std::string ExpressionFactory::evaluate(const std::string &expression) noexcept {
+        char *command = new char[strlen("python -c \"print()\"") + strlen(expression.c_str()) + 1];
+        double result;
+        strcpy(command, FORMAT("python -c \"print({})\"", expression).c_str());
+        FILE *pipe = POPEN(command, "r");
+        if(!pipe) { return "0"; }
+        if(fscanf(pipe, "%lf", &result) != 1) { result = 0; }
+        PCLOSE(pipe);
+        delete[] command;
+        return std::to_string(result);
+    }
+
     std::string ExpressionFactory::parse(const std::vector<TokenType> &endToken) noexcept {  // NOLINT(*-no-recursion)
         _text = {};
         _expressionText = "";
@@ -25,8 +44,6 @@ namespace vnd {
         _dot = false;
         _type = "";
         _temp = "";
-        exprtk::expression<double> expression;
-        exprtk::parser<double> parser;
         std::tuple<bool, bool, std::string> type = std::make_tuple(false, false, std::string{});
         while(_iterator != _end && std::ranges::find(endToken, _iterator->getType()) == endToken.end()) {
             if(_iterator->getType() == TokenType::UNARY_OPERATOR) {
@@ -49,13 +66,13 @@ namespace vnd {
         if(Scope::isNumber(std::get<2>(type))) {
             std::string value;
             if(_const) {
-                parser.compile(_expressionText, expression);
+                
+                value = ExpressionFactory::evaluate(_expressionText);
             }
-            value = std::to_string(expression.value());
             _expressions.emplace_back(
                 Expression::create(_text, std::get<2>(type), _const, value));
         } else {
-            _expressions.emplace_back(Expression::create(_text, std::get<2>(type), _const, _expressionText));
+            _expressions.emplace_back(Expression::create(_text, std::get<2>(type), _const));
         }
         return {};
     }
@@ -140,7 +157,7 @@ namespace vnd {
                 _text.emplace(_text.begin() + _power.value(), "std::pow(");
             }
             _text.emplace_back(",");
-            _expressionText += value;
+            _expressionText += "**";
             _iterator++;
             return;
         }

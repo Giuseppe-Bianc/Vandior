@@ -3,17 +3,22 @@
 namespace vnd {
 
     // NOLINTNEXTLINE
-    Expression::Expression(const std::vector<std::string> &text, const std::string type, const bool isConst,
+    Expression::Expression(const std::string &text, const std::string type, const bool isConst,
                            const std::string &value) noexcept
       : _text(text), _type(type), _const(isConst), _value(value) {
     }
 
     Expression Expression::create(const std::vector<std::string> &text, const std::string &type, const bool isConst,
                                   const std::string &value) noexcept {
-        return {text, type, isConst, value};
+        return {std::accumulate(text.begin(), text.end(), std::string()), type, isConst, value};
     }
 
-    std::string Expression::getText() const noexcept { return std::accumulate(_text.begin(), _text.end(), std::string()); }
+    Expression Expression::create(const std::vector<std::string> &text, const std::string &type, const bool isConst) noexcept {
+        std::string textString = std::accumulate(text.begin(), text.end(), std::string());
+        return {textString, type, isConst, textString};
+    }
+
+    std::string Expression::getText() const noexcept { return _text; }
 
     std::string Expression::getType() const noexcept { return _type; }
 

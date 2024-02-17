@@ -5,7 +5,6 @@
 
 #include "Expression.hpp"
 #include "Scope.hpp"
-#include "exprtk.hpp"
 #include "Token.hpp"
 
 namespace vnd {
@@ -32,7 +31,7 @@ namespace vnd {
          * @param endToken Vector of token types indicating the end of parsing.
          * @return Parsed string.
          */
-        std::string parse(const std::vector<TokenType> &endToken) noexcept;
+        [[nodiscard]] std::string parse(const std::vector<TokenType> &endToken) noexcept;
 
         /**
          * @brief Gets the size of the parsed text.
@@ -107,6 +106,13 @@ namespace vnd {
          * @param type String_view representing the type of the token.
          */
         void emplaceToken(const std::string_view &type) noexcept;
+
+        /**
+        * @brief Evaluate a compile time number expression.
+        * @param expression The expression to evaluate
+        * @return String containing the result.
+        */
+        std::string evaluate(const std::string &expression) noexcept;
 
         /**
          * @brief Writes the current token to the parsed text.

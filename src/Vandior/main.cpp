@@ -65,13 +65,17 @@ constexpr std::string_view filename = "../../../input.vn";  // Linux and Unix
 auto main(int argc, const char *const argv[]) -> int {
     // NOLINTNEXTLINE
     INIT_LOG();
+    if(system("python --version") != 0) {
+        LERROR("Python not found");
+        return EXIT_FAILURE;
+    }
     std::string str;
     try {
         str = readFromFile(filename.data());
     } catch(std::runtime_error &e) { LINFO("error {}", e.what()); }
     std::string_view code(str);
-    LINFO("{}", code);
-    LINFO("code length {}", code.length());
+    //LINFO("{}", code);
+    //LINFO("code length {}", code.length());
     try {
         CLI::App app{
             FORMAT("{} version {}", Vandior::cmake::project_name, Vandior::cmake::project_version)};  // NOLINT(*-include-cleaner)
@@ -90,7 +94,7 @@ auto main(int argc, const char *const argv[]) -> int {
         vnd::Tokenizer tokenizer{code, filename};
         std::vector<vnd::Token> tokens;
         timeTokenizer(tokenizer, tokens);
-        for(const auto &item : tokens) { LINFO("{}", item); }
+        //for(const auto &item : tokens) { LINFO("{}", item); }
         std::vector<vnd::Instruction> instructions;
         vnd::AutoTimer tim("tokenizer total time");
         size_t line = tokens.at(0).getLine();
@@ -98,7 +102,7 @@ auto main(int argc, const char *const argv[]) -> int {
             if(token.getType() == vnd::TokenType::COMMENT) [[unlikely]] { continue; }
             if(token.getLine() >= line) [[likely]] {
                 if(instructions.empty() || instructions.back().canTerminate()) [[likely]] {
-                    if(!instructions.empty()) { LINFO("{}", instructions.back().getLastType()); }
+                    //if(!instructions.empty()) { LINFO("{}", instructions.back().getLastType()); }
                     instructions.emplace_back(vnd::Instruction::create(filename));
                 } else if(instructions.back().typeToString().back() != "EXPRESSION" && token.getType() != vnd::TokenType::STRING)
                     [[unlikely]] {
