@@ -5,9 +5,10 @@ DISABLE_WARNINGS_PUSH(
 
 namespace vnd {
 
-    // NOLINTNEXTLINE
+    // NOLINTBEGIN
     std::vector<std::string> Scope::_numberTypes = {"int", "float"};
     std::vector<std::string> Scope::_primitiveTypes = {"int", "float", "double", "char", "bool", "string"};
+    // NOLINTEND
 
     Scope::Scope(std::shared_ptr<Scope> parent) noexcept : _parent(std::move(parent)) {}
 
@@ -66,7 +67,7 @@ namespace vnd {
         return true;
     }
 
-    std::string Scope::getKey(const std::string& type, const std::string_view& identifier) noexcept {
+    std::string Scope::getKey(const std::string &type, const std::string_view &identifier) noexcept {
         if(type.empty()) { return std::string(identifier); }
         return FORMAT("{}.{}", type, identifier);
     }
@@ -80,7 +81,9 @@ namespace vnd {
 
     void Scope::removeParent() noexcept { _parent = nullptr; }
 
-    void Scope::addType(const std::string_view &type, const std::vector<std::string> &assignable) noexcept { _types[std::string(type)] = assignable; }
+    void Scope::addType(const std::string_view &type, const std::vector<std::string> &assignable) noexcept {
+        _types[std::string(type)] = assignable;
+    }
 
     void Scope::addConstant(const std::string_view &identifier, const std::string_view &type, const std::string &value) noexcept {
         _consts[std::string{identifier}] = std::make_pair(type, value);
@@ -108,7 +111,9 @@ namespace vnd {
     // NOLINTNEXTLINE
     std::pair<bool, bool> Scope::checkVariable(const std::string_view identifier, const bool shadowing) const noexcept {
         if(_vars.contains(std::string{identifier}) || _vals.contains(std::string{identifier}) ||
-            _consts.contains(std::string{identifier})) { return {true, shadowing}; }
+           _consts.contains(std::string{identifier})) {
+            return {true, shadowing};
+        }
         if(_parent) { return _parent->checkVariable(identifier, true); }
         return {false, false};
     }
@@ -131,7 +136,7 @@ namespace vnd {
 
     // NOLINTNEXTLINE(*-no-recursion)
     std::pair<std::string, bool> Scope::getFunType(const std::string &type, const std::string_view &identifier,
-                                  const std::vector<Expression> &expressions) const noexcept {
+                                                   const std::vector<Expression> &expressions) const noexcept {
         auto key = Scope::getKey(Scope::getType(type), identifier);
         bool found = false;
         if(_funs.contains(key)) {
@@ -145,12 +150,12 @@ namespace vnd {
                         if(!canAssign(params.at(par), expressions.at(par).getType())) { found = false; }
                     }
                 }
-                if(found) { return { i.getReturnType(), i.isContructor() }; }
+                if(found) { return {i.getReturnType(), i.isContructor()}; }
             }
         }
         if(_types.contains(type)) {
             for(std::string i : _types.at(type)) {
-                auto [result, constructor]= getFunType(i, identifier, expressions);
+                auto [result, constructor] = getFunType(i, identifier, expressions);
                 if(!result.empty()) { return {result, constructor}; }
             }
         }
@@ -158,7 +163,7 @@ namespace vnd {
         return {"", false};
     }
 
-    std::string Scope::getConstValue(const std::string& type, const std::string_view& identifier) const noexcept {
+    std::string Scope::getConstValue(const std::string &type, const std::string_view &identifier) const noexcept {
         auto key = Scope::getKey(type, identifier);
         if(_consts.contains(key)) { return _consts.at(key).second; }
         if(_types.contains(type)) {
