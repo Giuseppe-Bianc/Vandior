@@ -81,6 +81,9 @@ namespace vnd {
         [[nodiscard]] std::vector<std::pair<std::string, std::string>> extractvariables(std::vector<Token>::iterator &iterator,
                                                         const std::vector<Token>::iterator &end, const Instruction &instruction) const;
 
+        [[nodiscard]] std::string extractToken(std::vector<Token>::iterator & iterator, const std::vector<Token>::iterator &end,
+                                                const std::vector<Token>::iterator &next, std::string &currentVariable, std::string &type) const noexcept;
+
         /**
         * @brief Transpile a type name.
         * @param iterator Iterator to the instruction.
