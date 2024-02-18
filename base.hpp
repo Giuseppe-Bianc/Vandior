@@ -37,7 +37,14 @@ namespace vnd {
 				}
 				std::copy(init.begin(), init.end(), this->begin());
 			}
-			T at(int64_t index) const {
+			T& at(int64_t index) {
+				if(index < 0) {
+					index += N;
+				}
+				if(index < 0 || index >= N) { throw std::runtime_error("Index " + std::to_string(index) +  " out of bounds for size " + std::to_string(N)); }
+				return std::array<T, N>::at(index);
+			}
+			const T& at(int64_t index) const {
 				if(index < 0) {
 					index += N;
 				}
@@ -52,7 +59,14 @@ namespace vnd {
 			vector(std::initializer_list<T> init) : std::vector<T>(init) {}
 			template <typename InputIt>
 			vector(InputIt first, InputIt last) : std::vector<T>(first, last) {}
-			T at(int64_t index) const {
+			T& at(int64_t index) {
+				if(index < 0) {
+					index += static_cast<int64_t>(this->size());
+				}
+				if(index < 0 || index >= static_cast<int64_t>(this->size())) { throw std::runtime_error("Index " + std::to_string(index) +  " out of bounds for size " + std::to_string(static_cast<int64_t>(this->size()))); }
+				return std::vector<T>::at(index);
+			}
+			const T& at(int64_t index) const {
 				if(index < 0) {
 					index += static_cast<int64_t>(this->size());
 				}

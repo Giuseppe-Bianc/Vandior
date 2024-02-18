@@ -221,7 +221,7 @@ namespace vnd {
         std::string type;
         while(iterator != end && iterator->getType() != EQUAL_OPERATOR && iterator->getType() != OPERATION_EQUAL) {
             const std::vector<Token>::iterator next = std::next(iterator);
-            if (iterator->getType() == IDENTIFIER) {
+            if(iterator->getType() == IDENTIFIER) {
                 if(next != end && next->getType() == OPEN_PARENTESIS) {
                     if(std::string error = extractFun(iterator, end, currentVariable, type); !error.empty()) {
                         throw TranspilerException(error, instruction);
@@ -229,11 +229,13 @@ namespace vnd {
                 } else if(std::string error = extractToken(iterator, end, next, currentVariable, type); !error.empty()) {
                     throw TranspilerException(error, instruction);
                 }
-            }
-            if(iterator->getType() == UNARY_OPERATOR) {
+            } else if(iterator->getType() == OPEN_SQ_PARENTESIS) {
+                if(std::string error = extractSquareExpression(iterator, end, currentVariable, type); !error.empty()) {
+                    throw TranspilerException(error, instruction);
+                }
+            } else if(iterator->getType() == UNARY_OPERATOR) {
                 throw TranspilerException(FORMAT("Cannot use {} at the left side of an assignation", iterator->getValue()), instruction);
-            }
-            if(iterator->getType() == COMMA) {
+            } else if(iterator->getType() == COMMA) {
                 if(currentVariable.ends_with("->")) {
                     currentVariable.pop_back();
                     currentVariable.pop_back();
@@ -281,7 +283,6 @@ namespace vnd {
 
     std::string Transpiler::extractFun(std::vector<Token>::iterator &iterator, const std::vector<Token>::iterator &end, std::string &currentVariable,
                                          std::string &type) const noexcept {
-        using enum TokenType;
         std::string_view identifier = iterator->getValue();
         ExpressionFactory factory = ExpressionFactory::create(iterator, end, _scope, false);
         std::vector<Expression> expressions;
@@ -326,6 +327,24 @@ namespace vnd {
                 }
             }
         }
+        return {};
+    }
+
+    std::string Transpiler::extractSquareExpression(std::vector<Token>::iterator &iterator, const std::vector<Token>::iterator &end,
+                                       std::string &currentVariable, std::string &type) const noexcept {
+        std::string newType;
+        if(currentVariable.ends_with("->")) {
+            currentVariable.pop_back();
+            currentVariable.pop_back();
+        }
+        if(!Scope::checkVector(type)) { return FORMAT("Indexing not allowed for {} type", type); }
+        ExpressionFactory factory = ExpressionFactory::create(iterator, end, _scope, false, true);
+        iterator++;
+        if(std::string error = factory.parse({TokenType::CLOSE_SQ_PARENTESIS}); !error.empty()) { return error; }
+        Expression expression = factory.getExpression();
+        newType = expression.getType();
+        if(newType != "int") { return FORMAT("{} index not allowed", newType); }
+        currentVariable += FORMAT(".at({})->", expression.getText().substr(1));
         return {};
     }
 

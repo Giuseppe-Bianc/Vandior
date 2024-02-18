@@ -87,7 +87,7 @@ namespace vnd {
          * @param end Iterator pointing to the end of the token sequence.
          * @param next Iterator pointing to the next token.
          * @param currentvariable String containing the current extracted variable.
-         * @param type String conraining the type of the extracted variable.
+         * @param type String containing the type of the extracted variable.
          * @return Parsed string if there is an error. If no error occurs, an empty string is returned.
          */
         [[nodiscard]] std::string extractToken(std::vector<Token>::iterator & iterator, const std::vector<Token>::iterator &end,
@@ -98,11 +98,22 @@ namespace vnd {
          * @param iterator The iterator to the instruction.
          * @param end Iterator pointing to the end of the token sequence.
          * @param currentvariable String containing the current extracted variable.
-         * @param type String conraining the type of the extracted variable.
+         * @param type String containing the type of the extracted variable.
          * @return Parsed string if there is an error. If no error occurs, an empty string is returned.
          */
         [[nodiscard]] std::string extractFun(std::vector<Token>::iterator &iterator, const std::vector<Token>::iterator &end,
                                                std::string &currentVariable, std::string &type) const noexcept;
+
+        /**
+         * @brief Extracts a square expression from an assignation instruction.
+         * @param iterator The iterator to the instruction.
+         * @param end Iterator pointing to the end of the token sequence.
+         * @param currentvariable String containing the current extracted variable.
+         * @param type String containing the type of the extracted variable.
+         * @return Parsed string if there is an error. If no error occurs, an empty string is returned.
+         */
+        [[nodiscard]] std::string extractSquareExpression(std::vector<Token>::iterator &iterator, const std::vector<Token>::iterator &end,
+                                             std::string &currentVariable, std::string &type) const noexcept;
 
         /**
         * @brief Transpile a type name.
