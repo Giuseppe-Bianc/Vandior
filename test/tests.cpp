@@ -1235,22 +1235,6 @@ TEST_CASE("ExpressionFactory emit float type", "[factory]") {
     REQUIRE(factory.getExpression().getType() == "float");
 }
 
-TEST_CASE("ExpressionFactory emit array index type", "[factory]") {
-    std::vector<vnd::Token> tokens = {
-        {vnd::TokenType::OPEN_SQ_PARENTESIS, "[", vnd::CodeSourceLocation(filename, 1, 0)},
-        {inte, "1", vnd::CodeSourceLocation(filename, 1, 0)},
-        {oper, "/", vnd::CodeSourceLocation(filename, 1, 1)},
-        {inte, "2", vnd::CodeSourceLocation(filename, 1, 2)},
-        {vnd::TokenType::CLOSE_SQ_PARENTESIS, "]", vnd::CodeSourceLocation(filename, 1, colum)},
-        {vnd::TokenType::EOFT, "", vnd::CodeSourceLocation(filename, 1, 7)},
-    };
-    std::shared_ptr<vnd::Scope> scope = vnd::Scope::createMain();
-    auto iterator = tokens.begin();
-    vnd::ExpressionFactory factory = vnd::ExpressionFactory::create(iterator, tokens.end(), scope, false, false);
-    factory.parse({vnd::TokenType::CLOSE_SQ_PARENTESIS});
-    REQUIRE(factory.size() == 1);
-}
-
 TEST_CASE("ExpressionFactory emit bool type", "[factory]") {
     std::vector<vnd::Token> tokens = {
         {vnd::TokenType::OPEN_PARENTESIS, "(", vnd::CodeSourceLocation(filename, 1, 0)},

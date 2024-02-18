@@ -91,9 +91,8 @@ class Derived: public Object {
 		std::shared_ptr<Object> getObj() { return obj; }
 		void setObj(std::shared_ptr<Object> _obj) { obj = _obj; }
 		bool get_derivedConst() { return _derivedConst; }
-		bool derivedFun(std::shared_ptr<Object> obj) {
-			return obj->getS().empty();
-		}
+		bool derivedFun(std::shared_ptr<Object> obj) { return obj->getS().empty(); }
+		std::shared_ptr<Object> object() { return std::make_shared<Object>(); }
 	private:
 		const bool _derivedConst = true;
 		bool _derivedProperty;

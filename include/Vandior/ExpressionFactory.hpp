@@ -123,35 +123,35 @@ namespace vnd {
         /**
          * @brief Handles a function during parsing.
          * @param type Tuple representing the type information.
-         * @return Parsed string if there is an error.
+         * @return Parsed string if there is an error. If no error occurs, an empty string is returned
          */
         [[nodiscard]] std::string handleFun(TupType &type) noexcept;
 
         /**
          * @brief Handles an inner expression during parsing.
          * @param type Tuple representing the type information.
-         * @return Parsed string if there is an error.
+         * @return Parsed string if there is an error. If no error occurs, an empty string is returned
          */
         [[nodiscard]] std::string handleInnerExpression(TupType &type) noexcept;
 
         /**
          * @brief Handles an inner expression for array indexing during parsing.
          * @param type Tuple representing the type information.
-         * @return Parsed string if there is an error.
+         * @return Parsed string if there is an error. If no error occurs, an empty string is returned
          */
         [[nodiscard]] std::string handleSquareExpression(TupType &type) noexcept;
 
         /**
          * @brief Handles a vector initialization.
          * @param type Tuple representing the type information.
-         * @return Parsed string if there is an error.
+         * @return Parsed string if there is an error. If no error occurs, an empty string is returned
          */
         [[nodiscard]] std::string handleVectorInitialization(TupType &type) noexcept;
 
         /**
          * @brief Handles a token during parsing.
          * @param type Tuple representing the type information.
-         * @return Parsed string if there is an error.
+         * @return Parsed string if there is an error. If no error occurs, an empty string is returned
          */
         [[nodiscard]] std::string handleToken(TupType &type) noexcept;
 
@@ -159,7 +159,7 @@ namespace vnd {
          * @brief Checks the type during parsing.
          * @param oldType Tuple representing the previous type.
          * @param newType The new type to check.
-         * @return Checked type as a string if there is an error.
+         * @return Checked type as a string if there is an error. If no error occurs, an empty string is returned
          */
         [[nodiscard]] std::string checkType(TupType &oldType, const std::string_view newType) noexcept;
 
@@ -170,13 +170,18 @@ namespace vnd {
          */
         [[nodiscard]] bool checkNextToken(const std::string &type, const std::string &value) noexcept;
 
-        bool checkUnaryOperator(const std::string_view &type) const noexcept;
+        /**
+         * @brief Checks if the current token can be followed by a ++ or --.
+         * @param type String_view conatining the type of the current token.
+         * @return Bool indicating if the current token can be followed by a ++ or --.
+         */
+        [[nodiscard]] bool checkUnaryOperator(const std::string_view &type) const noexcept;
 
         /**
          * @brief Checks and processes operators in the parsed value.
          * @param value Parsed value to check for operators.
          */
-        void checkOperators(std::string &value) noexcept;
+        [[nodiscard]] void checkOperators(std::string &value) noexcept;
 
         /**
          * @brief Writes the value to the parsed text.

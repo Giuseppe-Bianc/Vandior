@@ -191,7 +191,9 @@ namespace vnd {
                     _text += FORMAT("{} = std::pow({}, {}); ", var.first, var.first, expression.getText());
                 }
             }
+            _text += FORMAT("\n{}", std::string(C_ST(_tabs), '\t'));
         }
+        _text.erase(_text.size() - C_ST(_tabs) - 1, C_ST(_tabs) + 1);
     }
 
     std::vector<std::string_view> Transpiler::extractIdenfifiers(std::vector<Token>::iterator& iterator,
@@ -221,6 +223,9 @@ namespace vnd {
             const std::vector<Token>::iterator next = std::next(iterator);
             if (iterator->getType() == IDENTIFIER) {
                 if(next != end && next->getType() == OPEN_PARENTESIS) {
+                    if(std::string error = extractFun(iterator, end, currentVariable, type); !error.empty()) {
+                        throw TranspilerException(error, instruction);
+                    }
                 } else if(std::string error = extractToken(iterator, end, next, currentVariable, type); !error.empty()) {
                     throw TranspilerException(error, instruction);
                 }
@@ -256,7 +261,7 @@ namespace vnd {
         if(next != end && (next->getType() == COMMA || next->getType() == EQUAL_OPERATOR || next->getType() == OPERATION_EQUAL)) {
             assignable = !_scope->isConstant(type, value);
         }
-        if(newType.empty()) { return FORMAT("Cannot find identifier {}", value); }
+        if(newType.empty()) { return FORMAT("Cannot find identifier {}.{}", type, value); }
         if(!assignable) { return FORMAT("Cannot assign {}.{}", type, value); }
         type = newType;
         if(currentVariable.empty()) {
@@ -270,6 +275,56 @@ namespace vnd {
             currentVariable += FORMAT("get{}{}()->", char(std::toupper(value[0])), value.substr(1));
         } else {
             currentVariable += FORMAT("set{}{}(", char(std::toupper(value[0])), value.substr(1));
+        }
+        return {};
+    }
+
+    std::string Transpiler::extractFun(std::vector<Token>::iterator &iterator, const std::vector<Token>::iterator &end, std::string &currentVariable,
+                                         std::string &type) const noexcept {
+        using enum TokenType;
+        std::string_view identifier = iterator->getValue();
+        ExpressionFactory factory = ExpressionFactory::create(iterator, end, _scope, false);
+        std::vector<Expression> expressions;
+        std::string params;
+        iterator++;
+        while(iterator->getType() != TokenType::CLOSE_PARENTESIS) {
+            iterator++;
+            if(iterator->getType() != TokenType::CLOSE_PARENTESIS) {
+                if(std::string error = factory.parse({TokenType::COMMA, TokenType::CLOSE_PARENTESIS}); !error.empty()) {
+                    return error;
+                }
+            }
+        }
+        expressions = factory.getExpressions();
+        auto [newType, constructor] = _scope->getFunType(type, identifier, expressions);
+        if(newType.empty()) {
+            std::string value;
+            std::string paramTypes;
+            for(const Expression &expression : expressions) { paramTypes += expression.getType() + ","; }
+            if(!paramTypes.empty()) { paramTypes.pop_back(); }
+            value = FORMAT("{}.{}({})", type, identifier, paramTypes);
+            LINFO(value);
+            if(value.starts_with(".")) { value.erase(0, 1); }
+            return FORMAT("Function {} not found", value);
+        }
+        type = newType;
+        for(const Expression &expression : expressions) { params += expression.getText() + ","; }
+        if(!params.empty()) {
+            if(params.at(0) == ' ') { params.erase(0, 1); }
+            params.pop_back();
+        }
+        if(constructor) {
+            currentVariable += FORMAT("std::make_shared<{}>({})->", newType, params);
+        } else {
+            bool empty = currentVariable.empty();
+            currentVariable += FORMAT("{}({})->", identifier, params);
+            if(empty) {
+                if(currentVariable.at(0) == '_') {
+                    currentVariable = FORMAT("v{} ", currentVariable);
+                } else {
+                    currentVariable = FORMAT("_{}", currentVariable);
+                }
+            }
         }
         return {};
     }

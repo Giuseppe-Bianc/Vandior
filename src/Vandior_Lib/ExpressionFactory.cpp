@@ -213,7 +213,7 @@ namespace vnd {
         std::string_view identifier = _iterator->getValue();
         ExpressionFactory factory = ExpressionFactory::create(_iterator, _end, _scope, false);
         std::vector<Expression> expressions;
-        std::string text;
+        std::string params;
         if(_const && !_temp.empty()) { return "Cannot call methods on const value"; }
         _iterator++;
         while(_iterator->getType() != TokenType::CLOSE_PARENTESIS) {
@@ -227,18 +227,26 @@ namespace vnd {
         if((_iterator + 1) == _end || (_iterator + 1)->getType() != TokenType::DOT_OPERATOR) { _const = false; }
         expressions = factory.getExpressions();
         auto [newType, constructor] = _scope->getFunType(_type, identifier, expressions);
-        if(newType.empty()) { return FORMAT("Function {}.{} not found", _type, identifier); }
-        if(std::string error = ExpressionFactory::checkType(type, newType); !error.empty()) { return error; }
-        for(const Expression &expression : expressions) { text += expression.getText() + ","; }
-        if(!expressions.empty() && !text.empty()) {
-            if(text.at(0) == ' ') { text.erase(0, 1); }
-            text.pop_back();
+        if(newType.empty()) {
+            std::string value;
+            std::string paramTypes;
+            for(const Expression &expression : expressions) { paramTypes += expression.getType() + ","; }
+            if(!paramTypes.empty()) { paramTypes.pop_back(); }
+            value = FORMAT("{}.{}({})", _type, identifier, paramTypes);
+            if(value.starts_with(".")) { value.erase(0, 1); }
+            return FORMAT("Function {} not found", value);
         }
-        std::string value = FORMAT(" {}({})", std::string{identifier}, text);
+        if(std::string error = ExpressionFactory::checkType(type, newType); !error.empty()) { return error; }
+        for(const Expression &expression : expressions) { params += expression.getText() + ","; }
+        if(!params.empty()) {
+            if(params.at(0) == ' ') { params.erase(0, 1); }
+            params.pop_back();
+        }
+        std::string value = FORMAT(" {}({})", std::string{identifier}, params);
         if(_temp.empty()) {
             value.erase(0, 1);
             if(constructor) {
-                value = FORMAT("std::make_shared<{}>({})", newType, text);
+                value = FORMAT("std::make_shared<{}>({})", newType, params);
             } else if(!value.empty() && value.at(0) == '_') {
                 value = FORMAT("v{}", value);
             } else {

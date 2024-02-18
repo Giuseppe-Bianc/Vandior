@@ -16,7 +16,9 @@ main {
 	_var, intVar += 2 + 123, 10 / _var++ + der.a / testConstString.size()
 	_var, obj.a ^= 2, 12 * 5 ^ -2
 	der.a -= 12 ^ 2
+	createObject().a, der1.object().a /= 45 ^ 9.5, 67 - 56.65
 	der.s, intVar, testArray = "Ciao", 12 * 3 * obj.a, {1, 2, 3}
+	Derived().s = "Ciao"
 	obj.a, obj.a ^= "Ciao".size(), 12 * 3 * obj.a	
 	der1, pol = Derived(), Derived(Object(), true)
 	der.obj = Object()

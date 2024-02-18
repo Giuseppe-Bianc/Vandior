@@ -63,7 +63,7 @@ namespace vnd {
         void transpileAssignation(const Instruction &instruction);
 
         /**
-         * @brief Extracts identifiers of declared variables from the declaration instruction.
+         * @brief Extracts identifiers of declared variables from a declaration instruction.
          * @param iterator The iterator to the instruction.
          * @param instruction The instruction to extract variables from.
          * @return Vector of extracted identifiers.
@@ -72,7 +72,7 @@ namespace vnd {
                                                                      const Instruction &instruction) const;
 
         /**
-         * @brief Extracts variables from the instruction.
+         * @brief Extracts variables from an assignation instruction.
          * @param iterator The iterator to the instruction.
          * @param end Iterator pointing to the end of the token sequence.
          * @param instruction The instruction to extract variables from.
@@ -81,8 +81,28 @@ namespace vnd {
         [[nodiscard]] std::vector<std::pair<std::string, std::string>> extractvariables(std::vector<Token>::iterator &iterator,
                                                         const std::vector<Token>::iterator &end, const Instruction &instruction) const;
 
+        /**
+         * @brief Extracts a token from an assignation instruction.
+         * @param iterator The iterator to the instruction.
+         * @param end Iterator pointing to the end of the token sequence.
+         * @param next Iterator pointing to the next token.
+         * @param currentvariable String containing the current extracted variable.
+         * @param type String conraining the type of the extracted variable.
+         * @return Parsed string if there is an error. If no error occurs, an empty string is returned.
+         */
         [[nodiscard]] std::string extractToken(std::vector<Token>::iterator & iterator, const std::vector<Token>::iterator &end,
                                                 const std::vector<Token>::iterator &next, std::string &currentVariable, std::string &type) const noexcept;
+
+        /**
+         * @brief Extracts a function from an assignation instruction.
+         * @param iterator The iterator to the instruction.
+         * @param end Iterator pointing to the end of the token sequence.
+         * @param currentvariable String containing the current extracted variable.
+         * @param type String conraining the type of the extracted variable.
+         * @return Parsed string if there is an error. If no error occurs, an empty string is returned.
+         */
+        [[nodiscard]] std::string extractFun(std::vector<Token>::iterator &iterator, const std::vector<Token>::iterator &end,
+                                               std::string &currentVariable, std::string &type) const noexcept;
 
         /**
         * @brief Transpile a type name.
