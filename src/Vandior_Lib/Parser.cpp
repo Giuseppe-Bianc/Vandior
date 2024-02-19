@@ -4,6 +4,7 @@
 #include <utility>
 
 namespace vnd {
+    // NOLINTBEGIN(*-include-cleaner, *-no-recursion)
     std::unique_ptr<ASTNode> Parser::parse() { return parseExpression(); }
     void Parser::consumeToken() noexcept {
         if(position < tokenSize) { position++; }
@@ -52,7 +53,7 @@ namespace vnd {
 
         return 0.0;
     }
-    std::unique_ptr<ASTNode> Parser::parsePrimary() {  // NOLINT(*-no-recursion)
+    std::unique_ptr<ASTNode> Parser::parsePrimary() {
         const Token &currentToken = getCurrentToken();
         const auto &currentType = currentToken.getType();
         const auto &currentValue = currentToken.getValue();
@@ -81,19 +82,18 @@ namespace vnd {
             return nullptr;
         }
     }
-    std::unique_ptr<ASTNode> Parser::parseUnary() {  // NOLINT(*-no-recursion)
+    std::unique_ptr<ASTNode> Parser::parseUnary() {
         const Token &currentToken = getCurrentToken();
 
         if(isUnaryOperator(currentToken.getValue())) {
             consumeToken();
             auto operand = parseUnary();
-            return std::make_unique<UnaryExpressionNode>(currentToken.getValue(),
-                                                         std::move(operand));  // NOLINT(*-include-cleaner)
+            return std::make_unique<UnaryExpressionNode>(currentToken.getValue(), std::move(operand));
         } else {
             return parsePrimary();
         }
     }
-    std::unique_ptr<ASTNode> Parser::parseBinary(int precedence) {  // NOLINT(*-no-recursion)
+    std::unique_ptr<ASTNode> Parser::parseBinary(int precedence) {
         auto left = parseUnary();
         while(getOperatorPrecedence(getCurrentToken()) > precedence) {
             const Token &opToken = getCurrentToken();
@@ -104,5 +104,6 @@ namespace vnd {
 
         return left;
     }
-    std::unique_ptr<ASTNode> Parser::parseExpression() { return parseBinary(0); }  // NOLINT(*-no-recursion)
+    std::unique_ptr<ASTNode> Parser::parseExpression() { return parseBinary(0); }
+    // NOLINTEND(*-include-cleaner,*-no-recursion)
 }  // namespace vnd

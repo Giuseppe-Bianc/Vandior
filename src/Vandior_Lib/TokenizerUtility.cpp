@@ -1,6 +1,7 @@
 #include "Vandior/TokenizerUtility.hpp"
 
 namespace vnd {
+    // NOLINTBEGIN(*-include-cleaner)
     bool TokenizerUtility::isOperator(const char &aChar) {
         static const std::unordered_set<char> operators = {'*', '/', '=', '<', '>', '!', '|', '&', '+', '-', '^', '%'};
         return operators.contains(aChar);
@@ -30,4 +31,5 @@ namespace vnd {
     bool TokenizerUtility::isalnumUnderscore(const char &cha) noexcept { return std::isalnum(C_UC(cha)) || cha == '_'; }
     bool TokenizerUtility::isOctalDigit(const char &cha) noexcept { return std::isdigit(C_UC(cha)) && cha >= '0' && cha <= '7'; }
     bool TokenizerUtility::isHasterisc(const char &cha) noexcept { return cha == '#'; }
+    // NOLINTEND(*-include-cleaner)
 }  // namespace vnd

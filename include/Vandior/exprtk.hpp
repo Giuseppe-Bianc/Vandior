@@ -13,10 +13,19 @@
  * SPDX-License-Identifier: MIT                                   *
  ******************************************************************
  */
+#pragma once
 
-#ifndef INCLUDE_EXPRTK_HPP
-#define INCLUDE_EXPRTK_HPP
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wsign-conversion"
+#pragma clang diagnostic ignored "-Wshadow"
+#pragma clang diagnostic ignored "-Wmissing-field-initializers"
+#pragma clang diagnostic ignored "-Wmissing-braces"
+#pragma clang diagnostic ignored "-Wimplicit-int-conversion"
+#pragma clang diagnostic ignored "-Wimplicit-int-float-conversion"
+#endif
 
+// NOLINTBEGIN(*-diagnostic-implicit-int-float-conversion)
 #include "casts.hpp"
 #include <algorithm>
 #include <cassert>
@@ -10446,7 +10455,7 @@ namespace exprtk {
         static inline details::operator_type operation() { return details::e_##OpName; }                                         \
     };
 
-                // clang-format off
+        // clang-format off
       exprtk_define_unary_op(abs  ) exprtk_define_unary_op(acos )
       exprtk_define_unary_op(acosh) exprtk_define_unary_op(asin )
       exprtk_define_unary_op(asinh) exprtk_define_unary_op(atan )
@@ -10470,8 +10479,8 @@ namespace exprtk {
 // clang-format on
 #undef exprtk_define_unary_op
 
-                                                                template <typename T>
-                                                                struct opr_base {
+                                                                    template <typename T>
+                                                                    struct opr_base {
             typedef typename details::functor_t<T>::Type Type;
             typedef typename details::functor_t<T>::RefType RefType;
             typedef typename details::functor_t<T> functor_t;
@@ -13372,6 +13381,7 @@ namespace exprtk {
         typedef T (*ff13_functor)(T, T, T, T, T, T, T, T, T, T, T, T, T);
         typedef T (*ff14_functor)(T, T, T, T, T, T, T, T, T, T, T, T, T, T);
         typedef T (*ff15_functor)(T, T, T, T, T, T, T, T, T, T, T, T, T, T, T);
+
     protected:
         struct freefunc00 exprtk_final : public exprtk::ifunction<T> {
             using exprtk::ifunction<T>::operator();
@@ -33143,7 +33153,7 @@ namespace exprtk {
         }
 
         inline double time() const {
-            return (1.0 * (stop_time_.QuadPart - start_time_.QuadPart)) / (1.0 * clock_frequency_.QuadPart);
+            return (1.0 * C_D(stop_time_.QuadPart - start_time_.QuadPart)) / (1.0 * C_D(clock_frequency_.QuadPart));
         }
 
 #else
@@ -35007,4 +35017,7 @@ namespace exprtk {
 
 }  // namespace exprtk
 
+#if defined(__clang__)
+#pragma clang diagnostic pop
 #endif
+// NOLINTEND(*-diagnostic-implicit-int-float-conversion)

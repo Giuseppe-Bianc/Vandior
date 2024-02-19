@@ -69,7 +69,7 @@ namespace vnd {
          * @return Vector of extracted identifiers.
          */
         [[nodiscard]] std::vector<std::string_view> extractIdenfifiers(std::vector<Token>::iterator &iterator,
-                                                                     const Instruction &instruction) const;
+                                                                       const Instruction &instruction) const;
 
         /**
          * @brief Extracts variables from the instruction.
@@ -79,27 +79,30 @@ namespace vnd {
          * @param assignable Bool indicating if the variables can be assignated.
          * @return Vector of extracted variables and their types.
          */
-        //[[nodiscard]] std::vector<std::pair<std::string_view, std::string>> extractvariables(std::vector<Token>::iterator &iterator,
-                                                        //const std::vector<Token>::iterator &end, const Instruction &instruction, bool &assignable) const;
+        //[[nodiscard]] std::vector<std::pair<std::string_view, std::string>> extractvariables(std::vector<Token>::iterator
+        //&iterator, const std::vector<Token>::iterator &end, const Instruction &instruction, bool &assignable) const;
 
         /**
-        * @brief checks the type and the assignability of a variable.
-        * @param type the type of the thr object holfing the variable.
-        * @param Identifier String_view conatining the variable identifier to check.
-        * @return the type of the variable and its assignability.
-        */
-        //[[nodiscard]] std::pair<std::string, bool> checkIdentifier(const std::string &type, const std::string_view &identifier) const;
+         * @brief checks the type and the assignability of a variable.
+         * @param type the type of the thr object holfing the variable.
+         * @param Identifier String_view conatining the variable identifier to check.
+         * @return the type of the variable and its assignability.
+         */
+        //[[nodiscard]] std::pair<std::string, bool> checkIdentifier(const std::string &type, const std::string_view &identifier)
+        //const;
 
         /**
-        * @brief Transpile a type name.
-        * @param iterator Iterator to the instruction.
-        * @param end Iterator pointing to the end of the token sequence.
-        * @param endTokens Vector of token types indicating the end of parsing.
-        * @param instruction The instruction to extract type from.
-        * @return Pair that represent the type and the value to transpile.
-        */
-        [[nodiscard]] std::pair<std::string, std::string> transpileType(std::vector<Token>::iterator &iterator, const std::vector<Token>::iterator end,
-                                                    const std::vector<TokenType> &endTokens, const Instruction &instruction);
+         * @brief Transpile a type name.
+         * @param iterator Iterator to the instruction.
+         * @param end Iterator pointing to the end of the token sequence.
+         * @param endTokens Vector of token types indicating the end of parsing.
+         * @param instruction The instruction to extract type from.
+         * @return Pair that represent the type and the value to transpile.
+         */
+        [[nodiscard]] std::pair<std::string, std::string> transpileType(std::vector<Token>::iterator &iterator,
+                                                                        const std::vector<Token>::iterator &end,
+                                                                        const std::vector<TokenType> &endTokens,
+                                                                        const Instruction &instruction);
 
         /**
          * @brief Opens a new scope.

@@ -1,8 +1,8 @@
 #include "Vandior/Tokenizer.hpp"
 using namespace std::literals::string_view_literals;
 namespace vnd {
-
-    std::vector<Token> Tokenizer::tokenize() {  // NOLINT(*-include-cleaner)
+    // NOLINTBEGIN(*-include-cleaner)
+    std::vector<Token> Tokenizer::tokenize() {
         std::vector<Token> tokens;
         while(positionIsInText()) {
             const char &currentChar = _input[position];
@@ -62,13 +62,13 @@ namespace vnd {
     }
     void Tokenizer::kewordType(const std::string_view &value, TokenType &type) noexcept {
         using enum TokenType;
-        if(value == "main") { type = K_MAIN; }
-        if(value == "var" || value == "val" || value == "const") { type = K_VAR; }
-        if(value == "if" || value == "while") { type = K_STRUCTURE; }
-        if(value == "for") { type = K_FOR; }
-        if(value == "fun") { type = K_FUN; }
-        if(value == "return") { type = K_RETURN; }
-        if(value == "true" || value == "false") { type = BOOLEAN; }
+        if(value == "main"sv) { type = K_MAIN; }
+        if(value == "var"sv || value == "val"sv || value == "const"sv) { type = K_VAR; }
+        if(value == "if"sv || value == "while"sv) { type = K_STRUCTURE; }
+        if(value == "for"sv) { type = K_FOR; }
+        if(value == "fun"sv) { type = K_FUN; }
+        if(value == "return"sv) { type = K_RETURN; }
+        if(value == "true"sv || value == "false"sv) { type = BOOLEAN; }
     }
 
     bool Tokenizer::inTextAndE() const noexcept { return positionIsInText() && std::toupper(_input[position]) == ECR; }
@@ -282,9 +282,9 @@ namespace vnd {
 
         throw std::runtime_error(errorMessage);
     }
-    std::size_t Tokenizer::findLineStart() const noexcept {  // NOLINT(*-include-cleaner)
+    std::size_t Tokenizer::findLineStart() const noexcept {
         std::size_t lineStart = position;
-        while(lineStart > 0 && _input[lineStart - 1] != CNL) { --lineStart; }  // NOLINT(*-include-cleaner)
+        while(lineStart > 0 && _input[lineStart - 1] != CNL) { --lineStart; }
         return lineStart;
     }
     std::size_t Tokenizer::findLineEnd() const noexcept {
@@ -320,5 +320,5 @@ namespace vnd {
         const auto value = _input.substr(start, position - start);
         return {TokenType::INTEGER, value, {_filename, line, column - value.size() - 1}};
     }
-
+    // NOLINTEND(*-include-cleaner)
 }  // namespace vnd
