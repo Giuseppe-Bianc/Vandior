@@ -13,11 +13,13 @@ val vec: int[] = testArray
 var intVar: int = 2 + testPar(_test() ^ 7 + 6, 78.78) ^ testConstInt1 + testArray[1] + testArray1.size()
 var _var: int = 1, obj.a, testArray1[2]
 var ar: int[][] = {{_test(), 2, 3, 6}, {"Ciao".size(), -4}}
+print()
 main {
-	_var, testArray[1 + 3] += 2 + 123, 10 / _var++ + der.a / testConstString.size()
+	_, testArray[1 + 3] = 2 + 123, 10 / _var++ + der.a / testConstString.size()
+	_, _ = createObject(), true
 	_var, obj.a ^= 2, 12 * 5 ^ -2
 	der.a -= 12 ^ 2
-	ar[1 - 6][-2 ^ 2] = "Test".size()
+	ar[1 - 6][-2 ^ 2], _ = "Test".size(), Object()
 	var c: char = "test"[0]
 	createObject().a, der1.object().a /= 45 ^ 9.5, 67 - 56.65
 	der.s, intVar, testArray = "Ciao", 12 * 3 * obj.a, {1, 2, 3}

@@ -57,6 +57,12 @@ namespace vnd {
         void transpileDeclaration(const Instruction &instruction);
 
         /**
+         * @brief Transpile the operation part of the instruction.
+         * @param instruction The instruction to transpile.
+         */
+        void transpileOperation(const Instruction &instruction);
+
+        /**
          * @brief Transpile the assignation part of the instruction.
          * @param instruction The instruction to transpile.
          */

@@ -23,6 +23,9 @@ namespace vnd {
                 case INITIALIZATION:
                     transpileDeclaration(instruction);
                     break;
+                case OPERATION:
+                    transpileOperation(instruction);
+                    break;
                 case ASSIGNATION:
                     transpileAssignation(instruction);
                     break;
@@ -167,7 +170,18 @@ namespace vnd {
         for(auto& var : variables) {
             Expression expression = factory.getExpression();
             if(equalToken.getType() == TokenType::OPERATION_EQUAL && !Scope::isNumber(var.second)) {
+                if(var.first == "_") {
+                    throw TranspilerException(FORMAT("incompatible operator {} for blank identifier", equalToken.getValue(), var.second), instruction);
+                }
                 throw TranspilerException(FORMAT("incompatible operator {} for {} type", equalToken.getValue(), var.second), instruction);
+            }
+            if(var.first == "_") {
+                if(expression.getType() == "void") {
+                    return throw TranspilerException("Cannot assign void expression", instruction);
+                } else {
+                    _text += FORMAT("{};\n{}", expression.getText(), std::string(C_ST(_tabs), '\t'));
+                    continue;
+                }    
             }
             if(!_scope->canAssign(var.second, expression.getType())) {
                 throw TranspilerException(FORMAT("Cannot assign {} to {}", expression.getType(), var.second), instruction);
@@ -196,6 +210,8 @@ namespace vnd {
         _text.erase(_text.size() - C_ST(_tabs) - 1, C_ST(_tabs) + 1);
     }
 
+    void Transpiler::transpileOperation(const Instruction &instruction) { LWARN(instruction.getLastType()); }
+
     std::vector<std::string_view> Transpiler::extractIdenfifiers(std::vector<Token>::iterator& iterator,
         const Instruction& instruction) const {
         using enum TokenType;
@@ -204,6 +220,9 @@ namespace vnd {
             if (iterator->getType() == IDENTIFIER) {
                 if (_scope->checkType(iterator->getValue())) {
                     throw TranspilerException(FORMAT("Identifier {} not allowed", iterator->getValue()), instruction);
+                }
+                if(iterator->getValue() == "_") {
+                    throw TranspilerException("Cannot declare variables using blank identifier", instruction);
                 }
                 result.emplace_back(iterator->getValue());
             }
@@ -254,10 +273,20 @@ namespace vnd {
         return result;
     }
 
-    std::string Transpiler::extractToken(std::vector<Token>::iterator & iterator, const std::vector<Token>::iterator &end,
+    std::string Transpiler::extractToken(std::vector<Token>::iterator &iterator, const std::vector<Token>::iterator &end,
                                             const std::vector<Token>::iterator &next, std::string &currentVariable, std::string &type) const noexcept {
         using enum TokenType;
         std::string_view value = iterator->getValue();
+        if(value == "_") {
+            if(currentVariable.empty() &&
+               (next == end || next->getType() == COMMA || next->getType() == EQUAL_OPERATOR || next->getType() == OPERATION_EQUAL)) {
+                currentVariable = "_";
+                type = "";
+                return {};
+            } else {
+                return "Cannot use blank identifier here";
+            }
+        }
         auto [newType, assignable] = std::make_pair(_scope->getVariableType(type, value),
                                                     _scope->getConstValue(type, value).empty());
         if(next != end && (next->getType() == COMMA || next->getType() == EQUAL_OPERATOR || next->getType() == OPERATION_EQUAL)) {
@@ -356,6 +385,7 @@ namespace vnd {
         std::string suffix = "";
         type = (++iterator)->getValue();
         typeValue = type;
+        if(typeValue == "void") { throw TranspilerException("Cannot declare void variables", instruction); }
         if(!_scope->checkType(type)) { throw TranspilerException(FORMAT("Type {} not valid", type), instruction); }
         if(!_scope->isPrimitive(type)) { typeValue = FORMAT("std::shared_ptr<{}>", type); }
         while(iterator != end && std::ranges::find(endTokens, iterator->getType()) == endTokens.end()) {

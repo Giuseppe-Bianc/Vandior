@@ -18,6 +18,7 @@ namespace vnd {
 
     std::shared_ptr<Scope> Scope::createMain() noexcept {
         auto mainScope = std::make_shared<Scope>(Scope{nullptr});
+        mainScope->addType("void", {});
         mainScope->addType("int", {});
         mainScope->addType("float", {});
         mainScope->addType("double", {});
