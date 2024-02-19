@@ -21,8 +21,9 @@ namespace vnd {
 
         /**
          * @brief Transpile the instructions.
+         * @return Bool indicating if the transpiling is successful.
          */
-        void transpile();
+        bool transpile();
 
     private:
         /**

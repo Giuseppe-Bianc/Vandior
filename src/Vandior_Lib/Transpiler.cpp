@@ -6,7 +6,7 @@ namespace vnd {
 
     Transpiler Transpiler::create(const std::vector<Instruction> &instructions) noexcept { return {std::move(instructions)}; }
 
-    void Transpiler::transpile() {
+    bool Transpiler::transpile() {
         using enum TokenType;
         using enum InstructionType;
         _output.open("output.cpp");
@@ -51,7 +51,9 @@ namespace vnd {
         } catch(const TranspilerException &e) {
             LERROR("{}", e.what());
             _output.close();
+            return false;
         }
+        return true;
     }
 
     void Transpiler::checkTrailingBracket(const Instruction &instruction) {

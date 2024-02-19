@@ -114,12 +114,13 @@ auto main(int argc, const char *const argv[]) -> int {
             instructions.back().checkToken(token);
         }
         vnd::Transpiler transpiler = vnd::Transpiler::create(instructions);
-        transpiler.transpile();
+        if(!transpiler.transpile()) { return EXIT_FAILURE; }
         /* vnd::Parser parser(code);
         Timer timeAst("ast creation time");
         auto ast = parser.parse();
         prettyPrint(*ast);
         LINFO("{}", timeAst);*/
+        if(system("g++ --version") == 0) { system("g++ --std=c++20 output.cpp"); }
     } catch(const std::exception &e) { LERROR("Unhandled exception in main: {}", e.what()); }  // NOLINT(*-include-cleaner)
 
     return EXIT_SUCCESS;  // Return appropriate exit code
