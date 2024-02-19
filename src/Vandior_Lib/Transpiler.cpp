@@ -405,7 +405,7 @@ namespace vnd {
         std::string suffix = "";
         type = (++iterator)->getValue();
         typeValue = type;
-        if(typeValue == "void") { throw TranspilerException("Cannot declare void variables", instruction); }
+        if(typeValue == "void" || typeValue == "any") { throw TranspilerException(FORMAT("Cannot declare {} variables", typeValue), instruction); }
         if(!_scope->checkType(type)) { throw TranspilerException(FORMAT("Type {} not valid", type), instruction); }
         if(!_scope->isPrimitive(type)) { typeValue = FORMAT("std::shared_ptr<{}>", type); }
         while(iterator != end && std::ranges::find(endTokens, iterator->getType()) == endTokens.end()) {

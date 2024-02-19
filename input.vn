@@ -1,3 +1,6 @@
 main {
-	print()
+	println("Hello world {} {} {}", Object(), 1 , true)
+	val a: int = {1, 2}.size()
+	var s: string = "Ciao {}"
+	print(s, createDerived())                  
 }

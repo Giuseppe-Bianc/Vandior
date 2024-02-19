@@ -312,7 +312,7 @@ namespace vnd {
             if(!constValue.empty()) { constValue.pop_back(); }
             _expressionText += FORMAT("{{{}}}", value);
         }
-        write(FORMAT("{{{}}}", value), vectorType);
+        write(FORMAT("vnd::vector<{}>({{{}}})", vectorType.substr(0, vectorType.size() - 2), value), vectorType);
         return {};
     }
 

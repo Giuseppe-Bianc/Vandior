@@ -34,7 +34,8 @@ namespace vnd {
         mainScope->addVariable("Derived.obj", "Object", false);
         mainScope->addConstant("Object.c", "int", "2");
         mainScope->addConstant("Derived._derivedConst", "bool", "true");
-        mainScope->addFun("print", FunType::create("void", {}));
+        mainScope->addFun("print", FunType::create("void", {"string", "any..."}));
+        mainScope->addFun("println", FunType::create("void", {"string", "any..."}));
         mainScope->addFun("_test", FunType::create("int", {}));
         mainScope->addFun("testPar", FunType::create("int", {"int", "int"}));
         mainScope->addFun("testPar", FunType::create("int", {"string"}));
@@ -147,10 +148,21 @@ namespace vnd {
             for(const auto &i : _funs.at(key)) {
                 auto params = i.getParams();
                 found = true;
+                if(!params.empty() && params.back().ends_with("...")) {
+                    if(expressions.size() == params.size() - 1) {
+                        params.pop_back();
+                    } else if(expressions.size() >= params.size()) {
+                        params.back().pop_back();
+                        params.back().pop_back();
+                        params.back().pop_back();
+                        std::string lastPar = params.back();
+                        while(params.size() < expressions.size()) { params.push_back(lastPar); }
+                    }
+                }
                 if(params.size() != expressions.size()) [[likely]] {
                     found = false;
                 } else [[unlikely]] {
-                    for(size_t par = 0; par != params.size(); par++) {
+                    for(size_t par = 0; par != expressions.size(); par++) {
                         if(!canAssign(params.at(par), expressions.at(par).getType())) { found = false; }
                     }
                 }
@@ -194,6 +206,7 @@ namespace vnd {
     }
 
     bool Scope::canAssign(const std::string &left, const std::string &right) const noexcept {
+        if(left == "any") { return true; }
         if((Scope::isNumber(left) && Scope::isNumber(right)) || left == right) { return true; }
         std::pair<std::string, std::string> types = {left, right};
         if((types.first.ends_with("[]") || types.second.ends_with("[]")) && Scope::checkVector(types.first) &&
