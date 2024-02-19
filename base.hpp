@@ -112,5 +112,6 @@ class Derived: public Object {
 		bool _derivedProperty;
 		std::shared_ptr<Object> obj;
 };
+void _print() { std::cout << "Hello World" << std::endl; }
 std::shared_ptr<Object> _createObject() { return std::make_shared<Object>(); }
 std::shared_ptr<Derived> _createDerived() { return std::make_shared<Derived>(); }

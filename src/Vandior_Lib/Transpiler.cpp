@@ -210,7 +210,27 @@ namespace vnd {
         _text.erase(_text.size() - C_ST(_tabs) - 1, C_ST(_tabs) + 1);
     }
 
-    void Transpiler::transpileOperation(const Instruction &instruction) { LWARN(instruction.getLastType()); }
+    void Transpiler::transpileOperation(const Instruction &instruction) {
+        auto tokens = instruction.getTokens();
+        auto iterator = tokens.begin();
+        auto endToken = tokens.end();
+        std::vector<Expression> expressions;
+        ExpressionFactory factory = ExpressionFactory::create(iterator, endToken, _scope, false);
+        while(iterator != endToken) {
+            if(std::string error = factory.parse({TokenType::COMMA}); !error.empty()) {
+                throw TranspilerException(error, instruction);
+            }
+            if(iterator != endToken) { iterator++; }
+        }
+        for(Expression expression : factory.getExpressions()) {
+            std::string text = expression.getText();
+            if(expression.getType() != "void" && !(text.ends_with("++") || text.ends_with("--"))) {
+                throw TranspilerException(FORMAT("Invalid operation {}", text), instruction);
+            }
+            _text += FORMAT("{};\n{}", text, std::string(C_ST(_tabs), '\t')); 
+        }
+        _text.erase(_text.size() - C_ST(_tabs) - 1, C_ST(_tabs) + 1);
+    }
 
     std::vector<std::string_view> Transpiler::extractIdenfifiers(std::vector<Token>::iterator& iterator,
         const Instruction& instruction) const {

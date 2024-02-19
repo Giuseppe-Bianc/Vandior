@@ -34,6 +34,7 @@ namespace vnd {
         mainScope->addVariable("Derived.obj", "Object", false);
         mainScope->addConstant("Object.c", "int", "2");
         mainScope->addConstant("Derived._derivedConst", "bool", "true");
+        mainScope->addFun("print", FunType::create("void", {}));
         mainScope->addFun("_test", FunType::create("int", {}));
         mainScope->addFun("testPar", FunType::create("int", {"int", "int"}));
         mainScope->addFun("testPar", FunType::create("int", {"string"}));
