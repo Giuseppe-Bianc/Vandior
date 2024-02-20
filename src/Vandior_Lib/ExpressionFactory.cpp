@@ -1,5 +1,6 @@
 #include "Vandior/ExpressionFactory.hpp"
 #include <algorithm>
+#include <Vandior/Log.hpp>
 
 #ifdef _MSC_VER
     #define POPEN _popen
@@ -276,7 +277,7 @@ namespace vnd {
 
     // NOLINTNEXTLINE(*-no-recursion)
     std::string ExpressionFactory::handleVectorInitialization(TupType &type) noexcept {
-        std::string oldType = std::get<2>(type);
+        std::string oldType;
         std::string vectorType;
         std::string value;
         std::string constValue;
@@ -307,13 +308,19 @@ namespace vnd {
             value.pop_back();
             if(value.at(0) == ' ') { value.erase(0, 1); }
         }
+        oldType = vectorType;
         vectorType += "[]";
         if(std::string error = checkType(type, vectorType); !error.empty()) { return error; }
         if(_const) {
             if(!constValue.empty()) { constValue.pop_back(); }
             _expressionText += FORMAT("{{{}}}", value);
         }
-        write(FORMAT("vnd::vector<{}>({{{}}})", vectorType.substr(0, vectorType.size() - 2), value), vectorType);
+        if(oldType.ends_with("]")) {
+            while(oldType.back() != '[') { oldType.pop_back(); }
+            oldType.pop_back();
+            oldType = FORMAT("vnd::vector<{}>", oldType);
+        }
+        write(FORMAT("vnd::vector<{}>({{{}}})", oldType, value), vectorType);
         return {};
     }
 

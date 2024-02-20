@@ -4,4 +4,7 @@ main {
 	var s: string = "Ciao {}"
 	println(s, createDerived())
 	print("{}", a)
+	val a1: int[] = {1, 2}
+	val a2: int[2] = {1, 2}
+	val a4: int[][] = {{1, -2}, {2, 3}}
 }
