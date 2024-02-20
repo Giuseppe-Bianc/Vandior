@@ -76,7 +76,7 @@ namespace vnd {
          * @return Vector of extracted identifiers.
          */
         [[nodiscard]] std::vector<std::string_view> extractIdenfifiers(std::vector<Token>::iterator &iterator,
-                                                                     const Instruction &instruction) const;
+                                                                       const Instruction &instruction) const;
 
         /**
          * @brief Extracts variables from an assignation instruction.
@@ -123,15 +123,17 @@ namespace vnd {
                                              std::string &currentVariable, std::string &type) const noexcept;
 
         /**
-        * @brief Transpile a type name.
-        * @param iterator Iterator to the instruction.
-        * @param end Iterator pointing to the end of the token sequence.
-        * @param endTokens Vector of token types indicating the end of parsing.
-        * @param instruction The instruction to extract type from.
-        * @return Pair that represent the type and the value to transpile.
-        */
-        [[nodiscard]] std::pair<std::string, std::string> transpileType(std::vector<Token>::iterator &iterator, const std::vector<Token>::iterator end,
-                                                    const std::vector<TokenType> &endTokens, const Instruction &instruction);
+         * @brief Transpile a type name.
+         * @param iterator Iterator to the instruction.
+         * @param end Iterator pointing to the end of the token sequence.
+         * @param endTokens Vector of token types indicating the end of parsing.
+         * @param instruction The instruction to extract type from.
+         * @return Pair that represent the type and the value to transpile.
+         */
+        [[nodiscard]] std::pair<std::string, std::string> transpileType(std::vector<Token>::iterator &iterator,
+                                                                        const std::vector<Token>::iterator &end,
+                                                                        const std::vector<TokenType> &endTokens,
+                                                                        const Instruction &instruction);
 
         /**
          * @brief Opens a new scope.

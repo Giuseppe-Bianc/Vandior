@@ -60,7 +60,7 @@ namespace vnd {
          * @param text The vector of strings representing the expression.
          * @param type The type of the expression.
          */
-        Expression(const std::string &text, const std::string type, const bool isConst,
+        Expression(const std::string &text, const std::string &type, const bool isConst,
                    const std::string &value) noexcept;
 
         std::string _text;  ///< Vector of strings representing the expression.

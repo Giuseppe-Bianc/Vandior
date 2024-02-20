@@ -23,6 +23,7 @@ namespace vnd {
     }
     // NOLINTEND
 
+    // NOLINTBEGIN(*-include-cleaner)
     bool ExpressionFactory::isSquareType(const std::string_view &type) noexcept { return type == "int" || type == "operator"; }
 
     std::string ExpressionFactory::evaluate(const std::string &expression) noexcept {
@@ -37,6 +38,7 @@ namespace vnd {
         return std::to_string(result);
     }
 
+    // NOLINTNEXTLINE(*-function-cognitive-complexity)
     std::string ExpressionFactory::parse(const std::vector<TokenType> &endToken) noexcept {  // NOLINT(*-no-recursion)
         _text = {};
         _expressionText = "";
@@ -55,7 +57,7 @@ namespace vnd {
                std::next(_iterator)->getType() == TokenType::OPEN_PARENTESIS) {
                 if(auto error = handleFun(type); !error.empty()) { return error; };
             } else if(_iterator->getType() == TokenType::OPEN_PARENTESIS) {
-                if(auto error = handleInnerExpression(type); !error.empty()) return error;
+                if(auto error = handleInnerExpression(type); !error.empty()) { return error; }
             } else if(_iterator->getType() == TokenType::OPEN_SQ_PARENTESIS) {
                 if(std::string error = handleSquareExpression(type); !error.empty()) { return error; }
             } else if(_iterator->getType() == TokenType::OPEN_CUR_PARENTESIS) {
@@ -67,7 +69,6 @@ namespace vnd {
         if(Scope::isNumber(std::get<2>(type))) {
             std::string value;
             if(_const) {
-                
                 value = ExpressionFactory::evaluate(_expressionText);
             }
             _expressions.emplace_back(
@@ -153,9 +154,9 @@ namespace vnd {
         if(value == "^") {
             if(!_power.has_value()) { _power = _text.size() - 2; }
             if(_sq) {
-                _text.emplace(_text.begin() + _power.value(), "int(std::pow(");
+                _text.emplace(_text.begin() + C_LL(_power.value()), "int(std::pow(");
             } else {
-                _text.emplace(_text.begin() + _power.value(), "std::pow(");
+                _text.emplace(_text.begin() + C_LL(_power.value()), "std::pow(");
             }
             _text.emplace_back(",");
             _expressionText += "**";
@@ -274,7 +275,7 @@ namespace vnd {
     }
 
     // NOLINTNEXTLINE(*-no-recursion)
-    std::string ExpressionFactory::handleVectorInitialization(TupType& type) noexcept {
+    std::string ExpressionFactory::handleVectorInitialization(TupType &type) noexcept {
         std::string oldType = std::get<2>(type);
         std::string vectorType;
         std::string value;
@@ -289,8 +290,8 @@ namespace vnd {
                 }
             }
         }
-        for(Expression& expression : factory.getExpressions()) {
-            if(vectorType == "") {
+        for(Expression &expression : factory.getExpressions()) {
+            if(vectorType.empty()) {
                 vectorType = expression.getType();
             } else if(!_scope->canAssign(vectorType, expression.getType())) {
                 return FORMAT("Incompatible types in vector {}, {}", vectorType, expression.getType());
@@ -382,6 +383,7 @@ namespace vnd {
         return FORMAT("Incompatible types: {}, {}", std::get<2>(oldType), newType);
     }
 
+    // NOLINTNEXTLINE(*-easily-swappable-parameters)
     bool ExpressionFactory::checkNextToken(const std::string &type, const std::string &value) noexcept {
         if(std::next(_iterator) != _end && (std::next(_iterator)->getType() == TokenType::DOT_OPERATOR ||
                                             std::next(_iterator)->getType() == TokenType::OPEN_SQ_PARENTESIS)) {
@@ -398,11 +400,10 @@ namespace vnd {
         return false;
     }
 
-    bool ExpressionFactory::checkUnaryOperator(const std::string_view& type) const noexcept {
+    bool ExpressionFactory::checkUnaryOperator(const std::string_view &type) const noexcept {
         return _iterator->getType() != TokenType::IDENTIFIER || (_iterator + 1) == _end ||
                (_iterator + 1)->getType() != TokenType::UNARY_OPERATOR ||
                (_temp.empty() && type == "int" && !_scope->isConstant(_type, _iterator->getValue()));
-
     }
 
     void ExpressionFactory::checkOperators(std::string &value) noexcept {
@@ -430,5 +431,5 @@ namespace vnd {
         _iterator++;
         _dot = false;
     }
-
+    // NOLINTEND(*-include-cleaner)
 }  // namespace vnd

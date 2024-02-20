@@ -1,10 +1,11 @@
 #include "Vandior/Transpiler.hpp"
 
 namespace vnd {
+    // NOLINTBEGIN(*-include-cleaner)
     Transpiler::Transpiler(const std::vector<Instruction> &instructions) noexcept
-      : _tabs(0), _instructions(std::move(instructions)), _scope(Scope::createMain()), _main(0) {}
+      : _tabs(0), _instructions(instructions), _scope(Scope::createMain()), _main(0) {}
 
-    Transpiler Transpiler::create(const std::vector<Instruction> &instructions) noexcept { return {std::move(instructions)}; }
+    Transpiler Transpiler::create(const std::vector<Instruction> &instructions) noexcept { return {instructions}; }
 
     bool Transpiler::transpile() {
         using enum TokenType;
@@ -77,12 +78,14 @@ namespace vnd {
         _text += "int main(int argc, char **argv) {\n";
         _main = 1;
         openScope();
-        value = FORMAT("{:\t^{}}const vnd::vector<string> _args(argv, argv + argc);", "", C_ST(_tabs));;
+        value = FORMAT("{:\t^{}}const vnd::vector<string> _args(argv, argv + argc);", "", C_ST(_tabs));
+        ;
         _text += value;
         _scope->addConstant("args", "string[]", value);
         checkTrailingBracket(instruction);
     }
 
+    // NOLINTNEXTLINE(*-function-cognitive-complexity)
     void Transpiler::transpileDeclaration(const Instruction &instruction) {
         auto tokens = instruction.getTokens();
         auto iterator = tokens.begin();
@@ -94,7 +97,9 @@ namespace vnd {
         if (isConst || isVal) { _text += "const "; }
         auto [type, typeValue] = transpileType(iterator, tokens.end(), { TokenType::EQUAL_OPERATOR }, instruction);
         _text += FORMAT("{} ", typeValue);
-        if(isConst && !Scope::isPrimitive(type)) { throw TranspilerException(FORMAT("Cannot declare const variables of {} type", type), instruction); }
+        if(isConst && !Scope::isPrimitive(type)) {
+            throw TranspilerException(FORMAT("Cannot declare const variables of {} type", type), instruction);
+        }
         // Handle initialization
         if(iterator != endToken && iterator->getType() == TokenType::EQUAL_OPERATOR) {
             iterator++;
@@ -399,12 +404,14 @@ namespace vnd {
         return {};
     }
 
-    std::pair<std::string, std::string> Transpiler::transpileType(std::vector<Token>::iterator &iterator, const std::vector<Token>::iterator end,
-                                            const std::vector<TokenType> &endTokens, const Instruction &instruction) {
+    std::pair<std::string, std::string> Transpiler::transpileType(std::vector<Token>::iterator &iterator,
+                                                                  const std::vector<Token>::iterator &end,
+                                                                  const std::vector<TokenType> &endTokens,
+                                                                  const Instruction &instruction) {
         std::string type;
-        std::string typeValue; 
-        std::string prefix = "";
-        std::string suffix = "";
+        std::string typeValue;
+        std::string prefix;
+        std::string suffix;
         type = (++iterator)->getValue();
         typeValue = type;
         if(typeValue == "void" || typeValue == "any") { throw TranspilerException(FORMAT("Cannot declare {} variables", typeValue), instruction); }
@@ -414,24 +421,24 @@ namespace vnd {
             if(iterator->getType() == TokenType::OPEN_SQ_PARENTESIS) {
                 if((iterator + 1)->getType() == TokenType::CLOSE_SQ_PARENTESIS) {
                     prefix += "vnd::vector<";
-                    suffix = ">" + suffix;
+                    suffix = FORMAT(">{}", suffix);
                     type += "[]";
                 } else {
                     std::string size;
                     iterator++;
                     ExpressionFactory factory = ExpressionFactory::create(iterator, end, _scope, true, true);
-                    if(std::string error = factory.parse({TokenType::CLOSE_SQ_PARENTESIS, TokenType::EQUAL_OPERATOR}); error != "") {
+                    if(std::string error = factory.parse({TokenType::CLOSE_SQ_PARENTESIS, TokenType::EQUAL_OPERATOR});
+                       !error.empty()) {
                         throw TranspilerException(error, instruction);
                     };
                     Expression expression = factory.getExpression();
                     if(!expression.isConst()) {
-                        throw TranspilerException("Canno evaluate array dimension at compile time", instruction);
+                        throw TranspilerException("Cannot evaluate array dimension at compile time", instruction);
                     }
                     size = expression.getValue().substr(0, expression.getValue().find('.'));
                     if(std::stoi(size) < 0) { throw TranspilerException("Array cannot have negative size", instruction); }
                     prefix += "vnd::array<";
-                    suffix = FORMAT(", {}>{}", size,
-                                    suffix);
+                    suffix = FORMAT(", {}>{}", size, suffix);
                     type += FORMAT("[{}]", size);
                 }
             }
@@ -460,4 +467,5 @@ namespace vnd {
         }
         _text += ", ";
     }
+    // NOLINTEND(*-include-cleaner)
 }  // namespace vnd

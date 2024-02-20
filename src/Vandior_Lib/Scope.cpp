@@ -1,10 +1,9 @@
 #include "Vandior/Scope.hpp"
-
+// NOLINTBEGIN(*-include-cleaner,*-identifier-length)
 DISABLE_WARNINGS_PUSH(
     4005 4201 4459 4514 4625 4626 4820 6244 6285 6385 6386 26409 26415 26418 26429 26432 26437 26438 26440 26446 26447 26450 26451 26455 26457 26459 26460 26461 26467 26472 26473 26474 26475 26481 26482 26485 26490 26491 26493 26494 26495 26496 26497 26498 26800 26814 26818 26826)
 
 namespace vnd {
-
     // NOLINTBEGIN
     std::vector<std::string> Scope::_numberTypes = {"int", "float"};
     std::vector<std::string> Scope::_primitiveTypes = {"int", "float", "double", "char", "bool", "string"};
@@ -130,7 +129,7 @@ namespace vnd {
         if(_vals.contains(key)) { return _vals.at(key); }
         if(_consts.contains(key)) { return _consts.at(key).first; }
         if(_types.contains(type)) {
-            for(std::string i : _types.at(type)) {
+            for(const std::string &i : _types.at(type)) {
                 std::string_view result = getVariableType(i, identifier);
                 if(!result.empty()) { return result; }
             }
@@ -139,7 +138,7 @@ namespace vnd {
         return "";
     }
 
-    // NOLINTNEXTLINE(*-no-recursion)
+    // NOLINTNEXTLINE(*-no-recursion,readability-function-cognitive-complexity)
     std::pair<std::string, bool> Scope::getFunType(const std::string &type, const std::string_view &identifier,
                                                    const std::vector<Expression> &expressions) const noexcept {
         auto key = Scope::getKey(Scope::getType(type), identifier);
@@ -170,7 +169,7 @@ namespace vnd {
             }
         }
         if(_types.contains(type)) {
-            for(std::string i : _types.at(type)) {
+            for(const std::string &i : _types.at(type)) {
                 auto [result, constructor] = getFunType(i, identifier, expressions);
                 if(!result.empty()) { return {result, constructor}; }
             }
@@ -179,11 +178,12 @@ namespace vnd {
         return {"", false};
     }
 
+    // NOLINTNEXTLINE(*-no-recursion)
     std::string Scope::getConstValue(const std::string &type, const std::string_view &identifier) const noexcept {
         auto key = Scope::getKey(type, identifier);
         if(_consts.contains(key)) { return _consts.at(key).second; }
         if(_types.contains(type)) {
-            for(std::string i : _types.at(type)) {
+            for(const std::string &i : _types.at(type)) {
                 std::string result = getConstValue(i, identifier);
                 if(!result.empty()) { return result; }
             }
@@ -192,11 +192,12 @@ namespace vnd {
         return "";
     }
 
+    // NOLINTNEXTLINE(*-no-recursion)
     bool Scope::isConstant(const std::string &type, const std::string_view &identifier) const noexcept {
         auto key = Scope::getKey(type, identifier);
         if(_consts.contains(key) || _vals.contains(key)) { return true; }
         if(_types.contains(type)) {
-            for(std::string i : _types.at(type)) {
+            for(const std::string &i : _types.at(type)) {
                 bool result = isConstant(i, identifier);
                 if(result) { return result; }
             }
@@ -205,6 +206,7 @@ namespace vnd {
         return false;
     }
 
+    // NOLINTNEXTLINE(*-no-recursion)
     bool Scope::canAssign(const std::string &left, const std::string &right) const noexcept {
         if(left == "any") { return true; }
         if((Scope::isNumber(left) && Scope::isNumber(right)) || left == right) { return true; }
@@ -214,7 +216,7 @@ namespace vnd {
             return canAssign(types.first, types.second);
         }
         if(_types.contains(right)) {
-            for(std::string i : _types.at(right)) {
+            for(const std::string &i : _types.at(right)) {  // NOLINT(*-use-anyofallof)
                 if(canAssign(left, i)) { return true; }
             }
         }
@@ -225,3 +227,4 @@ namespace vnd {
 }  // namespace vnd
 
 DISABLE_WARNINGS_POP()
+// NOLINTEND(*-include-cleaner, *-identifier-length)

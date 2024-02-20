@@ -2,6 +2,7 @@
 #include <algorithm>
 
 namespace vnd {
+    // NOLINTBEGIN(*-include-cleaner)
     const std::vector<TokenType> Instruction::_expressionStartTokens = {
         TokenType::IDENTIFIER,      TokenType::INTEGER,
         TokenType::DOUBLE,          TokenType::CHAR,
@@ -152,7 +153,7 @@ namespace vnd {
         case BLANK:
         case OPERATION:
             setLastType(OPERATION);
-            _allowedTokens = {EQUAL_OPERATOR,  OPERATION_EQUAL, COMMA, eofTokenType};
+            _allowedTokens = {EQUAL_OPERATOR, OPERATION_EQUAL, COMMA, eofTokenType};
             emplaceUnaryOperator(type);
             break;
         case DECLARATION:
@@ -514,5 +515,5 @@ namespace vnd {
         }
         if(type != TokenType::UNARY_OPERATOR) { _allowedTokens.emplace_back(TokenType::UNARY_OPERATOR); }
     }
-
+    // NOLINTEND(*-include-cleaner)
 }  // namespace vnd
