@@ -1,10 +1,11 @@
 main {
 	println("Hello world {} {} {}", Object(), 1 , true)
-	val a: int = {1, 2}.size()
 	var s: string = "Ciao {}"
 	println(s, createDerived())
+	val a1, b: Object[] = {Object()}, {createObject(), Derived()}
+	val a: int = a1.size()
 	print("{}", a)
-	val a1: int[] = {1, 2}
-	val a2: int[2] = {1, 2}
-	val a4: int[][] = {{1, -2}, {2, 3}}
+	val a2: char[2] = {'a', 'b'}
+	val a3: int[][2] = {{1, 2}, {2, 3}}
+	val a4, b2: int[][2][2][] = {{{{1}, {-2}}, {{2}, {3}}}}, {{{{1}, {-2}}, {{2}, {3, 4}}}}
 }

@@ -1,6 +1,5 @@
 #include "Vandior/ExpressionFactory.hpp"
 #include <algorithm>
-#include <Vandior/Log.hpp>
 
 #ifdef _MSC_VER
     #define POPEN _popen
@@ -315,12 +314,7 @@ namespace vnd {
             if(!constValue.empty()) { constValue.pop_back(); }
             _expressionText += FORMAT("{{{}}}", value);
         }
-        if(oldType.ends_with("]")) {
-            while(oldType.back() != '[') { oldType.pop_back(); }
-            oldType.pop_back();
-            oldType = FORMAT("vnd::vector<{}>", oldType);
-        }
-        write(FORMAT("vnd::vector<{}>({{{}}})", oldType, value), vectorType);
+        write(FORMAT("{{{}}}", value), vectorType);
         return {};
     }
 

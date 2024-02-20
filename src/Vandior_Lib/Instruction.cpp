@@ -358,7 +358,6 @@ namespace vnd {
                 _allowedTokens = {COMMA, CLOSE_CUR_PARENTESIS};
                 return;
             }
-            _allowedTokens = {DOT_OPERATOR, OPEN_SQ_PARENTESIS};
             emplaceExpressionTokens();
             return;
         }
