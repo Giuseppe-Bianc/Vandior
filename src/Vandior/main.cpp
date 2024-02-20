@@ -69,11 +69,6 @@ auto main(int argc, const char *const argv[]) -> int {
         LERROR("Python not found");
         return EXIT_FAILURE;
     }
-    std::string str;
-    try {
-        str = readFromFile(filename.data());
-    } catch(std::runtime_error &e) { LINFO("error {}", e.what()); }
-    std::string_view code(str);
     //LINFO("{}", code);
     //LINFO("code length {}", code.length());
     try {
@@ -81,7 +76,9 @@ auto main(int argc, const char *const argv[]) -> int {
             FORMAT("{} version {}", Vandior::cmake::project_name, Vandior::cmake::project_version)};  // NOLINT(*-include-cleaner)
 
         std::optional<std::string> message;  // NOLINT(*-include-cleaner)
+        std::optional<std::string> path;
         app.add_option("-m,--message", message, "A message to print back out");
+        app.add_option("-i,--input", path, "The inpu file");
         bool show_version = false;
         app.add_flag("--version", show_version, "Show version information");
 
@@ -91,6 +88,13 @@ auto main(int argc, const char *const argv[]) -> int {
             LINFO("{}", Vandior::cmake::project_version);
             return EXIT_SUCCESS;  // NOLINT(*-include-cleaner)
         }
+        std::string str;
+        if(path.has_value()) {
+            str = readFromFile(path.value());
+        } else {
+            str = readFromFile(filename.data());
+        }
+        std::string_view code(str);
         vnd::Tokenizer tokenizer{code, filename};
         std::vector<vnd::Token> tokens;
         timeTokenizer(tokenizer, tokens);
