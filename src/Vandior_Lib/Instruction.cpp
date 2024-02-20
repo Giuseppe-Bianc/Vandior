@@ -41,14 +41,18 @@ namespace vnd {
     std::string Instruction::toString() const noexcept {
         std::string result;
         if(_tokens.empty()) { return ""; }
-        result += FORMAT("{}\t", _tokens.at(0).getLine());
+        result += FORMAT("{}\t", _tokens.front().getLine());
         for(const Token &iter : _tokens) {
-            if(iter.getType() == TokenType::CHAR) [[likely]] {
+            switch(iter.getType()) {
+            case TokenType::CHAR:
                 result += FORMAT("'{}'", iter.getValue());
-            } else if(iter.getType() == TokenType::STRING) [[likely]] {
+                break;
+            case TokenType::STRING:
                 result += FORMAT(R"("{}")", iter.getValue());
-            } else [[unlikely]] {
+                break;
+            default:
                 result += FORMAT("{} ", iter.getValue());
+                break;
             }
         }
         return result;
@@ -198,10 +202,7 @@ namespace vnd {
         using enum InstructionType;
         if(isExpression()) {
             _allowedTokens = {OPERATOR, MINUS_OPERATOR, LOGICAL_OPERATOR};
-            if(type == STRING) {
-                _allowedTokens.emplace_back(DOT_OPERATOR);
-                _allowedTokens.emplace_back(OPEN_SQ_PARENTESIS);
-            }
+            if(type == STRING) { _allowedTokens.insert(_allowedTokens.end(), {DOT_OPERATOR, OPEN_SQ_PARENTESIS}); }
             this->emplaceExpressionTokens();
             return;
         }
@@ -299,10 +300,7 @@ namespace vnd {
         removeBooleanOperator();
         if(isExpression()) {
             _allowedTokens = {OPERATOR, MINUS_OPERATOR, LOGICAL_OPERATOR, DOT_OPERATOR, OPEN_SQ_PARENTESIS};
-            if(type == CLOSE_SQ_PARENTESIS) {
-                _allowedTokens.emplace_back(UNARY_OPERATOR);
-                _allowedTokens.emplace_back(OPEN_PARENTESIS);
-            }
+            if(type == CLOSE_SQ_PARENTESIS) { _allowedTokens.insert(_allowedTokens.end(), {UNARY_OPERATOR, OPEN_PARENTESIS}); }
             emplaceExpressionTokens();
             return;
         }
@@ -313,11 +311,8 @@ namespace vnd {
                 _allowedTokens.emplace_back(eofTokenType);
                 break;
             }
-            _allowedTokens.emplace_back(EQUAL_OPERATOR);
-            _allowedTokens.emplace_back(OPERATION_EQUAL);
-            _allowedTokens.emplace_back(UNARY_OPERATOR);
-            _allowedTokens.emplace_back(COMMA);
-            _allowedTokens.emplace_back(OPEN_PARENTESIS);
+            _allowedTokens.insert(_allowedTokens.end(),
+                                  {EQUAL_OPERATOR, OPERATION_EQUAL, UNARY_OPERATOR, COMMA, OPEN_PARENTESIS});
             break;
         case DECLARATION:
             _allowedTokens = {EQUAL_OPERATOR, eofTokenType};
@@ -475,13 +470,11 @@ namespace vnd {
         if(emplaceTokenType(SQUARE_EXPRESSION, CLOSE_SQ_PARENTESIS)) { return; }
         if(emplaceTokenType(EXPRESSION, CLOSE_PARENTESIS)) { return; }
         if(lastTypeIs(PARAMETER_EXPRESSION)) {
-            _allowedTokens.emplace_back(CLOSE_PARENTESIS);
-            _allowedTokens.emplace_back(COMMA);
+            _allowedTokens.insert(_allowedTokens.end(), {CLOSE_PARENTESIS, COMMA});
             return;
         }
         if(lastTypeIs(ARRAY_INIZIALIZATION)) {
-            _allowedTokens.emplace_back(CLOSE_CUR_PARENTESIS);
-            _allowedTokens.emplace_back(COMMA);
+            _allowedTokens.insert(_allowedTokens.end(), {CLOSE_CUR_PARENTESIS, COMMA});
             return;
         }
         if(emplaceForTokens()) { return; }
@@ -489,8 +482,7 @@ namespace vnd {
     }
 
     inline void Instruction::emplaceCommaEoft() noexcept {
-        _allowedTokens.emplace_back(TokenType::COMMA);
-        _allowedTokens.emplace_back(eofTokenType);
+        _allowedTokens.insert(_allowedTokens.end(), {TokenType::COMMA, eofTokenType});
     }
 
     inline void Instruction::emplaceBooleanOperator() noexcept {
@@ -508,9 +500,8 @@ namespace vnd {
 
     inline void Instruction::emplaceUnaryOperator(const TokenType &type) noexcept {
         if(type == TokenType::IDENTIFIER) {
-            _allowedTokens.emplace_back(TokenType::DOT_OPERATOR);
-            _allowedTokens.emplace_back(TokenType::OPEN_PARENTESIS);
-            _allowedTokens.emplace_back(TokenType::OPEN_SQ_PARENTESIS);
+            _allowedTokens.insert(_allowedTokens.end(),
+                                  {TokenType::DOT_OPERATOR, TokenType::OPEN_PARENTESIS, TokenType::OPEN_SQ_PARENTESIS});
         }
         if(type != TokenType::UNARY_OPERATOR) { _allowedTokens.emplace_back(TokenType::UNARY_OPERATOR); }
     }

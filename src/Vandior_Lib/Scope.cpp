@@ -180,8 +180,7 @@ namespace vnd {
 
     // NOLINTNEXTLINE(*-no-recursion)
     std::string Scope::getConstValue(const std::string &type, const std::string_view &identifier) const noexcept {
-        auto key = Scope::getKey(type, identifier);
-        if(_consts.contains(key)) { return _consts.at(key).second; }
+        if(auto key = Scope::getKey(type, identifier); _consts.contains(key)) { return _consts.at(key).second; }
         if(_types.contains(type)) {
             for(const std::string &i : _types.at(type)) {
                 std::string result = getConstValue(i, identifier);
@@ -194,8 +193,7 @@ namespace vnd {
 
     // NOLINTNEXTLINE(*-no-recursion)
     bool Scope::isConstant(const std::string &type, const std::string_view &identifier) const noexcept {
-        auto key = Scope::getKey(type, identifier);
-        if(_consts.contains(key) || _vals.contains(key)) { return true; }
+        if(auto key = Scope::getKey(type, identifier); _consts.contains(key) || _vals.contains(key)) { return true; }
         if(_types.contains(type)) {
             for(const std::string &i : _types.at(type)) {
                 bool result = isConstant(i, identifier);
@@ -210,8 +208,8 @@ namespace vnd {
     bool Scope::canAssign(const std::string &left, const std::string &right) const noexcept {
         if(left == "any") { return true; }
         if((Scope::isNumber(left) && Scope::isNumber(right)) || left == right) { return true; }
-        std::pair<std::string, std::string> types = {left, right};
-        if((types.first.ends_with("[]") || types.second.ends_with("[]")) && Scope::checkVector(types.first) &&
+        if(std::pair<std::string, std::string> types = {left, right};
+           (types.first.ends_with("[]") || types.second.ends_with("[]")) && Scope::checkVector(types.first) &&
            Scope::checkVector(types.second)) {
             return canAssign(types.first, types.second);
         }

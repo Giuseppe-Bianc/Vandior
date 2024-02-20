@@ -38,8 +38,7 @@ namespace vnd {
         return std::to_string(result);
     }
 
-    // NOLINTNEXTLINE(*-function-cognitive-complexity)
-    std::string ExpressionFactory::parse(const std::vector<TokenType> &endToken) noexcept {  // NOLINT(*-no-recursion)
+    void ExpressionFactory::resetVariables() noexcept {
         _text = {};
         _expressionText = "";
         _power.reset();
@@ -47,26 +46,41 @@ namespace vnd {
         _dot = false;
         _type = "";
         _temp = "";
-        std::tuple<bool, bool, std::string> type = std::make_tuple(false, false, std::string{});
+    }
+
+    // NOLINTNEXTLINE(*-function-cognitive-complexity)
+    std::string ExpressionFactory::parse(const std::vector<TokenType> &endToken) noexcept {  // NOLINT(*-no-recursion)
+        using enum vnd::TokenType;
+        resetVariables();
+        exprtk::expression<double> expression;
+        exprtk::parser<double> parser;
+        auto type = std::make_tuple(false, false, std::string{});
         while(_iterator != _end && std::ranges::find(endToken, _iterator->getType()) == endToken.end()) {
-            if(_iterator->getType() == TokenType::UNARY_OPERATOR) {
+            auto iterType = _iterator->getType();
+            if(iterType == UNARY_OPERATOR) {
                 _iterator++;
                 continue;
             }
-            if(_iterator->getType() == TokenType::IDENTIFIER && std::next(_iterator) != _end &&
-               std::next(_iterator)->getType() == TokenType::OPEN_PARENTESIS) {
+            if(iterType == IDENTIFIER && std::next(_iterator) != _end && std::next(_iterator)->getType() == OPEN_PARENTESIS) {
                 if(auto error = handleFun(type); !error.empty()) { return error; };
-            } else if(_iterator->getType() == TokenType::OPEN_PARENTESIS) {
+            } else if(iterType == OPEN_PARENTESIS) {
                 if(auto error = handleInnerExpression(type); !error.empty()) { return error; }
-            } else if(_iterator->getType() == TokenType::OPEN_SQ_PARENTESIS) {
+            } else if(iterType == OPEN_SQ_PARENTESIS) {
                 if(std::string error = handleSquareExpression(type); !error.empty()) { return error; }
-            } else if(_iterator->getType() == TokenType::OPEN_CUR_PARENTESIS) {
+            } else if(iterType == OPEN_CUR_PARENTESIS) {
                 if(std::string error = handleVectorInitialization(type); !error.empty()) { return error; }
             } else if(std::string error = handleToken(type); !error.empty()) {
                 return error;
             }
         }
-        if(Scope::isNumber(std::get<2>(type))) {
+        if(std::get<0>(type)) { std::get<2>(type) = "bool"; }
+        handleFinalExpression(expression, parser, type);
+        return {};
+    }
+
+    void ExpressionFactory::handleFinalExpression(exprtk::expression<double> &expression, exprtk::parser<double> &parser,
+                                                  const std::tuple<bool, bool, std::string> &type) noexcept {
+        /*if(Scope::isNumber(std::get<2>(type))) {
             std::string value;
             if(_const) {
                 value = ExpressionFactory::evaluate(_expressionText);
@@ -75,8 +89,15 @@ namespace vnd {
                 Expression::create(_text, std::get<2>(type), _const, value));
         } else {
             _expressions.emplace_back(Expression::create(_text, std::get<2>(type), _const));
+        }*/
+        if(Scope::isNumber(std::get<2>(type))) {
+            std::string value;
+            if(_const) { parser.compile(_expressionText, expression); }
+            value = std::to_string(expression.value());
+            _expressions.emplace_back(Expression::create(_text, std::get<2>(type), _const, value));
+        } else {
+            _expressions.emplace_back(Expression::create(_text, std::get<2>(type), _const));
         }
-        return {};
     }
 
     std::size_t ExpressionFactory::size() const noexcept { return _expressions.size(); }
@@ -159,7 +180,7 @@ namespace vnd {
                 _text.emplace(_text.begin() + C_LL(_power.value()), "std::pow(");
             }
             _text.emplace_back(",");
-            _expressionText += "**";
+            _expressionText += value;
             _iterator++;
             return;
         }
@@ -283,14 +304,13 @@ namespace vnd {
         std::vector<Expression> expressions;
         ExpressionFactory factory = ExpressionFactory::create(_iterator, _end, _scope, _const);
         while(_iterator->getType() != TokenType::CLOSE_CUR_PARENTESIS) {
+            using enum vnd::TokenType;
             _iterator++;
-            if(_iterator->getType() != TokenType::CLOSE_CUR_PARENTESIS) {
-                if(std::string error = factory.parse({TokenType::COMMA, TokenType::CLOSE_CUR_PARENTESIS}); !error.empty()) {
-                    return error;
-                }
+            if(_iterator->getType() != CLOSE_CUR_PARENTESIS) {
+                if(std::string error = factory.parse({COMMA, CLOSE_CUR_PARENTESIS}); !error.empty()) { return error; }
             }
         }
-        for(Expression &expression : factory.getExpressions()) {
+        for(const Expression &expression : factory.getExpressions()) {
             if(vectorType.empty()) {
                 vectorType = expression.getType();
             } else if(!_scope->canAssign(vectorType, expression.getType())) {

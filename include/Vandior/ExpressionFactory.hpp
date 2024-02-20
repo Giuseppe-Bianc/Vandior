@@ -6,6 +6,7 @@
 #include "Expression.hpp"
 #include "Scope.hpp"
 #include "Token.hpp"
+#include "exprtk.hpp"
 
 namespace vnd {
 
@@ -24,7 +25,8 @@ namespace vnd {
          * @return ExpressionFactory instance.
          */
         [[nodiscard]] static ExpressionFactory create(std::vector<Token>::iterator &iterator, std::vector<Token>::iterator end,
-                                                      std::shared_ptr<Scope> scope, const bool isConst, const bool sq = false) noexcept;
+                                                      std::shared_ptr<Scope> scope, const bool isConst,
+                                                      const bool sq = false) noexcept;
 
         /**
          * @brief Parses the token sequence until reaching the specified end tokens.
@@ -189,6 +191,9 @@ namespace vnd {
          * @param type String_view representing the type of the value.
          */
         void write(const std::string &value, const std::string_view &type) noexcept;
+        void resetVariables() noexcept;
+        void handleFinalExpression(exprtk::expression<double> &expression, exprtk::parser<double> &parser,
+                                   const std::tuple<bool, bool, std::string> &type) noexcept;
     };
 
 }  // namespace vnd

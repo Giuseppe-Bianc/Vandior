@@ -1,4 +1,6 @@
 main {
+	const test: bool = 2 ^ 4 == 16
+	const f: int = 2 ^ 9 + 88
 	println("Hello world {} {} {}", Object(), 1 , true)
 	var s: string = "Ciao {}"
 	println(s, createDerived())
