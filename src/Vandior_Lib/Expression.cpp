@@ -4,7 +4,7 @@ namespace vnd {
 
     // clang-format off
     // NOLINTNEXTLINE
-    Expression::Expression(const std::vector<std::string> &text, const std::string type, const bool isConst, const std::string &value) noexcept
+    Expression::Expression(const std::vector<std::string> &text, const std::string &type, const bool isConst, const std::string &value) noexcept
       : _text(text), _type(type), _const(isConst), _value(value) {
     }
 

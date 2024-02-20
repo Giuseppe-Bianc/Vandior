@@ -1,8 +1,8 @@
 #pragma once
 
 #include "Token.hpp"
-#include <vector>
 #include <any>
+#include <vector>
 
 namespace vnd {
 
@@ -22,7 +22,7 @@ namespace vnd {
          * @return An Expression object.
          */
         [[nodiscard]] static Expression create(const std::vector<std::string> &text, const std::string &type, const bool isConst,
-                                                const std::string &value) noexcept;
+                                               const std::string &value) noexcept;
 
         /**
          * @brief Gets the text representation of the expression.
@@ -47,7 +47,7 @@ namespace vnd {
          * @param text The vector of strings representing the expression.
          * @param type The type of the expression.
          */
-        Expression(const std::vector<std::string> &text, const std::string type, const bool isConst,
+        Expression(const std::vector<std::string> &text, const std::string &type, const bool isConst,
                    const std::string &value) noexcept;
 
         std::vector<std::string> _text;  ///< Vector of strings representing the expression.
