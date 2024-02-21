@@ -170,7 +170,7 @@ namespace vnd {
             std::string typeValue = Scope::getTypeValue(var.second);
             std::string key = _scope->addTmp(var.first, var.second);
             _text += FORMAT("vnd::tmp[\"{}\"] = {};\n{}", key, key, std::string(C_ST(_tabs), '\t'));
-            tmp.push_back(key);
+            tmp.push_back(FORMAT("std::any_cast<{}>(vnd::tmp[\"{}\"])", typeValue, key));
         }
         while(iterator != endToken) {
             if(std::string error = factory.parse({TokenType::COMMA}); !error.empty()) {
@@ -200,23 +200,20 @@ namespace vnd {
             if(!_scope->canAssign(var.second, expression.getType())) {
                 throw TranspilerException(FORMAT("Cannot assign {} to {}", expression.getType(), var.second), instruction);
             }
-            if(var.first.contains("->")) {
-                if(equalToken.getType() == TokenType::EQUAL_OPERATOR) {
-                     _text += FORMAT("{}{}); ", var.first, expression.getText());
-                } else if(equalToken.getValue() == "^=") {
-                     _text += FORMAT("{}std::pow({},{})); ", var.first, tmp.front(), expression.getText());
+            std::string text = var.first;
+            if(!var.first.ends_with('(')) { text += " = "; }
+            if(equalToken.getType() == TokenType::OPERATION_EQUAL) {
+                if(equalToken.getValue() == "^=") {
+                    text += FORMAT("std::pow({},", tmp.front());
                 } else {
-                     _text += FORMAT("{}{}{}{}); ", var.first, tmp.front(), equalToken.getValue().at(0), expression.getText());
-                }
-            } else {
-                if(equalToken.getValue() != "^=") {
-                    _text += FORMAT("{} {} {}; ", var.first, equalToken.getValue(), expression.getText());
-                } else {
-                    _text += FORMAT("{} = std::pow({}, {}); ", var.first, tmp.front(), expression.getText());
+                    text += FORMAT("{} {}", tmp.front(), equalToken.getValue().at(0));
                 }
             }
+            text += expression.getText();
+            if(equalToken.getValue() == "^=") { text += ")"; }
+            if(var.first.ends_with('(')) { text += ")"; }
             tmp.erase(tmp.begin());
-            _text += FORMAT("\n{}", std::string(C_ST(_tabs), '\t'));
+            _text += FORMAT("{};\n{}", text, std::string(C_ST(_tabs), '\t'));
         }
         _text += "vnd::tmp.clear();";
         _scope->clearTmp();

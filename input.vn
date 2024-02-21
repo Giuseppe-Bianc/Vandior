@@ -4,9 +4,11 @@ main {
 	a, b = b, a
 	print("{} {}", a, b)
 	var obj: Object = Object()
-	obj.a += obj.a ^ 2
-	val ar: string[] = {"Ciao"}
-	ar[1] = "Mondo"
+	var c: float = -67.532
+	obj.a, c += obj.a ^ 2, obj.a ^ c
+	var ar: string[] = {"Ciao"}
+	a, Derived().obj.a = 1, -6
+	ar[0] = "Mondo"
 	a, b ^= 2, 5
 	createDerived().obj.a ^= obj.a ^ 2
 }

@@ -14,7 +14,7 @@
 class string: public std::string {
 	public:
 		using std::string::string;
-		string(std::string s): std::string(s) {}
+		string(const std::string &s): std::string(s) {}
 		const char at(int64_t index) const {
 			if(index < 0) {
 				index += static_cast<int64_t>(size());
