@@ -353,7 +353,7 @@ namespace vnd {
             }
         }
         expressions = factory.getExpressions();
-        auto [newType, constructor] = _scope->getFunType(type, identifier, expressions);
+        auto [newType, constructor, variadic] = _scope->getFunType(type, identifier, expressions);
         if(newType.empty()) {
             std::string value;
             std::string paramTypes;
@@ -365,11 +365,7 @@ namespace vnd {
             return FORMAT("Function {} not found", value);
         }
         type = newType;
-        for(const Expression &expression : expressions) { params += expression.getText() + ","; }
-        if(!params.empty()) {
-            if(params.at(0) == ' ') { params.erase(0, 1); }
-            params.pop_back();
-        }
+        params = ExpressionFactory::transpileFun(expressions, variadic);
         if(constructor) {
             currentVariable += FORMAT("std::make_shared<{}>({})->", newType, params);
         } else {

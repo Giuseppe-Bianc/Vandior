@@ -28,6 +28,8 @@ namespace vnd {
                                                       std::shared_ptr<Scope> scope, const bool isConst,
                                                       const bool sq = false) noexcept;
 
+        [[nodiscard]] static std::string transpileFun(const std::vector<Expression> &expressions, std::optional<size_t> variadic);
+
         /**
          * @brief Parses the token sequence until reaching the specified end tokens.
          * @param endToken Vector of token types indicating the end of parsing.

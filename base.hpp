@@ -3,11 +3,12 @@
 #include <array>
 #include <vector>
 #include <memory>
+#include <variant>
 #include <unordered_map>
 #include <any>
-#include <format>
 #include <iomanip>
 #include <sstream>
+#include <functional>
 #include <cstdint>
 
 class string: public std::string {
@@ -123,31 +124,52 @@ class Derived: public Object {
 		bool _derivedProperty;
 		std::shared_ptr<Object> obj;
 };
-template <typename T>
-struct std::formatter<std::shared_ptr<T>> : std::formatter<std::string> {
-  auto format(std::shared_ptr<T> obj, format_context& ctx) const {
-    return formatter<string>::format(std::vformat(obj->toString(), std::format_args()), ctx);
-  }
-};
-template<typename... Args>
-void _print(std::string_view text, Args&&... args) {
+void _print(const std::string_view text, const vnd::vector<std::variant<int, float, char, bool, string, std::shared_ptr<Object>>>& args) {
 	
-	try {
-		
-		std::string formattedText = std::vformat(text, std::make_format_args(args...));
-		std::cout << formattedText;
-		
-	} catch(std::exception e) {
-		
-		std::cerr << "Error";
-		
+	size_t par = 0;
+	std::string_view::iterator iterator = text.begin();
+	std::string result;
+	std::function<std::string(std::variant<int, float, char, bool, string, std::shared_ptr<Object>>)> format = [](std::variant<int, float, char, bool, string, std::shared_ptr<Object>> param) -> std::string {
+		if(std::holds_alternative<int>(param)) {
+			return std::to_string(std::get<int>(param));
+		} else if(std::holds_alternative<float>(param)) {
+			return std::to_string(std::get<float>(param));
+		} else if(std::holds_alternative<char>(param)) {
+			return std::string(1, std::get<char>(param));
+		} else if(std::holds_alternative<bool>(param)) {
+			if(std::get<bool>(param) == true) {
+				return "true";
+			} else {
+				return "false";
+			}
+		} else if(std::holds_alternative<string>(param)) {
+			return std::get<string>(param);
+		}
+		return std::get<std::shared_ptr<Object>>(param)->toString();
+	};
+
+	while(iterator != text.end()) {
+		if(*iterator == '{') {
+			char next = *std::next(iterator);
+			if(next == '}') {
+				if(par < args.size()) {
+					std::variant<int, float, char, bool, string, std::shared_ptr<Object>> param = args.at(par);
+					result += format(args.at(par));
+					par++;
+				}
+				iterator++;
+			}
+		} else {
+			result += *iterator;
+		}
+		iterator++;
 	}
+	std::cout << result;
 	
 }
-template<typename... Args>
-void _println(std::string_view text, Args&&... args) {
+void _println(std::string_view text, const vnd::vector<std::variant<int, float, char, bool, string, std::shared_ptr<Object>>>& args) {
 	
-	_print(text, args...);
+	_print(text, args);
 	std::cout << std::endl;
 	
 }

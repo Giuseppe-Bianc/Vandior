@@ -24,7 +24,25 @@ namespace vnd {
     // NOLINTEND
 
     // NOLINTBEGIN(*-include-cleaner)
+
+    std::string ExpressionFactory::transpileFun(const std::vector<Expression> &expressions, std::optional<size_t> variadic) {
+        std::string params;
+        size_t pos = 0;
+        for(const Expression &expression : expressions) {
+            if(variadic.has_value() && pos == variadic.value()) { params += "{"; }
+            params += expression.getText() + ",";
+            pos++;
+        }
+        if(!params.empty()) {
+            if(params.at(0) == ' ') { params.erase(0, 1); }
+            params.pop_back();
+        }
+        if(variadic.has_value()) { params += "}"; }
+        return params;
+    }
+
     bool ExpressionFactory::isSquareType(const std::string_view &type) noexcept { return type == "int" || type == "operator"; }
+
 
     std::string ExpressionFactory::evaluate(const std::string &expression) noexcept {
         char *command = new char[strlen("python -c \"print()\"") + strlen(expression.c_str()) + 1];
@@ -248,7 +266,7 @@ namespace vnd {
         }
         if((_iterator + 1) == _end || (_iterator + 1)->getType() != TokenType::DOT_OPERATOR) { _const = false; }
         expressions = factory.getExpressions();
-        auto [newType, constructor] = _scope->getFunType(_type, identifier, expressions);
+        auto [newType, constructor, variadic] = _scope->getFunType(_type, identifier, expressions);
         if(newType.empty()) {
             std::string value;
             std::string paramTypes;
@@ -259,11 +277,7 @@ namespace vnd {
             return FORMAT("Function {} not found", value);
         }
         if(std::string error = ExpressionFactory::checkType(type, newType); !error.empty()) { return error; }
-        for(const Expression &expression : expressions) { params += expression.getText() + ","; }
-        if(!params.empty()) {
-            if(params.at(0) == ' ') { params.erase(0, 1); }
-            params.pop_back();
-        }
+        params = ExpressionFactory::transpileFun(expressions, variadic);
         std::string value = FORMAT(" {}({})", std::string{identifier}, params);
         if(_temp.empty()) {
             value.erase(0, 1);

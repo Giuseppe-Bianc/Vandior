@@ -139,15 +139,17 @@ namespace vnd {
     }
 
     // NOLINTNEXTLINE(*-no-recursion,readability-function-cognitive-complexity)
-    std::pair<std::string, bool> Scope::getFunType(const std::string &type, const std::string_view &identifier,
+    std::tuple < std::string, bool, std::optional<size_t>> Scope::getFunType(const std::string &type, const std::string_view &identifier,
                                                    const std::vector<Expression> &expressions) const noexcept {
         auto key = Scope::getKey(Scope::getType(type), identifier);
         bool found = false;
         if(_funs.contains(key)) {
             for(const auto &i : _funs.at(key)) {
                 auto params = i.getParams();
+                std::optional<size_t> variadic;
                 found = true;
                 if(!params.empty() && params.back().ends_with("...")) {
+                    variadic = params.size() - 1;
                     if(expressions.size() == params.size() - 1) {
                         params.pop_back();
                     } else if(expressions.size() >= params.size()) {
@@ -165,17 +167,17 @@ namespace vnd {
                         if(!canAssign(params.at(par), expressions.at(par).getType())) { found = false; }
                     }
                 }
-                if(found) { return {i.getReturnType(), i.isContructor()}; }
+                if(found) { return {i.getReturnType(), i.isContructor(), variadic}; }
             }
         }
         if(_types.contains(type)) {
             for(const std::string &i : _types.at(type)) {
-                auto [result, constructor] = getFunType(i, identifier, expressions);
-                if(!result.empty()) { return {result, constructor}; }
+                auto [result, constructor, variadic] = getFunType(i, identifier, expressions);
+                if(!result.empty()) { return {result, constructor, variadic}; }
             }
         }
         if(_parent) { return _parent->getFunType(type, identifier, expressions); }
-        return {"", false};
+        return {"", false, {}};
     }
 
     // NOLINTNEXTLINE(*-no-recursion)
