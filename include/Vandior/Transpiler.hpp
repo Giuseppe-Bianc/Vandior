@@ -89,7 +89,7 @@ namespace vnd {
          * @return the type of the variable and its assignability.
          */
         //[[nodiscard]] std::pair<std::string, bool> checkIdentifier(const std::string &type, const std::string_view &identifier)
-        //const;
+        // const;
 
         /**
          * @brief Transpile a type name.
@@ -119,6 +119,7 @@ namespace vnd {
          * @param colon Boolean flag indicating if colon should be emplaced.
          */
         void emplaceCommaColon(const bool colon) noexcept;
+        [[nodiscard]] bool iteratorIs(const std::vector<Token>::iterator &iterator, const std::string &value) const noexcept;
     };
 
 }  // namespace vnd

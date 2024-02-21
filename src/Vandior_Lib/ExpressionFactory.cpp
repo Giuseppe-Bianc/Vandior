@@ -121,10 +121,7 @@ namespace vnd {
 
     void ExpressionFactory::emplaceToken(const std::string_view &type) noexcept {
         using enum TokenType;
-        if(!_dot) {
-            _type.clear();
-            _temp.clear();
-        }
+        clearData();
         if(_iterator->getType() == TokenType::DOT_OPERATOR) {
             _iterator++;
             return;
@@ -141,10 +138,11 @@ namespace vnd {
         _text.emplace_back(" ");
         if(value == "^") {
             if(!_power.has_value()) { _power = _text.size() - 2; }
+            auto textIndex = _text.begin() + C_LL(_power.value());
             if(_sq) {
-                _text.emplace(_text.begin() + C_LL(_power.value()), "int(std::pow(");
+                _text.emplace(textIndex, "int(std::pow(");
             } else {
-                _text.emplace(_text.begin() + C_LL(_power.value()), "std::pow(");
+                _text.emplace(textIndex, "std::pow(");
             }
             _text.emplace_back(",");
             _expressionText += value;
@@ -256,7 +254,7 @@ namespace vnd {
 
     // NOLINTNEXTLINE(*-no-recursion)
     std::string ExpressionFactory::handleVectorInitialization(TupType &type) noexcept {
-        std::string oldType = std::get<2>(type);
+        // auto oldType = std::get<2>(type);
         std::string vectorType;
         std::string value;
         std::string constValue;
@@ -327,7 +325,7 @@ namespace vnd {
         if(newType == "dot" || (std::next(_iterator) != _end && std::next(_iterator)->getType() == TokenType::DOT_OPERATOR)) {
             return {};
         }
-        if((std::next(_iterator) != _end && std::next(_iterator)->getType() == TokenType::OPEN_SQ_PARENTESIS)) { return ""; }
+        if(std::next(_iterator) != _end && std::next(_iterator)->getType() == TokenType::OPEN_SQ_PARENTESIS) { return ""; }
         if(_sq && !isSquareType(newType)) { return FORMAT("Type not allowed {}", newType); }
         if(std::get<2>(oldType).empty()) {
             if(newType == "operator") {
@@ -399,16 +397,19 @@ namespace vnd {
     }
 
     void ExpressionFactory::write(const std::string &value, const std::string_view &type) noexcept {
-        if(!_dot) {
-            _type.clear();
-            _temp.clear();
-        }
+        clearData();
         if(checkNextToken(std::string{type}, value)) { return; }
         std::string text = _temp + value;
         checkOperators(text);
         _text.emplace_back(text);
         _iterator++;
         _dot = false;
+    }
+    void ExpressionFactory::clearData() noexcept {
+        if(!_dot) {
+            _type.clear();
+            _temp.clear();
+        }
     }
     // NOLINTEND(*-include-cleaner)
 }  // namespace vnd

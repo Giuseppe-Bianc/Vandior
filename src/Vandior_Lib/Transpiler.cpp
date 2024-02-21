@@ -11,7 +11,7 @@ namespace vnd {
         using enum TokenType;
         using enum InstructionType;
         _output.open("output.cpp");
-        _text += "#include \"../../../base.hpp\"\n\n";
+        _text += R"(#include "../../../base.hpp"\n\n)";
         try {
             for(const Instruction &instruction : _instructions) {
                 _text += std::string(C_ST(_tabs), '\t');
@@ -66,15 +66,13 @@ namespace vnd {
     }
 
     void Transpiler::transpileMain(const Instruction &instruction) {
-        std::string value;
         if(!_scope->isMainScope()) { throw TranspilerException("Cannot declare main here", instruction); }
         if(_main == -1) { throw TranspilerException("Main already declared", instruction); }
         if(_scope->getParent() != nullptr) { throw TranspilerException("Cannot declare main here", instruction); }
         _text += "int main(int argc, char **argv) {\n";
         _main = 1;
         openScope();
-        value = FORMAT("{:\t^{}}const vnd::vector<string> _args(argv, argv + argc);", "", C_ST(_tabs));
-        ;
+        auto value = FORMAT("{:\t^{}}const vnd::vector<string> _args(argv, argv + argc);", "", C_ST(_tabs));
         _text += value;
         _scope->addConstant("args", "string[]", value);
         checkTrailingBracket(instruction);
@@ -84,11 +82,11 @@ namespace vnd {
     void Transpiler::transpileDeclaration(const Instruction &instruction) {
         auto tokens = instruction.getTokens();
         auto iterator = tokens.begin();
-        const auto isConst = iterator->getValue() == "const";
-        const auto isVal = iterator->getValue() == "val";
-        std::vector<std::string_view> variables = extractIdenfifiers(iterator, instruction);
+        const auto isConst = iteratorIs(iterator, "const");
+        const auto isVal = iteratorIs(iterator, "val");
+        auto variables = extractIdenfifiers(iterator, instruction);
         auto endToken = tokens.end();
-        ExpressionFactory factory = ExpressionFactory::create(iterator, tokens.end(), _scope, isConst);
+        auto factory = ExpressionFactory::create(iterator, tokens.end(), _scope, isConst);
         if(isConst || isVal) { _text += "const "; }
         auto [type, typeValue] = transpileType(iterator, tokens.end(), {TokenType::EQUAL_OPERATOR}, instruction);
         _text += FORMAT("{} ", typeValue);
@@ -109,7 +107,7 @@ namespace vnd {
             throw TranspilerException(
                 FORMAT("Uninitialized constant: {} values for {} constants", factory.size(), variables.size()), instruction);
         }
-        for(std::string_view jvar : variables) {
+        for(const std::string_view &jvar : variables) {
             std::string value;
             if(!jvar.empty() && jvar.at(0) == '_') {
                 _text += FORMAT("v{}", jvar);
@@ -122,11 +120,11 @@ namespace vnd {
                     throw TranspilerException(FORMAT("Cannot assign {} to {}", expression.getType(), type), instruction);
                 }
                 if(isConst) {
-                    if(expression.isConst()) {
+                    if(expression.isConst()) [[likely]] {
                         value = expression.getValue();
                         if(type == "int") { value = FORMAT("{}", value.substr(0, value.find('.'))); }
                         _text += FORMAT(" = {}", value);
-                    } else {
+                    } else [[unlikely]] {
                         throw TranspilerException(FORMAT("Cannot evaluate {} at compile time", jvar), instruction);
                     }
                 } else {
@@ -145,6 +143,9 @@ namespace vnd {
             }
             emplaceCommaColon(jvar == variables.back());
         }
+    }
+    bool Transpiler::iteratorIs(const std::vector<Token>::iterator &iterator, const std::string &value) const noexcept {
+        return iterator->getValue() == value;
     }
 
     void Transpiler::transpileAssignation(const Instruction &instruction) {
@@ -238,8 +239,7 @@ namespace vnd {
                     std::string size;
                     iterator++;
                     ExpressionFactory factory = ExpressionFactory::create(iterator, end, _scope, true, true);
-                    if(std::string error = factory.parse({TokenType::CLOSE_SQ_PARENTESIS, TokenType::EQUAL_OPERATOR});
-                       !error.empty()) {
+                    if(auto error = factory.parse({TokenType::CLOSE_SQ_PARENTESIS, TokenType::EQUAL_OPERATOR}); !error.empty()) {
                         throw TranspilerException(error, instruction);
                     };
                     Expression expression = factory.getExpression();

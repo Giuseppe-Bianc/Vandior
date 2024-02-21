@@ -47,7 +47,7 @@ namespace vnd {
 
         /// This is the type of a printing function, you can make your own
         using time_print_t = std::function<std::string(std::string, std::string)>;  // NOLINT(*-include-cleaner)
-
+        using nanolld = std::chrono::duration<long double, std::nano>;
         /// This is the title of the timer
         std::string title_;
 
@@ -106,7 +106,7 @@ namespace vnd {
             std::size_t n = 0;  // NOLINT(*-identifier-length)
             do {                // NOLINT(*-avoid-do-while)
                 f();
-                std::chrono::duration<long double> elapsed = clock::now() - start_;
+                nanolld elapsed = clock::now() - start_;
                 total_time = elapsed.count();
             } while(n++ < MFACTOR && total_time < target_time);
 
@@ -120,7 +120,7 @@ namespace vnd {
          * @return Elapsed time in seconds.
          */
         [[nodiscard]] inline long double make_time() const noexcept {
-            const std::chrono::duration<long double, std::nano> elapsed = clock::now() - start_;
+            const nanolld elapsed = clock::now() - start_;
             return elapsed.count();
         }
 
@@ -165,7 +165,7 @@ namespace vnd {
          * @return A formatted time string.
          */
         [[nodiscard]] inline std::string make_time_str() const {  // NOLINT(modernize-use-nodiscard)
-            const long double time = make_time() / static_cast<long double>(cycles);
+            const auto time = make_time() / C_LD(cycles);
             return make_time_str(time);
         }
 
@@ -186,9 +186,7 @@ namespace vnd {
          * @brief Get a string representation of the Timer.
          * @return A string representation of the Timer.
          */
-        [[nodiscard]] inline std::string to_string() const noexcept {
-            return std::invoke(time_print_, title_, make_time_str());
-        }  // NOLINT(modernize-use-nodiscard)
+        [[nodiscard]] inline std::string to_string() const noexcept { return std::invoke(time_print_, title_, make_time_str()); }
 
         /**
          * @brief Set the number of cycles to divide by.
