@@ -150,6 +150,7 @@ namespace vnd {
          * @param colon Boolean flag indicating if colon should be emplaced.
          */
         void emplaceCommaColon(const bool colon) noexcept;
+        [[nodiscard]] bool iteratorIs(const std::vector<Token>::iterator &iterator, const std::string &value) const noexcept;
     };
 
 }  // namespace vnd

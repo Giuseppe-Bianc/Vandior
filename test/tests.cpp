@@ -82,8 +82,8 @@ TEST_CASE("Timer: PrintTimer FMT", "[timer]") {
 
 TEST_CASE("Timer: TimeItTimer", "[timer]") {
     vnd::Timer timer;
-    std::string output = timer.time_it([]() { std::this_thread::sleep_for(std::chrono::milliseconds(5)); }, .01);
-    REQUIRE(output.find("ns") != std::string::npos);
+    std::string output = timer.time_it([]() { std::this_thread::sleep_for(std::chrono::milliseconds(5)); }, 5.0);
+    REQUIRE(output.find("ms") != std::string::npos);
 }
 
 TEST_CASE("CodeSourceLocation default constructor sets default values", "[CodeSourceLocation]") {
