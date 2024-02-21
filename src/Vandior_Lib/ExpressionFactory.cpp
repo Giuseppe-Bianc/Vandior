@@ -25,7 +25,7 @@ namespace vnd {
 
     // NOLINTBEGIN(*-include-cleaner)
 
-    std::string ExpressionFactory::transpileFun(const std::vector<Expression> &expressions, std::optional<size_t> variadic) {
+    std::string ExpressionFactory::transpileFun(const std::vector<Expression> &expressions, std::optional<size_t> variadic) noexcept {
         std::string params;
         size_t pos = 0;
         for(const Expression &expression : expressions) {
@@ -202,7 +202,7 @@ namespace vnd {
             _iterator++;
             return;
         }
-        std::string text = _temp + writeToken();
+        std::string text = _scope->getTmp(_temp + writeToken());
         if(_const) {
             if(_iterator->getType() == TokenType::IDENTIFIER) {
                 std::string constValue = _scope->getConstValue(_type, _iterator->getValue());
@@ -460,7 +460,7 @@ namespace vnd {
             _temp.clear();
         }
         if(checkNextToken(std::string{type}, value)) { return; }
-        std::string text = _temp + value;
+        std::string text = _scope->getTmp(_temp + value);
         checkOperators(text);
         _text.emplace_back(text);
         _iterator++;

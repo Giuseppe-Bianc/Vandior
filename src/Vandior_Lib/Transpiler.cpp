@@ -160,11 +160,18 @@ namespace vnd {
         auto tokens = instruction.getTokens();
         auto iterator = tokens.begin();
         auto endToken = tokens.end();
+        std::vector<std::string> tmp;
         Token equalToken;
         ExpressionFactory factory = ExpressionFactory::create(iterator, endToken, _scope, false);
         std::vector<std::pair<std::string, std::string>> variables = extractvariables(iterator, tokens.end(), instruction);
         equalToken = *iterator;
         iterator++;
+        for(auto &var : variables) {
+            std::string typeValue = Scope::getTypeValue(var.second);
+            std::string key = _scope->addTmp(var.first, var.second);
+            _text += FORMAT("vnd::tmp[\"{}\"] = {};\n{}", key, key, std::string(C_ST(_tabs), '\t'));
+            tmp.push_back(key);
+        }
         while(iterator != endToken) {
             if(std::string error = factory.parse({TokenType::COMMA}); !error.empty()) {
                 throw TranspilerException(error, instruction);
@@ -197,24 +204,22 @@ namespace vnd {
                 if(equalToken.getType() == TokenType::EQUAL_OPERATOR) {
                      _text += FORMAT("{}{}); ", var.first, expression.getText());
                 } else if(equalToken.getValue() == "^=") {
-                    std::string getter = FORMAT("{})", var.first);
-                    getter.replace(getter.find("->set"), 5, "->get");
-                    _text += FORMAT("{}std::pow({},{})); ", var.first, getter, expression.getText());
+                     _text += FORMAT("{}std::pow({},{})); ", var.first, tmp.front(), expression.getText());
                 } else {
-                    std::string getter = FORMAT("{})", var.first);
-                    getter.replace(getter.find("->set"), 5, "->get");
-                    _text += FORMAT("{}{}{}{}); ", var.first, getter, equalToken.getValue().at(0), expression.getText());
+                     _text += FORMAT("{}{}{}{}); ", var.first, tmp.front(), equalToken.getValue().at(0), expression.getText());
                 }
             } else {
                 if(equalToken.getValue() != "^=") {
                     _text += FORMAT("{} {} {}; ", var.first, equalToken.getValue(), expression.getText());
                 } else {
-                    _text += FORMAT("{} = std::pow({}, {}); ", var.first, var.first, expression.getText());
+                    _text += FORMAT("{} = std::pow({}, {}); ", var.first, tmp.front(), expression.getText());
                 }
             }
+            tmp.erase(tmp.begin());
             _text += FORMAT("\n{}", std::string(C_ST(_tabs), '\t'));
         }
-        _text.erase(_text.size() - C_ST(_tabs) - 1, C_ST(_tabs) + 1);
+        _text += "vnd::tmp.clear();";
+        _scope->clearTmp();
     }
 
     void Transpiler::transpileOperation(const Instruction &instruction) {

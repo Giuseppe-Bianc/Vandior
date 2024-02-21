@@ -1,15 +1,12 @@
 main {
-	const test: bool = 2 ^ 4 == 16
-	const f: int = 2 ^ 9 + 88
-	println("Hello world {} {} {}", Object(), 1 , true)
-	var s: string = "Ciao {}"
-	println(s, createDerived())
-	val a1, b: Object[] = {Object()}, {createObject(), Derived()}
-	val a: int = a1.size()
-	print("{} {} {}", a, 'C', "hello")
-	val a2: char[2] = {'a', 'b'}
-	val a3: int[][2] = {{1, 2}, {2, 3}}
-	val a4, b2: int[][2][2][] = {{{{1}, {-2}}, {{2}, {3}}}}, {{{{1}, {-2}}, {{2}, {3, 4}}}}
-	var testF: int = _test() + testPar(1, 2)
-	var testf1: Object = Object()
+	var a, b: int = 1, 2
+	println("{} {}", a, b)
+	a, b = b, a
+	print("{} {}", a, b)
+	var obj: Object = Object()
+	obj.a += obj.a ^ 2
+	val ar: string[] = {"Ciao"}
+	ar[1] = "Mondo"
+	a, b ^= 2, 5
+	createDerived().obj.a ^= obj.a ^ 2
 }

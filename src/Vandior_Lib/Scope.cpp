@@ -1,4 +1,6 @@
 #include "Vandior/Scope.hpp"
+#include <Vandior/Log.hpp>
+
 // NOLINTBEGIN(*-include-cleaner,*-identifier-length)
 DISABLE_WARNINGS_PUSH(
     4005 4201 4459 4514 4625 4626 4820 6244 6285 6385 6386 26409 26415 26418 26429 26432 26437 26438 26440 26446 26447 26450 26451 26455 26457 26459 26460 26461 26467 26472 26473 26474 26475 26481 26482 26485 26490 26491 26493 26494 26495 26496 26497 26498 26800 26814 26818 26826)
@@ -69,6 +71,33 @@ namespace vnd {
         while(type.back() != '[') { type.pop_back(); }
         type.pop_back();
         return true;
+    }
+
+    std::string Scope::getTypeValue(std::string &type) noexcept {
+        std::string typeValue;
+        size_t pos = type.find('[');
+        if(pos == std::string::npos) { pos = type.size(); }
+        typeValue = type.substr(0, pos);
+        if(!Scope::isPrimitive(typeValue)) { typeValue = FORMAT("std::shared_ptr<{}>", typeValue); };
+        if(pos != type.size()) {
+            std::string::iterator iterator = type.begin();
+            std::string size;
+            while(iterator != type.end()) {
+                if(*iterator == '[') {
+                    size.clear();
+                } else if(*iterator == ']') {
+                    if(size.empty()) {
+                        typeValue = FORMAT("vnd::vector<{}>", typeValue);
+                    } else {
+                        typeValue = FORMAT("vnd::array<{}, {}>", typeValue, std::stoi(size));
+                    }
+                } else if(std::isdigit(*iterator)) {
+                    size += *iterator;
+                }
+                iterator++;
+            }
+        }
+        return typeValue;
     }
 
     std::string Scope::getKey(const std::string &type, const std::string_view &identifier) noexcept {
@@ -210,6 +239,7 @@ namespace vnd {
     bool Scope::canAssign(const std::string &left, const std::string &right) const noexcept {
         if(left == "any") { return true; }
         if((Scope::isNumber(left) && Scope::isNumber(right)) || left == right) { return true; }
+        if(right == "[]" && left.ends_with(']')) { return true; }
         if(std::pair<std::string, std::string> types = {left, right};
            (types.first.ends_with("[]") || types.second.ends_with("[]")) && Scope::checkVector(types.first) &&
            Scope::checkVector(types.second)) {
@@ -223,6 +253,28 @@ namespace vnd {
         if(_parent) { return _parent->canAssign(left, right); }
         return false;
     }
+
+    std::string Scope::addTmp(std::string key, std::string &type) noexcept {
+        std::string::iterator end;
+        if(key.ends_with("(")) {
+            key.replace(key.find_last_of(">") + 1, 1, "g");
+            key = FORMAT("{})", key);
+        }
+        end = std::remove(key.begin(), key.end(), ' ');
+        key.erase(end, key.end());
+        _tmp.emplace(key, type);
+        return key;
+    }
+
+    std::string Scope::getTmp(const std::string &tmp) const noexcept {
+        std::string key = tmp;
+        std::string::iterator end_pos = std::remove(key.begin(), key.end(), ' ');
+        key.erase(end_pos, key.end());
+        if(_tmp.contains(key)) { return FORMAT("std::any_cast<{}>(vnd::tmp.at(\"{}\"))", _tmp.at(key), key); }
+        return tmp;
+    }
+
+    void Scope::clearTmp() noexcept { _tmp.clear(); }
 
 }  // namespace vnd
 
