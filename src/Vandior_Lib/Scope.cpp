@@ -168,8 +168,8 @@ namespace vnd {
     }
 
     // NOLINTNEXTLINE(*-no-recursion,readability-function-cognitive-complexity)
-    std::tuple < std::string, bool, std::optional<size_t>> Scope::getFunType(const std::string &type, const std::string_view &identifier,
-                                                   const std::vector<Expression> &expressions) const noexcept {
+    std::tuple<std::string, bool, std::optional<size_t>> Scope::getFunType(
+        const std::string &type, const std::string_view &identifier, const std::vector<Expression> &expressions) const noexcept {
         auto key = Scope::getKey(Scope::getType(type), identifier);
         bool found = false;
         if(_funs.contains(key)) {
@@ -257,7 +257,7 @@ namespace vnd {
     std::string Scope::addTmp(std::string key, std::string &type) noexcept {
         std::string::iterator end;
         if(key.ends_with("(")) {
-            key.replace(key.find_last_of(">") + 1, 1, "g");
+            key.replace(key.find_last_of('>') + 1, 1, "g");
             key = FORMAT("{})", key);
         }
         end = std::remove(key.begin(), key.end(), ' ');
@@ -274,12 +274,11 @@ namespace vnd {
         return tmp;
     }
 
-    void Scope::eachTmp(std::function<void(const std::string &key)> fun) const noexcept {
-        for(auto &tmp : _tmp) { fun(tmp.first); }
+    void Scope::eachTmp(const std::function<void(const std::string &key)> &fun) const noexcept {
+        for(const auto &tmp : _tmp) { fun(tmp.first); }
     }
 
     void Scope::clearTmp() noexcept { _tmp.clear(); }
-
 
 }  // namespace vnd
 

@@ -21,3 +21,4 @@ namespace vnd {
     };
 
 }  // namespace vnd
+#define TRANSPILER_EXCEPTIONF(instruction, ...) TranspilerException(FORMAT(__VA_ARGS__), instruction)

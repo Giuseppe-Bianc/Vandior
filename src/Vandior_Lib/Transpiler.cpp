@@ -2,17 +2,17 @@
 #include <sstream>
 
 namespace vnd {
-    // NOLINTBEGIN(*-include-cleaner)
+    // NOLINTBEGIN(*-include-cleaner, *-easily-swappable-parameters)
     Transpiler::Transpiler(const std::vector<Instruction> &instructions) noexcept
       : _tabs(0), _instructions(instructions), _scope(Scope::createMain()), _main(0) {}
 
     Transpiler Transpiler::create(const std::vector<Instruction> &instructions) noexcept { return {instructions}; }
 
-    std::vector<std::string> Transpiler::tokenize(const std::string& str) noexcept {
+    std::vector<std::string> Transpiler::tokenize(const std::string &str) noexcept {
         std::vector<std::string> result;
         std::istringstream iss(str);
-        std::string s;
-        while(iss >> s) { result.push_back(s); }
+        std::string strr;
+        while(iss >> strr) { result.push_back(strr); }
         return result;
     }
 
@@ -98,7 +98,7 @@ namespace vnd {
         auto iterator = tokens.begin();
         const auto isConst = iteratorIs(iterator, "const");
         const auto isVal = iteratorIs(iterator, "val");
-        auto variables = extractIdenfifiers(iterator, instruction);
+        auto variables = extractIdentifiers(iterator, instruction);
         auto endToken = tokens.end();
         auto factory = ExpressionFactory::create(iterator, tokens.end(), _scope, isConst);
         if(isConst || isVal) { _text += "const "; }
@@ -111,7 +111,7 @@ namespace vnd {
         if(iterator != endToken && iterator->getType() == TokenType::EQUAL_OPERATOR) {
             iterator++;
             while(iterator != endToken) {
-                if(std::string error = factory.parse({ TokenType::COMMA }); !error.empty()) {
+                if(auto error = factory.parse({TokenType::COMMA}); !error.empty()) {
                     throw TranspilerException(error, instruction);
                 }
                 if(iterator != endToken) { iterator++; }
@@ -123,39 +123,36 @@ namespace vnd {
         }
         for(const std::string_view &jvar : variables) {
             std::string value;
-            if (!jvar.empty() && jvar.at(0) == '_') {
+            if(!jvar.empty() && jvar.at(0) == '_') {
                 _text += FORMAT("v{}", jvar);
-            }
-            else {
+            } else {
                 _text += FORMAT("_{}", jvar);
             }
-            if (!factory.empty()) {
+            if(!factory.empty()) {
                 auto expression = factory.getExpression();
-                if (!_scope->canAssign(type, expression.getType())) {
+                if(!_scope->canAssign(type, expression.getType())) {
                     throw TranspilerException(FORMAT("Cannot assign {} to {}", expression.getType(), type), instruction);
                 }
                 if(isConst) {
                     if(expression.isConst()) [[likely]] {
                         value = expression.getValue();
-                        if (type == "int") { value = FORMAT("{}", value.substr(0, value.find('.'))); }
+                        if(type == "int") { value = FORMAT("{}", value.substr(0, value.find('.'))); }
                         _text += FORMAT(" = {}", value);
                     } else [[unlikely]] {
                         throw TranspilerException(FORMAT("Cannot evaluate {} at compile time", jvar), instruction);
                     }
-                }
-                else {
+                } else {
                     _text += FORMAT(" = {}", expression.getText());
                 }
             }
             auto [check, shadowing] = _scope->checkVariable(jvar);
             if(check) {
-                if (!shadowing) { throw TranspilerException(FORMAT("{} already defined", jvar), instruction); }
+                if(!shadowing) { throw TranspilerException(FORMAT("{} already defined", jvar), instruction); }
                 LWARN("{} already defined", jvar);
             }
             if(isConst) {
                 _scope->addConstant(jvar, type, value);
-            }
-            else {
+            } else {
                 _scope->addVariable(jvar, type, isVal);
             }
             emplaceCommaColon(jvar == variables.back());
@@ -165,20 +162,21 @@ namespace vnd {
         return iterator->getValue() == value;
     }
 
-    void Transpiler::transpileAssignation(const Instruction& instruction) {
+    // NOLINTNEXTLINE(*-function-cognitive-complexity)
+    void Transpiler::transpileAssignation(const Instruction &instruction) {
         auto tokens = instruction.getTokens();
         auto iterator = tokens.begin();
         auto endToken = tokens.end();
         std::vector<std::string> tmp;
         Token equalToken;
-        ExpressionFactory factory = ExpressionFactory::create(iterator, endToken, _scope, false);
-        std::vector<std::pair<std::string, std::string>> variables = extractvariables(iterator, tokens.end(), instruction);
+        auto factory = ExpressionFactory::create(iterator, endToken, _scope, false);
+        auto variables = extractVariables(iterator, endToken, instruction);
         equalToken = *iterator;
         iterator++;
         for(auto &var : variables) {
             if(var.first != "_") {
-                std::string typeValue = Scope::getTypeValue(var.second);
-                std::string key = _scope->addTmp(var.first, var.second);
+                auto typeValue = Scope::getTypeValue(var.second);
+                auto key = _scope->addTmp(var.first, var.second);
                 tmp.push_back(FORMAT("std::any_cast<{}>(vnd::tmp[\"{}\"])", typeValue, key));
             }
         }
@@ -190,40 +188,43 @@ namespace vnd {
         }
         if(factory.isMultiplefun()) {
             if(equalToken.getType() == TokenType::OPERATION_EQUAL) {
-                throw TranspilerException(FORMAT("incompatible operator {}", equalToken.getValue()), instruction);
+                throw TRANSPILER_EXCEPTIONF(instruction, "incompatible operator {}", equalToken.getValue());
             }
             if(auto error = transpileMultipleFun(variables, factory.getExpression()); !error.empty()) {
                 throw TranspilerException(error, instruction);
             }
             return;
         }
-        _scope->eachTmp([this](const std::string &key) -> void  {
+        _scope->eachTmp([this](const std::string &key) -> void {
             _text += FORMAT("vnd::tmp[\"{}\"] = {};\n{}", key, key, std::string(C_ST(_tabs), '\t'));
         });
         if(variables.size() != factory.size()) {
-            throw TranspilerException( FORMAT("Unconsistent assignation: {} values for {} variables", factory.size(), variables.size()), instruction);
+            throw TRANSPILER_EXCEPTIONF(instruction, "inconsistent assignation: {} values for {} variables", factory.size(),
+                                        variables.size());
         }
-        for(auto& var : variables) {
+        for(auto &var : variables) {
             Expression expression = factory.getExpression();
             if(expression.getType().contains(' ')) {
                 throw TranspilerException("Multiple return value functions must be used alone", instruction);
             }
             if(equalToken.getType() == TokenType::OPERATION_EQUAL && !Scope::isNumber(var.second)) {
                 if(var.first == "_") {
-                    throw TranspilerException(FORMAT("incompatible operator {} for blank identifier", equalToken.getValue(), var.second), instruction);
+                    throw TRANSPILER_EXCEPTIONF(instruction, "incompatible operator {} for blank identifier",
+                                                equalToken.getValue(), var.second);
                 }
-                throw TranspilerException(FORMAT("incompatible operator {} for {} type", equalToken.getValue(), var.second), instruction);
+                throw TRANSPILER_EXCEPTIONF(instruction, "incompatible operator {} for {} type", equalToken.getValue(),
+                                            var.second);
             }
             if(var.first == "_") {
                 if(expression.getType() == "void") {
-                    return throw TranspilerException("Cannot assign void expression", instruction);
+                    throw TranspilerException("Cannot assign void expression", instruction);
                 } else {
                     _text += FORMAT("{};\n{}", expression.getText(), std::string(C_ST(_tabs), '\t'));
                     continue;
-                }    
+                }
             }
             if(!_scope->canAssign(var.second, expression.getType())) {
-                throw TranspilerException(FORMAT("Cannot assign {} to {}", expression.getType(), var.second), instruction);
+                throw TRANSPILER_EXCEPTIONF(instruction, "Cannot assign {} to {}", expression.getType(), var.second);
             }
             std::string text = var.first;
             if(!var.first.ends_with('(')) { text += " = "; }
@@ -251,28 +252,26 @@ namespace vnd {
         std::vector<Expression> expressions;
         ExpressionFactory factory = ExpressionFactory::create(iterator, endToken, _scope, false);
         while(iterator != endToken) {
-            if(std::string error = factory.parse({TokenType::COMMA}); !error.empty()) {
-                throw TranspilerException(error, instruction);
-            }
+            if(auto error = factory.parse({TokenType::COMMA}); !error.empty()) { throw TranspilerException(error, instruction); }
             if(iterator != endToken) { iterator++; }
         }
-        for(Expression expression : factory.getExpressions()) {
+        for(const auto &expression : factory.getExpressions()) {
             std::string text = expression.getText();
             if(expression.getType() != "void" && !(text.ends_with("++") || text.ends_with("--"))) {
                 throw TranspilerException(FORMAT("Invalid operation {}", text), instruction);
             }
-            _text += FORMAT("{};\n{}", text, std::string(C_ST(_tabs), '\t')); 
+            _text += FORMAT("{};\n{}", text, std::string(C_ST(_tabs), '\t'));
         }
         _text.erase(_text.size() - C_ST(_tabs) - 1, C_ST(_tabs) + 1);
     }
 
-    std::vector<std::string_view> Transpiler::extractIdenfifiers(std::vector<Token>::iterator& iterator,
-        const Instruction& instruction) const {
+    std::vector<std::string_view> Transpiler::extractIdentifiers(std::vector<Token>::iterator &iterator,
+                                                                 const Instruction &instruction) const {
         using enum TokenType;
         std::vector<std::string_view> result;
-        while (iterator->getType() != COLON) {
-            if (iterator->getType() == IDENTIFIER) {
-                if (_scope->checkType(iterator->getValue())) {
+        while(iterator->getType() != COLON) {
+            if(iterator->getType() == IDENTIFIER) {
+                if(_scope->checkType(iterator->getValue())) {
                     throw TranspilerException(FORMAT("Identifier {} not allowed", iterator->getValue()), instruction);
                 }
                 if(iterator->getValue() == "_") {
@@ -285,35 +284,36 @@ namespace vnd {
         return result;
     }
 
-    std::vector<std::pair<std::string, std::string>> Transpiler::extractvariables(
-        std::vector<Token>::iterator& iterator,
-        const std::vector<Token>::iterator& end, const Instruction& instruction) const {
+    std::vector<std::pair<std::string, std::string>> Transpiler::extractVariables(std::vector<Token>::iterator &iterator,
+                                                                                  const std::vector<Token>::iterator &end,
+                                                                                  const Instruction &instruction) const {
         using enum TokenType;
         std::vector<std::pair<std::string, std::string>> result;
         std::string currentVariable;
         std::string type;
         while(iterator != end && iterator->getType() != EQUAL_OPERATOR && iterator->getType() != OPERATION_EQUAL) {
-            const std::vector<Token>::iterator next = std::next(iterator);
+            const auto next = std::next(iterator);
             if(iterator->getType() == IDENTIFIER) {
                 if(next != end && next->getType() == OPEN_PARENTESIS) {
-                    if(std::string error = extractFun(iterator, end, currentVariable, type); !error.empty()) {
+                    if(auto error = extractFun(iterator, end, currentVariable, type); !error.empty()) {
                         throw TranspilerException(error, instruction);
                     }
-                } else if(std::string error = extractToken(iterator, end, next, currentVariable, type); !error.empty()) {
+                } else if(auto error = extractToken(iterator, end, next, currentVariable, type); !error.empty()) {
                     throw TranspilerException(error, instruction);
                 }
             } else if(iterator->getType() == OPEN_SQ_PARENTESIS) {
-                if(std::string error = extractSquareExpression(iterator, end, currentVariable, type); !error.empty()) {
+                if(auto error = extractSquareExpression(iterator, end, currentVariable, type); !error.empty()) {
                     throw TranspilerException(error, instruction);
                 }
             } else if(iterator->getType() == UNARY_OPERATOR) {
-                throw TranspilerException(FORMAT("Cannot use {} at the left side of an assignation", iterator->getValue()), instruction);
+                throw TranspilerException(FORMAT("Cannot use {} at the left side of an assignation", iterator->getValue()),
+                                          instruction);
             } else if(iterator->getType() == COMMA) {
                 if(currentVariable.ends_with("->")) {
                     currentVariable.pop_back();
                     currentVariable.pop_back();
                 }
-                result.emplace_back(std::make_pair(currentVariable, type));
+                result.emplace_back(currentVariable, type);
                 currentVariable.clear();
                 type.clear();
             }
@@ -323,17 +323,18 @@ namespace vnd {
             currentVariable.pop_back();
             currentVariable.pop_back();
         }
-        result.emplace_back(std::make_pair(currentVariable, type));
+        result.emplace_back(currentVariable, type);
         return result;
     }
 
     std::string Transpiler::extractToken(std::vector<Token>::iterator &iterator, const std::vector<Token>::iterator &end,
-                                            const std::vector<Token>::iterator &next, std::string &currentVariable, std::string &type) const noexcept {
+                                         const std::vector<Token>::iterator &next, std::string &currentVariable,
+                                         std::string &type) const noexcept {
         using enum TokenType;
         std::string_view value = iterator->getValue();
         if(value == "_") {
-            if(currentVariable.empty() &&
-               (next == end || next->getType() == COMMA || next->getType() == EQUAL_OPERATOR || next->getType() == OPERATION_EQUAL)) {
+            if(currentVariable.empty() && (next == end || next->getType() == COMMA || next->getType() == EQUAL_OPERATOR ||
+                                           next->getType() == OPERATION_EQUAL)) {
                 currentVariable = "_";
                 type = "";
                 return {};
@@ -364,8 +365,8 @@ namespace vnd {
         return {};
     }
 
-    std::string Transpiler::extractFun(std::vector<Token>::iterator &iterator, const std::vector<Token>::iterator &end, std::string &currentVariable,
-                                         std::string &type) const noexcept {
+    std::string Transpiler::extractFun(std::vector<Token>::iterator &iterator, const std::vector<Token>::iterator &end,
+                                       std::string &currentVariable, std::string &type) const noexcept {
         std::string_view identifier = iterator->getValue();
         ExpressionFactory factory = ExpressionFactory::create(iterator, end, _scope, false);
         std::vector<Expression> expressions;
@@ -374,9 +375,7 @@ namespace vnd {
         while(iterator->getType() != TokenType::CLOSE_PARENTESIS) {
             iterator++;
             if(iterator->getType() != TokenType::CLOSE_PARENTESIS) {
-                if(std::string error = factory.parse({TokenType::COMMA, TokenType::CLOSE_PARENTESIS}); !error.empty()) {
-                    return error;
-                }
+                if(auto error = factory.parse({TokenType::COMMA, TokenType::CLOSE_PARENTESIS}); !error.empty()) { return error; }
             }
         }
         expressions = factory.getExpressions();
@@ -409,8 +408,9 @@ namespace vnd {
         return {};
     }
 
-    std::string Transpiler::extractSquareExpression(std::vector<Token>::iterator &iterator, const std::vector<Token>::iterator &end,
-                                                    std::string &currentVariable, std::string &type) const noexcept {
+    std::string Transpiler::extractSquareExpression(std::vector<Token>::iterator &iterator,
+                                                    const std::vector<Token>::iterator &end, std::string &currentVariable,
+                                                    std::string &type) const noexcept {
         std::string newType;
         if(currentVariable.ends_with("->")) {
             currentVariable.pop_back();
@@ -419,7 +419,7 @@ namespace vnd {
         if(!Scope::checkVector(type)) { return FORMAT("Indexing not allowed for {} type", type); }
         ExpressionFactory factory = ExpressionFactory::create(iterator, end, _scope, false, true);
         iterator++;
-        if(std::string error = factory.parse({TokenType::CLOSE_SQ_PARENTESIS}); !error.empty()) { return error; }
+        if(auto error = factory.parse({TokenType::CLOSE_SQ_PARENTESIS}); !error.empty()) { return error; }
         Expression expression = factory.getExpression();
         newType = expression.getType();
         if(newType != "int") { return FORMAT("{} index not allowed", newType); }
@@ -434,7 +434,7 @@ namespace vnd {
         std::vector<std::string> tmp;
         int typeIndex = 0;
         if(variables.size() != types.size()) {
-            return FORMAT("Unconsistent assignation: {} return values for {} variables", types.size(), variables.size());
+            return FORMAT("Inconsistent assignation: {} return values for {} variables", types.size(), variables.size());
         }
         for(size_t i = 0; i != types.size(); i++) {
             values += FORMAT("vnd::tmp[\"{}\"], ", i);
@@ -443,10 +443,10 @@ namespace vnd {
         values.pop_back();
         values.pop_back();
         _text += FORMAT("std::tie({}) = {};\n{}", values, expression.getText(), std::string(C_ST(_tabs), '\t'));
-        for(auto &var : variables) {
+        for(const auto &var : variables) {
             if(var.first != "_") {
-                std::string type = types.at(typeIndex);
-                std::string typeValue = Scope::getTypeValue(type);
+                auto type = types.at(typeIndex);
+                auto typeValue = Scope::getTypeValue(type);
                 if(!_scope->canAssign(var.second, type)) { return FORMAT("Cannot assign {}.{}", type, var.first); }
                 typeIndex++;
                 if(var.first.ends_with('(')) {
@@ -474,7 +474,9 @@ namespace vnd {
         std::string suffix;
         type = (++iterator)->getValue();
         typeValue = type;
-        if(typeValue == "void" || typeValue == "any") { throw TranspilerException(FORMAT("Cannot declare {} variables", typeValue), instruction); }
+        if(typeValue == "void" || typeValue == "any") {
+            throw TranspilerException(FORMAT("Cannot declare {} variables", typeValue), instruction);
+        }
         if(!_scope->checkType(type)) { throw TranspilerException(FORMAT("Type {} not valid", type), instruction); }
         if(!_scope->isPrimitive(type)) { typeValue = FORMAT("std::shared_ptr<{}>", type); }
         while(iterator != end && std::ranges::find(endTokens, iterator->getType()) == endTokens.end()) {
@@ -526,5 +528,5 @@ namespace vnd {
         }
         _text += ", ";
     }
-    // NOLINTEND(*-include-cleaner)
+    // NOLINTEND(*-include-cleaner, *-easily-swappable-parameters)
 }  // namespace vnd
