@@ -200,8 +200,7 @@ namespace vnd {
          */
         void write(const std::string &value, const std::string_view &type) noexcept;
         void resetVariables() noexcept;
-        void handleFinalExpression(exprtk::expression<double> &expression, exprtk::parser<double> &parser,
-                                   const std::tuple<bool, bool, std::string> &type) noexcept;
+        void handleFinalExpression(const std::tuple<bool, bool, std::string> &type) noexcept;
         void clearData() noexcept;
     };
 

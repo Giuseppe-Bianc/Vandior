@@ -9,6 +9,8 @@
     #define PCLOSE pclose
 #endif
 
+#define EXPRTK
+
 namespace vnd {
 
     // NOLINTBEGIN
@@ -70,7 +72,6 @@ namespace vnd {
     std::string ExpressionFactory::parse(const std::vector<TokenType> &endToken) noexcept {  // NOLINT(*-no-recursion)
         using enum vnd::TokenType;
         resetVariables();
-        exprtk::expression<double> expression;
         exprtk::parser<double> parser;
         auto type = std::make_tuple(false, false, std::string{});
         while(_iterator != _end && std::ranges::find(endToken, _iterator->getType()) == endToken.end()) {
@@ -92,30 +93,33 @@ namespace vnd {
             }
         }
         if(std::get<0>(type)) { std::get<2>(type) = "bool"; }
-        handleFinalExpression(expression, parser, type);
+        handleFinalExpression(type);
         return {};
     }
 
-    void ExpressionFactory::handleFinalExpression(exprtk::expression<double> &expression, exprtk::parser<double> &parser,
-                                                  const std::tuple<bool, bool, std::string> &type) noexcept {
-        /*if(Scope::isNumber(std::get<2>(type))) {
-            std::string value;
-            if(_const) {
-                value = ExpressionFactory::evaluate(_expressionText);
+    void ExpressionFactory::handleFinalExpression(const std::tuple<bool, bool, std::string> &type) noexcept {
+        #ifdef EXPRTK
+            exprtk::parser<double> parser;
+            exprtk::expression<double> expression;
+            if(Scope::isNumber(std::get<2>(type))) {
+                std::string value;
+                if(_const) { parser.compile(_expressionText, expression); }
+                value = std::to_string(expression.value());
+                _expressions.emplace_back(Expression::create(_text, std::get<2>(type), _const, value));
+            } else {
+                _expressions.emplace_back(Expression::create(_text, std::get<2>(type), _const));
             }
-            _expressions.emplace_back(
-                Expression::create(_text, std::get<2>(type), _const, value));
-        } else {
-            _expressions.emplace_back(Expression::create(_text, std::get<2>(type), _const));
-        }*/
-        if(Scope::isNumber(std::get<2>(type))) {
-            std::string value;
-            if(_const) { parser.compile(_expressionText, expression); }
-            value = std::to_string(expression.value());
-            _expressions.emplace_back(Expression::create(_text, std::get<2>(type), _const, value));
-        } else {
-            _expressions.emplace_back(Expression::create(_text, std::get<2>(type), _const));
-        }
+        #else
+            if(Scope::isNumber(std::get<2>(type))) {
+                std::string value;
+                if(_const) { value = ExpressionFactory::evaluate(_expressionText); }
+                _expressions.emplace_back(Expression::create(_text, std::get<2>(type), _const, value));
+            } else {
+                _expressions.emplace_back(Expression::create(_text, std::get<2>(type), _const));
+            }
+        #endif  
+
+        
     }
 
     std::size_t ExpressionFactory::size() const noexcept { return _expressions.size(); }
@@ -201,7 +205,11 @@ namespace vnd {
                 _text.emplace(textIndex, "std::pow(");
             }
             _text.emplace_back(",");
-            _expressionText += value;
+            #ifdef EXPRTK
+                _expressionText += value;
+            #else
+                _expressionText += "**";
+            #endif
             _iterator++;
             return;
         }
