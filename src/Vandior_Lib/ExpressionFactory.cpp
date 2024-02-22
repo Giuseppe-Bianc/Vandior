@@ -134,6 +134,11 @@ namespace vnd {
         return result;
     }
 
+    bool ExpressionFactory::isMultiplefun() const noexcept {
+        if(_expressions.size() != 1) { return false; }
+        return _expressions.front().getType().contains(' ');
+    }
+
     std::string_view ExpressionFactory::getTokenType() noexcept {
         using enum TokenType;
         // NOLINTBEGIN
@@ -379,6 +384,14 @@ namespace vnd {
 
     std::string ExpressionFactory::checkType(TupType &oldType, const std::string_view newType) noexcept {
         if(newType == "dot" || (std::next(_iterator) != _end && std::next(_iterator)->getType() == TokenType::DOT_OPERATOR)) {
+            return {};
+        }
+        if(std::get<2>(oldType).contains(' ')) { return "Multiple return value functions must be used alone"; }
+        if(newType.contains(' ')) {
+            if(!std::get<2>(oldType).empty()) {
+                return "Multiple return value functions must be used alone";
+            }
+            std::get<2>(oldType) = newType;
             return {};
         }
         if(std::next(_iterator) != _end && std::next(_iterator)->getType() == TokenType::OPEN_SQ_PARENTESIS) { return ""; }

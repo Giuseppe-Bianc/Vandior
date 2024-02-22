@@ -1,5 +1,4 @@
 #include "Vandior/Scope.hpp"
-#include <Vandior/Log.hpp>
 
 // NOLINTBEGIN(*-include-cleaner,*-identifier-length)
 DISABLE_WARNINGS_PUSH(
@@ -40,6 +39,7 @@ namespace vnd {
         mainScope->addFun("_test", FunType::create("int", {}));
         mainScope->addFun("testPar", FunType::create("int", {"int", "int"}));
         mainScope->addFun("testPar", FunType::create("int", {"string"}));
+        mainScope->addFun("max", FunType::create("int float", {"float[]"}));
         mainScope->addFun("createObject", FunType::create("Object", {}));
         mainScope->addFun("Object", FunType::create("Object", {}, true));
         mainScope->addFun("Derived", FunType::create("Derived", {}, true));

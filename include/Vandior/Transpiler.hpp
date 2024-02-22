@@ -40,6 +40,13 @@ namespace vnd {
         char _main;                              ///< Main character.
 
         /**
+         * @brief Tokenize a string.
+         * @param str String to tokenize.
+         * @return Vector of tokenized string.
+         */
+        static std::vector<std::string> tokenize(const std::string &str) noexcept;
+
+        /**
          * @brief Checks if there's a trailing bracket in the instruction.
          * @param instruction The instruction to check.
          */
@@ -121,6 +128,16 @@ namespace vnd {
          */
         [[nodiscard]] std::string extractSquareExpression(std::vector<Token>::iterator &iterator, const std::vector<Token>::iterator &end,
                                              std::string &currentVariable, std::string &type) const noexcept;
+
+
+        /**
+         * @brief transpile a multi return value function instruction.
+         * @param variables Vector of identifiers and types of assigned variables.
+         * @param expressiom Expression conataining the function.
+         * @return Parsed string if there is an error. If no error occurs, an empty string is returned.
+         */
+        [[nodiscard]] std::string transpileMultipleFun(const std::vector<std::pair<std::string, std::string>> &variables,
+                                                       const Expression &expression) noexcept;
 
         /**
          * @brief Transpile a type name.

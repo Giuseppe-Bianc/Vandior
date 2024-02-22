@@ -10,5 +10,9 @@ main {
 	a, Derived().obj.a = 1, -6
 	ar[0] = "Mondo"
 	a, b ^= 2, 5
+	val s: string = "Ciao"
+	_, _, a = 45 ^ 67, 'c', testPar("Ciao")
+	var maxValue: float
+	a, obj.a = max({1})
 	createDerived().obj.a ^= obj.a ^ 2
 }

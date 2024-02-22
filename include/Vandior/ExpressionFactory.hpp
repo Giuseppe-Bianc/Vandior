@@ -61,6 +61,12 @@ namespace vnd {
          */
         [[nodiscard]] std::vector<Expression> getExpressions() noexcept;
 
+        /*
+         * @brief Checks if the factory contains only one expression and that this is a multiple return value function.
+         * @return Bool indicating the result of the check.
+         */
+        [[nodiscard]] bool isMultiplefun() const noexcept;
+
     private:
         /**
          * @brief Private constructor for creating an ExpressionFactory instance.

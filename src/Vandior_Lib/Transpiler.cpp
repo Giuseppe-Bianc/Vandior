@@ -1,4 +1,5 @@
 #include "Vandior/Transpiler.hpp"
+#include <sstream>
 
 namespace vnd {
     // NOLINTBEGIN(*-include-cleaner)
@@ -6,6 +7,14 @@ namespace vnd {
       : _tabs(0), _instructions(instructions), _scope(Scope::createMain()), _main(0) {}
 
     Transpiler Transpiler::create(const std::vector<Instruction> &instructions) noexcept { return {instructions}; }
+
+    std::vector<std::string> Transpiler::tokenize(const std::string& str) noexcept {
+        std::vector<std::string> result;
+        std::istringstream iss(str);
+        std::string s;
+        while(iss >> s) { result.push_back(s); }
+        return result;
+    }
 
     bool Transpiler::transpile() {
         using enum TokenType;
@@ -167,10 +176,12 @@ namespace vnd {
         equalToken = *iterator;
         iterator++;
         for(auto &var : variables) {
-            std::string typeValue = Scope::getTypeValue(var.second);
-            std::string key = _scope->addTmp(var.first, var.second);
-            _text += FORMAT("vnd::tmp[\"{}\"] = {};\n{}", key, key, std::string(C_ST(_tabs), '\t'));
-            tmp.push_back(FORMAT("std::any_cast<{}>(vnd::tmp[\"{}\"])", typeValue, key));
+            if(var.first != "_") {
+                std::string typeValue = Scope::getTypeValue(var.second);
+                std::string key = _scope->addTmp(var.first, var.second);
+                _text += FORMAT("vnd::tmp[\"{}\"] = {};\n{}", key, key, std::string(C_ST(_tabs), '\t'));
+                tmp.push_back(FORMAT("std::any_cast<{}>(vnd::tmp[\"{}\"])", typeValue, key));
+            }
         }
         while(iterator != endToken) {
             if(std::string error = factory.parse({TokenType::COMMA}); !error.empty()) {
@@ -178,11 +189,23 @@ namespace vnd {
             }
             if(iterator != endToken) { iterator++; }
         }
+        if(factory.isMultiplefun()) {
+            if(equalToken.getType() == TokenType::OPERATION_EQUAL) {
+                throw TranspilerException(FORMAT("incompatible operator {}", equalToken.getValue()), instruction);
+            }
+            if(auto error = transpileMultipleFun(variables, factory.getExpression()); !error.empty()) {
+                throw TranspilerException(error, instruction);
+            }
+            return;
+        }
         if(variables.size() != factory.size()) {
             throw TranspilerException( FORMAT("Unconsistent assignation: {} values for {} variables", factory.size(), variables.size()), instruction);
         }
         for(auto& var : variables) {
             Expression expression = factory.getExpression();
+            if(expression.getType().contains(' ')) {
+                throw TranspilerException("Multiple return value functions must be used alone", instruction);
+            }
             if(equalToken.getType() == TokenType::OPERATION_EQUAL && !Scope::isNumber(var.second)) {
                 if(var.first == "_") {
                     throw TranspilerException(FORMAT("incompatible operator {} for blank identifier", equalToken.getValue(), var.second), instruction);
@@ -385,7 +408,7 @@ namespace vnd {
     }
 
     std::string Transpiler::extractSquareExpression(std::vector<Token>::iterator &iterator, const std::vector<Token>::iterator &end,
-                                       std::string &currentVariable, std::string &type) const noexcept {
+                                                    std::string &currentVariable, std::string &type) const noexcept {
         std::string newType;
         if(currentVariable.ends_with("->")) {
             currentVariable.pop_back();
@@ -399,6 +422,43 @@ namespace vnd {
         newType = expression.getType();
         if(newType != "int") { return FORMAT("{} index not allowed", newType); }
         currentVariable += FORMAT(".at({})->", expression.getText().substr(1));
+        return {};
+    }
+
+    std::string Transpiler::transpileMultipleFun(const std::vector<std::pair<std::string, std::string>> &variables,
+                                                 const Expression &expression) noexcept {
+        std::vector<std::string> types = Transpiler::tokenize(expression.getType());
+        std::string values;
+        std::vector<std::string> tmp;
+        int typeIndex = 0;
+        if(variables.size() != types.size()) {
+            return FORMAT("Unconsistent assignation: {} return values for {} variables", types.size(), variables.size());
+        }
+        for(size_t i = 0; i != types.size(); i++) {
+            values += FORMAT("vnd::tmp[\"{}\"], ", i);
+            tmp.emplace_back(FORMAT("vnd::tmp.at(\"{}\")", i));
+        }
+        values.pop_back();
+        values.pop_back();
+        _text += FORMAT("std::tie({}) = {};\n{}", values, expression.getText(), std::string(C_ST(_tabs), '\t'));
+        for(auto &var : variables) {
+            if(var.first != "_") {
+                std::string type = types.at(typeIndex);
+                std::string typeValue = Scope::getTypeValue(type);
+                if(!_scope->canAssign(var.second, type)) { return FORMAT("Cannot assign {}.{}", type, var.first); }
+                typeIndex++;
+                if(var.first.ends_with('(')) {
+                    _text += FORMAT("{}std::any_cast<{}>({}));\n{}", var.first, typeValue, tmp.front(),
+                                    std::string(C_ST(_tabs), '\t'));
+                } else if(var.first != "_") {
+                    _text += FORMAT("{} = std::any_cast<{}>({});\n{}", var.first, typeValue, tmp.front(),
+                                    std::string(C_ST(_tabs), '\t'));
+                }
+            }
+            tmp.erase(tmp.begin());
+        }
+        _text += "vnd::tmp.clear();";
+        _scope->clearTmp();
         return {};
     }
 
