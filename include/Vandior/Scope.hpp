@@ -26,15 +26,17 @@ namespace vnd {
                                                           const bool shadowing = false) const noexcept;
         [[nodiscard]] std::string_view getVariableType(const std::string &type,
                                                        const std::string_view &identifier) const noexcept;
-        [[nodiscard]] std::tuple<std::string, bool, std::optional<size_t>> getFunType(const std::string &type, const std::string_view &identifier,
-                                             const std::vector<Expression> &expressions) const noexcept;
+        [[nodiscard]] std::tuple<std::string, bool, std::optional<size_t>> getFunType(
+            const std::string &type, const std::string_view &identifier,
+            const std::vector<Expression> &expressions) const noexcept;
         [[nodiscard]] std::string getConstValue(const std::string &type, const std::string_view &identifier) const noexcept;
         [[nodiscard]] bool isConstant(const std::string &type, const std::string_view &identifier) const noexcept;
         [[nodiscard]] bool canAssign(const std::string &left, const std::string &right) const noexcept;
         [[nodiscard]] std::string addTmp(std::string key, std::string &type) noexcept;
         [[nodiscard]] std::string getTmp(const std::string &tmp) const noexcept;
-        void eachTmp(std::function<void(const std::string &key)> fun) const noexcept;
+        void eachTmp(const std::function<void(const std::string &key)> &fun) const noexcept;
         void clearTmp() noexcept;
+
     private:
         Scope(std::shared_ptr<Scope> parent) noexcept;
         static std::vector<std::string> _numberTypes;

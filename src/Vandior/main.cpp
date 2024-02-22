@@ -1,4 +1,4 @@
-// NOLINTBEGIN(*-include-cleaner)
+// NOLINTBEGIN(*-include-cleaner, *-env33-c)
 #include "FileReaderError.hpp"
 #include "Vandior/vandior.hpp"
 
@@ -12,6 +12,8 @@ DISABLE_WARNINGS_POP()
 // configuration step. It creates a namespace called `Vandior`. You can modify
 // the source template at `configured_files/config.hpp.in`.
 #include <internal_use_only/config.hpp>
+
+#define HIDE_SYSTEM_UOTPUT
 
 namespace {
     auto timeTokenizer(vnd::Tokenizer &tokenizer, std::vector<vnd::Token> &tokens) -> void {
@@ -64,23 +66,25 @@ constexpr std::string_view filename = "../../../input.vn";  // Linux and Unix
 #endif
 auto main(int argc, const char *const argv[]) -> int {
     // NOLINTNEXTLINE
-    INIT_LOG();
-    if(system("python --version") != 0) {
+    INIT_LOG()
+    if(std::system("python --version") != 0) {
         LERROR("Python not found");
         return EXIT_FAILURE;
     }
-    //LINFO("{}", code);
-    //LINFO("code length {}", code.length());
+    // LINFO("{}", code);
+    // LINFO("code length {}", code.length());
     try {
         CLI::App app{
             FORMAT("{} version {}", Vandior::cmake::project_name, Vandior::cmake::project_version)};  // NOLINT(*-include-cleaner)
 
-        std::optional<std::string> message;  // NOLINT(*-include-cleaner)
+        // std::optional<std::string> message;  // NOLINT(*-include-cleaner)
         std::optional<std::string> path;
-        app.add_option("-m,--message", message, "A message to print back out");
-        app.add_option("-i,--input", path, "The inpu file");
+        // app.add_option("-m,--message", message, "A message to print back out");
+        app.add_option("-i,--input", path, "The input file");
         bool show_version = false;
+        bool run = false;
         app.add_flag("--version", show_version, "Show version information");
+        app.add_flag("--run", run, "Run the resulting code");
 
         CLI11_PARSE(app, argc, argv)
 
@@ -88,41 +92,45 @@ auto main(int argc, const char *const argv[]) -> int {
             LINFO("{}", Vandior::cmake::project_version);
             return EXIT_SUCCESS;  // NOLINT(*-include-cleaner)
         }
-        std::string str;
-        if(path.has_value()) {
-            str = readFromFile(path.value());
-        } else {
-            str = readFromFile(filename.data());
-        }
+        std::string str = readFromFile(path.value_or(filename.data()));
         std::string_view code(str);
         vnd::Tokenizer tokenizer{code, filename};
         std::vector<vnd::Token> tokens;
         timeTokenizer(tokenizer, tokens);
-        //for(const auto &item : tokens) { LINFO("{}", item); }
+        // for(const auto &item : tokens) { LINFO("{}", item); }
         std::vector<vnd::Instruction> instructions;
         size_t line = tokens.at(0).getLine();
-        vnd::AutoTimer tim("tokenizer total time");
+        vnd::Timer tim("transpiling time");
         for(const vnd::Token &token : tokens) {
             if(token.getType() == vnd::TokenType::COMMENT) [[unlikely]] { continue; }
             if(token.getLine() >= line) [[likely]] {
                 if(instructions.empty() || instructions.back().canTerminate()) [[likely]] {
-                    //if(!instructions.empty()) { LINFO("{}", instructions.back().getLastType()); }
+                    // if(!instructions.empty()) { LINFO("{}", instructions.back().getLastType()); }
                     instructions.emplace_back(vnd::Instruction::create(filename));
                 } else if(instructions.back().typeToString().back() != "EXPRESSION" && token.getType() != vnd::TokenType::STRING)
                     [[unlikely]] {
                     throw vnd::InstructionException(token);
-                    break;
                 }
                 line = token.getLine() + 1;
             }
             instructions.back().checkToken(token);
         }
-        vnd::Transpiler transpiler = vnd::Transpiler::create(instructions);
-        if(!transpiler.transpile()) { return EXIT_FAILURE; }
-        if(system("g++ --version") == 0) { system("g++ --std=c++20 output.cpp"); }
-    } catch(const std::exception &e) { LERROR("Unhandled exception in main: {}", e.what()); }  // NOLINT(*-include-cleaner)
-
+        if(vnd::Transpiler transpiler = vnd::Transpiler::create(instructions); !transpiler.transpile()) { return EXIT_FAILURE; }
+        LINFO("{}", tim);
+        if(run) {
+            vnd::AutoTimer rtim("run code time");
+#ifdef HIDE_SYSTEM_UOTPUT
+#ifdef _WIN32
+            if(std::system("g++ --version > NUL") == 0) { system("g++ --std=c++20 output.cpp"); }
+#else
+            if(std::system("g++ --version > /dev/null") == 0) { system("g++ --std=c++20 output.cpp"); }
+#endif
+#else
+            if(std::system("g++ --version") == 0) { system("g++ --std=c++20 output.cpp"); }
+#endif
+        }
+    } catch(const std::exception &e) { LERROR("Unhandled exception in main: {}", e.what()); }
     return EXIT_SUCCESS;  // Return appropriate exit code
 }
 DISABLE_WARNINGS_POP()
-// NOLINTEND(*-include-cleaner)
+// NOLINTEND(*-include-cleaner, *-env33-c)

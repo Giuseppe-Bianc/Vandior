@@ -1,12 +1,13 @@
 #include "Vandior/ExpressionFactory.hpp"
 #include <algorithm>
 
+// NOLINTBEGIN(*-include-cleaner, *-env33-c)
 #ifdef _MSC_VER
-    #define POPEN _popen
-    #define PCLOSE _pclose
+#define POPEN _popen
+#define PCLOSE _pclose
 #else
-    #define POPEN popen
-    #define PCLOSE pclose
+#define POPEN popen
+#define PCLOSE pclose
 #endif
 
 #define EXPRTK
@@ -25,9 +26,8 @@ namespace vnd {
     }
     // NOLINTEND
 
-    // NOLINTBEGIN(*-include-cleaner)
-
-    std::string ExpressionFactory::transpileFun(const std::vector<Expression> &expressions, std::optional<size_t> variadic) noexcept {
+    std::string ExpressionFactory::transpileFun(const std::vector<Expression> &expressions,
+                                                std::optional<size_t> variadic) noexcept {
         std::string params;
         size_t pos = 0;
         for(const Expression &expression : expressions) {
@@ -45,16 +45,16 @@ namespace vnd {
 
     bool ExpressionFactory::isSquareType(const std::string_view &type) noexcept { return type == "int" || type == "operator"; }
 
-
     std::string ExpressionFactory::evaluate(const std::string &expression) noexcept {
-        char *command = new char[strlen("python -c \"print()\"") + strlen(expression.c_str()) + 1];
-        double result;
-        strcpy(command, FORMAT("python -c \"print({})\"", expression).c_str());
-        FILE *pipe = POPEN(command, "r");
+        std::string command = FORMAT("python -c \"print({})\"", expression);
+
+        double result = 0.0;
+        std::unique_ptr<FILE, decltype(&PCLOSE)> pipe(POPEN(command.c_str(), "r"), PCLOSE);
         if(!pipe) { return "0"; }
-        if(fscanf(pipe, "%lf", &result) != 1) { result = 0; }
-        PCLOSE(pipe);
-        delete[] command;
+
+        // NOLINTNEXTLINE(*-err34-c, *-pro-type-vararg, hicpp-vararg)
+        if(std::fscanf(pipe.get(), "%lf", &result) != 1) { result = 0; }
+
         return std::to_string(result);
     }
 
@@ -98,28 +98,26 @@ namespace vnd {
     }
 
     void ExpressionFactory::handleFinalExpression(const std::tuple<bool, bool, std::string> &type) noexcept {
-        #ifdef EXPRTK
-            exprtk::parser<double> parser;
-            exprtk::expression<double> expression;
-            if(Scope::isNumber(std::get<2>(type))) {
-                std::string value;
-                if(_const) { parser.compile(_expressionText, expression); }
-                value = std::to_string(expression.value());
-                _expressions.emplace_back(Expression::create(_text, std::get<2>(type), _const, value));
-            } else {
-                _expressions.emplace_back(Expression::create(_text, std::get<2>(type), _const));
-            }
-        #else
-            if(Scope::isNumber(std::get<2>(type))) {
-                std::string value;
-                if(_const) { value = ExpressionFactory::evaluate(_expressionText); }
-                _expressions.emplace_back(Expression::create(_text, std::get<2>(type), _const, value));
-            } else {
-                _expressions.emplace_back(Expression::create(_text, std::get<2>(type), _const));
-            }
-        #endif  
-
-        
+#ifdef EXPRTK
+        exprtk::parser<double> parser;
+        exprtk::expression<double> expression;
+        if(Scope::isNumber(std::get<2>(type))) {
+            std::string value;
+            if(_const) { parser.compile(_expressionText, expression); }
+            value = std::to_string(expression.value());
+            _expressions.emplace_back(Expression::create(_text, std::get<2>(type), _const, value));
+        } else {
+            _expressions.emplace_back(Expression::create(_text, std::get<2>(type), _const));
+        }
+#else
+        if(Scope::isNumber(std::get<2>(type))) {
+            std::string value;
+            if(_const) { value = ExpressionFactory::evaluate(_expressionText); }
+            _expressions.emplace_back(Expression::create(_text, std::get<2>(type), _const, value));
+        } else {
+            _expressions.emplace_back(Expression::create(_text, std::get<2>(type), _const));
+        }
+#endif
     }
 
     std::size_t ExpressionFactory::size() const noexcept { return _expressions.size(); }
@@ -205,11 +203,11 @@ namespace vnd {
                 _text.emplace(textIndex, "std::pow(");
             }
             _text.emplace_back(",");
-            #ifdef EXPRTK
-                _expressionText += value;
-            #else
-                _expressionText += "**";
-            #endif
+#ifdef EXPRTK
+            _expressionText += value;
+#else
+            _expressionText += "**";
+#endif
             _iterator++;
             return;
         }
@@ -390,15 +388,14 @@ namespace vnd {
         return {};
     }
 
+    // NOLINTNEXTLINE(*-function-cognitive-complexity)
     std::string ExpressionFactory::checkType(TupType &oldType, const std::string_view newType) noexcept {
         if(newType == "dot" || (std::next(_iterator) != _end && std::next(_iterator)->getType() == TokenType::DOT_OPERATOR)) {
             return {};
         }
         if(std::get<2>(oldType).contains(' ')) { return "Multiple return value functions must be used alone"; }
         if(newType.contains(' ')) {
-            if(!std::get<2>(oldType).empty()) {
-                return "Multiple return value functions must be used alone";
-            }
+            if(!std::get<2>(oldType).empty()) { return "Multiple return value functions must be used alone"; }
             std::get<2>(oldType) = newType;
             return {};
         }
@@ -488,5 +485,5 @@ namespace vnd {
             _temp.clear();
         }
     }
-    // NOLINTEND(*-include-cleaner)
 }  // namespace vnd
+// NOLINTEND(*-include-cleaner, *-env33-c)
