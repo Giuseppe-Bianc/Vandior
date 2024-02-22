@@ -1,6 +1,7 @@
 // NOLINTBEGIN(*-include-cleaner, *-env33-c)
 #include "FileReaderError.hpp"
 #include "Vandior/vandior.hpp"
+#include <future>
 
 DISABLE_WARNINGS_PUSH(
     4005 4201 4459 4514 4625 4626 4820 6244 6285 6385 6386 26408 26409 26415 26418 26426 26429 26432 26437 26438 26440 26446 26447 26450 26451 26455 26457 26459 26460 26461 26462 26467 26472 26473 26474 26475 26481 26482 26485 26490 26491 26493 26494 26495 26496 26497 26498 26800 26814 26818 26821 26826 26827)
@@ -18,13 +19,12 @@ DISABLE_WARNINGS_POP()
 namespace {
     auto timeTokenizer(vnd::Tokenizer &tokenizer, std::vector<vnd::Token> &tokens) -> void {
         tokens.clear();
-        vnd::AutoTimer timer("tokenizer.tokenize()");
+        vnd::AutoTimer timer("tokenization");
         tokens = tokenizer.tokenize();
     }
     auto readFromFile(const std::string &filename) -> std::string {
-        vnd::AutoTimer timer("readFromFile");
+        vnd::AutoTimer timer(FORMAT("reading file {}", filename));
         const auto &filePath = std::filesystem::path(filename);
-
         if(!std::filesystem::exists(filePath)) { throw FILEREADEREERRORF("File not found: {}", filePath); }
         if(!std::filesystem::is_regular_file(filePath)) { throw FILEREADEREERRORF("Path is not a regular file: {}", filePath); }
 
@@ -49,6 +49,7 @@ namespace {
         // Extract the content as a string
         return buffer.str();
     }
+
 }  // namespace
 // constexpr std::string_view code2 = R"('a' '\\' '')";
 // constexpr std::string_view code2 = R"("a" "\\" "")";
@@ -64,6 +65,27 @@ constexpr std::string_view filename = "../../../input.vn";
 // constexpr std::string_view filename = "../../../../input.vn";  // Linux and Unix  form editor
 constexpr std::string_view filename = "../../../input.vn";  // Linux and Unix
 #endif
+auto extractInstructions(const std::vector<vnd::Token> &tokens) -> std::vector<vnd::Instruction> {
+    std::vector<vnd::Instruction> instructions;
+    auto line = tokens.at(0).getLine();
+    vnd::AutoTimer ictim("Instructions creation time");
+    for(const vnd::Token &token : tokens) {
+        if(token.getType() == vnd::TokenType::COMMENT) [[unlikely]] { continue; }
+        if(token.getLine() >= line) [[likely]] {
+            if(instructions.empty() || instructions.back().canTerminate()) [[likely]] {
+                // if(!instructions.empty()) { LINFO("{}", instructions.back().getLastType()); }
+                instructions.emplace_back(vnd::Instruction::create(filename));
+            } else if(instructions.back().typeToString().back() != "EXPRESSION" && token.getType() != vnd::TokenType::STRING)
+                [[unlikely]] {
+                throw vnd::InstructionException(token);
+            }
+            line = token.getLine() + 1;
+        }
+        instructions.back().checkToken(token);
+    }
+    return instructions;
+}
+// NOLINTNEXTLINE(*-function-cognitive-complexity)
 auto main(int argc, const char *const argv[]) -> int {
     // NOLINTNEXTLINE
     INIT_LOG()
@@ -83,9 +105,8 @@ auto main(int argc, const char *const argv[]) -> int {
         app.add_option("-i,--input", path, "The input file");
         bool show_version = false;
         bool run = false;
-        app.add_flag("--version", show_version, "Show version information");
-        app.add_flag("--run", run, "Run the resulting code");
-
+        app.add_flag("--version, -v", show_version, "Show version information");
+        app.add_flag("--run, -r", run, "Run the compilation on resulting code");
         CLI11_PARSE(app, argc, argv)
 
         if(show_version) {
@@ -93,41 +114,42 @@ auto main(int argc, const char *const argv[]) -> int {
             return EXIT_SUCCESS;  // NOLINT(*-include-cleaner)
         }
         std::string str = readFromFile(path.value_or(filename.data()));
+
         std::string_view code(str);
         vnd::Tokenizer tokenizer{code, filename};
         std::vector<vnd::Token> tokens;
         timeTokenizer(tokenizer, tokens);
         // for(const auto &item : tokens) { LINFO("{}", item); }
-        std::vector<vnd::Instruction> instructions;
-        size_t line = tokens.at(0).getLine();
+        std::vector<vnd::Instruction> instructions = extractInstructions(tokens);
         vnd::Timer tim("transpiling time");
-        for(const vnd::Token &token : tokens) {
-            if(token.getType() == vnd::TokenType::COMMENT) [[unlikely]] { continue; }
-            if(token.getLine() >= line) [[likely]] {
-                if(instructions.empty() || instructions.back().canTerminate()) [[likely]] {
-                    // if(!instructions.empty()) { LINFO("{}", instructions.back().getLastType()); }
-                    instructions.emplace_back(vnd::Instruction::create(filename));
-                } else if(instructions.back().typeToString().back() != "EXPRESSION" && token.getType() != vnd::TokenType::STRING)
-                    [[unlikely]] {
-                    throw vnd::InstructionException(token);
-                }
-                line = token.getLine() + 1;
-            }
-            instructions.back().checkToken(token);
-        }
         if(vnd::Transpiler transpiler = vnd::Transpiler::create(instructions); !transpiler.transpile()) { return EXIT_FAILURE; }
         LINFO("{}", tim);
         if(run) {
-            vnd::AutoTimer rtim("run code time");
+            std::string_view command;
 #ifdef HIDE_SYSTEM_UOTPUT
 #ifdef _WIN32
-            if(std::system("g++ --version > NUL") == 0) { system("g++ --std=c++20 output.cpp"); }
+            command = "g++ --version > NUL";
 #else
-            if(std::system("g++ --version > /dev/null") == 0) { system("g++ --std=c++20 output.cpp"); }
+            command = "g++ --version > /dev/null";
 #endif
 #else
-            if(std::system("g++ --version") == 0) { system("g++ --std=c++20 output.cpp"); }
+            command = "g++ --version";
 #endif
+
+            if(std::system(command.data()) == 0) {
+                vnd::Timer rtim("compile code time");
+
+                // Compile the code
+                int compileResult = std::system("g++ --std=c++20 output.cpp");
+                LINFO("{}", rtim);
+                if(compileResult != 0) {
+                    LERROR("Compilation failed");
+                    return EXIT_FAILURE;
+                }
+            } else {
+                LERROR("Failed to execute command: {}", command);
+                return EXIT_FAILURE;
+            }
         }
     } catch(const std::exception &e) { LERROR("Unhandled exception in main: {}", e.what()); }
     return EXIT_SUCCESS;  // Return appropriate exit code
