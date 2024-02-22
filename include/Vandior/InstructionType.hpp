@@ -3,6 +3,10 @@
 #include "headers.hpp"
 
 namespace vnd {
+    /**
+     * @enum InstructionType
+     * @brief Represents the types of instruction in the programming language.
+     */
     enum class InstructionType : short {
         PARAMETER_EXPRESSION,
         OPERATION,

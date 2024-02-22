@@ -28,9 +28,9 @@ namespace vnd {
     private:
         /**
          * @brief Constructs a Transpiler with a vector of instructions.
-         * @param _instructions The vector of instructions.
+         * @param instructions The vector of instructions.
          */
-        Transpiler(const std::vector<Instruction> &_instructions) noexcept;
+        Transpiler(const std::vector<Instruction> &instructions) noexcept;
 
         int _tabs;                               ///< Number of tabs for indentation.
         std::string _text;                       ///< The transpiled text.
