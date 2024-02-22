@@ -21,6 +21,7 @@ namespace vnd {
         K_MAIN,                ///< Keyword 'main'
         K_VAR,                 ///< Keyword 'var'
         K_STRUCTURE,           ///< Keyword 'structure'
+        K_ELSE,                ///< Keywork 'else'
         K_FOR,                 ///< Keyword 'for'
         K_FUN,                 ///< Keyword 'fun'
         K_RETURN,              ///< Keyword 'return'
@@ -91,6 +92,9 @@ template <> struct fmt::formatter<vnd::TokenType> : fmt::formatter<std::string_v
             break;
         case K_STRUCTURE:
             name = "K_STRUCTURE";
+            break;
+        case K_ELSE:
+            name = "K_ELSE";
             break;
         case K_FOR:
             name = "K_FOR";

@@ -122,7 +122,10 @@ namespace vnd {
             checkKVar();
             break;
         case K_STRUCTURE:
-            checkKStructure();
+            checkKStructure(token.getValue());
+            break;
+        case K_ELSE:
+            checkKElse();
             break;
         case K_FOR:
             checkKFor();
@@ -319,6 +322,8 @@ namespace vnd {
             if(type == CLOSE_SQ_PARENTESIS) { _allowedTokens.emplace_back(OPEN_SQ_PARENTESIS); }
             break;
         case STRUCTURE:
+            [[fallthrough]];
+        case ELSE:
             _allowedTokens = {OPEN_CUR_PARENTESIS};
             break;
         case DEFINITION:
@@ -357,7 +362,7 @@ namespace vnd {
             return;
         }
         if(lastTypeIs(BLANK)) { setLastType(CLOSE_SCOPE); }
-        _allowedTokens = {eofTokenType};
+        _allowedTokens = {K_ELSE, eofTokenType};
     }
 
     void Instruction::checkKMain() noexcept {
@@ -374,11 +379,26 @@ namespace vnd {
         _allowedTokens = {IDENTIFIER};
     }
 
-    void Instruction::checkKStructure() noexcept {
+    void Instruction::checkKStructure(const std::string_view &value) noexcept {
         using enum TokenType;
         using enum InstructionType;
+        if(getLastTokenType() == K_ELSE) {
+            if(value == "if") {
+                _allowedTokens = {OPEN_PARENTESIS};
+                return;
+            }
+            _allowedTokens = {};
+            return;
+        }
         setLastType(STRUCTURE);
         _allowedTokens = {OPEN_PARENTESIS};
+    }
+
+    void Instruction::checkKElse() noexcept {
+        using enum TokenType;
+        using enum InstructionType;
+        setLastType(ELSE);
+        _allowedTokens = {K_STRUCTURE, OPEN_CUR_PARENTESIS};
     }
 
     void Instruction::checkKFor() noexcept {

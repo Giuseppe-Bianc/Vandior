@@ -18,4 +18,9 @@ main {
 	var maxValue: float
 	a, obj.a = max({1})
 	createDerived().obj.a ^= obj.a ^ 2
+	if(a == 2) {
+		
+	} else if(1) {
+	
+	} else {}
 }

@@ -35,7 +35,8 @@ namespace vnd {
         void checkClosedCurParentesis() noexcept;
         void checkKMain() noexcept;
         void checkKVar() noexcept;
-        void checkKStructure() noexcept;
+        void checkKStructure(const std::string_view &value) noexcept;
+        void checkKElse() noexcept;
         void checkKFor() noexcept;
         void checkKFun() noexcept;
         void checkKReturn() noexcept;

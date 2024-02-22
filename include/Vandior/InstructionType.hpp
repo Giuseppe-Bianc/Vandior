@@ -15,6 +15,7 @@ namespace vnd {
         ARRAY_INIZIALIZATION,
         MAIN,
         STRUCTURE,
+        ELSE,
         FOR_STRUCTURE,
         FOR_INITIALIZATION,
         FOR_CONDITION,
@@ -65,6 +66,9 @@ template <> struct fmt::formatter<vnd::InstructionType> : fmt::formatter<std::st
             break;
         case STRUCTURE:
             name = "STRUCTURE";
+            break;
+        case ELSE:
+            name = "ELSE";
             break;
         case FOR_STRUCTURE:
             name = "FOR_STRUCTURE";

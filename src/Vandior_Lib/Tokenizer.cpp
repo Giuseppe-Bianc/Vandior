@@ -65,6 +65,7 @@ namespace vnd {
         if(value == "main"sv) { type = K_MAIN; }
         if(value == "var"sv || value == "val"sv || value == "const"sv) { type = K_VAR; }
         if(value == "if"sv || value == "while"sv) { type = K_STRUCTURE; }
+        if(value == "else"sv) { type = K_ELSE; }
         if(value == "for"sv) { type = K_FOR; }
         if(value == "fun"sv) { type = K_FUN; }
         if(value == "return"sv) { type = K_RETURN; }
