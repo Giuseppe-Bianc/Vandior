@@ -21,8 +21,9 @@ namespace vnd {
 
         /**
          * @brief Transpile the instructions.
+         * @return Bool indicating if the transpiling is successful.
          */
-        void transpile();
+        bool transpile();
 
     private:
         /**
@@ -37,6 +38,13 @@ namespace vnd {
         std::vector<Instruction> _instructions;  ///< Vector of instructions.
         std::shared_ptr<Scope> _scope;           ///< Shared pointer to the current scope.
         char _main;                              ///< Main character.
+
+        /**
+         * @brief Tokenize a string.
+         * @param str String to tokenize.
+         * @return Vector of tokenized string.
+         */
+        static std::vector<std::string> tokenize(const std::string &str) noexcept;
 
         /**
          * @brief Checks if there's a trailing bracket in the instruction.
@@ -57,13 +65,19 @@ namespace vnd {
         void transpileDeclaration(const Instruction &instruction);
 
         /**
+         * @brief Transpile the operation part of the instruction.
+         * @param instruction The instruction to transpile.
+         */
+        void transpileOperation(const Instruction &instruction);
+
+        /**
          * @brief Transpile the assignation part of the instruction.
          * @param instruction The instruction to transpile.
          */
         void transpileAssignation(const Instruction &instruction);
 
         /**
-         * @brief Extracts identifiers of declared variables from the declaration instruction.
+         * @brief Extracts identifiers of declared variables from a declaration instruction.
          * @param iterator The iterator to the instruction.
          * @param instruction The instruction to extract variables from.
          * @return Vector of extracted identifiers.
@@ -72,24 +86,58 @@ namespace vnd {
                                                                        const Instruction &instruction) const;
 
         /**
-         * @brief Extracts variables from the instruction.
+         * @brief Extracts variables from an assignation instruction.
          * @param iterator The iterator to the instruction.
          * @param end Iterator pointing to the end of the token sequence.
          * @param instruction The instruction to extract variables from.
-         * @param assignable Bool indicating if the variables can be assignated.
          * @return Vector of extracted variables and their types.
          */
-        //[[nodiscard]] std::vector<std::pair<std::string_view, std::string>> extractvariables(std::vector<Token>::iterator
-        //&iterator, const std::vector<Token>::iterator &end, const Instruction &instruction, bool &assignable) const;
+        [[nodiscard]] std::vector<std::pair<std::string, std::string>> extractvariables(std::vector<Token>::iterator &iterator,
+                                                        const std::vector<Token>::iterator &end, const Instruction &instruction) const;
 
         /**
-         * @brief checks the type and the assignability of a variable.
-         * @param type the type of the thr object holfing the variable.
-         * @param Identifier String_view conatining the variable identifier to check.
-         * @return the type of the variable and its assignability.
+         * @brief Extracts a token from an assignation instruction.
+         * @param iterator The iterator to the instruction.
+         * @param end Iterator pointing to the end of the token sequence.
+         * @param next Iterator pointing to the next token.
+         * @param currentvariable String containing the current extracted variable.
+         * @param type String containing the type of the extracted variable.
+         * @return Parsed string if there is an error. If no error occurs, an empty string is returned.
          */
-        //[[nodiscard]] std::pair<std::string, bool> checkIdentifier(const std::string &type, const std::string_view &identifier)
-        // const;
+        [[nodiscard]] std::string extractToken(std::vector<Token>::iterator & iterator, const std::vector<Token>::iterator &end,
+                                                const std::vector<Token>::iterator &next, std::string &currentVariable, std::string &type) const noexcept;
+
+        /**
+         * @brief Extracts a function from an assignation instruction.
+         * @param iterator The iterator to the instruction.
+         * @param end Iterator pointing to the end of the token sequence.
+         * @param currentvariable String containing the current extracted variable.
+         * @param type String containing the type of the extracted variable.
+         * @return Parsed string if there is an error. If no error occurs, an empty string is returned.
+         */
+        [[nodiscard]] std::string extractFun(std::vector<Token>::iterator &iterator, const std::vector<Token>::iterator &end,
+                                               std::string &currentVariable, std::string &type) const noexcept;
+
+        /**
+         * @brief Extracts a square expression from an assignation instruction.
+         * @param iterator The iterator to the instruction.
+         * @param end Iterator pointing to the end of the token sequence.
+         * @param currentvariable String containing the current extracted variable.
+         * @param type String containing the type of the extracted variable.
+         * @return Parsed string if there is an error. If no error occurs, an empty string is returned.
+         */
+        [[nodiscard]] std::string extractSquareExpression(std::vector<Token>::iterator &iterator, const std::vector<Token>::iterator &end,
+                                             std::string &currentVariable, std::string &type) const noexcept;
+
+
+        /**
+         * @brief transpile a multi return value function instruction.
+         * @param variables Vector of identifiers and types of assigned variables.
+         * @param expressiom Expression conataining the function.
+         * @return Parsed string if there is an error. If no error occurs, an empty string is returned.
+         */
+        [[nodiscard]] std::string transpileMultipleFun(const std::vector<std::pair<std::string, std::string>> &variables,
+                                                       const Expression &expression) noexcept;
 
         /**
          * @brief Transpile a type name.

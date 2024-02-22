@@ -13,6 +13,7 @@ namespace vnd {
         [[nodiscard]] static bool isNumber(const std::string &type) noexcept;
         [[nodiscard]] static bool isPrimitive(const std::string &type) noexcept;
         [[nodiscard]] static bool checkVector(std::string &type) noexcept;
+        [[nodiscard]] static std::string getTypeValue(std::string &type) noexcept;
         [[nodiscard]] std::shared_ptr<Scope> getParent() const noexcept;
         void removeParent() noexcept;
         void addType(const std::string_view &type, const std::vector<std::string> &assignable) noexcept;
@@ -25,11 +26,15 @@ namespace vnd {
                                                           const bool shadowing = false) const noexcept;
         [[nodiscard]] std::string_view getVariableType(const std::string &type,
                                                        const std::string_view &identifier) const noexcept;
-        [[nodiscard]] std::pair<std::string, bool> getFunType(const std::string &type, const std::string_view &identifier,
+        [[nodiscard]] std::tuple<std::string, bool, std::optional<size_t>> getFunType(const std::string &type, const std::string_view &identifier,
                                              const std::vector<Expression> &expressions) const noexcept;
         [[nodiscard]] std::string getConstValue(const std::string &type, const std::string_view &identifier) const noexcept;
         [[nodiscard]] bool isConstant(const std::string &type, const std::string_view &identifier) const noexcept;
         [[nodiscard]] bool canAssign(const std::string &left, const std::string &right) const noexcept;
+        [[nodiscard]] std::string addTmp(std::string key, std::string &type) noexcept;
+        [[nodiscard]] std::string getTmp(const std::string &tmp) const noexcept;
+        void eachTmp(std::function<void(const std::string &key)> fun) const noexcept;
+        void clearTmp() noexcept;
     private:
         Scope(std::shared_ptr<Scope> parent) noexcept;
         static std::vector<std::string> _numberTypes;
@@ -41,6 +46,7 @@ namespace vnd {
         std::unordered_map<std::string, std::pair<std::string, std::string>> _consts;
         std::unordered_map<std::string, std::vector<std::string>> _types;
         std::unordered_map<std::string, std::vector<FunType>> _funs;
+        std::unordered_map<std::string, std::string> _tmp;
         std::shared_ptr<Scope> _parent;
     };
 
