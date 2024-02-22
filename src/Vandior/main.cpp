@@ -21,10 +21,10 @@ namespace {
     }
     auto readFromFile(const std::string &filename) -> std::string {
         vnd::AutoTimer timer("readFromFile");
-        std::filesystem::path filePath = filename;
+        const auto &filePath = std::filesystem::path(filename);
 
-        if(!std::filesystem::exists(filePath)) { throw FILEREADEREERRORF("File not found: {}", filename); }
-        if(!std::filesystem::is_regular_file(filePath)) { throw FILEREADEREERRORF("Path is not a regular file: {}", filename); }
+        if(!std::filesystem::exists(filePath)) { throw FILEREADEREERRORF("File not found: {}", filePath); }
+        if(!std::filesystem::is_regular_file(filePath)) { throw FILEREADEREERRORF("Path is not a regular file: {}", filePath); }
 
         std::stringstream buffer;
         // NOLINTNEXTLINE(*-include-cleaner,  hicpp-signed-bitwise)
@@ -36,12 +36,12 @@ namespace {
             try {
                 buffer << fileStream.rdbuf();
             } catch(const std::ios_base::failure &e) {
-                throw FILEREADEREERRORF("Unable to read file: {}. Reason: {}", filename, e.what());
+                throw FILEREADEREERRORF("Unable to read file: {}. Reason: {}", filePath, e.what());
             }
         } else {
             // Handle the case when the file cannot be opened,
             // You might throw an exception or return an error indicator
-            throw FILEREADEREERRORF("Unable to open file: {}", filename);
+            throw FILEREADEREERRORF("Unable to open file: {}", filePath);
         }
 
         // Extract the content as a string
@@ -100,8 +100,8 @@ auto main(int argc, const char *const argv[]) -> int {
         timeTokenizer(tokenizer, tokens);
         //for(const auto &item : tokens) { LINFO("{}", item); }
         std::vector<vnd::Instruction> instructions;
-        vnd::AutoTimer tim("tokenizer total time");
         size_t line = tokens.at(0).getLine();
+        vnd::AutoTimer tim("tokenizer total time");
         for(const vnd::Token &token : tokens) {
             if(token.getType() == vnd::TokenType::COMMENT) [[unlikely]] { continue; }
             if(token.getLine() >= line) [[likely]] {
@@ -119,11 +119,6 @@ auto main(int argc, const char *const argv[]) -> int {
         }
         vnd::Transpiler transpiler = vnd::Transpiler::create(instructions);
         if(!transpiler.transpile()) { return EXIT_FAILURE; }
-        /* vnd::Parser parser(code);
-        Timer timeAst("ast creation time");
-        auto ast = parser.parse();
-        prettyPrint(*ast);
-        LINFO("{}", timeAst);*/
         if(system("g++ --version") == 0) { system("g++ --std=c++20 output.cpp"); }
     } catch(const std::exception &e) { LERROR("Unhandled exception in main: {}", e.what()); }  // NOLINT(*-include-cleaner)
 

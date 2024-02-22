@@ -33,6 +33,7 @@ namespace vnd {
         [[nodiscard]] bool canAssign(const std::string &left, const std::string &right) const noexcept;
         [[nodiscard]] std::string addTmp(std::string key, std::string &type) noexcept;
         [[nodiscard]] std::string getTmp(const std::string &tmp) const noexcept;
+        void eachTmp(std::function<void(const std::string &key)> fun) const noexcept;
         void clearTmp() noexcept;
     private:
         Scope(std::shared_ptr<Scope> parent) noexcept;

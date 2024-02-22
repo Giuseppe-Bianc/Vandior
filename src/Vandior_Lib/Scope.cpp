@@ -274,7 +274,12 @@ namespace vnd {
         return tmp;
     }
 
+    void Scope::eachTmp(std::function<void(const std::string &key)> fun) const noexcept {
+        for(auto &tmp : _tmp) { fun(tmp.first); }
+    }
+
     void Scope::clearTmp() noexcept { _tmp.clear(); }
+
 
 }  // namespace vnd
 

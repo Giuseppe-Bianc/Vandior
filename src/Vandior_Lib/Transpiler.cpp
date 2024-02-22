@@ -179,7 +179,6 @@ namespace vnd {
             if(var.first != "_") {
                 std::string typeValue = Scope::getTypeValue(var.second);
                 std::string key = _scope->addTmp(var.first, var.second);
-                _text += FORMAT("vnd::tmp[\"{}\"] = {};\n{}", key, key, std::string(C_ST(_tabs), '\t'));
                 tmp.push_back(FORMAT("std::any_cast<{}>(vnd::tmp[\"{}\"])", typeValue, key));
             }
         }
@@ -198,6 +197,9 @@ namespace vnd {
             }
             return;
         }
+        _scope->eachTmp([this](const std::string &key) -> void  {
+            _text += FORMAT("vnd::tmp[\"{}\"] = {};\n{}", key, key, std::string(C_ST(_tabs), '\t'));
+        });
         if(variables.size() != factory.size()) {
             throw TranspilerException( FORMAT("Unconsistent assignation: {} values for {} variables", factory.size(), variables.size()), instruction);
         }
