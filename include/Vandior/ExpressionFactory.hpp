@@ -28,6 +28,12 @@ namespace vnd {
                                                       std::shared_ptr<Scope> scope, const bool isConst,
                                                       const bool sq = false) noexcept;
 
+        /**
+         * @brief Creates the text for the arguments of a function.
+         * @param expressions Vector of the expressions passed as arguments to the function.
+         * @param variadic Optional indicating the position of the first variadic argument, if present.
+         * @return the transpiled text for the arguments.
+         */
         [[nodiscard]] static std::string transpileFun(const std::vector<Expression> &expressions, std::optional<size_t> variadic) noexcept;
 
         /**
@@ -38,25 +44,25 @@ namespace vnd {
         [[nodiscard]] std::string parse(const std::vector<TokenType> &endToken) noexcept;
 
         /**
-         * @brief Gets the size of the parsed text.
-         * @return Size of the parsed text.
+         * @brief Gets the size of the vector of parsed expressions.
+         * @return Size of the vector of parsed expressions.
          */
         [[nodiscard]] std::size_t size() const noexcept;
 
         /**
-         * @brief Checks if the parsed text is empty.
-         * @return True if the parsed text is empty, false otherwise.
+         * @brief Checks if the size of the vector of parsed expressions is empty.
+         * @return True if the vector is empty, false otherwise.
          */
         [[nodiscard]] bool empty() const noexcept;
 
         /**
-         * @brief Gets the parsed expression.
+         * @brief Gets the first parsed expression removing it from the vector.
          * @return Parsed expression.
          */
         [[nodiscard]] Expression getExpression() noexcept;
 
         /**
-         * @brief Gets the vector of parsed expressions.
+         * @brief Gets the vector of parsed expressions clearing it.
          * @return Vector of parsed expressions.
          */
         [[nodiscard]] std::vector<Expression> getExpressions() noexcept;
@@ -80,23 +86,23 @@ namespace vnd {
                           const bool isConst, const bool sq) noexcept;
 
         /**
-         * @brief Type definition for a tuple used during parsing.
+         * @brief Type definition for a tuple used during parsing for representing the current expression type.
          */
         using TupType = std::tuple<bool, bool, std::string>;
 
-        std::vector<Token>::iterator &_iterator;  ///< Iterator pointing to the current position in the token sequence.
-        std::vector<Token>::iterator _end;        ///< Iterator pointing to the end of the token sequence.
-        std::shared_ptr<Scope> _scope;            ///< Shared pointer to the current scope.
-        std::vector<std::string> _text;           ///< Vector storing the parsed text.
-        std::vector<Expression> _expressions;     ///< Vector storing the created expressions.
-        std::optional<size_t> _power;             ///< Power value used during parsing.
-        bool _divide;                             ///< Flag indicating division operation during parsing.
-        bool _dot;
-        bool _sq;
-        bool _const;
-        std::string _expressionText;
-        std::string _type;
-        std::string _temp;
+        std::vector<Token>::iterator &_iterator;    ///< Iterator pointing to the current position in the token sequence.
+        std::vector<Token>::iterator _end;          ///< Iterator pointing to the end of the token sequence.
+        std::shared_ptr<Scope> _scope;              ///< Shared pointer to the current scope.
+        std::vector<std::string> _text;             ///< Vector storing the parsed text.
+        std::vector<Expression> _expressions;       ///< Vector storing the parsed expressions.
+        std::optional<size_t> _power;               ///< Power value used to parse ^ operator.
+        bool _divide;                               ///< Flag indicating division operation during parsing.
+        bool _dot;                                  ///< Flag used for indicate the presence of . token.
+        bool _const;                                ///< Flag used to indicate if it's a const expression.
+        bool _sq;                                   ///< Flag used to indicate if it's a square expression.
+        std::string _expressionText;                ///< String containing the text to evaluate a constant expression.
+        std::string _type;                          ///< String containing the temp type of the operand.
+        std::string _temp;                          ///< String containing the temp value of the operand.
 
         /**
          * @brief Checks if the type of a token is allowed for array indexing.
@@ -133,35 +139,35 @@ namespace vnd {
         /**
          * @brief Handles a function during parsing.
          * @param type Tuple representing the type information.
-         * @return Parsed string if there is an error. If no error occurs, an empty string is returned
+         * @return Parsed string if there is an error. If no error occurs, an empty string is returned.
          */
         [[nodiscard]] std::string handleFun(TupType &type) noexcept;
 
         /**
          * @brief Handles an inner expression during parsing.
          * @param type Tuple representing the type information.
-         * @return Parsed string if there is an error. If no error occurs, an empty string is returned
+         * @return Parsed string if there is an error. If no error occurs, an empty string is returned.
          */
         [[nodiscard]] std::string handleInnerExpression(TupType &type) noexcept;
 
         /**
-         * @brief Handles an inner expression for array indexing during parsing.
+         * @brief Handles an inner expression for array size or indexing during parsing.
          * @param type Tuple representing the type information.
-         * @return Parsed string if there is an error. If no error occurs, an empty string is returned
+         * @return Parsed string if there is an error. If no error occurs, an empty string is returned.
          */
         [[nodiscard]] std::string handleSquareExpression(TupType &type) noexcept;
 
         /**
          * @brief Handles a vector initialization.
          * @param type Tuple representing the type information.
-         * @return Parsed string if there is an error. If no error occurs, an empty string is returned
+         * @return Parsed string if there is an error. If no error occurs, an empty string is returned.
          */
         [[nodiscard]] std::string handleVectorInitialization(TupType &type) noexcept;
 
         /**
          * @brief Handles a token during parsing.
          * @param type Tuple representing the type information.
-         * @return Parsed string if there is an error. If no error occurs, an empty string is returned
+         * @return Parsed string if there is an error. If no error occurs, an empty string is returned.
          */
         [[nodiscard]] std::string handleToken(TupType &type) noexcept;
 
@@ -169,21 +175,22 @@ namespace vnd {
          * @brief Checks the type during parsing.
          * @param oldType Tuple representing the previous type.
          * @param newType The new type to check.
-         * @return Checked type as a string if there is an error. If no error occurs, an empty string is returned
+         * @return Parsed string if there is an error. If no error occurs, an empty string is returned.
          */
         [[nodiscard]] std::string checkType(TupType &oldType, const std::string_view newType) noexcept;
 
         /**
          * @brief Checks the presence of . or [ as next token.
-         * @param type String representing the type of the value.
+         * @param type String representing the type of the current token.
+         * @param value String representing the value of the current token.
          * @param value Bool if the next token is . or [.
          */
         [[nodiscard]] bool checkNextToken(const std::string &type, const std::string &value) noexcept;
 
         /**
          * @brief Checks if the current token can be followed by a ++ or --.
-         * @param type String_view conatining the type of the current token.
-         * @return Bool indicating if the current token can be followed by a ++ or --.
+         * @param type String_view containing the type of the current token.
+         * @return Bool indicating the result of the check.
          */
         [[nodiscard]] bool checkUnaryOperator(const std::string_view &type) const noexcept;
 
@@ -194,13 +201,26 @@ namespace vnd {
         [[nodiscard]] void checkOperators(std::string &value) noexcept;
 
         /**
-         * @brief Writes the value to the parsed text.
+         * @brief Writes the value to the parsed text vector.
          * @param value String to write.
          * @param type String_view representing the type of the value.
          */
         void write(const std::string &value, const std::string_view &type) noexcept;
+
+        /**
+         * @brief Resets the value of variables used for parsing.
+         */
         void resetVariables() noexcept;
+
+        /**
+         * @brief Handles the final part of expression parsing creating the expression object.
+         * @param type Tuple representing the type information.
+         */
         void handleFinalExpression(const std::tuple<bool, bool, std::string> &type) noexcept;
+
+        /**
+         * @brief Clears the _type and _temp properties.
+         */
         void clearData() noexcept;
     };
 

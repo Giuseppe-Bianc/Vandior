@@ -18,7 +18,7 @@ namespace vnd {
     ExpressionFactory::ExpressionFactory(std::vector<Token>::iterator &iterator, std::vector<Token>::iterator end,
                                          std::shared_ptr<Scope> scope, const bool isConst, const bool sq) noexcept
       : _iterator(iterator), _end(end), _scope(std::move(scope)), _text({}), _expressions({}), _power(), _divide(false),
-        _dot(false), _sq(sq), _const(isConst), _expressionText(""), _type(""), _temp("") {}
+        _dot(false), _const(isConst), _sq(sq), _expressionText(""), _type(""), _temp("") {}
 
     ExpressionFactory ExpressionFactory::create(std::vector<Token>::iterator &iterator, std::vector<Token>::iterator end,
                                                 std::shared_ptr<Scope> scope, const bool isConst, bool sq) noexcept {
@@ -479,6 +479,7 @@ namespace vnd {
         _iterator++;
         _dot = false;
     }
+
     void ExpressionFactory::clearData() noexcept {
         if(!_dot) {
             _type.clear();
