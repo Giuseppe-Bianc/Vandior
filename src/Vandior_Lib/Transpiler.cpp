@@ -99,7 +99,7 @@ namespace vnd {
         const auto isConst = iteratorIs(iterator, "const");
         const auto isVal = iteratorIs(iterator, "val");
         auto variables = extractIdentifiers(iterator, instruction);
-        auto endToken = tokens.end();
+        const auto endToken = tokens.end();
         auto factory = ExpressionFactory::create(iterator, tokens.end(), _scope, isConst);
         if(isConst || isVal) { _text += "const "; }
         auto [type, typeValue] = transpileType(iterator, tokens.end(), {TokenType::EQUAL_OPERATOR}, instruction);
@@ -121,7 +121,7 @@ namespace vnd {
             throw TRANSPILER_EXCEPTIONF(instruction, "Uninitialized constant: {} values for {} constants", factory.size(),
                                         variables.size());
         }
-        for(const std::string_view &jvar : variables) {
+        for(const auto &jvar : variables) {
             std::string value;
             if(!jvar.empty() && jvar.at(0) == '_') {
                 _text += FORMAT("v{}", jvar);
@@ -166,7 +166,7 @@ namespace vnd {
     void Transpiler::transpileAssignation(const Instruction &instruction) {
         auto tokens = instruction.getTokens();
         auto iterator = tokens.begin();
-        auto endToken = tokens.end();
+        const auto endToken = tokens.end();
         std::vector<std::string> tmp;
         Token equalToken;
         auto factory = ExpressionFactory::create(iterator, endToken, _scope, false);
@@ -248,7 +248,7 @@ namespace vnd {
     void Transpiler::transpileOperation(const Instruction &instruction) {
         auto tokens = instruction.getTokens();
         auto iterator = tokens.begin();
-        auto endToken = tokens.end();
+        const auto endToken = tokens.end();
         std::vector<Expression> expressions;
         auto factory = ExpressionFactory::create(iterator, endToken, _scope, false);
         while(iterator != endToken) {
@@ -395,7 +395,7 @@ namespace vnd {
         if(constructor) {
             currentVariable += FORMAT("std::make_shared<{}>({})->", newType, params);
         } else {
-            bool empty = currentVariable.empty();
+            const bool empty = currentVariable.empty();
             currentVariable += FORMAT("{}({})->", identifier, params);
             if(empty) {
                 if(currentVariable.at(0) == '_') {
