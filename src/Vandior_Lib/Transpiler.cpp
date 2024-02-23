@@ -432,7 +432,7 @@ namespace vnd {
         auto types = Transpiler::tokenize(expression.getType());
         std::string values;
         std::vector<std::string> tmp;
-        int typeIndex = 0;
+        std::size_t typeIndex = 0;
         if(variables.size() != types.size()) {
             return FORMAT("Inconsistent assignation: {} return values for {} variables", types.size(), variables.size());
         }
@@ -443,17 +443,17 @@ namespace vnd {
         values.pop_back();
         values.pop_back();
         _text += FORMAT("std::tie({}) = {};\n{}", values, expression.getText(), std::string(C_ST(_tabs), '\t'));
-        for(const auto &var : variables) {
-            if(var.first != "_") {
+        for(const auto &[first, second] : variables) {
+            if(first != "_") {
                 auto type = types.at(typeIndex);
                 auto typeValue = Scope::getTypeValue(type);
-                if(!_scope->canAssign(var.second, type)) { return FORMAT("Cannot assign {}.{}", type, var.first); }
+                if(!_scope->canAssign(second, type)) { return FORMAT("Cannot assign {}.{}", type, first); }
                 typeIndex++;
-                if(var.first.ends_with('(')) {
-                    _text += FORMAT("{}std::any_cast<{}>({}));\n{}", var.first, typeValue, tmp.front(),
+                if(first.ends_with('(')) {
+                    _text += FORMAT("{}std::any_cast<{}>({}));\n{}", first, typeValue, tmp.front(),
                                     std::string(C_ST(_tabs), '\t'));
-                } else if(var.first != "_") {
-                    _text += FORMAT("{} = std::any_cast<{}>({});\n{}", var.first, typeValue, tmp.front(),
+                } else if(first != "_") {
+                    _text += FORMAT("{} = std::any_cast<{}>({});\n{}", first, typeValue, tmp.front(),
                                     std::string(C_ST(_tabs), '\t'));
                 }
             }

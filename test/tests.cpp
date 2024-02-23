@@ -1,3 +1,4 @@
+// NOLINTBEGIN(*-include-cleaner)
 #include <catch2/catch_test_macros.hpp>
 
 #include <Vandior/vandior.hpp>
@@ -12,9 +13,6 @@ static inline constexpr std::size_t colum3 = 7;
 static inline constexpr std::size_t colum4 = 8;
 static inline constexpr std::size_t colum5 = 9;
 static inline constexpr std::size_t colum6 = line4;
-static inline constexpr auto lfh = 1.0;
-static inline constexpr auto lfh2 = lfh + 0.5;
-static inline constexpr auto rhs = 2.0;
 static inline constexpr auto identf = vnd::TokenType::IDENTIFIER;
 static inline constexpr auto inte = vnd::TokenType::INTEGER;
 static inline constexpr auto doub = vnd::TokenType::DOUBLE;
@@ -24,13 +22,17 @@ static inline constexpr std::string_view filename2 = "example.cpp";
 static inline constexpr std::string_view filename3 = "new_file.cpp";
 static inline constexpr std::string_view filename4 = "unknown";
 static inline constexpr std::string_view timerName = "My Timer";
+static inline constexpr long long int timerSleap = 12;
+static inline constexpr long long int timerSleap2 = 5;
+static inline constexpr std::size_t timerCicles = 1000000;
+static inline constexpr long double timerResolution = 5.0;
 #define REQ_FORMAT(type, string) REQUIRE(FORMAT("{}", type) == (string));  // NOLINT(*-macro-usage)
 
 TEST_CASE("Timer: MSTimes", "[timer]") {
     vnd::Timer timer{timerName.data()};
-    std::this_thread::sleep_for(std::chrono::milliseconds(12));
+    std::this_thread::sleep_for(std::chrono::milliseconds(timerSleap));
     std::string output = timer.to_string();
-    std::string new_output = (timer / 1000000).to_string();
+    std::string new_output = (timer / timerCicles).to_string();
     REQUIRE(output.find(timerName.data()) != std::string::npos);
     REQUIRE(output.find(" ms") != std::string::npos);
     REQUIRE(new_output.find(" ns") != std::string::npos);
@@ -38,9 +40,9 @@ TEST_CASE("Timer: MSTimes", "[timer]") {
 
 TEST_CASE("Timer: MSTimes FMT", "[timer]") {
     vnd::Timer timer{timerName.data()};
-    std::this_thread::sleep_for(std::chrono::milliseconds(12));
+    std::this_thread::sleep_for(std::chrono::milliseconds(timerSleap));
     std::string output = FORMAT("{}", timer);
-    std::string new_output = FORMAT("{}", (timer / 1000000));
+    std::string new_output = FORMAT("{}", (timer / timerCicles));
     REQUIRE(output.find(timerName.data()) != std::string::npos);
     REQUIRE(output.find(" ms") != std::string::npos);
     REQUIRE(new_output.find(" ns") != std::string::npos);
@@ -82,7 +84,8 @@ TEST_CASE("Timer: PrintTimer FMT", "[timer]") {
 
 TEST_CASE("Timer: TimeItTimer", "[timer]") {
     vnd::Timer timer;
-    std::string output = timer.time_it([]() { std::this_thread::sleep_for(std::chrono::milliseconds(5)); }, 5.0);
+    std::string output = timer.time_it([]() { std::this_thread::sleep_for(std::chrono::milliseconds(timerSleap2)); },
+                                       timerResolution);
     REQUIRE(output.find("ms") != std::string::npos);
 }
 
@@ -617,7 +620,7 @@ TEST_CASE("Corrected type of for instruction", "[Instruction]") {
 }
 TEST_CASE("Instruction toString() Empty tokens", "[Instruction]") {
     vnd::Instruction instruction = vnd::Instruction::create(filename);
-    REQUIRE(instruction.toString() == "");
+    REQUIRE(instruction.toString() == "");  // NOLINT(*-container-size-empty)
 }
 
 TEST_CASE("Instruction toString() Empty tokens FMT", "[Instruction]") {
@@ -646,566 +649,6 @@ TEST_CASE("Instruction toString() FMT", "[Instruction]") {
     instruction.checkToken(vnd::Token{vnd::TokenType::OPEN_CUR_PARENTESIS, "", vnd::CodeSourceLocation(filename, 0, 1)});
     REQ_FORMAT(instruction, "0\t  ");
 }
-TEST_CASE("Parser emit number node", "[parser]") {
-    vnd::Parser parser("1", filename);
-    auto ast = parser.parse();
-    REQUIRE(ast != nullptr);
-    REQUIRE(ast->getType() == NodeType::Number);
-    const auto *number = dynamic_cast<const NumberNode *>(ast.get());
-    REQUIRE(number != nullptr);
-    REQUIRE(number->getValue() == lfh);
-}
-
-TEST_CASE("Parser emit number node print", "[parser]") {
-    vnd::Parser parser("1", filename);
-    auto ast = parser.parse();
-    REQUIRE(ast != nullptr);
-    REQUIRE(ast->getType() == NodeType::Number);
-    const auto *number = dynamic_cast<const NumberNode *>(ast.get());
-    REQUIRE(number != nullptr);
-    REQUIRE(number->getValue() == lfh);
-    REQUIRE(number->print() == "NUMBER(1)");
-}
-
-TEST_CASE("Parser emit number node compat print", "[parser]") {
-    vnd::Parser parser("1", filename);
-    auto ast = parser.parse();
-    REQUIRE(ast != nullptr);
-    REQUIRE(ast->getType() == NodeType::Number);
-    const auto *number = dynamic_cast<const NumberNode *>(ast.get());
-    REQUIRE(number != nullptr);
-    REQUIRE(number->getValue() == lfh);
-    REQUIRE(number->comp_print() == "NUM(1)");
-}
-
-TEST_CASE("Parser emit variable node", "[parser]") {
-    vnd::Parser parser("y", filename);
-    auto ast = parser.parse();
-    REQUIRE(ast != nullptr);
-    REQUIRE(ast->getType() == NodeType::Variable);
-    const auto *variable = dynamic_cast<const VariableNode *>(ast.get());
-    REQUIRE(variable != nullptr);
-    REQUIRE(variable->getName() == "y");
-}
-
-TEST_CASE("Parser emit number node double", "[parser]") {
-    vnd::Parser parser("1.5", filename);
-    auto ast = parser.parse();
-    REQUIRE(ast != nullptr);
-    REQUIRE(ast->getType() == NodeType::Number);
-    const auto *number = dynamic_cast<const NumberNode *>(ast.get());
-    REQUIRE(number != nullptr);
-    REQUIRE(number->getValue() == lfh2);
-}
-
-TEST_CASE("Parser emit number node double print", "[parser]") {
-    vnd::Parser parser("1.5", filename);
-    auto ast = parser.parse();
-    REQUIRE(ast != nullptr);
-    REQUIRE(ast->getType() == NodeType::Number);
-    const auto *number = dynamic_cast<const NumberNode *>(ast.get());
-    REQUIRE(number != nullptr);
-    REQUIRE(number->getValue() == lfh2);
-    REQUIRE(number->print() == "NUMBER(1.5)");
-}
-
-TEST_CASE("Parser emit number node double compat print", "[parser]") {
-    vnd::Parser parser("1.5", filename);
-    auto ast = parser.parse();
-    REQUIRE(ast != nullptr);
-    REQUIRE(ast->getType() == NodeType::Number);
-    const auto *number = dynamic_cast<const NumberNode *>(ast.get());
-    REQUIRE(number != nullptr);
-    REQUIRE(number->getValue() == lfh2);
-    REQUIRE(number->comp_print() == "NUM(1.5)");
-}
-
-TEST_CASE("Parser emit variable node print", "[parser]") {
-    vnd::Parser parser("y", filename);
-    auto ast = parser.parse();
-    REQUIRE(ast != nullptr);
-    REQUIRE(ast->getType() == NodeType::Variable);
-    const auto *variable = dynamic_cast<const VariableNode *>(ast.get());
-    REQUIRE(variable != nullptr);
-    REQUIRE(variable->getName() == "y");
-    REQUIRE(variable->print() == "VARIABLE (y)");
-}
-
-TEST_CASE("Parser emit variable node compat print", "[parser]") {
-    vnd::Parser parser("y", filename);
-    auto ast = parser.parse();
-    REQUIRE(ast != nullptr);
-    REQUIRE(ast->getType() == NodeType::Variable);
-    const auto *variable = dynamic_cast<const VariableNode *>(ast.get());
-    REQUIRE(variable != nullptr);
-    REQUIRE(variable->getName() == "y");
-    REQUIRE(variable->comp_print() == "VAR(y)");
-}
-
-TEST_CASE("Parser emit unary expression node", "[parser]") {
-    vnd::Parser parser("-x", filename);
-    auto ast = parser.parse();
-
-    REQUIRE(ast != nullptr);
-    REQUIRE(ast->getType() == NodeType::UnaryExpression);
-
-    const auto *unaryNode = dynamic_cast<const UnaryExpressionNode *>(ast.get());
-
-    // Check the operator and operand
-    REQUIRE(unaryNode->getOp() == "-");
-
-    const auto &operand = unaryNode->getOperand();
-    REQUIRE(operand != nullptr);
-    REQUIRE(operand->getType() == NodeType::Variable);
-
-    const auto *variableNode = dynamic_cast<const VariableNode *>(operand.get());
-    REQUIRE(variableNode != nullptr);
-    REQUIRE(variableNode->getName() == "x");
-}
-
-TEST_CASE("Parser emit unary expression node print", "[parser]") {
-    vnd::Parser parser("-x", filename);
-    auto ast = parser.parse();
-
-    REQUIRE(ast != nullptr);
-    REQUIRE(ast->getType() == NodeType::UnaryExpression);
-
-    const auto *unaryNode = dynamic_cast<const UnaryExpressionNode *>(ast.get());
-
-    // Check the operator and operand
-    REQUIRE(unaryNode->getOp() == "-");
-
-    const auto &operand = unaryNode->getOperand();
-    REQUIRE(operand != nullptr);
-    REQUIRE(operand->getType() == NodeType::Variable);
-
-    const auto *variableNode = dynamic_cast<const VariableNode *>(operand.get());
-    REQUIRE(variableNode != nullptr);
-    REQUIRE(variableNode->getName() == "x");
-    REQUIRE(unaryNode->print() == "UNARY_EXPRESION(op:\"-\" operand:VARIABLE (x))");
-}
-
-TEST_CASE("Parser emit unary expression node compat print", "[parser]") {
-    vnd::Parser parser("-x", filename);
-    auto ast = parser.parse();
-
-    REQUIRE(ast != nullptr);
-    REQUIRE(ast->getType() == NodeType::UnaryExpression);
-
-    const auto *unaryNode = dynamic_cast<const UnaryExpressionNode *>(ast.get());
-
-    // Check the operator and operand
-    REQUIRE(unaryNode->getOp() == "-");
-
-    const auto &operand = unaryNode->getOperand();
-    REQUIRE(operand != nullptr);
-    REQUIRE(operand->getType() == NodeType::Variable);
-
-    const auto *variableNode = dynamic_cast<const VariableNode *>(operand.get());
-    REQUIRE(variableNode != nullptr);
-    REQUIRE(variableNode->getName() == "x");
-    REQUIRE(unaryNode->comp_print() == "UNE(op:\"-\" opr:VAR(x))");
-}
-
-TEST_CASE("Parser emit binary expression node", "[parser]") {
-    vnd::Parser parser("1 + 2", filename);
-    auto ast = parser.parse();
-    REQUIRE(ast != nullptr);
-    REQUIRE(ast->getType() == NodeType::BinaryExpression);
-
-    const auto *binaryNode = dynamic_cast<const BinaryExpressionNode *>(ast.get());
-    REQUIRE(binaryNode != nullptr);
-
-    // Check the operation
-    REQUIRE(binaryNode->getOp() == "+");
-
-    // Check the left and right operands
-    const auto *leftNumber = dynamic_cast<const NumberNode *>(binaryNode->getLeft().get());
-    const auto *rightNumber = dynamic_cast<const NumberNode *>(binaryNode->getRight().get());
-
-    REQUIRE(leftNumber != nullptr);
-    REQUIRE(rightNumber != nullptr);
-
-    // Check the values of left and right operands
-    REQUIRE(leftNumber->getValue() == lfh);
-    REQUIRE(rightNumber->getValue() == rhs);
-}
-
-TEST_CASE("Parser emit binary expression node multiply", "[parser]") {
-    vnd::Parser parser("1 * 2", filename);
-    auto ast = parser.parse();
-    REQUIRE(ast != nullptr);
-    REQUIRE(ast->getType() == NodeType::BinaryExpression);
-
-    const auto *binaryNode = dynamic_cast<const BinaryExpressionNode *>(ast.get());
-    REQUIRE(binaryNode != nullptr);
-
-    // Check the operation
-    REQUIRE(binaryNode->getOp() == "*");
-
-    // Check the left and right operands
-    const auto *leftNumber = dynamic_cast<const NumberNode *>(binaryNode->getLeft().get());
-    const auto *rightNumber = dynamic_cast<const NumberNode *>(binaryNode->getRight().get());
-
-    REQUIRE(leftNumber != nullptr);
-    REQUIRE(rightNumber != nullptr);
-
-    // Check the values of left and right operands
-    REQUIRE(leftNumber->getValue() == lfh);
-    REQUIRE(rightNumber->getValue() == rhs);
-}
-
-TEST_CASE("Parser emit binary expression node divide", "[parser]") {
-    vnd::Parser parser("1 / 2", filename);
-    auto ast = parser.parse();
-    REQUIRE(ast != nullptr);
-    REQUIRE(ast->getType() == NodeType::BinaryExpression);
-
-    const auto *binaryNode = dynamic_cast<const BinaryExpressionNode *>(ast.get());
-    REQUIRE(binaryNode != nullptr);
-
-    // Check the operation
-    REQUIRE(binaryNode->getOp() == "/");
-
-    // Check the left and right operands
-    const auto *leftNumber = dynamic_cast<const NumberNode *>(binaryNode->getLeft().get());
-    const auto *rightNumber = dynamic_cast<const NumberNode *>(binaryNode->getRight().get());
-
-    REQUIRE(leftNumber != nullptr);
-    REQUIRE(rightNumber != nullptr);
-
-    // Check the values of left and right operands
-    REQUIRE(leftNumber->getValue() == lfh);
-    REQUIRE(rightNumber->getValue() == rhs);
-}
-
-TEST_CASE("Parser emit binary expression node multiply print", "[parser]") {
-    vnd::Parser parser("1 * 2", filename);
-    auto ast = parser.parse();
-    REQUIRE(ast != nullptr);
-    REQUIRE(ast->getType() == NodeType::BinaryExpression);
-
-    const auto *binaryNode = dynamic_cast<const BinaryExpressionNode *>(ast.get());
-    REQUIRE(binaryNode != nullptr);
-
-    // Check the operation
-    REQUIRE(binaryNode->getOp() == "*");
-
-    // Check the left and right operands
-    const auto *leftNumber = dynamic_cast<const NumberNode *>(binaryNode->getLeft().get());
-    const auto *rightNumber = dynamic_cast<const NumberNode *>(binaryNode->getRight().get());
-
-    REQUIRE(leftNumber != nullptr);
-    REQUIRE(rightNumber != nullptr);
-
-    // Check the values of left and right operands
-    REQUIRE(leftNumber->getValue() == lfh);
-    REQUIRE(rightNumber->getValue() == rhs);
-    REQUIRE(binaryNode->print() == "BINARY_EXPRESION(op:\"*\" left:NUMBER(1), right:NUMBER(2))");
-}
-
-TEST_CASE("Parser emit binary expression node divide print", "[parser]") {
-    vnd::Parser parser("1 / 2", filename);
-    auto ast = parser.parse();
-    REQUIRE(ast != nullptr);
-    REQUIRE(ast->getType() == NodeType::BinaryExpression);
-
-    const auto *binaryNode = dynamic_cast<const BinaryExpressionNode *>(ast.get());
-    REQUIRE(binaryNode != nullptr);
-
-    // Check the operation
-    REQUIRE(binaryNode->getOp() == "/");
-
-    // Check the left and right operands
-    const auto *leftNumber = dynamic_cast<const NumberNode *>(binaryNode->getLeft().get());
-    const auto *rightNumber = dynamic_cast<const NumberNode *>(binaryNode->getRight().get());
-
-    REQUIRE(leftNumber != nullptr);
-    REQUIRE(rightNumber != nullptr);
-
-    // Check the values of left and right operands
-    REQUIRE(leftNumber->getValue() == lfh);
-    REQUIRE(rightNumber->getValue() == rhs);
-    REQUIRE(binaryNode->print() == "BINARY_EXPRESION(op:\"/\" left:NUMBER(1), right:NUMBER(2))");
-}
-
-TEST_CASE("Parser emit binary expression node multiply comp print", "[parser]") {
-    vnd::Parser parser("1 * 2", filename);
-    auto ast = parser.parse();
-    REQUIRE(ast != nullptr);
-    REQUIRE(ast->getType() == NodeType::BinaryExpression);
-
-    const auto *binaryNode = dynamic_cast<const BinaryExpressionNode *>(ast.get());
-    REQUIRE(binaryNode != nullptr);
-
-    // Check the operation
-    REQUIRE(binaryNode->getOp() == "*");
-
-    // Check the left and right operands
-    const auto *leftNumber = dynamic_cast<const NumberNode *>(binaryNode->getLeft().get());
-    const auto *rightNumber = dynamic_cast<const NumberNode *>(binaryNode->getRight().get());
-
-    REQUIRE(leftNumber != nullptr);
-    REQUIRE(rightNumber != nullptr);
-
-    // Check the values of left and right operands
-    REQUIRE(leftNumber->getValue() == lfh);
-    REQUIRE(rightNumber->getValue() == rhs);
-    REQUIRE(binaryNode->comp_print() == "BINE(op:\"*\" l:NUM(1), r:NUM(2))");
-}
-
-TEST_CASE("Parser emit binary expression node divide comp print", "[parser]") {
-    vnd::Parser parser("1 / 2", filename);
-    auto ast = parser.parse();
-    REQUIRE(ast != nullptr);
-    REQUIRE(ast->getType() == NodeType::BinaryExpression);
-
-    const auto *binaryNode = dynamic_cast<const BinaryExpressionNode *>(ast.get());
-    REQUIRE(binaryNode != nullptr);
-
-    // Check the operation
-    REQUIRE(binaryNode->getOp() == "/");
-
-    // Check the left and right operands
-    const auto *leftNumber = dynamic_cast<const NumberNode *>(binaryNode->getLeft().get());
-    const auto *rightNumber = dynamic_cast<const NumberNode *>(binaryNode->getRight().get());
-
-    REQUIRE(leftNumber != nullptr);
-    REQUIRE(rightNumber != nullptr);
-
-    // Check the values of left and right operands
-    REQUIRE(leftNumber->getValue() == lfh);
-    REQUIRE(rightNumber->getValue() == rhs);
-    REQUIRE(binaryNode->comp_print() == "BINE(op:\"/\" l:NUM(1), r:NUM(2))");
-}
-
-TEST_CASE("Parser emit binary expression node print", "[parser]") {
-    vnd::Parser parser("1 + 2", filename);
-    auto ast = parser.parse();
-    REQUIRE(ast != nullptr);
-    REQUIRE(ast->getType() == NodeType::BinaryExpression);
-
-    const auto *binaryNode = dynamic_cast<const BinaryExpressionNode *>(ast.get());
-
-    // Check the operation
-    REQUIRE(binaryNode->getOp() == "+");
-
-    // Check the left and right operands
-    const auto *leftNumber = dynamic_cast<const NumberNode *>(binaryNode->getLeft().get());
-    const auto *rightNumber = dynamic_cast<const NumberNode *>(binaryNode->getRight().get());
-
-    REQUIRE(leftNumber != nullptr);
-    REQUIRE(rightNumber != nullptr);
-
-    // Check the values of left and right operands
-    REQUIRE(leftNumber->getValue() == lfh);
-    REQUIRE(rightNumber->getValue() == rhs);
-    REQUIRE(binaryNode->print() == "BINARY_EXPRESION(op:\"+\" left:NUMBER(1), right:NUMBER(2))");
-}
-
-TEST_CASE("Parser emit binary expression node compact print", "[parser]") {
-    vnd::Parser parser("1 + 2", filename);
-    auto ast = parser.parse();
-    REQUIRE(ast != nullptr);
-    REQUIRE(ast->getType() == NodeType::BinaryExpression);
-
-    const auto *binaryNode = dynamic_cast<const BinaryExpressionNode *>(ast.get());
-
-    // Check the operation
-    REQUIRE(binaryNode->getOp() == "+");
-
-    // Check the left and right operands
-    const auto *leftNumber = dynamic_cast<const NumberNode *>(binaryNode->getLeft().get());
-    const auto *rightNumber = dynamic_cast<const NumberNode *>(binaryNode->getRight().get());
-
-    REQUIRE(leftNumber != nullptr);
-    REQUIRE(rightNumber != nullptr);
-
-    // Check the values of left and right operands
-    REQUIRE(leftNumber->getValue() == lfh);
-    REQUIRE(rightNumber->getValue() == rhs);
-    REQUIRE(binaryNode->comp_print() == "BINE(op:\"+\" l:NUM(1), r:NUM(2))");
-}
-
-TEST_CASE("Parser emit binary expression node parentesis", "[parser]") {
-    vnd::Parser parser("1 + (2 + 3)", filename);
-    auto ast = parser.parse();
-    REQUIRE(ast != nullptr);
-    REQUIRE(ast->getType() == NodeType::BinaryExpression);
-
-    const auto *binaryNode = dynamic_cast<const BinaryExpressionNode *>(ast.get());
-
-    // Check the operation
-    REQUIRE(binaryNode->getOp() == "+");
-
-    REQUIRE(binaryNode->getLeft()->getType() == NodeType::Number);
-    REQUIRE(binaryNode->getRight()->getType() == NodeType::BinaryExpression);
-
-    // Check the left and right operands
-    const auto *leftNumber = dynamic_cast<const NumberNode *>(binaryNode->getLeft().get());
-    const auto *right = dynamic_cast<const BinaryExpressionNode *>(binaryNode->getRight().get());
-    REQUIRE(leftNumber != nullptr);
-    REQUIRE(right != nullptr);
-    // Check the left and right operands
-    const auto *rLeftNumber = dynamic_cast<const NumberNode *>(right->getLeft().get());
-    const auto *rRightNumber = dynamic_cast<const NumberNode *>(right->getRight().get());
-
-    // Check the values of left and right operands
-    REQUIRE(leftNumber->getValue() == lfh);
-    REQUIRE(rLeftNumber->getValue() == rhs);
-    REQUIRE(rRightNumber->getValue() == rhs + 1);
-}
-
-TEST_CASE("Parser emit binary expression node parentesis 2", "[parser]") {
-    vnd::Parser parser("(2 + 3) + 1", filename);
-    auto ast = parser.parse();
-    REQUIRE(ast != nullptr);
-    REQUIRE(ast->getType() == NodeType::BinaryExpression);
-
-    const auto *binaryNode = dynamic_cast<const BinaryExpressionNode *>(ast.get());
-
-    // Check the operation
-    REQUIRE(binaryNode->getOp() == "+");
-
-    REQUIRE(binaryNode->getLeft()->getType() == NodeType::BinaryExpression);
-    REQUIRE(binaryNode->getRight()->getType() == NodeType::Number);
-
-    // Check the left and right operands
-    const auto *left = dynamic_cast<const BinaryExpressionNode *>(binaryNode->getLeft().get());
-    const auto *rightNumber = dynamic_cast<const NumberNode *>(binaryNode->getRight().get());
-    REQUIRE(left != nullptr);
-    REQUIRE(rightNumber != nullptr);
-    // Check the left and right operands
-    const auto *lLeftNumber = dynamic_cast<const NumberNode *>(left->getLeft().get());
-    const auto *lRightNumber = dynamic_cast<const NumberNode *>(left->getRight().get());
-
-    // Check the values of left and right operands
-    REQUIRE(lLeftNumber->getValue() == rhs);
-    REQUIRE(lRightNumber->getValue() == rhs + 1);
-    REQUIRE(rightNumber->getValue() == lfh);
-}
-
-TEST_CASE("Parser emit binary expression node parentesis print", "[parser]") {
-    vnd::Parser parser("1 + (2 + 3)", filename);
-    auto ast = parser.parse();
-    REQUIRE(ast != nullptr);
-    REQUIRE(ast->getType() == NodeType::BinaryExpression);
-
-    const auto *binaryNode = dynamic_cast<const BinaryExpressionNode *>(ast.get());
-
-    // Check the operation
-    REQUIRE(binaryNode->getOp() == "+");
-
-    REQUIRE(binaryNode->getLeft()->getType() == NodeType::Number);
-    REQUIRE(binaryNode->getRight()->getType() == NodeType::BinaryExpression);
-
-    // Check the left and right operands
-    const auto *leftNumber = dynamic_cast<const NumberNode *>(binaryNode->getLeft().get());
-    const auto *right = dynamic_cast<const BinaryExpressionNode *>(binaryNode->getRight().get());
-    REQUIRE(leftNumber != nullptr);
-    REQUIRE(right != nullptr);
-    // Check the left and right operands
-    const auto *rLeftNumber = dynamic_cast<const NumberNode *>(right->getLeft().get());
-    const auto *rRightNumber = dynamic_cast<const NumberNode *>(right->getRight().get());
-
-    // Check the values of left and right operands
-    REQUIRE(leftNumber->getValue() == lfh);
-    REQUIRE(rLeftNumber->getValue() == rhs);
-    REQUIRE(rRightNumber->getValue() == rhs + 1);
-    REQUIRE(binaryNode->print() ==
-            "BINARY_EXPRESION(op:\"+\" left:NUMBER(1), right:BINARY_EXPRESION(op:\"+\" left:NUMBER(2), right:NUMBER(3)))");
-}
-
-TEST_CASE("Parser emit binary expression node parentesis 2 print", "[parser]") {
-    vnd::Parser parser("(2 + 3) + 1", filename);
-    auto ast = parser.parse();
-    REQUIRE(ast != nullptr);
-    REQUIRE(ast->getType() == NodeType::BinaryExpression);
-
-    const auto *binaryNode = dynamic_cast<const BinaryExpressionNode *>(ast.get());
-
-    // Check the operation
-    REQUIRE(binaryNode->getOp() == "+");
-
-    REQUIRE(binaryNode->getLeft()->getType() == NodeType::BinaryExpression);
-    REQUIRE(binaryNode->getRight()->getType() == NodeType::Number);
-
-    // Check the left and right operands
-    const auto *left = dynamic_cast<const BinaryExpressionNode *>(binaryNode->getLeft().get());
-    const auto *rightNumber = dynamic_cast<const NumberNode *>(binaryNode->getRight().get());
-    REQUIRE(left != nullptr);
-    REQUIRE(rightNumber != nullptr);
-    // Check the left and right operands
-    const auto *lLeftNumber = dynamic_cast<const NumberNode *>(left->getLeft().get());
-    const auto *lRightNumber = dynamic_cast<const NumberNode *>(left->getRight().get());
-
-    // Check the values of left and right operands
-    REQUIRE(lLeftNumber->getValue() == rhs);
-    REQUIRE(lRightNumber->getValue() == rhs + 1);
-    REQUIRE(rightNumber->getValue() == lfh);
-    REQUIRE(binaryNode->print() ==
-            "BINARY_EXPRESION(op:\"+\" left:BINARY_EXPRESION(op:\"+\" left:NUMBER(2), right:NUMBER(3)), right:NUMBER(1))");
-}
-
-TEST_CASE("Parser emit binary expression node parentesis compat print", "[parser]") {
-    vnd::Parser parser("1 + (2 + 3)", filename);
-    auto ast = parser.parse();
-    REQUIRE(ast != nullptr);
-    REQUIRE(ast->getType() == NodeType::BinaryExpression);
-
-    const auto *binaryNode = dynamic_cast<const BinaryExpressionNode *>(ast.get());
-
-    // Check the operation
-    REQUIRE(binaryNode->getOp() == "+");
-
-    REQUIRE(binaryNode->getLeft()->getType() == NodeType::Number);
-    REQUIRE(binaryNode->getRight()->getType() == NodeType::BinaryExpression);
-
-    // Check the left and right operands
-    const auto *leftNumber = dynamic_cast<const NumberNode *>(binaryNode->getLeft().get());
-    const auto *right = dynamic_cast<const BinaryExpressionNode *>(binaryNode->getRight().get());
-    REQUIRE(leftNumber != nullptr);
-    REQUIRE(right != nullptr);
-    // Check the left and right operands
-    const auto *rLeftNumber = dynamic_cast<const NumberNode *>(right->getLeft().get());
-    const auto *rRightNumber = dynamic_cast<const NumberNode *>(right->getRight().get());
-
-    // Check the values of left and right operands
-    REQUIRE(leftNumber->getValue() == lfh);
-    REQUIRE(rLeftNumber->getValue() == rhs);
-    REQUIRE(rRightNumber->getValue() == rhs + 1);
-    REQUIRE(binaryNode->comp_print() == "BINE(op:\"+\" l:NUM(1), r:BINE(op:\"+\" l:NUM(2), r:NUM(3)))");
-}
-
-TEST_CASE("Parser emit binary expression node parentesis 2 compat print", "[parser]") {
-    vnd::Parser parser("(2 + 3) + 1", filename);
-    auto ast = parser.parse();
-    REQUIRE(ast != nullptr);
-    REQUIRE(ast->getType() == NodeType::BinaryExpression);
-
-    const auto *binaryNode = dynamic_cast<const BinaryExpressionNode *>(ast.get());
-
-    // Check the operation
-    REQUIRE(binaryNode->getOp() == "+");
-
-    REQUIRE(binaryNode->getLeft()->getType() == NodeType::BinaryExpression);
-    REQUIRE(binaryNode->getRight()->getType() == NodeType::Number);
-
-    // Check the left and right operands
-    const auto *left = dynamic_cast<const BinaryExpressionNode *>(binaryNode->getLeft().get());
-    const auto *rightNumber = dynamic_cast<const NumberNode *>(binaryNode->getRight().get());
-    REQUIRE(left != nullptr);
-    REQUIRE(rightNumber != nullptr);
-    // Check the left and right operands
-    const auto *lLeftNumber = dynamic_cast<const NumberNode *>(left->getLeft().get());
-    const auto *lRightNumber = dynamic_cast<const NumberNode *>(left->getRight().get());
-
-    // Check the values of left and right operands
-    REQUIRE(lLeftNumber->getValue() == rhs);
-    REQUIRE(lRightNumber->getValue() == rhs + 1);
-    REQUIRE(rightNumber->getValue() == lfh);
-    REQUIRE(binaryNode->comp_print() == "BINE(op:\"+\" l:BINE(op:\"+\" l:NUM(2), r:NUM(3)), r:NUM(1))");
-}
 
 TEST_CASE("ExpressionFactory emit int type", "[factory]") {
     std::vector<vnd::Token> tokens = {
@@ -1216,7 +659,7 @@ TEST_CASE("ExpressionFactory emit int type", "[factory]") {
     std::shared_ptr<vnd::Scope> scope = vnd::Scope::createMain();
     auto iterator = tokens.begin();
     vnd::ExpressionFactory factory = vnd::ExpressionFactory::create(iterator, tokens.end(), scope, false, false);
-    factory.parse({});
+    auto fpr = factory.parse({});
     REQUIRE(factory.size() == 1);
     REQUIRE(factory.getExpression().getType() == "int");
 }
@@ -1230,7 +673,7 @@ TEST_CASE("ExpressionFactory emit float type", "[factory]") {
     std::shared_ptr<vnd::Scope> scope = vnd::Scope::createMain();
     auto iterator = tokens.begin();
     vnd::ExpressionFactory factory = vnd::ExpressionFactory::create(iterator, tokens.end(), scope, false, false);
-    factory.parse({});
+    auto fpr = factory.parse({});
     REQUIRE(factory.size() == 1);
     REQUIRE(factory.getExpression().getType() == "float");
 }
@@ -1246,7 +689,7 @@ TEST_CASE("ExpressionFactory emit bool type", "[factory]") {
     std::shared_ptr<vnd::Scope> scope = vnd::Scope::createMain();
     auto iterator = tokens.begin();
     vnd::ExpressionFactory factory = vnd::ExpressionFactory::create(iterator, tokens.end(), scope, false, false);
-    factory.parse({vnd::TokenType::CLOSE_PARENTESIS});
+    auto fpr = factory.parse({vnd::TokenType::CLOSE_PARENTESIS});
     REQUIRE(factory.size() == 1);
     REQUIRE(factory.getExpression().getType() == "bool");
 }
@@ -1261,7 +704,8 @@ TEST_CASE("ExpressionFactory emit function type", "[factory]") {
     std::shared_ptr<vnd::Scope> scope = vnd::Scope::createMain();
     auto iterator = tokens.begin();
     vnd::ExpressionFactory factory = vnd::ExpressionFactory::create(iterator, tokens.end(), scope, false, false);
-    factory.parse({vnd::TokenType::CLOSE_PARENTESIS});
+    auto fpr = factory.parse({vnd::TokenType::CLOSE_PARENTESIS});
     REQUIRE(factory.size() == 1);
     REQUIRE(factory.getExpression().getType() == "int");
 }
+// NOLINTEND(*-include-cleaner)
