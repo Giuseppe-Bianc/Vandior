@@ -8,28 +8,29 @@ namespace vnd {
      * @brief Represents the types of instruction in the programming language.
      */
     enum class InstructionType : short {
-        PARAMETER_EXPRESSION,
-        OPERATION,
-        ASSIGNATION,
-        EXPRESSION,
-        SQUARE_EXPRESSION,
-        RETURN_EXPRESSION,
-        DECLARATION,
-        INITIALIZATION,
-        ARRAY_INIZIALIZATION,
-        MAIN,
-        STRUCTURE,
-        ELSE,
-        FOR_STRUCTURE,
-        FOR_INITIALIZATION,
-        FOR_CONDITION,
-        FOR_STEP,
-        DEFINITION,
-        PARAMETER_DEFINITION,
-        RETURN_DEFINITION,
-        OPEN_SCOPE,
-        CLOSE_SCOPE,
-        BLANK
+        PARAMETER_EXPRESSION,   ///< An epxression used as function parameter.
+        OPERATION,              ///< An operation (call to function or use of ++ or --).
+        ASSIGNATION,            ///< An assignation.
+        EXPRESSION,             ///< An expression.
+        SQUARE_EXPRESSION,      ///< An expression used as array size or index.
+        RETURN_EXPRESSION,      ///< An expression used as return value of a function.
+        DECLARATION,            ///< A declaration of variables.
+        INITIALIZATION,         ///< A declaration with the initialization.
+        ARRAY_INIZIALIZATION,   ///< An array literals.
+        MAIN,                   ///< The main instruction.
+        STRUCTURE,              ///< A if or while structure.
+        ELSE,                   ///< An else structure.
+        FOR_STRUCTURE,          ///< A for structure.
+        BREAK,                  ///< A break or continue instruction.
+        FOR_INITIALIZATION,     ///< The initialization part of a for.
+        FOR_CONDITION,          ///< The condition part of a for.
+        FOR_STEP,               ///< The step part of a for.
+        DEFINITION,             ///< A function definition instruction.
+        PARAMETER_DEFINITION,   ///< The parameter definition of a function.
+        RETURN_DEFINITION,      ///< The return type definition of a function.
+        OPEN_SCOPE,             ///< An open scope instruction.
+        CLOSE_SCOPE,            ///< A close scope instruction.
+        BLANK                   ///< A blank instruction.
     };
 }
 
@@ -76,6 +77,9 @@ template <> struct fmt::formatter<vnd::InstructionType> : fmt::formatter<std::st
             break;
         case FOR_STRUCTURE:
             name = "FOR_STRUCTURE";
+            break;
+        case BREAK:
+            name = "BREAK";
             break;
         case FOR_INITIALIZATION:
             name = "FOR_INITIALIZATION";

@@ -71,6 +71,7 @@ namespace vnd {
         if(value == "while"sv) { type = K_WHILE; }
         if(value == "else"sv) { type = K_ELSE; }
         if(value == "for"sv) { type = K_FOR; }
+        if(value == "break"sv || value == "continue"sv) { type = K_BREAK; }
         if(value == "fun"sv) { type = K_FUN; }
         if(value == "return"sv) { type = K_RETURN; }
         if(value == "nullptr"sv) { type = K_NULLPTR; }

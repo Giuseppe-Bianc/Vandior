@@ -14,7 +14,7 @@ DISABLE_WARNINGS_POP()
 // the source template at `configured_files/config.hpp.in`.
 #include <internal_use_only/config.hpp>
 
-#define HIDE_SYSTEM_UOTPUT
+#define HIDE_SYSTEM_OUTPUT
 
 namespace {
     auto timeTokenizer(vnd::Tokenizer &tokenizer, std::vector<vnd::Token> &tokens) -> void {
@@ -89,7 +89,17 @@ auto extractInstructions(const std::vector<vnd::Token> &tokens) -> std::vector<v
 auto main(int argc, const char *const argv[]) -> int {
     // NOLINTNEXTLINE
     INIT_LOG()
-    if(std::system("python --version") != 0) {
+    std::string_view command;
+#ifdef HIDE_SYSTEM_OUTPUT
+#ifdef _WIN32
+    command = "python --version > NUL";
+#else
+    command = "python --version > /dev/null";
+#endif
+#else
+    command = "python --version";
+#endif
+    if(std::system(command.data()) != 0) {
         LERROR("Python not found");
         return EXIT_FAILURE;
     }
@@ -125,8 +135,7 @@ auto main(int argc, const char *const argv[]) -> int {
         if(vnd::Transpiler transpiler = vnd::Transpiler::create(instructions); !transpiler.transpile()) { return EXIT_FAILURE; }
         LINFO("{}", tim);
         if(run) {
-            std::string_view command;
-#ifdef HIDE_SYSTEM_UOTPUT
+#ifdef HIDE_SYSTEM_OUTPUT
 #ifdef _WIN32
             command = "g++ --version > NUL";
 #else

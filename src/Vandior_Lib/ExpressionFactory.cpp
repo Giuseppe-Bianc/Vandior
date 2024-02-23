@@ -406,6 +406,7 @@ namespace vnd {
             return {};
         }
         if(newType == "boolean") {
+            if(!Scope::isPrimitive(std::get<2>(oldType))) { return FORMAT("Cannot compare {} type", std::get<2>(oldType)); }
             std::get<0>(oldType) = true;
             return {};
         }

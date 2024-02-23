@@ -13,7 +13,7 @@ namespace vnd {
 
     Instruction::Instruction(const std::string_view filename) noexcept
       : _allowedTokens({TokenType::K_MAIN, TokenType::K_VAR, TokenType::K_IF, TokenType::K_WHILE, TokenType::K_FOR, TokenType::K_FUN,
-                        TokenType::K_RETURN, TokenType::IDENTIFIER, TokenType::OPEN_CUR_PARENTESIS,
+                        TokenType::K_RETURN, TokenType::K_BREAK, TokenType::IDENTIFIER, TokenType::OPEN_CUR_PARENTESIS,
                         TokenType::CLOSE_CUR_PARENTESIS, eofTokenType}),
         _types({InstructionType::BLANK}), _booleanOperators({false}), _filename(filename) {
         _tokens.reserve({});
@@ -133,6 +133,10 @@ namespace vnd {
             break;
         case K_FOR:
             checkKFor();
+            break;
+        case K_BREAK:
+            setLastType(InstructionType::BREAK);
+            _allowedTokens = {eofTokenType};
             break;
         case K_FUN:
             checkKFun();

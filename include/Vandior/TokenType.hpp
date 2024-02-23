@@ -24,6 +24,7 @@ namespace vnd {
         K_WHILE,                ///< Keyword 'while'
         K_ELSE,                 ///< Keywork 'else'
         K_FOR,                  ///< Keyword 'for'
+        K_BREAK,                ///< Keyword 'break'
         K_FUN,                  ///< Keyword 'fun'
         K_RETURN,               ///< Keyword 'return'
         K_NULLPTR,              ///< Keyword 'nullptr'
@@ -93,7 +94,7 @@ template <> struct fmt::formatter<vnd::TokenType> : fmt::formatter<std::string_v
             name = "K_VAR";
             break;
         case K_IF:
-            name = "K_IF ";
+            name = "K_IF";
             break;
         case K_WHILE:
             name = "K_WHILE";
@@ -103,6 +104,9 @@ template <> struct fmt::formatter<vnd::TokenType> : fmt::formatter<std::string_v
             break;
         case K_FOR:
             name = "K_FOR";
+            break;
+        case K_BREAK:
+            name = "BREAK";
             break;
         case K_FUN:
             name = "K_FUN";

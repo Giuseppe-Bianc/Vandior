@@ -1,6 +1,6 @@
 main {
 	const constFloat1, constFloat2: float = 2 ^ 8 * 2.5, 20 - 9
-	const constBool: bool = 1 ^ 1 == 1 && !false
+	const constBool: bool = 1 ^ 1 == 1 && !false || 2 <= 3
 	var array: int[2 ^ 10]
 	var a, b: int = 1, 2 + constFloat1
 	println("{} {}", a, b)
@@ -19,5 +19,7 @@ main {
 	a, obj.a = max({1})
 	createDerived().obj.a ^= obj.a ^ 2
 	var der: Derived = nullptr
-	obj = nullptr
+	var boolean: bool = "Ciao" < s
+	break
+	continue
 }
