@@ -11,7 +11,7 @@ namespace vnd {
         TokenType::OPEN_PARENTESIS, TokenType::OPEN_CUR_PARENTESIS};
 
     Instruction::Instruction(const std::string_view filename) noexcept
-      : _allowedTokens({TokenType::K_MAIN, TokenType::K_VAR, TokenType::K_STRUCTURE, TokenType::K_FOR, TokenType::K_FUN,
+      : _allowedTokens({TokenType::K_MAIN, TokenType::K_VAR, TokenType::K_IF, TokenType::K_WHILE, TokenType::K_FOR, TokenType::K_FUN,
                         TokenType::K_RETURN, TokenType::IDENTIFIER, TokenType::OPEN_CUR_PARENTESIS,
                         TokenType::CLOSE_CUR_PARENTESIS, eofTokenType}),
         _types({InstructionType::BLANK}), _booleanOperators({false}), _filename(filename) {
@@ -121,8 +121,10 @@ namespace vnd {
         case K_VAR:
             checkKVar();
             break;
-        case K_STRUCTURE:
-            checkKStructure(token.getValue());
+        case K_IF:
+            [[fallthrough]];
+        case K_WHILE:
+            checkKStructure();
             break;
         case K_ELSE:
             checkKElse();
@@ -379,18 +381,10 @@ namespace vnd {
         _allowedTokens = {IDENTIFIER};
     }
 
-    void Instruction::checkKStructure(const std::string_view &value) noexcept {
+    void Instruction::checkKStructure() noexcept {
         using enum TokenType;
         using enum InstructionType;
-        if(getLastTokenType() == K_ELSE) {
-            if(value == "if") {
-                _allowedTokens = {OPEN_PARENTESIS};
-                return;
-            }
-            _allowedTokens = {};
-            return;
-        }
-        setLastType(STRUCTURE);
+        if(getLastType() == BLANK) { setLastType(STRUCTURE); }
         _allowedTokens = {OPEN_PARENTESIS};
     }
 
@@ -398,7 +392,7 @@ namespace vnd {
         using enum TokenType;
         using enum InstructionType;
         setLastType(ELSE);
-        _allowedTokens = {K_STRUCTURE, OPEN_CUR_PARENTESIS};
+        _allowedTokens = {K_IF, OPEN_CUR_PARENTESIS};
     }
 
     void Instruction::checkKFor() noexcept {

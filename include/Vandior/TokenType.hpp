@@ -20,7 +20,8 @@ namespace vnd {
         STRING,                ///< String literal
         K_MAIN,                ///< Keyword 'main'
         K_VAR,                 ///< Keyword 'var'
-        K_STRUCTURE,           ///< Keyword 'structure'
+        K_IF,                  ///< Keyword 'if'
+        K_WHILE,               ///< Keyword 'while'
         K_ELSE,                ///< Keywork 'else'
         K_FOR,                 ///< Keyword 'for'
         K_FUN,                 ///< Keyword 'fun'
@@ -90,8 +91,11 @@ template <> struct fmt::formatter<vnd::TokenType> : fmt::formatter<std::string_v
         case K_VAR:
             name = "K_VAR";
             break;
-        case K_STRUCTURE:
-            name = "K_STRUCTURE";
+        case K_IF:
+            name = "K_IF ";
+            break;
+        case K_WHILE:
+            name = "K_WHILE";
             break;
         case K_ELSE:
             name = "K_ELSE";

@@ -127,10 +127,9 @@ namespace vnd {
         void checkKVar() noexcept;
 
         /**
-         * @brief Checks a structure keyword token.
-         * @param value String_view containing the value of the token.
+         * @brief Checks an if or while keyword token.
          */
-        void checkKStructure(const std::string_view &value) noexcept;
+        void checkKStructure() noexcept;
 
         /**
          * @brief Checks an else keyword parentesis token.

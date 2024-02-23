@@ -10,8 +10,6 @@
 #define PCLOSE pclose
 #endif
 
-#define EXPRTK
-
 namespace vnd {
 
     // NOLINTBEGIN
@@ -98,18 +96,6 @@ namespace vnd {
     }
 
     void ExpressionFactory::handleFinalExpression(const std::tuple<bool, bool, std::string> &type) noexcept {
-#ifdef EXPRTK
-        exprtk::parser<double> parser;
-        exprtk::expression<double> expression;
-        if(Scope::isNumber(std::get<2>(type))) {
-            std::string value;
-            if(_const) { parser.compile(_expressionText, expression); }
-            value = std::to_string(expression.value());
-            _expressions.emplace_back(Expression::create(_text, std::get<2>(type), _const, value));
-        } else {
-            _expressions.emplace_back(Expression::create(_text, std::get<2>(type), _const));
-        }
-#else
         if(Scope::isNumber(std::get<2>(type))) {
             std::string value;
             if(_const) { value = ExpressionFactory::evaluate(_expressionText); }
@@ -117,7 +103,6 @@ namespace vnd {
         } else {
             _expressions.emplace_back(Expression::create(_text, std::get<2>(type), _const));
         }
-#endif
     }
 
     std::size_t ExpressionFactory::size() const noexcept { return _expressions.size(); }
@@ -203,11 +188,7 @@ namespace vnd {
                 _text.emplace(textIndex, "std::pow(");
             }
             _text.emplace_back(",");
-#ifdef EXPRTK
-            _expressionText += value;
-#else
             _expressionText += "**";
-#endif
             _iterator++;
             return;
         }
