@@ -393,9 +393,12 @@ namespace vnd {
         auto isTokentype = [&](TokenType type) {
             return std::next(_iterator) != _end && std::next(_iterator)->getType() == type;
         };
+        static const std::string sps = " ";      // space
+        static const std::string nots = "not";   // not string
+        static const std::string bols = "bool";  // bool string
         if(newType == "dot" || isTokentype(TokenType::DOT_OPERATOR)) { return {}; }
-        if(std::get<2>(oldType).contains(' ')) { return "Multiple return value functions must be used alone"; }
-        if(newType.contains(' ')) {
+        if(std::get<2>(oldType).contains(sps)) { return "Multiple return value functions must be used alone"; }
+        if(newType.contains(sps)) {
             if(!std::get<2>(oldType).empty()) { return "Multiple return value functions must be used alone"; }
             std::get<2>(oldType) = newType;
             return {};
@@ -410,11 +413,11 @@ namespace vnd {
             std::get<2>(oldType) = newType;
             return {};
         }
-        if(std::get<2>(oldType) == "not" && newType == "bool") {
+        if(std::get<2>(oldType) == nots && newType == bols) {
             std::get<2>(oldType) = newType;
             return {};
         }
-        if(std::get<2>(oldType) == "bool" && newType == "not") { return ""; }
+        if(std::get<2>(oldType) == bols && newType == nots) { return ""; }
         if(std::get<2>(oldType) == newType) { return ""; }
         if(Scope::isNumber(std::get<2>(oldType)) && (Scope::isNumber(std::string{newType}) || newType == "operator")) {
             return {};
@@ -424,7 +427,7 @@ namespace vnd {
             return {};
         }
         if(newType == "logical") {
-            if(std::get<2>(oldType) == "bool" || std::get<0>(oldType) == true) {
+            if(std::get<2>(oldType) == bols || std::get<0>(oldType) == true) {
                 std::get<0>(oldType) = false;
                 std::get<1>(oldType) = true;
                 std::get<2>(oldType) = "";
