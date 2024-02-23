@@ -79,7 +79,7 @@ namespace vnd {
                 continue;
             }
             if(iterType == IDENTIFIER && std::next(_iterator) != _end && std::next(_iterator)->getType() == OPEN_PARENTESIS) {
-                if(auto error = handleFun(type); !error.empty()) { return error; };
+                if(auto error = handleFun(type); !error.empty()) { return error; }
             } else if(iterType == OPEN_PARENTESIS) {
                 if(auto error = handleInnerExpression(type); !error.empty()) { return error; }
             } else if(iterType == OPEN_SQ_PARENTESIS) {

@@ -162,8 +162,7 @@ namespace exprtk {
         };
 #endif
 
-        inline bool is_valid_sf_symbol(const std::string &symbol) {
-            // Special function: $f12 or $F34
+        inline bool is_valid_sf_symbol(const std::string &symbol) { // Special function: $f12 or $F34
             return (4 == symbol.size()) && ('$' == symbol[0]) && imatch('f', symbol[1]) && is_digit(symbol[2]) &&
                    is_digit(symbol[3]);
         }
@@ -299,32 +298,30 @@ namespace exprtk {
             std::string data_;
         };
 
-        static const std::string reserved_words[] = {"break", "case",   "continue", "default", "false", "for",  "if",     "else",
-                                                     "ilike", "in",     "like",     "and",     "nand",  "nor",  "not",    "null",
-                                                     "or",    "repeat", "return",   "shl",     "shr",   "swap", "switch", "true",
-                                                     "until", "var",    "while",    "xnor",    "xor",   "&",    "|"};
+        static const std::string reserved_words[] = {"break", "case","continue", "default", "false", "for",  "if","else",
+                                                     "ilike", "in", "like", "and", "nand", "nor", "not", "null",
+                                                     "or", "repeat", "return", "shl", "shr", "swap", "switch", "true",
+                                                     "until", "var", "while", "xnor", "xor", "&","|"};
 
         static inline constexpr std::size_t reserved_words_size = sizeof(reserved_words) / sizeof(std::string);
 
         static const std::string reserved_symbols[] = {
-            "abs",       "acos", "acosh", "and",      "asin",    "asinh",   "atan",   "atanh", "atan2",   "avg",      "break",
-            "case",      "ceil", "clamp", "continue", "cos",     "cosh",    "cot",    "csc",   "default", "deg2grad", "deg2rad",
-            "equal",     "erf",  "erfc",  "exp",      "expm1",   "false",   "floor",  "for",   "frac",    "grad2deg", "hypot",
-            "iclamp",    "if",   "else",  "ilike",    "in",      "inrange", "like",   "log",   "log10",   "log2",     "logn",
-            "log1p",     "mand", "max",   "min",      "mod",     "mor",     "mul",    "ncdf",  "nand",    "nor",      "not",
-            "not_equal", "null", "or",    "pow",      "rad2deg", "repeat",  "return", "root",  "round",   "roundn",   "sec",
-            "sgn",       "shl",  "shr",   "sin",      "sinc",    "sinh",    "sqrt",   "sum",   "swap",    "switch",   "tan",
-            "tanh",      "true", "trunc", "until",    "var",     "while",   "xnor",   "xor",   "&",       "|"};
+            "abs", "acos", "acosh", "and", "asin", "asinh", "atan", "atanh", "atan2", "avg", "break", "case", "ceil",
+            "clamp", "continue", "cos", "cosh", "cot", "csc", "default", "deg2grad", "deg2rad","equal", "erf", "erfc",
+            "exp", "expm1", "false", "floor", "for", "frac", "grad2deg", "hypot", "iclamp", "if", "else", "ilike",
+            "in", "inrange", "like", "log", "log10", "log2", "logn", "log1p", "mand", "max", "min", "mod", "mor",
+            "mul", "ncdf", "nand", "nor", "not", "not_equal", "null", "or", "pow", "rad2deg", "repeat", "return",
+            "root", "round", "roundn", "sec", "sgn", "shl", "shr", "sin", "sinc", "sinh", "sqrt", "sum", "swap",
+            "switch", "tan", "tanh", "true", "trunc", "until", "var", "while", "xnor", "xor", "&", "|"};
 
         static inline constexpr std::size_t reserved_symbols_size = sizeof(reserved_symbols) / sizeof(std::string);
 
         static const std::string base_function_list[] = {
-            "abs",    "acos",  "acosh",     "asin",    "asinh",    "atan",    "atanh",   "atan2",   "avg",  "ceil",
-            "clamp",  "cos",   "cosh",      "cot",     "csc",      "equal",   "erf",     "erfc",    "exp",  "expm1",
-            "floor",  "frac",  "hypot",     "iclamp",  "like",     "log",     "log10",   "log2",    "logn", "log1p",
-            "mand",   "max",   "min",       "mod",     "mor",      "mul",     "ncdf",    "pow",     "root", "round",
-            "roundn", "sec",   "sgn",       "sin",     "sinc",     "sinh",    "sqrt",    "sum",     "swap", "tan",
-            "tanh",   "trunc", "not_equal", "inrange", "deg2grad", "deg2rad", "rad2deg", "grad2deg"};
+            "abs", "acos", "acosh", "asin", "asinh", "atan", "atanh", "atan2", "avg", "ceil","clamp", "cos", "cosh",
+            "cot", "csc", "equal", "erf", "erfc", "exp", "expm1", "floor", "frac", "hypot", "iclamp", "like", "log",
+            "log10", "log2", "logn", "log1p", "mand",  "max", "min", "mod", "mor", "mul", "ncdf", "pow", "root",
+            "round", "roundn", "sec", "sgn", "sin", "sinc", "sinh", "sqrt", "sum", "swap", "tan", "tanh", "trunc",
+            "not_equal", "inrange", "deg2grad", "deg2rad", "rad2deg", "grad2deg"};
 
         static inline constexpr std::size_t base_function_list_size = sizeof(base_function_list) / sizeof(std::string);
 
@@ -470,34 +467,27 @@ namespace exprtk {
             while((s_end != s_itr) && (p_end != p_itr)) {
                 if('*' == (*p_itr)) {
                     const char_t target = C_C(std::toupper(*(p_itr - 1)));
-
                     if('*' == target) {
                         diff_index = C_ST(std::distance(str.begin(), s_itr));
                         diff_value = C_C(std::toupper(*p_itr));
-
                         return false;
                     } else
                         ++p_itr;
-
                     while(s_itr != s_end) {
                         if(target != std::toupper(*s_itr))
                             break;
                         else
                             ++s_itr;
                     }
-
                     continue;
                 } else if(('?' != *p_itr) && std::toupper(*p_itr) != std::toupper(*s_itr)) {
                     diff_index = C_ST(std::distance(str.begin(), s_itr));
                     diff_value = C_C(std::toupper(*p_itr));
-
                     return false;
                 }
-
                 ++p_itr;
                 ++s_itr;
             }
-
             return ((s_end == s_itr) && ((p_end == p_itr) || ('*' == *p_itr)));
         }
 
@@ -525,7 +515,7 @@ namespace exprtk {
 
         template <typename T> inline void set_zero_value(std::vector<T> &v) { set_zero_value(v.data(), v.size()); }
 
-        static const double pow10[] = {1.0,      1.0E+001, 1.0E+002, 1.0E+003, 1.0E+004, 1.0E+005, 1.0E+006, 1.0E+007, 1.0E+008,
+        static const double pow10[] = {1.0, 1.0E+001, 1.0E+002, 1.0E+003, 1.0E+004, 1.0E+005, 1.0E+006, 1.0E+007, 1.0E+008,
                                        1.0E+009, 1.0E+010, 1.0E+011, 1.0E+012, 1.0E+013, 1.0E+014, 1.0E+015, 1.0E+016};
 
         static inline constexpr std::size_t pow10_size = sizeof(pow10) / sizeof(double);
@@ -630,16 +620,14 @@ namespace exprtk {
                     const T epsilon = epsilon_type<T>::value();
                     return (abs_impl(v0 - v1, real_type_tag()) <=
                             (std::max(T{1}, std::max(abs_impl(v0, real_type_tag()), abs_impl(v1, real_type_tag()))) * epsilon))
-                               ? T{1}
-                               : T{0};
+                               ? T{1} : T{0};
                 }
 
                 inline float equal_impl(const float v0, const float v1, real_type_tag) {
                     const float epsilon = epsilon_type<float>::value();
                     return (abs_impl(v0 - v1, real_type_tag()) <=
                             (std::max(1.0f, std::max(abs_impl(v0, real_type_tag()), abs_impl(v1, real_type_tag()))) * epsilon))
-                               ? 1.0f
-                               : 0.0f;
+                               ? 1.0f : 0.0f;
                 }
 
                 template <typename T> inline T equal_impl(const T v0, const T v1, int_type_tag) { return (v0 == v1) ? 1 : 0; }
@@ -658,18 +646,14 @@ namespace exprtk {
                     typedef real_type_tag rtg;
                     const T epsilon = epsilon_type<T>::value();
                     return (abs_impl(v0 - v1, rtg()) >
-                            (std::max(T{1}, std::max(abs_impl(v0, rtg()), abs_impl(v1, rtg()))) * epsilon))
-                               ? T{1}
-                               : T{0};
+                            (std::max(T{1}, std::max(abs_impl(v0, rtg()), abs_impl(v1, rtg()))) * epsilon)) ? T{1} : T{0};
                 }
 
                 inline float nequal_impl(const float v0, const float v1, real_type_tag) {
                     typedef real_type_tag rtg;
                     const float epsilon = epsilon_type<float>::value();
                     return (abs_impl(v0 - v1, rtg()) >
-                            (std::max(1.0f, std::max(abs_impl(v0, rtg()), abs_impl(v1, rtg()))) * epsilon))
-                               ? 1.0f
-                               : 0.0f;
+                            (std::max(1.0f, std::max(abs_impl(v0, rtg()), abs_impl(v1, rtg()))) * epsilon)) ? 1.0f : 0.0f;
                 }
 
                 template <typename T> inline T nequal_impl(const T v0, const T v1, int_type_tag) { return (v0 != v1) ? 1 : 0; }
@@ -832,8 +816,7 @@ namespace exprtk {
                 }
 
 #if(defined(_MSC_VER) && (_MSC_VER >= 1900)) || !defined(_MSC_VER)
-#define exprtk_define_erf(TT, impl)                                                                                              \
-    inline TT erf_impl(const TT v) { return impl(v); }
+#define exprtk_define_erf(TT, impl) inline TT erf_impl(const TT v) { return impl(v); }
 
                 exprtk_define_erf(float, ::erff) exprtk_define_erf(double, ::erf) exprtk_define_erf(long double, ::erfl)
 #undef exprtk_define_erf
@@ -862,8 +845,7 @@ namespace exprtk {
                 }
 
 #if(defined(_MSC_VER) && (_MSC_VER >= 1900)) || !defined(_MSC_VER)
-#define exprtk_define_erfc(TT, impl)                                                                                             \
-    inline TT erfc_impl(const TT v) { return impl(v); }
+#define exprtk_define_erfc(TT, impl)   inline TT erfc_impl(const TT v) { return impl(v); }
 
                 exprtk_define_erfc(float, ::erfcf) exprtk_define_erfc(double, ::erfc) exprtk_define_erfc(long double, ::erfcl)
 #undef exprtk_define_erfc
@@ -1129,17 +1111,14 @@ namespace exprtk {
                 static inline T result(T v) {
                     unsigned int k = N;
                     T l = T{1};
-
                     while(k) {
                         if(1 == (k % 2)) {
                             l *= v;
                             --k;
                         }
-
                         v *= v;
                         k /= 2;
                     }
-
                     return l;
                 }
             };
@@ -1223,7 +1202,7 @@ namespace exprtk {
 
         template <typename T> inline T compute_pow10(T d, const int exponent) {
             static const double fract10[] = {
-                0.0,      1.0E+001, 1.0E+002, 1.0E+003, 1.0E+004, 1.0E+005, 1.0E+006, 1.0E+007, 1.0E+008, 1.0E+009, 1.0E+010,
+                0.0, 1.0E+001, 1.0E+002, 1.0E+003, 1.0E+004, 1.0E+005, 1.0E+006, 1.0E+007, 1.0E+008, 1.0E+009, 1.0E+010,
                 1.0E+011, 1.0E+012, 1.0E+013, 1.0E+014, 1.0E+015, 1.0E+016, 1.0E+017, 1.0E+018, 1.0E+019, 1.0E+020, 1.0E+021,
                 1.0E+022, 1.0E+023, 1.0E+024, 1.0E+025, 1.0E+026, 1.0E+027, 1.0E+028, 1.0E+029, 1.0E+030, 1.0E+031, 1.0E+032,
                 1.0E+033, 1.0E+034, 1.0E+035, 1.0E+036, 1.0E+037, 1.0E+038, 1.0E+039, 1.0E+040, 1.0E+041, 1.0E+042, 1.0E+043,
@@ -1393,19 +1372,14 @@ namespace exprtk {
         template <typename Iterator, typename T>
         inline bool string_to_real(Iterator &itr_external, const Iterator end, T &t, numeric::details::real_type_tag) {
             if(end == itr_external) return false;
-
             Iterator itr = itr_external;
-
             T d = T{0};
-
             const bool negative = ('-' == (*itr));
 
             if(negative || '+' == (*itr)) {
                 if(end == ++itr) return false;
             }
-
             bool instate = false;
-
             static constexpr char_t zero = C_UC('0');
 
 #define parse_digit_1(d)                                                                                                         \
@@ -1428,7 +1402,6 @@ namespace exprtk {
                 const Iterator curr = itr;
 
                 while((end != itr) && (zero == (*itr))) ++itr;
-
                 while(end != itr) {
                     unsigned int digit;
                     parse_digit_1(d) parse_digit_1(d) parse_digit_2(d)
@@ -1547,7 +1520,6 @@ namespace exprtk {
 
     struct loop_runtime_check {
         enum loop_types { e_invalid = 0, e_for_loop = 1, e_while_loop = 2, e_repeat_until_loop = 4, e_all_loops = 7 };
-
         enum violation_type { e_unknown = 0, e_iteration_count = 1, e_timeout = 2 };
 
         loop_types loop_set;
@@ -1910,10 +1882,7 @@ namespace exprtk {
 
             inline void skip_comments() {
 #ifndef exprtk_disable_comments
-                // The following comment styles are supported:
-                // 1. // .... \n
-                // 2. #  .... \n
-                // 3. /* .... */
+                // The following comment styles are supported: 1. // .... \n 2. #  .... \n 3. /* .... */
                 struct test {
                     static inline bool comment_start(const char_t c0, const char_t c1, int &mode, int &incr) {
                         mode = 0;
@@ -2119,21 +2088,11 @@ namespace exprtk {
             inline void scan_number() {
                 /*
                    Attempt to match a valid numeric value in one of the following formats:
-                   (01) 123456
-                   (02) 123456.
-                   (03) 123.456
-                   (04) 123.456e3
-                   (05) 123.456E3
-                   (06) 123.456e+3
-                   (07) 123.456E+3
-                   (08) 123.456e-3
-                   (09) 123.456E-3
-                   (00) .1234
-                   (11) .1234e3
-                   (12) .1234E+3
-                   (13) .1234e+3
-                   (14) .1234E-3
-                   (15) .1234e-3
+                   (01) 123456 (02) 123456. (03) 123.456
+                   (04) 123.456e3 (05) 123.456E3 (06) 123.456e+3
+                   (07) 123.456E+3 (08) 123.456e-3 (09) 123.456E-3
+                   (00) .1234 (11) .1234e3 (12) .1234E+3
+                   (13) .1234e+3 (14) .1234E-3 (15) .1234e-3
                 */
 
                 details::char_cptr initial_itr = s_itr_;
@@ -2148,13 +2107,11 @@ namespace exprtk {
                         if(dot_found) {
                             t.set_error(token::e_err_number, initial_itr, s_itr_, base_itr_);
                             token_list_.push_back(t);
-
                             return;
                         }
 
                         dot_found = true;
                         ++s_itr_;
-
                         continue;
                     } else if('e' == std::tolower(*s_itr_)) {
                         const char_t &c = *(s_itr_ + 1);
@@ -2162,35 +2119,29 @@ namespace exprtk {
                         if(is_end(s_itr_ + 1)) {
                             t.set_error(token::e_err_number, initial_itr, s_itr_, base_itr_);
                             token_list_.push_back(t);
-
                             return;
                         } else if(('+' != c) && ('-' != c) && !details::is_digit(c)) {
                             t.set_error(token::e_err_number, initial_itr, s_itr_, base_itr_);
                             token_list_.push_back(t);
-
                             return;
                         }
 
                         e_found = true;
                         ++s_itr_;
-
                         continue;
                     } else if(e_found && details::is_sign(*s_itr_) && !post_e_digit_found) {
                         if(post_e_sign_found) {
                             t.set_error(token::e_err_number, initial_itr, s_itr_, base_itr_);
                             token_list_.push_back(t);
-
                             return;
                         }
 
                         post_e_sign_found = true;
                         ++s_itr_;
-
                         continue;
                     } else if(e_found && details::is_digit(*s_itr_)) {
                         post_e_digit_found = true;
                         ++s_itr_;
-
                         continue;
                     } else if(('.' != (*s_itr_)) && !details::is_digit(*s_itr_))
                         break;
@@ -2200,7 +2151,6 @@ namespace exprtk {
 
                 t.set_numeric(initial_itr, s_itr_, base_itr_);
                 token_list_.push_back(t);
-
                 return;
             }
 
@@ -2208,11 +2158,9 @@ namespace exprtk {
                 details::char_cptr initial_itr = s_itr_;
                 token_t t;
 
-                // $fdd(x,x,x) = at least 11 chars
-                if(std::distance(s_itr_, s_end_) < 11) {
+                if(std::distance(s_itr_, s_end_) < 11) { // $fdd(x,x,x) = at least 11 chars
                     t.set_error(token::e_err_sfunc, initial_itr, std::min(initial_itr + 11, s_end_), base_itr_);
                     token_list_.push_back(t);
-
                     return;
                 }
 
@@ -2220,7 +2168,6 @@ namespace exprtk {
                      (details::is_digit(*(s_itr_ + 3))))) {
                     t.set_error(token::e_err_sfunc, initial_itr, std::min(initial_itr + 4, s_end_), base_itr_);
                     token_list_.push_back(t);
-
                     return;
                 }
 
@@ -2240,7 +2187,6 @@ namespace exprtk {
                 if(std::distance(s_itr_, s_end_) < 2) {
                     t.set_error(token::e_err_string, s_itr_, s_end_, base_itr_);
                     token_list_.push_back(t);
-
                     return;
                 }
 
@@ -2266,18 +2212,15 @@ namespace exprtk {
                     } else if(escaped) {
                         if(!is_end(s_itr_) && ('0' == *(s_itr_)) && ((s_itr_ + 4) <= s_end_)) {
                             const bool x_separator = ('X' == std::toupper(*(s_itr_ + 1)));
-
                             const bool both_digits = details::is_hex_digit(*(s_itr_ + 2)) && details::is_hex_digit(*(s_itr_ + 3));
 
                             if(!(x_separator && both_digits)) {
                                 t.set_error(token::e_err_string, initial_itr, s_itr_, base_itr_);
                                 token_list_.push_back(t);
-
                                 return;
                             } else
                                 s_itr_ += 3;
                         }
-
                         escaped = false;
                     }
 
@@ -2287,7 +2230,6 @@ namespace exprtk {
                 if(is_end(s_itr_)) {
                     t.set_error(token::e_err_string, initial_itr, s_itr_, base_itr_);
                     token_list_.push_back(t);
-
                     return;
                 }
 
@@ -2299,7 +2241,6 @@ namespace exprtk {
                     if(!details::cleanup_escapes(parsed_string)) {
                         t.set_error(token::e_err_string, initial_itr, s_itr_, base_itr_);
                         token_list_.push_back(t);
-
                         return;
                     }
 
@@ -2308,7 +2249,6 @@ namespace exprtk {
 
                 token_list_.push_back(t);
                 ++s_itr_;
-
                 return;
             }
 #endif
@@ -2496,23 +2436,15 @@ namespace exprtk {
 
             // clang-format off
 #define token_inserter_empty_body { return -1; }
-
             inline virtual int insert(const token &, token &) token_inserter_empty_body
-
             inline virtual int insert(const token &, const token &, token &) token_inserter_empty_body
-
             inline virtual int insert(const token &, const token &, const token &, token &) token_inserter_empty_body
-
-            inline virtual int insert(const token &, const token &, const token &, const token &,
-                                          token &) token_inserter_empty_body
-
-            inline virtual int insert(const token &, const token &, const token &, const token &, const token &,
-                                          token &) token_inserter_empty_body
+            inline virtual int insert(const token &, const token &, const token &, const token &, token &) token_inserter_empty_body
+            inline virtual int insert(const token &, const token &, const token &, const token &, const token &,token &) token_inserter_empty_body
 // clang-format on
 #undef token_inserter_empty_body
 
                 private :
-
               const std::size_t stride_;
         };
 
@@ -2690,7 +2622,6 @@ namespace exprtk {
                         t.type = lexer::token::e_assign;
                         t.value = ":=";
                         t.position = t0.position;
-
                         return true;
                     }
                     // '+ =' --> '+='
@@ -2698,7 +2629,6 @@ namespace exprtk {
                         t.type = lexer::token::e_addass;
                         t.value = "+=";
                         t.position = t0.position;
-
                         return true;
                     }
                     // '- =' --> '-='
@@ -2706,7 +2636,6 @@ namespace exprtk {
                         t.type = lexer::token::e_subass;
                         t.value = "-=";
                         t.position = t0.position;
-
                         return true;
                     }
                     // '* =' --> '*='
@@ -2714,7 +2643,6 @@ namespace exprtk {
                         t.type = lexer::token::e_mulass;
                         t.value = "*=";
                         t.position = t0.position;
-
                         return true;
                     }
                     // '/ =' --> '/='
@@ -2722,7 +2650,6 @@ namespace exprtk {
                         t.type = lexer::token::e_divass;
                         t.value = "/=";
                         t.position = t0.position;
-
                         return true;
                     }
                     // '% =' --> '%='
@@ -2730,7 +2657,6 @@ namespace exprtk {
                         t.type = lexer::token::e_modass;
                         t.value = "%=";
                         t.position = t0.position;
-
                         return true;
                     }
                     // '> =' --> '>='
@@ -2738,7 +2664,6 @@ namespace exprtk {
                         t.type = lexer::token::e_gte;
                         t.value = ">=";
                         t.position = t0.position;
-
                         return true;
                     }
                     // '< =' --> '<='
@@ -2746,7 +2671,6 @@ namespace exprtk {
                         t.type = lexer::token::e_lte;
                         t.value = "<=";
                         t.position = t0.position;
-
                         return true;
                     }
                     // '= =' --> '=='
@@ -2754,7 +2678,6 @@ namespace exprtk {
                         t.type = lexer::token::e_eq;
                         t.value = "==";
                         t.position = t0.position;
-
                         return true;
                     }
                     // '! =' --> '!='
@@ -2762,7 +2685,6 @@ namespace exprtk {
                         t.type = lexer::token::e_ne;
                         t.value = "!=";
                         t.position = t0.position;
-
                         return true;
                     }
                     // '< >' --> '<>'
@@ -2770,7 +2692,6 @@ namespace exprtk {
                         t.type = lexer::token::e_ne;
                         t.value = "<>";
                         t.position = t0.position;
-
                         return true;
                     }
                     // '<= >' --> '<=>'
@@ -2778,7 +2699,6 @@ namespace exprtk {
                         t.type = lexer::token::e_swap;
                         t.value = "<=>";
                         t.position = t0.position;
-
                         return true;
                     }
                     // '+ -' --> '-'
@@ -2786,7 +2706,6 @@ namespace exprtk {
                         t.type = lexer::token::e_sub;
                         t.value = "-";
                         t.position = t0.position;
-
                         return true;
                     }
                     // '- +' --> '-'
@@ -2794,7 +2713,6 @@ namespace exprtk {
                         t.type = lexer::token::e_sub;
                         t.value = "-";
                         t.position = t0.position;
-
                         return true;
                     }
                     // '- -' --> '+'
@@ -2806,7 +2724,6 @@ namespace exprtk {
                         t.type = lexer::token::e_add;
                         t.value = "+";
                         t.position = t0.position;
-
                         return true;
                     } else
                         return false;
@@ -2870,12 +2787,10 @@ namespace exprtk {
                             if(stack_.empty()) {
                                 state_ = false;
                                 error_token_ = t;
-
                                 return false;
                             } else if(c != stack_.top().first) {
                                 state_ = false;
                                 error_token_ = t;
-
                                 return false;
                             } else
                                 stack_.pop();
@@ -2907,7 +2822,6 @@ namespace exprtk {
                 bool operator()(const lexer::token &t) exprtk_override {
                     if(token::e_number == t.type) {
                         T v;
-
                         if(!exprtk::details::string_to_real(t.value, v)) { error_list_.push_back(current_index_); }
                     }
 
@@ -2970,7 +2884,6 @@ namespace exprtk {
                         if(replace_map_.end() != itr) {
                             t.value = itr->second.first;
                             t.type = itr->second.second;
-
                             return true;
                         }
                     }
@@ -2990,29 +2903,21 @@ namespace exprtk {
                 using lexer::token_scanner::operator();
 
                 sequence_validator() : lexer::token_scanner(2) {
+                    // clang-format off
                     add_invalid(lexer::token::e_number, lexer::token::e_number);
                     add_invalid(lexer::token::e_string, lexer::token::e_string);
                     add_invalid(lexer::token::e_number, lexer::token::e_string);
                     add_invalid(lexer::token::e_string, lexer::token::e_number);
-
-                    add_invalid_set1(lexer::token::e_assign);
-                    add_invalid_set1(lexer::token::e_shr);
-                    add_invalid_set1(lexer::token::e_shl);
-                    add_invalid_set1(lexer::token::e_lte);
-                    add_invalid_set1(lexer::token::e_ne);
-                    add_invalid_set1(lexer::token::e_gte);
-                    add_invalid_set1(lexer::token::e_lt);
-                    add_invalid_set1(lexer::token::e_gt);
-                    add_invalid_set1(lexer::token::e_eq);
-                    add_invalid_set1(lexer::token::e_comma);
-                    add_invalid_set1(lexer::token::e_add);
-                    add_invalid_set1(lexer::token::e_sub);
-                    add_invalid_set1(lexer::token::e_div);
-                    add_invalid_set1(lexer::token::e_mul);
-                    add_invalid_set1(lexer::token::e_mod);
-                    add_invalid_set1(lexer::token::e_pow);
-                    add_invalid_set1(lexer::token::e_colon);
-                    add_invalid_set1(lexer::token::e_ternary);
+                    add_invalid_set1(lexer::token::e_assign); add_invalid_set1(lexer::token::e_shr);
+                    add_invalid_set1(lexer::token::e_shl); add_invalid_set1(lexer::token::e_lte);
+                    add_invalid_set1(lexer::token::e_ne); add_invalid_set1(lexer::token::e_gte);
+                    add_invalid_set1(lexer::token::e_lt); add_invalid_set1(lexer::token::e_gt);
+                    add_invalid_set1(lexer::token::e_eq); add_invalid_set1(lexer::token::e_comma);
+                    add_invalid_set1(lexer::token::e_add); add_invalid_set1(lexer::token::e_sub);
+                    add_invalid_set1(lexer::token::e_div); add_invalid_set1(lexer::token::e_mul);
+                    add_invalid_set1(lexer::token::e_mod); add_invalid_set1(lexer::token::e_pow);
+                    add_invalid_set1(lexer::token::e_colon); add_invalid_set1(lexer::token::e_ternary);
+                    // clang-format on
                 }
 
                 bool result() exprtk_override { return error_list_.empty(); }
@@ -3048,21 +2953,16 @@ namespace exprtk {
                 }
 
                 void add_invalid_set1(const lexer::token::token_type t) {
-                    add_invalid(t, lexer::token::e_assign);
-                    add_invalid(t, lexer::token::e_shr);
-                    add_invalid(t, lexer::token::e_shl);
-                    add_invalid(t, lexer::token::e_lte);
-                    add_invalid(t, lexer::token::e_ne);
-                    add_invalid(t, lexer::token::e_gte);
-                    add_invalid(t, lexer::token::e_lt);
-                    add_invalid(t, lexer::token::e_gt);
-                    add_invalid(t, lexer::token::e_eq);
-                    add_invalid(t, lexer::token::e_comma);
-                    add_invalid(t, lexer::token::e_div);
-                    add_invalid(t, lexer::token::e_mul);
-                    add_invalid(t, lexer::token::e_mod);
-                    add_invalid(t, lexer::token::e_pow);
+                    // clang-format off
+                    add_invalid(t, lexer::token::e_assign); add_invalid(t, lexer::token::e_shr);
+                    add_invalid(t, lexer::token::e_shl); add_invalid(t, lexer::token::e_lte);
+                    add_invalid(t, lexer::token::e_ne); add_invalid(t, lexer::token::e_gte);
+                    add_invalid(t, lexer::token::e_lt); add_invalid(t, lexer::token::e_gt);
+                    add_invalid(t, lexer::token::e_eq); add_invalid(t, lexer::token::e_comma);
+                    add_invalid(t, lexer::token::e_div); add_invalid(t, lexer::token::e_mul);
+                    add_invalid(t, lexer::token::e_mod); add_invalid(t, lexer::token::e_pow);
                     add_invalid(t, lexer::token::e_colon);
+                    // clang-format on
                 }
 
                 bool invalid_bracket_check(const lexer::token::token_type base, const lexer::token::token_type t) {
@@ -3250,7 +3150,6 @@ namespace exprtk {
 
                         if(!modifier.result()) {
                             error_token_modifier = token_modifier_list[i];
-
                             return false;
                         }
                     }
@@ -3269,7 +3168,6 @@ namespace exprtk {
 
                         if(!joiner.result()) {
                             error_token_joiner = token_joiner_list[i];
-
                             return false;
                         }
                     }
@@ -3288,7 +3186,6 @@ namespace exprtk {
 
                         if(!inserter.result()) {
                             error_token_inserter = token_inserter_list[i];
-
                             return false;
                         }
                     }
@@ -3307,7 +3204,6 @@ namespace exprtk {
 
                         if(!scanner.result()) {
                             error_token_scanner = token_scanner_list[i];
-
                             return false;
                         }
                     }
@@ -3372,7 +3268,6 @@ namespace exprtk {
                 if(current_token().type != ttype) { return false; }
 
                 advance_token(mode);
-
                 return true;
             }
 
@@ -3381,7 +3276,6 @@ namespace exprtk {
                 if((current_token().type != ttype) || !exprtk::details::imatch(value, current_token().value)) { return false; }
 
                 advance_token(mode);
-
                 return true;
             }
 
@@ -3389,7 +3283,6 @@ namespace exprtk {
                 if(!exprtk::details::imatch(value, current_token().value)) { return false; }
 
                 advance_token(mode);
-
                 return true;
             }
 
@@ -3425,7 +3318,6 @@ namespace exprtk {
                 }
 
                 advance_token(mode);
-
                 return true;
             }
 
@@ -3440,7 +3332,6 @@ namespace exprtk {
                 }
 
                 advance_token(mode);
-
                 return true;
             }
 
@@ -3455,7 +3346,6 @@ namespace exprtk {
                 }
 
                 advance_token(mode);
-
                 return true;
             }
 
@@ -3571,19 +3461,12 @@ namespace exprtk {
             explicit parameter_list(std::vector<type_store> &pl) : parameter_list_(pl) {}
 
             inline bool empty() const { return parameter_list_.empty(); }
-
             inline std::size_t size() const { return parameter_list_.size(); }
-
             inline type_store &operator[](const std::size_t &index) { return parameter_list_[index]; }
-
             inline const type_store &operator[](const std::size_t &index) const { return parameter_list_[index]; }
-
             inline type_store &front() { return parameter_list_[0]; }
-
             inline const type_store &front() const { return parameter_list_[0]; }
-
             inline type_store &back() { return parameter_list_.back(); }
-
             inline const type_store &back() const { return parameter_list_.back(); }
 
         private:
@@ -3602,16 +3485,11 @@ namespace exprtk {
               : ts_(const_cast<type_store_t &>(ts)), data_(reinterpret_cast<value_t *>(ts_.data)) {}
 
             inline std::size_t size() const { return ts_.size; }
-
             inline value_t &operator[](const std::size_t &i) { return data_[i]; }
-
             inline const value_t &operator[](const std::size_t &i) const { return data_[i]; }
-
             inline const value_t *begin() const { return data_; }
             inline value_t *begin() { return data_; }
-
             inline const value_t *end() const { return static_cast<value_t *>(data_ + ts_.size); }
-
             inline value_t *end() { return static_cast<value_t *>(data_ + ts_.size); }
 
             type_store_t &ts_;
@@ -3750,74 +3628,63 @@ namespace exprtk {
     namespace details {
         // clang-format off
         enum operator_type {
-            e_default , e_null    , e_add     , e_sub     ,
-            e_mul     , e_div     , e_mod     , e_pow     ,
-            e_atan2   , e_min     , e_max     , e_avg     ,
-            e_sum     , e_prod    , e_lt      , e_lte     ,
-            e_eq      , e_equal   , e_ne      , e_nequal  ,
-            e_gte     , e_gt      , e_and     , e_nand    ,
-            e_or      , e_nor     , e_xor     , e_xnor    ,
-            e_mand    , e_mor     , e_scand   , e_scor    ,
-            e_shr     , e_shl     , e_abs     , e_acos    ,
-            e_acosh   , e_asin    , e_asinh   , e_atan    ,
-            e_atanh   , e_ceil    , e_cos     , e_cosh    ,
-            e_exp     , e_expm1   , e_floor   , e_log     ,
-            e_log10   , e_log2    , e_log1p   , e_logn    ,
-            e_neg     , e_pos     , e_round   , e_roundn  ,
-            e_root    , e_sqrt    , e_sin     , e_sinc    ,
-            e_sinh    , e_sec     , e_csc     , e_tan     ,
-            e_tanh    , e_cot     , e_clamp   , e_iclamp  ,
-            e_inrange , e_sgn     , e_r2d     , e_d2r     ,
-            e_d2g     , e_g2d     , e_hypot   , e_notl    ,
-            e_erf     , e_erfc    , e_ncdf    , e_frac    ,
-            e_trunc   , e_assign  , e_addass  , e_subass  ,
-            e_mulass  , e_divass  , e_modass  , e_in      ,
-            e_like    , e_ilike   , e_multi   , e_smulti  ,
-            e_swap    ,
+            e_default, e_null, e_add, e_sub,
+            e_mul, e_div, e_mod, e_pow,e_atan2,
+            e_min, e_max, e_avg,e_sum, e_prod,
+            e_lt, e_lte,e_eq, e_equal, e_ne,
+            e_nequal,e_gte, e_gt, e_and, e_nand,
+            e_or, e_nor, e_xor, e_xnor,e_mand,
+            e_mor, e_scand, e_scor,e_shr, e_shl,
+            e_abs, e_acos,e_acosh, e_asin, e_asinh,
+            e_atan,e_atanh, e_ceil, e_cos, e_cosh,
+            e_exp, e_expm1, e_floor, e_log,e_log10,
+            e_log2, e_log1p, e_logn,e_neg, e_pos,
+            e_round, e_roundn,e_root, e_sqrt, e_sin,
+            e_sinc,e_sinh, e_sec, e_csc, e_tan,e_tanh,
+            e_cot, e_clamp, e_iclamp,e_inrange, e_sgn,
+            e_r2d , e_d2r,e_d2g, e_g2d, e_hypot, e_notl,
+            e_erf, e_erfc, e_ncdf, e_frac, e_trunc,
+            e_assign, e_addass, e_subass,e_mulass,
+            e_divass, e_modass, e_in, e_like, e_ilike,
+            e_multi, e_smulti,e_swap,
 
             // Do not add new functions/operators after this point.
-            e_sf00 = 1000, e_sf01 = 1001, e_sf02 = 1002, e_sf03 = 1003,
-            e_sf04 = 1004, e_sf05 = 1005, e_sf06 = 1006, e_sf07 = 1007,
-            e_sf08 = 1008, e_sf09 = 1009, e_sf10 = 1010, e_sf11 = 1011,
-            e_sf12 = 1012, e_sf13 = 1013, e_sf14 = 1014, e_sf15 = 1015,
-            e_sf16 = 1016, e_sf17 = 1017, e_sf18 = 1018, e_sf19 = 1019,
-            e_sf20 = 1020, e_sf21 = 1021, e_sf22 = 1022, e_sf23 = 1023,
-            e_sf24 = 1024, e_sf25 = 1025, e_sf26 = 1026, e_sf27 = 1027,
-            e_sf28 = 1028, e_sf29 = 1029, e_sf30 = 1030, e_sf31 = 1031,
-            e_sf32 = 1032, e_sf33 = 1033, e_sf34 = 1034, e_sf35 = 1035,
-            e_sf36 = 1036, e_sf37 = 1037, e_sf38 = 1038, e_sf39 = 1039,
-            e_sf40 = 1040, e_sf41 = 1041, e_sf42 = 1042, e_sf43 = 1043,
-            e_sf44 = 1044, e_sf45 = 1045, e_sf46 = 1046, e_sf47 = 1047,
-            e_sf48 = 1048, e_sf49 = 1049, e_sf50 = 1050, e_sf51 = 1051,
-            e_sf52 = 1052, e_sf53 = 1053, e_sf54 = 1054, e_sf55 = 1055,
-            e_sf56 = 1056, e_sf57 = 1057, e_sf58 = 1058, e_sf59 = 1059,
-            e_sf60 = 1060, e_sf61 = 1061, e_sf62 = 1062, e_sf63 = 1063,
-            e_sf64 = 1064, e_sf65 = 1065, e_sf66 = 1066, e_sf67 = 1067,
-            e_sf68 = 1068, e_sf69 = 1069, e_sf70 = 1070, e_sf71 = 1071,
-            e_sf72 = 1072, e_sf73 = 1073, e_sf74 = 1074, e_sf75 = 1075,
-            e_sf76 = 1076, e_sf77 = 1077, e_sf78 = 1078, e_sf79 = 1079,
-            e_sf80 = 1080, e_sf81 = 1081, e_sf82 = 1082, e_sf83 = 1083,
-            e_sf84 = 1084, e_sf85 = 1085, e_sf86 = 1086, e_sf87 = 1087,
-            e_sf88 = 1088, e_sf89 = 1089, e_sf90 = 1090, e_sf91 = 1091,
-            e_sf92 = 1092, e_sf93 = 1093, e_sf94 = 1094, e_sf95 = 1095,
-            e_sf96 = 1096, e_sf97 = 1097, e_sf98 = 1098, e_sf99 = 1099,
-            e_sffinal  = 1100,
-            e_sf4ext00 = 2000, e_sf4ext01 = 2001, e_sf4ext02 = 2002, e_sf4ext03 = 2003,
-            e_sf4ext04 = 2004, e_sf4ext05 = 2005, e_sf4ext06 = 2006, e_sf4ext07 = 2007,
-            e_sf4ext08 = 2008, e_sf4ext09 = 2009, e_sf4ext10 = 2010, e_sf4ext11 = 2011,
-            e_sf4ext12 = 2012, e_sf4ext13 = 2013, e_sf4ext14 = 2014, e_sf4ext15 = 2015,
-            e_sf4ext16 = 2016, e_sf4ext17 = 2017, e_sf4ext18 = 2018, e_sf4ext19 = 2019,
-            e_sf4ext20 = 2020, e_sf4ext21 = 2021, e_sf4ext22 = 2022, e_sf4ext23 = 2023,
-            e_sf4ext24 = 2024, e_sf4ext25 = 2025, e_sf4ext26 = 2026, e_sf4ext27 = 2027,
-            e_sf4ext28 = 2028, e_sf4ext29 = 2029, e_sf4ext30 = 2030, e_sf4ext31 = 2031,
-            e_sf4ext32 = 2032, e_sf4ext33 = 2033, e_sf4ext34 = 2034, e_sf4ext35 = 2035,
-            e_sf4ext36 = 2036, e_sf4ext37 = 2037, e_sf4ext38 = 2038, e_sf4ext39 = 2039,
-            e_sf4ext40 = 2040, e_sf4ext41 = 2041, e_sf4ext42 = 2042, e_sf4ext43 = 2043,
-            e_sf4ext44 = 2044, e_sf4ext45 = 2045, e_sf4ext46 = 2046, e_sf4ext47 = 2047,
-            e_sf4ext48 = 2048, e_sf4ext49 = 2049, e_sf4ext50 = 2050, e_sf4ext51 = 2051,
-            e_sf4ext52 = 2052, e_sf4ext53 = 2053, e_sf4ext54 = 2054, e_sf4ext55 = 2055,
-            e_sf4ext56 = 2056, e_sf4ext57 = 2057, e_sf4ext58 = 2058, e_sf4ext59 = 2059,
-            e_sf4ext60 = 2060, e_sf4ext61 = 2061
+            e_sf00 = 1000, e_sf01 = 1001, e_sf02 = 1002, e_sf03 = 1003, e_sf04 = 1004,
+            e_sf05 = 1005, e_sf06 = 1006, e_sf07 = 1007, e_sf08 = 1008, e_sf09 = 1009,
+            e_sf10 = 1010, e_sf11 = 1011, e_sf12 = 1012, e_sf13 = 1013, e_sf14 = 1014,
+            e_sf15 = 1015, e_sf16 = 1016, e_sf17 = 1017, e_sf18 = 1018, e_sf19 = 1019,
+            e_sf20 = 1020, e_sf21 = 1021, e_sf22 = 1022, e_sf23 = 1023, e_sf24 = 1024,
+            e_sf25 = 1025, e_sf26 = 1026, e_sf27 = 1027, e_sf28 = 1028, e_sf29 = 1029,
+            e_sf30 = 1030, e_sf31 = 1031, e_sf32 = 1032, e_sf33 = 1033, e_sf34 = 1034,
+            e_sf35 = 1035, e_sf36 = 1036, e_sf37 = 1037, e_sf38 = 1038, e_sf39 = 1039,
+            e_sf40 = 1040, e_sf41 = 1041, e_sf42 = 1042, e_sf43 = 1043, e_sf44 = 1044,
+            e_sf45 = 1045, e_sf46 = 1046, e_sf47 = 1047, e_sf48 = 1048, e_sf49 = 1049,
+            e_sf50 = 1050, e_sf51 = 1051, e_sf52 = 1052, e_sf53 = 1053, e_sf54 = 1054,
+            e_sf55 = 1055, e_sf56 = 1056, e_sf57 = 1057, e_sf58 = 1058, e_sf59 = 1059,
+            e_sf60 = 1060, e_sf61 = 1061, e_sf62 = 1062, e_sf63 = 1063, e_sf64 = 1064,
+            e_sf65 = 1065, e_sf66 = 1066, e_sf67 = 1067, e_sf68 = 1068, e_sf69 = 1069,
+            e_sf70 = 1070, e_sf71 = 1071, e_sf72 = 1072, e_sf73 = 1073, e_sf74 = 1074,
+            e_sf75 = 1075, e_sf76 = 1076, e_sf77 = 1077, e_sf78 = 1078, e_sf79 = 1079,
+            e_sf80 = 1080, e_sf81 = 1081, e_sf82 = 1082, e_sf83 = 1083, e_sf84 = 1084,
+            e_sf85 = 1085, e_sf86 = 1086, e_sf87 = 1087, e_sf88 = 1088, e_sf89 = 1089,
+            e_sf90 = 1090, e_sf91 = 1091, e_sf92 = 1092, e_sf93 = 1093, e_sf94 = 1094,
+            e_sf95 = 1095, e_sf96 = 1096, e_sf97 = 1097, e_sf98 = 1098, e_sf99 = 1099,
+            e_sffinal  = 1100, e_sf4ext00 = 2000, e_sf4ext01 = 2001, e_sf4ext02 = 2002,
+            e_sf4ext03 = 2003, e_sf4ext04 = 2004, e_sf4ext05 = 2005, e_sf4ext06 = 2006,
+            e_sf4ext07 = 2007, e_sf4ext08 = 2008, e_sf4ext09 = 2009, e_sf4ext10 = 2010,
+            e_sf4ext11 = 2011, e_sf4ext12 = 2012, e_sf4ext13 = 2013, e_sf4ext14 = 2014,
+            e_sf4ext15 = 2015, e_sf4ext16 = 2016, e_sf4ext17 = 2017, e_sf4ext18 = 2018,
+            e_sf4ext19 = 2019, e_sf4ext20 = 2020, e_sf4ext21 = 2021, e_sf4ext22 = 2022,
+            e_sf4ext23 = 2023, e_sf4ext24 = 2024, e_sf4ext25 = 2025, e_sf4ext26 = 2026,
+            e_sf4ext27 = 2027, e_sf4ext28 = 2028, e_sf4ext29 = 2029, e_sf4ext30 = 2030,
+            e_sf4ext31 = 2031, e_sf4ext32 = 2032, e_sf4ext33 = 2033, e_sf4ext34 = 2034,
+            e_sf4ext35 = 2035, e_sf4ext36 = 2036, e_sf4ext37 = 2037, e_sf4ext38 = 2038,
+            e_sf4ext39 = 2039, e_sf4ext40 = 2040, e_sf4ext41 = 2041, e_sf4ext42 = 2042,
+            e_sf4ext43 = 2043, e_sf4ext44 = 2044, e_sf4ext45 = 2045, e_sf4ext46 = 2046,
+            e_sf4ext47 = 2047, e_sf4ext48 = 2048, e_sf4ext49 = 2049, e_sf4ext50 = 2050,
+            e_sf4ext51 = 2051, e_sf4ext52 = 2052, e_sf4ext53 = 2053, e_sf4ext54 = 2054,
+            e_sf4ext55 = 2055, e_sf4ext56 = 2056, e_sf4ext57 = 2057, e_sf4ext58 = 2058,
+            e_sf4ext59 = 2059, e_sf4ext60 = 2060, e_sf4ext61 = 2061
         };
         // clang-format on
 
@@ -4308,44 +4175,23 @@ namespace exprtk {
         public:
             // clang-format off
          enum node_type {
-            e_none          , e_null          , e_constant    , e_unary        ,
-            e_binary        , e_binary_ext    , e_trinary     , e_quaternary   ,
-            e_vararg        , e_conditional   , e_while       , e_repeat       ,
-            e_for           , e_switch        , e_mswitch     , e_return       ,
-            e_retenv        , e_variable      , e_stringvar   , e_stringconst  ,
-            e_stringvarrng  , e_cstringvarrng , e_strgenrange , e_strconcat    ,
-            e_stringvarsize , e_strswap       , e_stringsize  , e_stringvararg ,
-            e_function      , e_vafunction    , e_genfunction , e_strfunction  ,
-            e_strcondition  , e_strccondition , e_add         , e_sub          ,
-            e_mul           , e_div           , e_mod         , e_pow          ,
-            e_lt            , e_lte           , e_gt          , e_gte          ,
-            e_eq            , e_ne            , e_and         , e_nand         ,
-            e_or            , e_nor           , e_xor         , e_xnor         ,
-            e_in            , e_like          , e_ilike       , e_inranges     ,
-            e_ipow          , e_ipowinv       , e_abs         , e_acos         ,
-            e_acosh         , e_asin          , e_asinh       , e_atan         ,
-            e_atanh         , e_ceil          , e_cos         , e_cosh         ,
-            e_exp           , e_expm1         , e_floor       , e_log          ,
-            e_log10         , e_log2          , e_log1p       , e_neg          ,
-            e_pos           , e_round         , e_sin         , e_sinc         ,
-            e_sinh          , e_sqrt          , e_tan         , e_tanh         ,
-            e_cot           , e_sec           , e_csc         , e_r2d          ,
-            e_d2r           , e_d2g           , e_g2d         , e_notl         ,
-            e_sgn           , e_erf           , e_erfc        , e_ncdf         ,
-            e_frac          , e_trunc         , e_uvouv       , e_vov          ,
-            e_cov           , e_voc           , e_vob         , e_bov          ,
-            e_cob           , e_boc           , e_vovov       , e_vovoc        ,
-            e_vocov         , e_covov         , e_covoc       , e_vovovov      ,
-            e_vovovoc       , e_vovocov       , e_vocovov     , e_covovov      ,
-            e_covocov       , e_vocovoc       , e_covovoc     , e_vococov      ,
-            e_sf3ext        , e_sf4ext        , e_nulleq      , e_strass       ,
-            e_vector        , e_vecsize       , e_vecelem     , e_veccelem     ,
-            e_vecelemrtc    , e_veccelemrtc   , e_rbvecelem   , e_rbvecelemrtc ,
-            e_rbveccelem    , e_rbveccelemrtc ,  e_vecdefass  , e_vecvalass    ,
-            e_vecvecass     , e_vecopvalass   , e_vecopvecass , e_vecfunc      ,
-            e_vecvecswap    , e_vecvecineq    , e_vecvalineq  , e_valvecineq   ,
-            e_vecvecarith   , e_vecvalarith   , e_valvecarith , e_vecunaryop   ,
-            e_vecondition   , e_break         , e_continue    , e_swap
+            e_none, e_null, e_constant, e_unary,e_binary, e_binary_ext,e_trinary, e_quaternary,
+            e_vararg, e_conditional, e_while, e_repeat, e_for,e_switch, e_mswitch, e_return,
+            e_retenv,e_variable, e_stringvar,e_stringconst, e_stringvarrng,e_cstringvarrng,
+            e_strgenrange,e_strconcat, e_stringvarsize,e_strswap, e_stringsize, e_stringvararg,
+            e_function, e_vafunction, e_genfunction, e_strfunction,e_strcondition, e_strccondition,
+            e_add, e_sub,e_mul, e_div, e_mod, e_pow, e_lt, e_lte, e_gt, e_gte,e_eq, e_ne, e_and, e_nand,
+            e_or, e_nor , e_xor, e_xnor, e_in,e_like, e_ilike, e_inranges,e_ipow, e_ipowinv,e_abs,e_acos,
+            e_acosh,e_asin, e_asinh, e_atan,e_atanh, e_ceil, e_cos, e_cosh,e_exp, e_expm1,e_floor, e_log,
+            e_log10, e_log2, e_log1p, e_neg,e_pos, e_round, e_sin,e_sinc, e_sinh, e_sqrt,e_tan, e_tanh,
+            e_cot, e_sec, e_csc, e_r2d,e_d2r, e_d2g, e_g2d, e_notl, e_sgn, e_erf, e_erfc,e_ncdf,e_frac,
+            e_trunc, e_uvouv, e_vov, e_cov, e_voc, e_vob, e_bov,e_cob, e_boc, e_vovov,e_vovoc, e_vocov,
+            e_covov, e_covoc, e_vovovov,e_vovovoc, e_vovocov, e_vocovov, e_covovov,e_covocov, e_vocovoc,
+            e_covovoc, e_vococov, e_sf3ext, e_sf4ext, e_nulleq, e_strass,e_vector, e_vecsize, e_vecelem,
+            e_veccelem,e_vecelemrtc, e_veccelemrtc, e_rbvecelem, e_rbvecelemrtc, e_rbveccelem,
+            e_rbveccelemrtc, e_vecdefass,e_vecvalass, e_vecvecass,e_vecopvalass, e_vecopvecass, e_vecfunc,
+            e_vecvecswap, e_vecvecineq, e_vecvalineq,e_valvecineq, e_vecvecarith, e_vecvalarith,
+            e_valvecarith, e_vecunaryop, e_vecondition, e_break, e_continue, e_swap
          };
             // clang-format on
 
@@ -4371,9 +4217,7 @@ namespace exprtk {
         template <typename T> inline bool is_generally_string_node(const expression_node<T> *node);
 
         inline bool is_true(const double v) { return std::not_equal_to<double>()(0.0, v); }
-
         inline bool is_true(const long double v) { return std::not_equal_to<long double>()(0.0L, v); }
-
         inline bool is_true(const float v) { return std::not_equal_to<float>()(0.0f, v); }
 
         template <typename T> inline bool is_true(const expression_node<T> *node) {
@@ -6966,6 +6810,13 @@ namespace exprtk {
             mutable range_t rp_;
         };
 
+
+        /**
+        * \brief Default value for the string variable.
+        * This variable holds the default value for the string variable. When the variable is
+        * not assigned any value, this default value will be used.
+        * \tparam T The type of the default value.
+        */
         template <typename T> std::string stringvar_node<T>::null_value = std::string("");
 
         template <typename T>
@@ -7972,42 +7823,27 @@ namespace exprtk {
         static inline T process(Type x, Type y, Type z) { return (OP0); }                                                        \
         static inline std::string id() { return (OP1); }                                                                         \
     };
-
+                    // clang-format off
         define_sfop3(00, (x + y) / z, "(t+t)/t") define_sfop3(01, (x + y) * z, "(t+t)*t") define_sfop3(02, (x + y) - z, "(t+t)-t")
-            define_sfop3(03, (x + y) + z, "(t+t)+t") define_sfop3(04, (x - y) + z, "(t-t)+t") define_sfop3(
-                05, (x - y) / z, "(t-t)/t") define_sfop3(06, (x - y) * z, "(t-t)*t") define_sfop3(07, (x * y) + z, "(t*t)+t")
-                define_sfop3(08, (x * y) - z, "(t*t)-t") define_sfop3(09, (x * y) / z, "(t*t)/t")
-                    define_sfop3(10, (x * y) * z, "(t*t)*t") define_sfop3(11, (x / y) + z, "(t/t)+t")
-                        define_sfop3(12, (x / y) - z, "(t/t)-t") define_sfop3(13, (x / y) / z,
-                                                                              "(t/t)/t") define_sfop3(14, (x / y) * z, "(t/t)*t")
-                            define_sfop3(15, x / (y + z), "t/(t+t)") define_sfop3(16, x / (y - z), "t/(t-t)")
-                                define_sfop3(17, x / (y * z), "t/(t*t)") define_sfop3(18, x / (y / z), "t/(t/t)")
-                                    define_sfop3(19, x *(y + z), "t*(t+t)") define_sfop3(20, x *(y - z), "t*(t-t)") define_sfop3(
-                                        21, x *(y *z), "t*(t*t)") define_sfop3(22, x *(y / z),
-                                                                               "t*(t/t)") define_sfop3(23, x - (y + z), "t-(t+t)")
-                                        define_sfop3(24, x - (y - z), "t-(t-t)") define_sfop3(25, x - (y / z), "t-(t/t)")
-                                            define_sfop3(26, x - (y * z), "t-(t*t)") define_sfop3(27, x + (y * z), "t+(t*t)")
-                                                define_sfop3(28, x + (y / z), "t+(t/t)") define_sfop3(29, x + (y + z), "t+(t+t)")
-                                                    define_sfop3(30, x + (y - z),
-                                                                 "t+(t-t)") define_sfop3(31, (axnb<T, 2>(x, y, z)), "       ")
-                                                        define_sfop3(32, (axnb<T, 3>(x, y, z)),
-                                                                     "       ") define_sfop3(33, (axnb<T, 4>(x, y, z)), "       ")
-                                                            define_sfop3(34, (axnb<T, 5>(x, y, z)), "       ") define_sfop3(
-                                                                35, (axnb<T, 6>(x, y, z)),
-                                                                "       ") define_sfop3(36, (axnb<T, 7>(x, y, z)), "       ")
-                                                                define_sfop3(37, (axnb<T, 8>(x, y, z)), "       ") define_sfop3(
-                                                                    38, (axnb<T, 9>(x, y, z)),
-                                                                    "       ") define_sfop3(39, x *numeric::log(y) + z, "")
-                                                                    define_sfop3(40, x *numeric::log(y) - z, "") define_sfop3(
-                                                                        41, x *numeric::log10(y) + z,
-                                                                        "") define_sfop3(42, x *numeric::log10(y) - z, "")
-                                                                        define_sfop3(43, x *numeric::sin(y) + z, "")
-                                                                            define_sfop3(44, x *numeric::sin(y) - z, "")
-                                                                                define_sfop3(45, x *numeric::cos(y) + z, "")
-                                                                                    define_sfop3(46, x *numeric::cos(y) - z, "")
-                                                                                        define_sfop3(47,
-                                                                                                     details::is_true(x) ? y : z,
-                                                                                                     "")
+        define_sfop3(03, (x + y) + z, "(t+t)+t") define_sfop3(04, (x - y) + z, "(t-t)+t") define_sfop3(05, (x - y) / z, "(t-t)/t")
+        define_sfop3(06, (x - y) * z, "(t-t)*t") define_sfop3(07, (x * y) + z, "(t*t)+t") define_sfop3(08, (x * y) - z, "(t*t)-t")
+        define_sfop3(09, (x * y) / z, "(t*t)/t") define_sfop3(10, (x * y) * z, "(t*t)*t") define_sfop3(11, (x / y) + z, "(t/t)+t")
+        define_sfop3(12, (x / y) - z, "(t/t)-t") define_sfop3(13, (x / y) / z, "(t/t)/t") define_sfop3(14, (x / y) * z, "(t/t)*t")
+        define_sfop3(15, x / (y + z), "t/(t+t)") define_sfop3(16, x / (y - z), "t/(t-t)") define_sfop3(17, x / (y * z), "t/(t*t)")
+        define_sfop3(18, x / (y / z), "t/(t/t)") define_sfop3(19, x * (y + z), "t*(t+t)") define_sfop3(20, x * (y - z), "t*(t-t)")
+        define_sfop3(21, x * (y * z), "t*(t*t)") define_sfop3(22, x * (y / z), "t*(t/t)") define_sfop3(23, x - (y + z), "t-(t+t)")
+        define_sfop3(24, x - (y - z), "t-(t-t)") define_sfop3(25, x - (y / z), "t-(t/t)") define_sfop3(26, x - (y * z), "t-(t*t)")
+        define_sfop3(27, x + (y * z), "t+(t*t)") define_sfop3(28, x + (y / z), "t+(t/t)") define_sfop3(29, x + (y + z), "t+(t+t)")
+        define_sfop3(30, x + (y - z),"t+(t-t)")  define_sfop3(31, (axnb<T, 2>(x, y, z)), "       ")
+        define_sfop3(32, (axnb<T, 3>(x, y, z)), "       ") define_sfop3(33, (axnb<T, 4>(x, y, z)), "       ")
+        define_sfop3(34, (axnb<T, 5>(x, y, z)), "       ") define_sfop3(35, (axnb<T, 6>(x, y, z)), "       ")
+        define_sfop3(36, (axnb<T, 7>(x, y, z)), "       ") define_sfop3(37, (axnb<T, 8>(x, y, z)), "       ")
+        define_sfop3(38, (axnb<T, 9>(x, y, z)), "       ") define_sfop3(39, x *numeric::log(y) + z, "")
+        define_sfop3(40, x *numeric::log(y) - z, "") define_sfop3(41, x *numeric::log10(y) + z,"")
+        define_sfop3(42, x *numeric::log10(y) - z, "") define_sfop3(43, x *numeric::sin(y) + z, "")
+        define_sfop3(44, x *numeric::sin(y) - z, "") define_sfop3(45, x *numeric::cos(y) + z, "")
+        define_sfop3(46, x *numeric::cos(y) - z, "") define_sfop3(47, details::is_true(x) ? y : z, "")
+                        // clang-format on
 #define define_sfop4(NN, OP0, OP1)                                                                                               \
     template <typename T> struct sf##NN##_op : public sf_base<T> {                                                               \
         typedef typename sf_base<T>::Type const Type;                                                                            \
@@ -8082,11 +7918,7 @@ namespace exprtk {
 #undef define_sfop3
 #undef define_sfop4
 
-                                                                                                                                        template <
-                                                                                                                                            typename T,
-                                                                                                                                            typename SpecialFunction>
-                                                                                                                                        class
-            sf3_node exprtk_final : public trinary_node<T> {
+        template <typename T, typename SpecialFunction> class sf3_node exprtk_final : public trinary_node<T> {
         public:
             typedef expression_node<T> *expression_ptr;
 
@@ -13238,11 +13070,10 @@ namespace exprtk {
 
         virtual ~ifunction() {}
 
-#define empty_method_body(N)                                                                                                     \
-    {                                                                                                                            \
-        exprtk_debug(("ifunction::operator() - Operator(" #N ") has not been overridden\n"));                                    \
-        return std::numeric_limits<T>::quiet_NaN();                                                                              \
-    }
+#define empty_method_body(N){                                                                                                \
+    exprtk_debug(("ifunction::operator() - Operator(" #N ") has not been overridden\n"));                                    \
+    return std::numeric_limits<T>::quiet_NaN();                                                                              \
+}
 
         // clang-format off
         inline virtual T operator()() empty_method_body(0)
@@ -13309,11 +13140,10 @@ namespace exprtk {
 
         virtual ~igeneric_function() {}
 
-#define igeneric_function_empty_body(N)                                                                                          \
-    {                                                                                                                            \
-        exprtk_debug(("igeneric_function::operator() - Operator(" #N ") has not been overridden\n"));                            \
-        return std::numeric_limits<T>::quiet_NaN();                                                                              \
-    }
+#define igeneric_function_empty_body(N) {                                                                                    \
+    exprtk_debug(("igeneric_function::operator() - Operator(" #N ") has not been overridden\n"));                            \
+    return std::numeric_limits<T>::quiet_NaN();                                                                              \
+}
 
         // clang-format off
         // f(i_0,i_1,....,i_N) --> Scalar
