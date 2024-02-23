@@ -196,14 +196,14 @@ namespace vnd {
             return;
         }
         _scope->eachTmp([this](const std::string &key) -> void {
-            _text += FORMAT("vnd::tmp[\"{}\"] = {};\n{}", key, key, std::string(C_ST(_tabs), '\t'));
+            _text += FORMAT("vnd::tmp[\"{}\"] = {};\n{:\t^{}}", key, key, "", C_ST(_tabs));
         });
         if(variables.size() != factory.size()) {
             throw TRANSPILER_EXCEPTIONF(instruction, "inconsistent assignation: {} values for {} variables", factory.size(),
                                         variables.size());
         }
         for(auto &var : variables) {
-            Expression expression = factory.getExpression();
+            auto expression = factory.getExpression();
             if(expression.getType().contains(' ')) {
                 throw TranspilerException("Multiple return value functions must be used alone", instruction);
             }
@@ -219,7 +219,7 @@ namespace vnd {
                 if(expression.getType() == "void") {
                     throw TranspilerException("Cannot assign void expression", instruction);
                 } else {
-                    _text += FORMAT("{};\n{}", expression.getText(), std::string(C_ST(_tabs), '\t'));
+                    _text += FORMAT("{};\n{:\t^{}}", expression.getText(), "", C_ST(_tabs));
                     continue;
                 }
             }
@@ -250,7 +250,7 @@ namespace vnd {
         auto iterator = tokens.begin();
         auto endToken = tokens.end();
         std::vector<Expression> expressions;
-        ExpressionFactory factory = ExpressionFactory::create(iterator, endToken, _scope, false);
+        auto factory = ExpressionFactory::create(iterator, endToken, _scope, false);
         while(iterator != endToken) {
             if(auto error = factory.parse({TokenType::COMMA}); !error.empty()) { throw TranspilerException(error, instruction); }
             if(iterator != endToken) { iterator++; }
@@ -260,7 +260,7 @@ namespace vnd {
             if(expression.getType() != "void" && !(text.ends_with("++") || text.ends_with("--"))) {
                 throw TranspilerException(FORMAT("Invalid operation {}", text), instruction);
             }
-            _text += FORMAT("{};\n{}", text, std::string(C_ST(_tabs), '\t'));
+            _text += FORMAT("{};\n{:\t^{}}", text, "", C_ST(_tabs));
         }
         _text.erase(_text.size() - C_ST(_tabs) - 1, C_ST(_tabs) + 1);
     }
@@ -331,7 +331,7 @@ namespace vnd {
                                          const std::vector<Token>::iterator &next, std::string &currentVariable,
                                          std::string &type) const noexcept {
         using enum TokenType;
-        std::string_view value = iterator->getValue();
+        auto value = iterator->getValue();
         if(value == "_") {
             if(currentVariable.empty() && (next == end || next->getType() == COMMA || next->getType() == EQUAL_OPERATOR ||
                                            next->getType() == OPERATION_EQUAL)) {
@@ -367,8 +367,8 @@ namespace vnd {
 
     std::string Transpiler::extractFun(std::vector<Token>::iterator &iterator, const std::vector<Token>::iterator &end,
                                        std::string &currentVariable, std::string &type) const noexcept {
-        std::string_view identifier = iterator->getValue();
-        ExpressionFactory factory = ExpressionFactory::create(iterator, end, _scope, false);
+        auto identifier = iterator->getValue();
+        auto factory = ExpressionFactory::create(iterator, end, _scope, false);
         std::vector<Expression> expressions;
         std::string params;
         iterator++;
@@ -417,10 +417,10 @@ namespace vnd {
             currentVariable.pop_back();
         }
         if(!Scope::checkVector(type)) { return FORMAT("Indexing not allowed for {} type", type); }
-        ExpressionFactory factory = ExpressionFactory::create(iterator, end, _scope, false, true);
+        auto factory = ExpressionFactory::create(iterator, end, _scope, false, true);
         iterator++;
         if(auto error = factory.parse({TokenType::CLOSE_SQ_PARENTESIS}); !error.empty()) { return error; }
-        Expression expression = factory.getExpression();
+        auto expression = factory.getExpression();
         newType = expression.getType();
         if(newType != "int") { return FORMAT("{} index not allowed", newType); }
         currentVariable += FORMAT(".at({})->", expression.getText().substr(1));
@@ -429,7 +429,7 @@ namespace vnd {
 
     std::string Transpiler::transpileMultipleFun(const std::vector<std::pair<std::string, std::string>> &variables,
                                                  const Expression &expression) noexcept {
-        std::vector<std::string> types = Transpiler::tokenize(expression.getType());
+        auto types = Transpiler::tokenize(expression.getType());
         std::string values;
         std::vector<std::string> tmp;
         int typeIndex = 0;
