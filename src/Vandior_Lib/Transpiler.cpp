@@ -12,7 +12,7 @@ namespace vnd {
         std::vector<std::string> result;
         std::istringstream iss(str);
         std::string strr;
-        while(iss >> strr) { result.push_back(strr); }
+        while(iss >> strr) { result.emplace_back(std::move(strr)); }
         return result;
     }
 
@@ -105,7 +105,7 @@ namespace vnd {
         auto [type, typeValue] = transpileType(iterator, tokens.end(), {TokenType::EQUAL_OPERATOR}, instruction);
         _text += FORMAT("{} ", typeValue);
         if(isConst && !Scope::isPrimitive(type)) {
-            throw TranspilerException(FORMAT("Cannot declare const variables of {} type", type), instruction);
+            throw TRANSPILER_EXCEPTIONF(instruction, "Cannot declare const variables of {} type", type);
         }
         // Handle initialization
         if(iterator != endToken && iterator->getType() == TokenType::EQUAL_OPERATOR) {
@@ -118,8 +118,8 @@ namespace vnd {
             }
         }
         if((isConst || isVal) && variables.size() > factory.size()) {
-            throw TranspilerException(
-                FORMAT("Uninitialized constant: {} values for {} constants", factory.size(), variables.size()), instruction);
+            throw TRANSPILER_EXCEPTIONF(instruction, "Uninitialized constant: {} values for {} constants", factory.size(),
+                                        variables.size());
         }
         for(const std::string_view &jvar : variables) {
             std::string value;
@@ -131,7 +131,7 @@ namespace vnd {
             if(!factory.empty()) {
                 auto expression = factory.getExpression();
                 if(!_scope->canAssign(type, expression.getType())) {
-                    throw TranspilerException(FORMAT("Cannot assign {} to {}", expression.getType(), type), instruction);
+                    throw TRANSPILER_EXCEPTIONF(instruction, "Cannot assign {} to {}", expression.getType(), type);
                 }
                 if(isConst) {
                     if(expression.isConst()) [[likely]] {
@@ -139,7 +139,7 @@ namespace vnd {
                         if(type == "int") { value = FORMAT("{}", value.substr(0, value.find('.'))); }
                         _text += FORMAT(" = {}", value);
                     } else [[unlikely]] {
-                        throw TranspilerException(FORMAT("Cannot evaluate {} at compile time", jvar), instruction);
+                        throw TRANSPILER_EXCEPTIONF(instruction, "Cannot evaluate {} at compile time", jvar);
                     }
                 } else {
                     _text += FORMAT(" = {}", expression.getText());

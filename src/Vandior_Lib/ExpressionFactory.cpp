@@ -390,16 +390,17 @@ namespace vnd {
 
     // NOLINTNEXTLINE(*-function-cognitive-complexity)
     std::string ExpressionFactory::checkType(TupType &oldType, const std::string_view newType) noexcept {
-        if(newType == "dot" || (std::next(_iterator) != _end && std::next(_iterator)->getType() == TokenType::DOT_OPERATOR)) {
-            return {};
-        }
+        auto isTokentype = [&](TokenType type) {
+            return std::next(_iterator) != _end && std::next(_iterator)->getType() == type;
+        };
+        if(newType == "dot" || isTokentype(TokenType::DOT_OPERATOR)) { return {}; }
         if(std::get<2>(oldType).contains(' ')) { return "Multiple return value functions must be used alone"; }
         if(newType.contains(' ')) {
             if(!std::get<2>(oldType).empty()) { return "Multiple return value functions must be used alone"; }
             std::get<2>(oldType) = newType;
             return {};
         }
-        if(std::next(_iterator) != _end && std::next(_iterator)->getType() == TokenType::OPEN_SQ_PARENTESIS) { return ""; }
+        if(isTokentype(TokenType::OPEN_SQ_PARENTESIS)) { return ""; }
         if(_sq && !isSquareType(newType)) { return FORMAT("Type not allowed {}", newType); }
         if(std::get<2>(oldType).empty()) {
             if(newType == "operator") {

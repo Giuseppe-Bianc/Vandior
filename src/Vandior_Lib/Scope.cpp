@@ -1,5 +1,4 @@
 #include "Vandior/Scope.hpp"
-
 // NOLINTBEGIN(*-include-cleaner,*-identifier-length)
 DISABLE_WARNINGS_PUSH(
     4005 4201 4459 4514 4625 4626 4820 6244 6285 6385 6386 26409 26415 26418 26429 26432 26437 26438 26440 26446 26447 26450 26451 26455 26457 26459 26460 26461 26467 26472 26473 26474 26475 26481 26482 26485 26490 26491 26493 26494 26495 26496 26497 26498 26800 26814 26818 26826)
@@ -255,27 +254,24 @@ namespace vnd {
     }
 
     std::string Scope::addTmp(std::string key, std::string &type) noexcept {
-        std::string::iterator end;
         if(key.ends_with("(")) {
             key.replace(key.find_last_of('>') + 1, 1, "g");
             key = FORMAT("{})", key);
         }
-        end = std::remove(key.begin(), key.end(), ' ');
-        key.erase(end, key.end());
+        key.erase(std::remove(key.begin(), key.end(), ' '), key.end());
         _tmp.emplace(key, type);
         return key;
     }
 
     std::string Scope::getTmp(const std::string &tmp) const noexcept {
-        std::string key = tmp;
-        std::string::iterator end_pos = std::remove(key.begin(), key.end(), ' ');
-        key.erase(end_pos, key.end());
+        auto key = tmp;
+        key.erase(std::remove(key.begin(), key.end(), ' '), key.end());
         if(_tmp.contains(key)) { return FORMAT("std::any_cast<{}>(vnd::tmp.at(\"{}\"))", _tmp.at(key), key); }
         return tmp;
     }
 
     void Scope::eachTmp(const std::function<void(const std::string &key)> &fun) const noexcept {
-        for(const auto &tmp : _tmp) { fun(tmp.first); }
+        for(const auto &[key, value] : _tmp) { fun(key); }
     }
 
     void Scope::clearTmp() noexcept { _tmp.clear(); }
