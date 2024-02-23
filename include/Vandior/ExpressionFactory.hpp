@@ -28,7 +28,8 @@ namespace vnd {
                                                       std::shared_ptr<Scope> scope, const bool isConst,
                                                       const bool sq = false) noexcept;
 
-        [[nodiscard]] static std::string transpileFun(const std::vector<Expression> &expressions, std::optional<size_t> variadic) noexcept;
+        [[nodiscard]] static std::string transpileFun(const std::vector<Expression> &expressions,
+                                                      std::optional<size_t> variadic) noexcept;
 
         /**
          * @brief Parses the token sequence until reaching the specified end tokens.
@@ -118,10 +119,10 @@ namespace vnd {
         void emplaceToken(const std::string_view &type) noexcept;
 
         /**
-        * @brief Evaluate a compile time number expression.
-        * @param expression The expression to evaluate
-        * @return String containing the result.
-        */
+         * @brief Evaluate a compile time number expression.
+         * @param expression The expression to evaluate
+         * @return String containing the result.
+         */
         std::string evaluate(const std::string &expression) noexcept;
 
         /**
@@ -191,7 +192,7 @@ namespace vnd {
          * @brief Checks and processes operators in the parsed value.
          * @param value Parsed value to check for operators.
          */
-        [[nodiscard]] void checkOperators(std::string &value) noexcept;
+        void checkOperators(std::string &value) noexcept;
 
         /**
          * @brief Writes the value to the parsed text.
