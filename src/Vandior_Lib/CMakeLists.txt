@@ -7,7 +7,7 @@ add_library(vandior_lib vandior.cpp
         TokenizerUtility.cpp
         InstructionException.cpp
         Instruction.cpp
-        ../../ingnore/Parser.cpp
+        ../../ingnoref/Parser.cpp
         FunType.cpp
         Scope.cpp
         ExpressionFactory.cpp
