@@ -8,7 +8,8 @@ namespace vnd {
         TokenType::DOUBLE,          TokenType::CHAR,
         TokenType::STRING,          TokenType::BOOLEAN,
         TokenType::MINUS_OPERATOR,  TokenType::NOT_OPERATOR,
-        TokenType::OPEN_PARENTESIS, TokenType::OPEN_CUR_PARENTESIS};
+        TokenType::OPEN_PARENTESIS, TokenType::OPEN_CUR_PARENTESIS,
+        TokenType::K_NULLPTR};
 
     Instruction::Instruction(const std::string_view filename) noexcept
       : _allowedTokens({TokenType::K_MAIN, TokenType::K_VAR, TokenType::K_IF, TokenType::K_WHILE, TokenType::K_FOR, TokenType::K_FUN,
@@ -71,8 +72,9 @@ namespace vnd {
         case DOUBLE:
         case CHAR:
         case STRING:
-            [[fallthrough]];
         case BOOLEAN:
+            [[fallthrough]];
+        case K_NULLPTR:
             checkValue(token.getType());
             break;
         case OPERATOR:

@@ -8,40 +8,41 @@ namespace vnd {
      * @brief Represents the types of tokens in the programming language.
      */
     enum class TokenType : long {
-        INTEGER,               ///< Integer literal
-        DOUBLE,                ///< Double literal
-        BOOLEAN,               ///< Boolean literal
-        OPERATOR,              ///< Generic operator
-        MINUS_OPERATOR,        ///< Minus operator
-        EQUAL_OPERATOR,        ///< Equal operator
-        DOT_OPERATOR,          ///< Dot operator
-        IDENTIFIER,            ///< Identifier
-        CHAR,                  ///< Character literal
-        STRING,                ///< String literal
-        K_MAIN,                ///< Keyword 'main'
-        K_VAR,                 ///< Keyword 'var'
-        K_IF,                  ///< Keyword 'if'
-        K_WHILE,               ///< Keyword 'while'
-        K_ELSE,                ///< Keywork 'else'
-        K_FOR,                 ///< Keyword 'for'
-        K_FUN,                 ///< Keyword 'fun'
-        K_RETURN,              ///< Keyword 'return'
-        OPEN_PARENTESIS,       ///< Opening parenthesis '('
-        OPEN_SQ_PARENTESIS,    ///< Opening square parenthesis '['
-        OPEN_CUR_PARENTESIS,   ///< Opening curly parenthesis '{'
-        CLOSE_PARENTESIS,      ///< Closing parenthesis ')'
-        CLOSE_SQ_PARENTESIS,   ///< Closing square parenthesis ']'
-        CLOSE_CUR_PARENTESIS,  ///< Closing curly parenthesis '}'
-        OPERATION_EQUAL,       ///< Operation equal '='
-        BOOLEAN_OPERATOR,      ///< Boolean operator
-        NOT_OPERATOR,          ///< Not operator '!'
-        LOGICAL_OPERATOR,      ///< Logical operator
-        UNARY_OPERATOR,        ///< Unary operator
-        COMMA,                 ///< Comma ','
-        COLON,                 ///< Colon ':'
-        COMMENT,               ///< Comment
-        UNKNOWN,               ///< Unknown token type
-        EOFT,                  ///< End of file token
+        INTEGER,                ///< Integer literal
+        DOUBLE,                 ///< Double literal
+        BOOLEAN,                ///< Boolean literal
+        OPERATOR,               ///< Generic operator
+        MINUS_OPERATOR,         ///< Minus operator
+        EQUAL_OPERATOR,         ///< Equal operator
+        DOT_OPERATOR,           ///< Dot operator
+        IDENTIFIER,             ///< Identifier
+        CHAR,                   ///< Character literal
+        STRING,                 ///< String literal
+        K_MAIN,                 ///< Keyword 'main'
+        K_VAR,                  ///< Keyword 'var'
+        K_IF,                   ///< Keyword 'if'
+        K_WHILE,                ///< Keyword 'while'
+        K_ELSE,                 ///< Keywork 'else'
+        K_FOR,                  ///< Keyword 'for'
+        K_FUN,                  ///< Keyword 'fun'
+        K_RETURN,               ///< Keyword 'return'
+        K_NULLPTR,              ///< Keyword 'nullptr'
+        OPEN_PARENTESIS,        ///< Opening parenthesis '('
+        OPEN_SQ_PARENTESIS,     ///< Opening square parenthesis '['
+        OPEN_CUR_PARENTESIS,    ///< Opening curly parenthesis '{'
+        CLOSE_PARENTESIS,       ///< Closing parenthesis ')'
+        CLOSE_SQ_PARENTESIS,    ///< Closing square parenthesis ']'
+        CLOSE_CUR_PARENTESIS,   ///< Closing curly parenthesis '}'
+        OPERATION_EQUAL,        ///< Operation equal '='
+        BOOLEAN_OPERATOR,       ///< Boolean operator
+        NOT_OPERATOR,           ///< Not operator '!'
+        LOGICAL_OPERATOR,       ///< Logical operator
+        UNARY_OPERATOR,         ///< Unary operator
+        COMMA,                  ///< Comma ','
+        COLON,                  ///< Colon ':'
+        COMMENT,                ///< Comment
+        UNKNOWN,                ///< Unknown token type
+        EOFT,                   ///< End of file token
         // Add more types as needed
     };
 
@@ -108,6 +109,9 @@ template <> struct fmt::formatter<vnd::TokenType> : fmt::formatter<std::string_v
             break;
         case K_RETURN:
             name = "K_RETURN";
+            break;
+        case K_NULLPTR:
+            name = "K_NULLPTR";
             break;
         case OPEN_PARENTESIS:
             name = "OPEN_PARENTESIS";

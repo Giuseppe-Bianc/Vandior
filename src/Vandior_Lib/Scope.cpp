@@ -238,6 +238,7 @@ namespace vnd {
     bool Scope::canAssign(const std::string &left, const std::string &right) const noexcept {
         if(left == "any") { return true; }
         if((Scope::isNumber(left) && Scope::isNumber(right)) || left == right) { return true; }
+        if(right == "nullptr") { return !Scope::isPrimitive(left); }
         if(right == "[]" && left.ends_with(']')) { return true; }
         if(std::pair<std::string, std::string> types = {left, right};
            (types.first.ends_with("[]") || types.second.ends_with("[]")) && Scope::checkVector(types.first) &&

@@ -155,6 +155,8 @@ namespace vnd {
             return "not";
         case LOGICAL_OPERATOR:
             return "logical";
+        case K_NULLPTR:
+            return "nullptr";
         default:
             break;
         }
