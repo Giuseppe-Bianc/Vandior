@@ -196,7 +196,7 @@ namespace vnd {
                         if(!canAssign(params.at(par), expressions.at(par).getType())) { found = false; }
                     }
                 }
-                if(found) { return {i.getReturnType(), i.isContructor(), variadic}; }
+                if(found) { return {i.getReturnType(), i.isConstructor(), variadic}; }
             }
         }
         if(_types.contains(type)) {
