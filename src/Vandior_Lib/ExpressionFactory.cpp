@@ -10,15 +10,13 @@
 #define PCLOSE pclose
 #endif
 
-#define EXPRTK
-
 namespace vnd {
 
     // NOLINTBEGIN
     ExpressionFactory::ExpressionFactory(std::vector<Token>::iterator &iterator, std::vector<Token>::iterator end,
                                          std::shared_ptr<Scope> scope, const bool isConst, const bool sq) noexcept
       : _iterator(iterator), _end(end), _scope(std::move(scope)), _text({}), _expressions({}), _power(), _divide(false),
-        _dot(false), _sq(sq), _const(isConst), _expressionText(""), _type(""), _temp("") {}
+        _dot(false), _const(isConst), _sq(sq), _expressionText(""), _type(""), _temp("") {}
 
     ExpressionFactory ExpressionFactory::create(std::vector<Token>::iterator &iterator, std::vector<Token>::iterator end,
                                                 std::shared_ptr<Scope> scope, const bool isConst, bool sq) noexcept {
@@ -98,18 +96,6 @@ namespace vnd {
     }
 
     void ExpressionFactory::handleFinalExpression(const std::tuple<bool, bool, std::string> &type) noexcept {
-#ifdef EXPRTK
-        exprtk::parser<double> parser;
-        exprtk::expression<double> expression;
-        if(Scope::isNumber(std::get<2>(type))) {
-            std::string value;
-            if(_const) { parser.compile(_expressionText, expression); }
-            value = std::to_string(expression.value());
-            _expressions.emplace_back(Expression::create(_text, std::get<2>(type), _const, value));
-        } else {
-            _expressions.emplace_back(Expression::create(_text, std::get<2>(type), _const));
-        }
-#else
         if(Scope::isNumber(std::get<2>(type))) {
             std::string value;
             if(_const) { value = ExpressionFactory::evaluate(_expressionText); }
@@ -117,7 +103,6 @@ namespace vnd {
         } else {
             _expressions.emplace_back(Expression::create(_text, std::get<2>(type), _const));
         }
-#endif
     }
 
     std::size_t ExpressionFactory::size() const noexcept { return _expressions.size(); }
@@ -170,6 +155,8 @@ namespace vnd {
             return "not";
         case LOGICAL_OPERATOR:
             return "logical";
+        case K_NULLPTR:
+            return "nullptr";
         default:
             break;
         }
@@ -203,11 +190,7 @@ namespace vnd {
                 _text.emplace(textIndex, "std::pow(");
             }
             _text.emplace_back(",");
-#ifdef EXPRTK
-            _expressionText += value;
-#else
             _expressionText += "**";
-#endif
             _iterator++;
             return;
         }
@@ -423,6 +406,7 @@ namespace vnd {
             return {};
         }
         if(newType == "boolean") {
+            if(!Scope::isPrimitive(std::get<2>(oldType))) { return FORMAT("Cannot compare {} type", std::get<2>(oldType)); }
             std::get<0>(oldType) = true;
             return {};
         }
@@ -483,6 +467,7 @@ namespace vnd {
         _iterator++;
         _dot = false;
     }
+
     void ExpressionFactory::clearData() noexcept {
         if(!_dot) {
             _type.clear();

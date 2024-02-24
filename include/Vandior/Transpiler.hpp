@@ -28,16 +28,16 @@ namespace vnd {
     private:
         /**
          * @brief Constructs a Transpiler with a vector of instructions.
-         * @param _instructions The vector of instructions.
+         * @param instructions The vector of instructions.
          */
-        Transpiler(const std::vector<Instruction> &_instructions) noexcept;
+        Transpiler(const std::vector<Instruction> &instructions) noexcept;
 
         int _tabs;                               ///< Number of tabs for indentation.
         std::string _text;                       ///< The transpiled text.
         std::ofstream _output;                   ///< Output file stream.
         std::vector<Instruction> _instructions;  ///< Vector of instructions.
         std::shared_ptr<Scope> _scope;           ///< Shared pointer to the current scope.
-        char _main;                              ///< Main character.
+        char _main;                              ///< Character used to check main transpiling.
 
         /**
          * @brief Tokenize a string.
@@ -53,25 +53,25 @@ namespace vnd {
         void checkTrailingBracket(const Instruction &instruction);
 
         /**
-         * @brief Transpile the main part of the instruction.
+         * @brief Transpile the main instruction of the program.
          * @param instruction The instruction to transpile.
          */
         void transpileMain(const Instruction &instruction);
 
         /**
-         * @brief Transpile the declaration part of the instruction.
+         * @brief Transpile a declaration instruction of the program.
          * @param instruction The instruction to transpile.
          */
         void transpileDeclaration(const Instruction &instruction);
 
         /**
-         * @brief Transpile the operation part of the instruction.
+         * @brief Transpile an operation instruction of the program.
          * @param instruction The instruction to transpile.
          */
         void transpileOperation(const Instruction &instruction);
 
         /**
-         * @brief Transpile the assignation part of the instruction.
+         * @brief Transpile an assignation instruction of the program.
          * @param instruction The instruction to transpile.
          */
         void transpileAssignation(const Instruction &instruction);
@@ -169,6 +169,13 @@ namespace vnd {
          * @param colon Boolean flag indicating if colon should be emplaced.
          */
         void emplaceCommaColon(const bool colon) noexcept;
+
+        /**
+         * @brief Checks if a token has a specific value.
+         * @param iterator Iterator pointing to the token.
+         * @param value String containing the value.
+         * @return Bool indicating the result of the check.
+         */
         [[nodiscard]] bool iteratorIs(const std::vector<Token>::iterator &iterator, const std::string &value) const noexcept;
     };
 

@@ -4,7 +4,6 @@
 #include <stdexcept>
 
 namespace vnd {
-
     /**
      * @brief Custom exception class for transpiler errors.
      * This exception is thrown when a transpiler encounters an error during the conversion process.

@@ -11,6 +11,6 @@ namespace vnd {
 
     std::vector<std::string> FunType::getParams() const noexcept { return _params; } // NOLINT(*-include-cleaner)
 
-    bool FunType::isContructor() const noexcept { return _constructor; }
+    bool FunType::isConstructor() const noexcept { return _constructor; }
 
 }  // namespace vnd
