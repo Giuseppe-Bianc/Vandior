@@ -23,6 +23,13 @@
 #pragma clang diagnostic ignored "-Wmissing-braces"
 #pragma clang diagnostic ignored "-Wimplicit-int-conversion"
 #pragma clang diagnostic ignored "-Wimplicit-int-float-conversion"
+#elif defined(__GNUC__) && (__GNUC__ >= 11)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsign-conversion"
+#pragma GCC diagnostic ignored "-Wshadow"
+#pragma GCC diagnostic ignored "-Wuseless-cast"
+#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
+#pragma GCC diagnostic ignored "-Wmissing-braces"
 #endif
 
 // NOLINTBEGIN(*-diagnostic-implicit-int-float-conversion)
@@ -206,7 +213,7 @@ namespace exprtk {
                 return false;
             }
 
-            result = hex_to_bin(C_UC(*(itr + 2))) << 4 | hex_to_bin(C_UC(*(itr + 3)));
+            result = C_C(hex_to_bin(C_UC(*(itr + 2))) << 4 | hex_to_bin(C_UC(*(itr + 3))));
 
             return true;
         }
@@ -3760,7 +3767,7 @@ namespace exprtk {
 
             struct details {
                 explicit details(const std::size_t &vsize, const unsigned int loop_batch_size = global_loop_batch_size)
-                  : batch_size(loop_batch_size), remainder(vsize % batch_size),
+                  : batch_size(loop_batch_size), remainder(C_I(vsize % batch_size)),
                     upper_bound(C_I(vsize - (remainder ? loop_batch_size : 0))) {}
 
                 unsigned int batch_size;
@@ -34452,5 +34459,7 @@ namespace exprtk {
 
 #if defined(__clang__)
 #pragma clang diagnostic pop
+#elif defined(__GNUC__) && (__GNUC__ >= 11)
+#pragma GCC diagnostic pop
 #endif
 // NOLINTEND(*-diagnostic-implicit-int-float-conversion)
