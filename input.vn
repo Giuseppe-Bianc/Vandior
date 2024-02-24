@@ -1,7 +1,7 @@
 main {
 	const constFloat1, constFloat2: float = 2 ^ 8 * 2.5, 20 - 9
 	const constBool: bool = 1 ^ 1 == 1 && !false || 2 <= 3
-	var array: int[2 ^ 10]
+	var array, array1: int[2 ^ 10]
 	var a, b: int = 1, 2 + constFloat1
 	println("{} {}", a, b)
 	a, b = b, a
@@ -13,7 +13,7 @@ main {
 	a, Derived().obj.a = 1, -6
 	ar[0] = "Mondo"
 	{
-		var test: int = 12
+		var test: int
 		println("\ntest:\t{}", test)
 	}
 	a, b ^= 2, 5

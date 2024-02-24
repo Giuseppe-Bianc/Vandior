@@ -156,7 +156,7 @@ namespace vnd {
 
         /**
          * @brief Opens a new scope.
-         * @brief type ScopeType of the scope.
+         * @param type ScopeType of the scope.
          */
         void openScope(const ScopeType &type) noexcept;
 

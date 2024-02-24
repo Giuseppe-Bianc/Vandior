@@ -143,6 +143,8 @@ namespace vnd {
                 } else {
                     _text += FORMAT(" = {}", expression.getText());
                 }
+            } else {
+                _text += "{}";
             }
             auto [check, shadowing] = _scope->checkVariable(jvar);
             if(check) {
@@ -157,6 +159,7 @@ namespace vnd {
             emplaceCommaColon(jvar == variables.back());
         }
     }
+
     bool Transpiler::iteratorIs(const std::vector<Token>::iterator &iterator, const std::string &value) const noexcept {
         return iterator->getValue() == value;
     }
@@ -259,6 +262,7 @@ namespace vnd {
             if(expression.getType() != "void" && !(text.ends_with("++") || text.ends_with("--"))) {
                 throw TranspilerException(FORMAT("Invalid operation {}", text), instruction);
             }
+            if(text.starts_with(' ')) { text.erase(0, 1); }
             _text += FORMAT("{};\n{:\t^{}}", text, "", C_ST(_tabs));
         }
         _text.erase(_text.size() - C_ST(_tabs) - 1, C_ST(_tabs) + 1);
