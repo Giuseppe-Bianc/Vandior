@@ -1,4 +1,5 @@
 #pragma once
+#include "ScopeType.hpp"
 #include "Expression.hpp"
 #include "FunType.hpp"
 #include "headers.hpp"
@@ -13,9 +14,10 @@ namespace vnd {
         /**
          * @brief Creates a Scope instance using a shared pointer.
          * @param parent Shared pointer to the parent scope.
+         * @param type ScopeType of the scope.
          * @return Shared pointer to an Scope instance.
          */
-        [[nodiscard]] static std::shared_ptr<Scope> create(std::shared_ptr<Scope> parent) noexcept;
+        [[nodiscard]] static std::shared_ptr<Scope> create(std::shared_ptr<Scope> parent, const ScopeType &type) noexcept;
 
         /**
          * @brief Creates the scope used as main scope in the program (not by the main function).
@@ -56,6 +58,12 @@ namespace vnd {
          * @return Shared pointer to the parent scope.
          */
         [[nodiscard]] std::shared_ptr<Scope> getParent() const noexcept;
+
+        /**
+         * @Gets the scope type.
+         * @return ScopeType of the scope.
+         */
+        [[nodiscard]] ScopeType getType() const noexcept;
 
         /**
          * @brief Removes the parent scope.
@@ -190,8 +198,9 @@ namespace vnd {
         /**
          * @brief Constructor of a Scope.
          * @param parent Shared pointer to the parent scope.
+         * @param type ScopeType of the scope.
          */
-        Scope(std::shared_ptr<Scope> parent) noexcept;
+        Scope(std::shared_ptr<Scope> parent, const ScopeType &type) noexcept;
 
         static std::vector<std::string> _numberTypes;       ///< Vector of numeric types
         static std::vector<std::string> _primitiveTypes;    ///< Vector of primitive types
@@ -218,6 +227,7 @@ namespace vnd {
         std::unordered_map<std::string, std::vector<FunType>> _funs;                    ///< Map of function identifiers and informations.
         std::unordered_map<std::string, std::string> _tmp;                              ///< Map of temporary variables and types.
         std::shared_ptr<Scope> _parent;                                                 ///< Shared pointer to the parent scope.
+        ScopeType _type;                                                                ///< The type of the scope.
     };
 
 }  // namespace vnd

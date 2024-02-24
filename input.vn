@@ -12,6 +12,10 @@ main {
 	var ar: string[] = {"Ciao"}
 	a, Derived().obj.a = 1, -6
 	ar[0] = "Mondo"
+	{
+		var test: int = 12
+		println("\ntest:\t{}", test)
+	}
 	a, b ^= 2, 5
 	val s: string = "Ciao"
 	_, _, a = 45 ^ 67, 'c', testPar("Ciao")

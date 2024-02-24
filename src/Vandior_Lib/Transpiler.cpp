@@ -4,7 +4,7 @@
 namespace vnd {
     // NOLINTBEGIN(*-include-cleaner, *-easily-swappable-parameters)
     Transpiler::Transpiler(const std::vector<Instruction> &instructions) noexcept
-      : _tabs(0), _instructions(instructions), _scope(Scope::createMain()), _main(0) {}
+      : _tabs(0), _instructions(instructions), _scope(Scope::createMain()), _main(false) {}
 
     Transpiler Transpiler::create(const std::vector<Instruction> &instructions) noexcept { return {instructions}; }
 
@@ -41,7 +41,7 @@ namespace vnd {
                     break;
                 case OPEN_SCOPE:
                     _text += "{";
-                    openScope();
+                    openScope(ScopeType::SCOPE);
                     checkTrailingBracket(instruction);
                     break;
                 case CLOSE_SCOPE:
@@ -69,10 +69,9 @@ namespace vnd {
     void Transpiler::checkTrailingBracket(const Instruction &instruction) {
         if(instruction.getTokens().back().getType() == TokenType::CLOSE_CUR_PARENTESIS) {
             auto parent = _scope->getParent();
-            if(_main == 1 && parent && parent->isMainScope()) {
+            if(_scope->getType() == ScopeType::MAIN_FUNCTION_SCOPE) {
                 if(instruction.getLastType() == InstructionType::MAIN) { _text += "\n"; }
                 _text += FORMAT("{:\t^{}}return 0;\n{:\t^{}}", "", C_ST(_tabs), "", C_ST(_tabs) - 1);
-                _main = -1;
             }
             _text += "}";
             closeScope();
@@ -81,11 +80,11 @@ namespace vnd {
 
     void Transpiler::transpileMain(const Instruction &instruction) {
         if(!_scope->isMainScope()) { throw TranspilerException("Cannot declare main here", instruction); }
-        if(_main == -1) { throw TranspilerException("Main already declared", instruction); }
+        if(_main) { throw TranspilerException("Main already declared", instruction); }
         if(_scope->getParent() != nullptr) { throw TranspilerException("Cannot declare main here", instruction); }
         _text += "\nint main(int argc, char **argv) {\n";
-        _main = 1;
-        openScope();
+        _main = true;
+        openScope(ScopeType::MAIN_FUNCTION_SCOPE);
         auto value = FORMAT("{:\t^{}}const vnd::vector<string> _args(argv, argv + argc);", "", C_ST(_tabs));
         _text += value;
         _scope->addConstant("args", "string[]", value);
@@ -508,8 +507,8 @@ namespace vnd {
         return {type, prefix + typeValue + suffix};
     }
 
-    void Transpiler::openScope() noexcept {
-        auto newScope = Scope::create(_scope);
+    void Transpiler::openScope(const ScopeType &type) noexcept {
+        auto newScope = Scope::create(_scope, type);
         _scope = newScope;
         _tabs++;
     }

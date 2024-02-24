@@ -37,7 +37,7 @@ namespace vnd {
         std::ofstream _output;                   ///< Output file stream.
         std::vector<Instruction> _instructions;  ///< Vector of instructions.
         std::shared_ptr<Scope> _scope;           ///< Shared pointer to the current scope.
-        char _main;                              ///< Character used to check main transpiling.
+        bool _main;                              ///< Flag used to check main transpiling.
 
         /**
          * @brief Tokenize a string.
@@ -156,8 +156,9 @@ namespace vnd {
 
         /**
          * @brief Opens a new scope.
+         * @brief type ScopeType of the scope.
          */
-        void openScope() noexcept;
+        void openScope(const ScopeType &type) noexcept;
 
         /**
          * @brief Closes the current scope.

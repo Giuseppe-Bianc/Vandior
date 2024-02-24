@@ -1,4 +1,5 @@
 #include "Vandior/Scope.hpp"
+#include <Vandior/Log.hpp>
 // NOLINTBEGIN(*-include-cleaner,*-identifier-length)
 DISABLE_WARNINGS_PUSH(
     4005 4201 4459 4514 4625 4626 4820 6244 6285 6385 6386 26409 26415 26418 26429 26432 26437 26438 26440 26446 26447 26450 26451 26455 26457 26459 26460 26461 26467 26472 26473 26474 26475 26481 26482 26485 26490 26491 26493 26494 26495 26496 26497 26498 26800 26814 26818 26826)
@@ -9,14 +10,16 @@ namespace vnd {
     std::vector<std::string> Scope::_primitiveTypes = {"int", "float", "double", "char", "bool", "string"};
     // NOLINTEND
 
-    Scope::Scope(std::shared_ptr<Scope> parent) noexcept : _parent(std::move(parent)) {}
+    Scope::Scope(std::shared_ptr<Scope> parent, const ScopeType &type) noexcept : _parent(std::move(parent)), _type(type) {
+        LINFO(_type);
+    }
 
-    std::shared_ptr<Scope> Scope::create(std::shared_ptr<Scope> parent) noexcept {
-        return std::make_shared<Scope>(Scope{std::move(parent)});
+    std::shared_ptr<Scope> Scope::create(std::shared_ptr<Scope> parent, const ScopeType &type) noexcept {
+        return std::make_shared<Scope>(Scope{std::move(parent), type});
     }
 
     std::shared_ptr<Scope> Scope::createMain() noexcept {
-        auto mainScope = std::make_shared<Scope>(Scope{nullptr});
+        auto mainScope = std::make_shared<Scope>(Scope{nullptr, ScopeType::MAIN_SCOPE});
         mainScope->addType("void", {});
         mainScope->addType("int", {});
         mainScope->addType("float", {});
@@ -111,6 +114,8 @@ namespace vnd {
 
     std::shared_ptr<Scope> Scope::getParent() const noexcept { return _parent; }
 
+    ScopeType Scope::getType() const noexcept { return _type; }
+
     void Scope::removeParent() noexcept { _parent = nullptr; }
 
     void Scope::addType(const std::string_view &type, const std::vector<std::string> &assignable) noexcept {
@@ -132,7 +137,7 @@ namespace vnd {
         _funs[key].emplace_back(fun);
     }
 
-    bool Scope::isMainScope() const noexcept { return _parent == nullptr; }
+    bool Scope::isMainScope() const noexcept { return _parent == nullptr && _type == ScopeType::MAIN_SCOPE; }
 
     bool Scope::checkType(const std::string_view type) const noexcept {  // NOLINT(*-no-recursion)
         if(_types.contains(std::string{type})) { return true; }
