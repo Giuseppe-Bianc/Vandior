@@ -148,7 +148,6 @@ TEST_CASE("corrected format for Tokentype", "[token_type]") {
     REQ_FORMAT(STRING, "STRING");
     REQ_FORMAT(K_MAIN, "K_MAIN");
     REQ_FORMAT(K_VAR, "K_VAR");
-    REQ_FORMAT(K_STRUCTURE, "K_STRUCTURE");
     REQ_FORMAT(K_FOR, "K_FOR");
     REQ_FORMAT(K_FUN, "K_FUN");
     REQ_FORMAT(K_RETURN, "K_RETURN");
@@ -593,15 +592,6 @@ TEST_CASE("Corrected type of main instruction", "[Instruction]") {
     instruction.checkToken(vnd::Token{vnd::TokenType::K_MAIN, "", vnd::CodeSourceLocation(filename, 0, 0)});
     instruction.checkToken(vnd::Token{vnd::TokenType::OPEN_CUR_PARENTESIS, "", vnd::CodeSourceLocation(filename, 0, 1)});
     REQUIRE(instruction.getLastType() == vnd::InstructionType::MAIN);
-}
-
-TEST_CASE("Corrected type of structure instruction", "[Instruction]") {
-    vnd::Instruction instruction = vnd::Instruction::create(filename);
-    instruction.checkToken(vnd::Token{vnd::TokenType::K_STRUCTURE, "", vnd::CodeSourceLocation(filename, 0, 0)});
-    instruction.checkToken(vnd::Token{vnd::TokenType::OPEN_PARENTESIS, "", vnd::CodeSourceLocation(filename, 0, 1)});
-    instruction.checkToken(vnd::Token{vnd::TokenType::CLOSE_PARENTESIS, "", vnd::CodeSourceLocation(filename, 0, 2)});
-    instruction.checkToken(vnd::Token{vnd::TokenType::OPEN_CUR_PARENTESIS, "", vnd::CodeSourceLocation(filename, 0, 3)});
-    REQUIRE(instruction.getLastType() == vnd::InstructionType::STRUCTURE);
 }
 
 TEST_CASE("Corrected type of for instruction", "[Instruction]") {
