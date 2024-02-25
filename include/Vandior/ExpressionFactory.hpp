@@ -9,6 +9,7 @@
 #include "exprtk.hpp"
 
 namespace vnd {
+    using TokenVecIter = std::vector<Token>::iterator;
 
     /**
      * @brief Factory class for parsing and creating expressions from a sequence of tokens.
@@ -24,7 +25,7 @@ namespace vnd {
          * @param sq Bool indicating if it's a square expression.
          * @return ExpressionFactory instance.
          */
-        [[nodiscard]] static ExpressionFactory create(std::vector<Token>::iterator &iterator, std::vector<Token>::iterator end,
+        [[nodiscard]] static ExpressionFactory create(TokenVecIter &iterator, const TokenVecIter &end,
                                                       std::shared_ptr<Scope> scope, const bool isConst,
                                                       const bool sq = false) noexcept;
 
@@ -83,27 +84,26 @@ namespace vnd {
          * @param isConst Bool indicating if it's a const expression.
          * @param sq Bool indicating if it's a square expression.
          */
-        ExpressionFactory(std::vector<Token>::iterator &iterator, std::vector<Token>::iterator end, std::shared_ptr<Scope> scope,
-                          const bool isConst, const bool sq) noexcept;
+        ExpressionFactory(TokenVecIter &iterator, const TokenVecIter &end, std::shared_ptr<Scope> scope, const bool isConst,
+                          const bool sq) noexcept;
 
         /**
          * @brief Type definition for a tuple used during parsing for representing the current expression type.
          */
         using TupType = std::tuple<bool, bool, std::string>;
-
-        std::vector<Token>::iterator &_iterator;    ///< Iterator pointing to the current position in the token sequence.
-        std::vector<Token>::iterator _end;          ///< Iterator pointing to the end of the token sequence.
-        std::shared_ptr<Scope> _scope;              ///< Shared pointer to the current scope.
-        std::vector<std::string> _text;             ///< Vector storing the parsed text.
-        std::vector<Expression> _expressions;       ///< Vector storing the parsed expressions.
-        std::optional<size_t> _power;               ///< Power value used to parse ^ operator.
-        bool _divide;                               ///< Flag indicating division operation during parsing.
-        bool _dot;                                  ///< Flag used for indicate the presence of . token.
-        bool _const;                                ///< Flag used to indicate if it's a const expression.
-        bool _sq;                                   ///< Flag used to indicate if it's a square expression.
-        std::string _expressionText;                ///< String containing the text to evaluate a constant expression.
-        std::string _type;                          ///< String containing the temp type of the operand.
-        std::string _temp;                          ///< String containing the temp value of the operand.
+        TokenVecIter &_iterator;               ///< Iterator pointing to the current position in the token sequence.
+        TokenVecIter _end;                     ///< Iterator pointing to the end of the token sequence.
+        std::shared_ptr<Scope> _scope;         ///< Shared pointer to the current scope.
+        std::vector<std::string> _text;        ///< Vector storing the parsed text.
+        std::vector<Expression> _expressions;  ///< Vector storing the parsed expressions.
+        std::optional<size_t> _power;          ///< Power value used to parse ^ operator.
+        bool _divide;                          ///< Flag indicating division operation during parsing.
+        bool _dot;                             ///< Flag used for indicate the presence of . token.
+        bool _const;                           ///< Flag used to indicate if it's a const expression.
+        bool _sq;                              ///< Flag used to indicate if it's a square expression.
+        std::string _expressionText;           ///< String containing the text to evaluate a constant expression.
+        std::string _type;                     ///< String containing the temp type of the operand.
+        std::string _temp;                     ///< String containing the temp value of the operand.
 
         /**
          * @brief Checks if the type of a token is allowed for array indexing.
@@ -217,7 +217,7 @@ namespace vnd {
          * @brief Handles the final part of expression parsing creating the expression object.
          * @param type Tuple representing the type information.
          */
-        void handleFinalExpression(const std::tuple<bool, bool, std::string> &type) noexcept;
+        void handleFinalExpression(const TupType &type) noexcept;
 
         /**
          * @brief Clears the _type and _temp properties.

@@ -82,7 +82,7 @@ namespace vnd {
          * @param instruction The instruction to extract variables from.
          * @return Vector of extracted identifiers.
          */
-        [[nodiscard]] std::vector<std::string_view> extractIdentifiers(std::vector<Token>::iterator &iterator,
+        [[nodiscard]] std::vector<std::string_view> extractIdentifiers(TokenVecIter &iterator,
                                                                        const Instruction &instruction) const;
 
         /**
@@ -92,8 +92,8 @@ namespace vnd {
          * @param instruction The instruction to extract variables from.
          * @return Vector of extracted variables and their types.
          */
-        [[nodiscard]] std::vector<std::pair<std::string, std::string>> extractVariables(std::vector<Token>::iterator &iterator,
-                                                                                        const std::vector<Token>::iterator &end,
+        [[nodiscard]] std::vector<std::pair<std::string, std::string>> extractVariables(TokenVecIter &iterator,
+                                                                                        const TokenVecIter &end,
                                                                                         const Instruction &instruction) const;
 
         /**
@@ -105,9 +105,8 @@ namespace vnd {
          * @param type String containing the type of the extracted variable.
          * @return Parsed string if there is an error. If no error occurs, an empty string is returned.
          */
-        [[nodiscard]] std::string extractToken(std::vector<Token>::iterator &iterator, const std::vector<Token>::iterator &end,
-                                               const std::vector<Token>::iterator &next, std::string &currentVariable,
-                                               std::string &type) const noexcept;
+        [[nodiscard]] std::string extractToken(TokenVecIter &iterator, const TokenVecIter &end, const TokenVecIter &next,
+                                               std::string &currentVariable, std::string &type) const noexcept;
 
         /**
          * @brief Extracts a function from an assignation instruction.
@@ -117,8 +116,8 @@ namespace vnd {
          * @param type String containing the type of the extracted variable.
          * @return Parsed string if there is an error. If no error occurs, an empty string is returned.
          */
-        [[nodiscard]] std::string extractFun(std::vector<Token>::iterator &iterator, const std::vector<Token>::iterator &end,
-                                             std::string &currentVariable, std::string &type) const noexcept;
+        [[nodiscard]] std::string extractFun(TokenVecIter &iterator, const TokenVecIter &end, std::string &currentVariable,
+                                             std::string &type) const noexcept;
 
         /**
          * @brief Extracts a square expression from an assignation instruction.
@@ -128,9 +127,8 @@ namespace vnd {
          * @param type String containing the type of the extracted variable.
          * @return Parsed string if there is an error. If no error occurs, an empty string is returned.
          */
-        [[nodiscard]] std::string extractSquareExpression(std::vector<Token>::iterator &iterator,
-                                                          const std::vector<Token>::iterator &end, std::string &currentVariable,
-                                                          std::string &type) const noexcept;
+        [[nodiscard]] std::string extractSquareExpression(TokenVecIter &iterator, const TokenVecIter &end,
+                                                          std::string &currentVariable, std::string &type) const noexcept;
 
         /**
          * @brief transpile a multi return value function instruction.
@@ -149,8 +147,7 @@ namespace vnd {
          * @param instruction The instruction to extract type from.
          * @return Pair that represent the type and the value to transpile.
          */
-        [[nodiscard]] std::pair<std::string, std::string> transpileType(std::vector<Token>::iterator &iterator,
-                                                                        const std::vector<Token>::iterator &end,
+        [[nodiscard]] std::pair<std::string, std::string> transpileType(TokenVecIter &iterator, const TokenVecIter &end,
                                                                         const std::vector<TokenType> &endTokens,
                                                                         const Instruction &instruction);
 
@@ -176,7 +173,7 @@ namespace vnd {
          * @param value String containing the value.
          * @return Bool indicating the result of the check.
          */
-        [[nodiscard]] bool iteratorIs(const std::vector<Token>::iterator &iterator, const std::string &value) const noexcept;
+        [[nodiscard]] bool iteratorIs(const TokenVecIter &iterator, const std::string &value) const noexcept;
     };
 
 }  // namespace vnd
