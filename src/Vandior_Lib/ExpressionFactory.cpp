@@ -321,11 +321,17 @@ namespace vnd {
             }
         }
         for(const Expression &expression : factory.getExpressions()) {
+            bool assignable = false;
             if(vectorType.empty()) {
                 vectorType = expression.getType();
-            } else if(!_scope->canAssign(vectorType, expression.getType())) {
-                return FORMAT("Incompatible types in vector {}, {}", vectorType, expression.getType());
+                assignable = true;
+            } else if(_scope->canAssign(vectorType, expression.getType())) {
+                assignable = true;
+            } else if(_scope->canAssign(expression.getType(), vectorType)) {
+                vectorType = expression.getType();
+                assignable = true;
             }
+            if(!assignable) { return FORMAT("Incompatible types in vector {}, {}", vectorType, expression.getType()); }
             if(expression.isConst()) {
                 constValue += FORMAT("{},", expression.getValue());
             } else {

@@ -1,4 +1,6 @@
 main {
+	var array1, array2: Object[] = {Object(), Object()}, {Derived(), Object()} 
+	var array3, array4: Derived[] = {Derived(), Derived()} 
 	var num: int = 10
 	var num1: float = 10
 	if(num % 2 == 0) {
