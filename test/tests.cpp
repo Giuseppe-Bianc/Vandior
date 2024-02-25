@@ -22,6 +22,9 @@ static inline constexpr std::string_view filename2 = "example.cpp";
 static inline constexpr std::string_view filename3 = "new_file.cpp";
 static inline constexpr std::string_view filename4 = "unknown";
 static inline constexpr std::string_view timerName = "My Timer";
+static inline constexpr std::string_view timerBigs = "-----------";
+static inline constexpr std::string_view timerTime1 = "ms";
+static inline constexpr std::string_view timerTime2 = "ns";
 static inline constexpr long long int timerSleap = 12;
 static inline constexpr long long int timerSleap2 = 5;
 static inline constexpr std::size_t timerCicles = 1000000;
@@ -34,8 +37,8 @@ TEST_CASE("Timer: MSTimes", "[timer]") {
     std::string output = timer.to_string();
     std::string new_output = (timer / timerCicles).to_string();
     REQUIRE(output.find(timerName.data()) != std::string::npos);
-    REQUIRE(output.find(" ms") != std::string::npos);
-    REQUIRE(new_output.find(" ns") != std::string::npos);
+    REQUIRE(output.find(timerTime1) != std::string::npos);
+    REQUIRE(new_output.find(timerTime2) != std::string::npos);
 }
 
 TEST_CASE("Timer: MSTimes FMT", "[timer]") {
@@ -44,22 +47,22 @@ TEST_CASE("Timer: MSTimes FMT", "[timer]") {
     std::string output = FORMAT("{}", timer);
     std::string new_output = FORMAT("{}", (timer / timerCicles));
     REQUIRE(output.find(timerName.data()) != std::string::npos);
-    REQUIRE(output.find(" ms") != std::string::npos);
-    REQUIRE(new_output.find(" ns") != std::string::npos);
+    REQUIRE(output.find(timerTime1) != std::string::npos);
+    REQUIRE(new_output.find(timerTime2) != std::string::npos);
 }
 
 TEST_CASE("Timer: BigTimer", "[timer]") {
     vnd::Timer timer{timerName.data(), vnd::Timer::Big};
     std::string output = timer.to_string();
     REQUIRE(output.find(timerName.data()) != std::string::npos);
-    REQUIRE(output.find("-----------") != std::string::npos);
+    REQUIRE(output.find(timerBigs) != std::string::npos);
 }
 
 TEST_CASE("Timer: BigTimer FMT", "[timer]") {
     vnd::Timer timer{timerName.data(), vnd::Timer::Big};
     std::string output = FORMAT("{}", timer);
     REQUIRE(output.find(timerName.data()) != std::string::npos);
-    REQUIRE(output.find("-----------") != std::string::npos);
+    REQUIRE(output.find(timerBigs) != std::string::npos);
 }
 
 TEST_CASE("Timer: AutoTimer", "[timer]") {
@@ -86,7 +89,7 @@ TEST_CASE("Timer: TimeItTimer", "[timer]") {
     vnd::Timer timer;
     std::string output = timer.time_it([]() { std::this_thread::sleep_for(std::chrono::milliseconds(timerSleap2)); },
                                        timerResolution);
-    REQUIRE(output.find("ms") != std::string::npos);
+    REQUIRE(output.find(timerTime1) != std::string::npos);
 }
 
 TEST_CASE("CodeSourceLocation default constructor sets default values", "[CodeSourceLocation]") {
@@ -149,8 +152,14 @@ TEST_CASE("corrected format for Tokentype", "[token_type]") {
     REQ_FORMAT(K_MAIN, "K_MAIN");
     REQ_FORMAT(K_VAR, "K_VAR");
     REQ_FORMAT(K_FOR, "K_FOR");
+    REQ_FORMAT(K_IF, "K_IF");
+    REQ_FORMAT(K_WHILE, "K_WHILE");
+    REQ_FORMAT(K_ELSE, "K_ELSE");
+    REQ_FORMAT(K_FOR, "K_FOR");
+    REQ_FORMAT(K_BREAK, "BREAK");
     REQ_FORMAT(K_FUN, "K_FUN");
     REQ_FORMAT(K_RETURN, "K_RETURN");
+    REQ_FORMAT(K_NULLPTR, "K_NULLPTR");
     REQ_FORMAT(OPEN_PARENTESIS, "OPEN_PARENTESIS");
     REQ_FORMAT(OPEN_SQ_PARENTESIS, "OPEN_SQ_PARENTESIS");
     REQ_FORMAT(OPEN_CUR_PARENTESIS, "OPEN_CUR_PARENTESIS");
@@ -493,7 +502,7 @@ TEST_CASE("corrected format for InstructionType", "[Instruction_type]") {
     using enum vnd::InstructionType;
     REQ_FORMAT(PARAMETER_EXPRESSION, "PARAMETER_EXPRESSION");
     REQ_FORMAT(OPERATION, "OPERATION");
-    REQ_FORMAT(ASSIGNATION, "ASSIGNATION")
+    REQ_FORMAT(ASSIGNATION, "ASSIGNATION");
     REQ_FORMAT(EXPRESSION, "EXPRESSION");
     REQ_FORMAT(SQUARE_EXPRESSION, "SQUARE_EXPRESSION");
     REQ_FORMAT(RETURN_EXPRESSION, "RETURN_EXPRESSION");
@@ -502,7 +511,9 @@ TEST_CASE("corrected format for InstructionType", "[Instruction_type]") {
     REQ_FORMAT(ARRAY_INIZIALIZATION, "ARRAY_INIZIALIZATION");
     REQ_FORMAT(MAIN, "MAIN");
     REQ_FORMAT(STRUCTURE, "STRUCTURE");
+    REQ_FORMAT(ELSE, "ELSE");
     REQ_FORMAT(FOR_STRUCTURE, "FOR_STRUCTURE");
+    REQ_FORMAT(BREAK, "BREAK");
     REQ_FORMAT(FOR_INITIALIZATION, "FOR_INITIALIZATION");
     REQ_FORMAT(FOR_CONDITION, "FOR_CONDITION");
     REQ_FORMAT(FOR_STEP, "FOR_STEP");
