@@ -13,13 +13,13 @@
 namespace vnd {
 
     // NOLINTBEGIN
-    ExpressionFactory::ExpressionFactory(std::vector<Token>::iterator &iterator, std::vector<Token>::iterator end,
-                                         std::shared_ptr<Scope> scope, const bool isConst, const bool sq) noexcept
+    ExpressionFactory::ExpressionFactory(TokenVecIter &iterator, const TokenVecIter &end, std::shared_ptr<Scope> scope,
+                                         const bool isConst, const bool sq) noexcept
       : _iterator(iterator), _end(end), _scope(std::move(scope)), _text({}), _expressions({}), _power(), _divide(false),
         _dot(false), _const(isConst), _sq(sq), _expressionText(""), _type(""), _temp("") {}
 
-    ExpressionFactory ExpressionFactory::create(std::vector<Token>::iterator &iterator, std::vector<Token>::iterator end,
-                                                std::shared_ptr<Scope> scope, const bool isConst, bool sq) noexcept {
+    ExpressionFactory ExpressionFactory::create(TokenVecIter &iterator, const TokenVecIter &end, std::shared_ptr<Scope> scope,
+                                                const bool isConst, bool sq) noexcept {
         return {iterator, end, std::move(scope), isConst, sq};
     }
     // NOLINTEND
@@ -98,7 +98,7 @@ namespace vnd {
         return {};
     }
 
-    void ExpressionFactory::handleFinalExpression(const std::tuple<bool, bool, std::string> &type) noexcept {
+    void ExpressionFactory::handleFinalExpression(const TupType &type) noexcept {
         if(Scope::isNumber(std::get<2>(type))) {
             std::string value;
             if(_const) { value = ExpressionFactory::evaluate(_expressionText); }
@@ -146,8 +146,8 @@ namespace vnd {
         case IDENTIFIER:
             return _scope->getVariableType(_type, _iterator->getValue());
         case OPERATOR:
-            [[fallthrough]];
         case MINUS_OPERATOR:
+            [[fallthrough]];
         case UNARY_OPERATOR:
             return "operator";
         case DOT_OPERATOR:
@@ -266,7 +266,7 @@ namespace vnd {
         if(newType.empty()) {
             std::string value;
             std::string paramTypes;
-            for(const Expression &expression : expressions) { paramTypes += expression.getType() + ","; }
+            for(const auto &expression : expressions) { paramTypes += expression.getType() + ","; }
             if(!paramTypes.empty()) { paramTypes.pop_back(); }
             value = FORMAT("{}.{}({})", _type, identifier, paramTypes);
             if(value.starts_with(".")) { value.erase(0, 1); }
@@ -320,7 +320,7 @@ namespace vnd {
                 if(std::string error = factory.parse({COMMA, CLOSE_CUR_PARENTESIS}); !error.empty()) { return error; }
             }
         }
-        for(const Expression &expression : factory.getExpressions()) {
+        for(const auto &expression : factory.getExpressions()) {
             bool assignable = false;
             if(vectorType.empty()) {
                 vectorType = expression.getType();

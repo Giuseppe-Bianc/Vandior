@@ -1,7 +1,7 @@
 main {
 	var array1, array2: Object[] = {Object(), Object()}, {Derived(), Object()} 
 	var array3, array4: Derived[] = {Derived(), Derived()} 
-	var num: int = 1
+	var num: int = 5
 	var num1: float = 45
 	if(true) {
 		if(num == 2) {

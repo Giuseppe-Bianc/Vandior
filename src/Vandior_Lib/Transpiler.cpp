@@ -22,7 +22,7 @@ namespace vnd {
         _output.open("output.cpp");
         _text += R"(#include "../../../base.hpp")";
         try {
-            for(const Instruction &instruction : _instructions) {
+            for(const auto &instruction : _instructions) {
                 _text += std::string(C_ST(_tabs), '\t');
                 switch(instruction.getLastType()) {
                 case MAIN:
@@ -52,7 +52,7 @@ namespace vnd {
                     break;
                 case CLOSE_SCOPE:
                     _text.pop_back();
-                    if(_scope->isMainScope()) { throw TranspilerException("Unexpected }", instruction); }
+                    if(_scope->isMainScope()) { throw TranspilerException("Unexpected '}'", instruction); }
                     checkTrailingBracket(instruction);
                     break;
                 default:
@@ -60,7 +60,7 @@ namespace vnd {
                 }
                 _text += "\n";
             }
-            if(!_scope->isMainScope()) { throw TranspilerException("Expected }", Instruction::create("")); }
+            if(!_scope->isMainScope()) { throw TranspilerException("Expected '}'", Instruction::create("")); }
             _output << _text;
             _output.close();
             LINFO("Transpiling successfully");
@@ -166,7 +166,7 @@ namespace vnd {
         }
     }
 
-    bool Transpiler::iteratorIs(const std::vector<Token>::iterator &iterator, const std::string &value) const noexcept {
+    bool Transpiler::iteratorIs(const TokenVecIter &iterator, const std::string &value) const noexcept {
         return iterator->getValue() == value;
     }
 
@@ -183,7 +183,7 @@ namespace vnd {
         for(const auto &expression : factory.getExpressions()) {
             std::string text = expression.getText();
             if(expression.getType() != "void" && !(text.ends_with("++") || text.ends_with("--"))) {
-                throw TranspilerException(FORMAT("Invalid operation {}", text), instruction);
+                throw TRANSPILER_EXCEPTIONF(instruction, "Invalid operation {}", text);
             }
             if(text.starts_with(' ')) { text.erase(0, 1); }
             _text += FORMAT("{};\n{:\t^{}}", text, "", C_ST(_tabs));
@@ -268,7 +268,7 @@ namespace vnd {
             if(equalToken.getValue() == "^=") { text += ")"; }
             if(var.first.ends_with('(')) { text += ")"; }
             tmp.erase(tmp.begin());
-            _text += FORMAT("{};\n{}", text, std::string(C_ST(_tabs), '\t'));
+            _text += FORMAT("{};\n{:\t^{}}", text, "", C_ST(_tabs));
         }
         _text += "vnd::tmp.clear();";
         _scope->clearTmp();
@@ -315,14 +315,13 @@ namespace vnd {
         checkTrailingBracket(instruction);
     }
 
-    std::vector<std::string_view> Transpiler::extractIdentifiers(std::vector<Token>::iterator &iterator,
-                                                                 const Instruction &instruction) const {
+    std::vector<std::string_view> Transpiler::extractIdentifiers(TokenVecIter &iterator, const Instruction &instruction) const {
         using enum TokenType;
         std::vector<std::string_view> result;
         while(iterator->getType() != COLON) {
             if(iterator->getType() == IDENTIFIER) {
                 if(_scope->checkType(iterator->getValue())) {
-                    throw TranspilerException(FORMAT("Identifier {} not allowed", iterator->getValue()), instruction);
+                    throw TRANSPILER_EXCEPTIONF(instruction, "Identifier {} not allowed", iterator->getValue());
                 }
                 if(iterator->getValue() == "_") {
                     throw TranspilerException("Cannot declare variables using blank identifier", instruction);
@@ -334,8 +333,7 @@ namespace vnd {
         return result;
     }
 
-    std::vector<std::pair<std::string, std::string>> Transpiler::extractVariables(std::vector<Token>::iterator &iterator,
-                                                                                  const std::vector<Token>::iterator &end,
+    std::vector<std::pair<std::string, std::string>> Transpiler::extractVariables(TokenVecIter &iterator, const TokenVecIter &end,
                                                                                   const Instruction &instruction) const {
         using enum TokenType;
         std::vector<std::pair<std::string, std::string>> result;
@@ -356,8 +354,8 @@ namespace vnd {
                     throw TranspilerException(error, instruction);
                 }
             } else if(iterator->getType() == UNARY_OPERATOR) {
-                throw TranspilerException(FORMAT("Cannot use {} at the left side of an assignation", iterator->getValue()),
-                                          instruction);
+                throw TRANSPILER_EXCEPTIONF(instruction, "Cannot use {} at the left side of an assignation",
+                                            iterator->getValue());
             } else if(iterator->getType() == COMMA) {
                 if(currentVariable.ends_with("->")) {
                     currentVariable.pop_back();
@@ -377,9 +375,8 @@ namespace vnd {
         return result;
     }
 
-    std::string Transpiler::extractToken(std::vector<Token>::iterator &iterator, const std::vector<Token>::iterator &end,
-                                         const std::vector<Token>::iterator &next, std::string &currentVariable,
-                                         std::string &type) const noexcept {
+    std::string Transpiler::extractToken(TokenVecIter &iterator, const TokenVecIter &end, const TokenVecIter &next,
+                                         std::string &currentVariable, std::string &type) const noexcept {
         using enum TokenType;
         auto value = iterator->getValue();
         if(value == "_") {
@@ -415,8 +412,8 @@ namespace vnd {
         return {};
     }
 
-    std::string Transpiler::extractFun(std::vector<Token>::iterator &iterator, const std::vector<Token>::iterator &end,
-                                       std::string &currentVariable, std::string &type) const noexcept {
+    std::string Transpiler::extractFun(TokenVecIter &iterator, const TokenVecIter &end, std::string &currentVariable,
+                                       std::string &type) const noexcept {
         auto identifier = iterator->getValue();
         auto factory = ExpressionFactory::create(iterator, end, _scope, false);
         std::vector<Expression> expressions;
@@ -433,7 +430,7 @@ namespace vnd {
         if(newType.empty()) {
             std::string value;
             std::string paramTypes;
-            for(const Expression &expression : expressions) { paramTypes += expression.getType() + ","; }
+            for(const auto &expression : expressions) { paramTypes += expression.getType() + ","; }
             if(!paramTypes.empty()) { paramTypes.pop_back(); }
             value = FORMAT("{}.{}({})", type, identifier, paramTypes);
             LINFO(value);
@@ -458,8 +455,7 @@ namespace vnd {
         return {};
     }
 
-    std::string Transpiler::extractSquareExpression(std::vector<Token>::iterator &iterator,
-                                                    const std::vector<Token>::iterator &end, std::string &currentVariable,
+    std::string Transpiler::extractSquareExpression(TokenVecIter &iterator, const TokenVecIter &end, std::string &currentVariable,
                                                     std::string &type) const noexcept {
         std::string newType;
         if(currentVariable.ends_with("->")) {
@@ -492,7 +488,7 @@ namespace vnd {
         }
         values.pop_back();
         values.pop_back();
-        _text += FORMAT("std::tie({}) = {};\n{}", values, expression.getText(), std::string(C_ST(_tabs), '\t'));
+        _text += FORMAT("std::tie({}) = {};\n{:\t^{}}", values, expression.getText(), "", C_ST(_tabs));
         for(const auto &[first, second] : variables) {
             if(first != "_") {
                 auto type = types.at(typeIndex);
@@ -500,11 +496,9 @@ namespace vnd {
                 if(!_scope->canAssign(second, type)) { return FORMAT("Cannot assign {}.{}", type, first); }
                 typeIndex++;
                 if(first.ends_with('(')) {
-                    _text += FORMAT("{}std::any_cast<{}>({}));\n{}", first, typeValue, tmp.front(),
-                                    std::string(C_ST(_tabs), '\t'));
+                    _text += FORMAT("{}std::any_cast<{}>({}));\n{:\t^{}}", first, typeValue, tmp.front(), "", C_ST(_tabs));
                 } else if(first != "_") {
-                    _text += FORMAT("{} = std::any_cast<{}>({});\n{}", first, typeValue, tmp.front(),
-                                    std::string(C_ST(_tabs), '\t'));
+                    _text += FORMAT("{} = std::any_cast<{}>({});\n{:\t^{}}", first, typeValue, tmp.front(), "", C_ST(_tabs));
                 }
             }
             tmp.erase(tmp.begin());
@@ -514,8 +508,7 @@ namespace vnd {
         return {};
     }
 
-    std::pair<std::string, std::string> Transpiler::transpileType(std::vector<Token>::iterator &iterator,
-                                                                  const std::vector<Token>::iterator &end,
+    std::pair<std::string, std::string> Transpiler::transpileType(TokenVecIter &iterator, const TokenVecIter &end,
                                                                   const std::vector<TokenType> &endTokens,
                                                                   const Instruction &instruction) {
         std::string type;
@@ -558,7 +551,7 @@ namespace vnd {
         return {type, prefix + typeValue + suffix};
     }
 
-    std::string Transpiler::transpileCondition(std::vector<Token>::iterator &iterator, const std::vector<Token>::iterator &end) noexcept {
+    std::string Transpiler::transpileCondition(TokenVecIter &iterator, const TokenVecIter &end) noexcept {
         auto factory = ExpressionFactory::create(iterator, end, _scope, false);
         std::string value;
         if(std::string error = factory.parse({TokenType::CLOSE_PARENTESIS}); !error.empty()) { return error; }
