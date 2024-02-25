@@ -42,6 +42,9 @@ namespace vnd {
                 case STRUCTURE:
                     transpileStructure(instruction);
                     break;
+                case ELSE:
+                    transpileElse(instruction);
+                    break;
                 case OPEN_SCOPE:
                     _text += "{";
                     openScope(ScopeType::SCOPE);
@@ -274,9 +277,6 @@ namespace vnd {
     void Transpiler::transpileStructure(const Instruction &instruction) {
         auto tokens = instruction.getTokens();
         auto iterator = tokens.begin();
-        const auto endToken = tokens.end();
-        auto factory = ExpressionFactory::create(iterator, endToken, _scope, false);
-        std::string value;
         if(iterator->getValue() == "if") {
             openScope(ScopeType::IF_SCOPE);
         } else {
@@ -284,14 +284,34 @@ namespace vnd {
         }
         _text += iterator->getValue();
         iterator += 2;
-        if(std::string error = factory.parse({TokenType::CLOSE_PARENTESIS}); !error.empty()) {
+        if(std::string error = transpileCondition(iterator, tokens.end()); !error.empty()) {
             throw TranspilerException(error, instruction);
         }
-        Expression expression = factory.getExpression();
-        if(expression.getType() != "bool") { throw TranspilerException("Invalid condition type", instruction); }
-        value = expression.getText();
-        if(value.starts_with(' ')) { value.erase(0, 1); }
-        _text += FORMAT("({}) {{", value);
+        checkTrailingBracket(instruction);
+    }
+
+    void Transpiler::transpileElse(const Instruction &instruction) {
+        auto tokens = instruction.getTokens();
+        auto iterator = tokens.begin();
+        const auto endToken = tokens.end();
+        auto factory = ExpressionFactory::create(iterator, endToken, _scope, false);
+        if(_scope->getType() != ScopeType::IF_SCOPE) { throw TranspilerException("Unexpected instruction", instruction); }
+        if(_text.back() == '\t') { _text.pop_back(); }
+        closeScope();
+        _text += "} else ";
+        iterator += 2;
+        if(iterator->getType() != TokenType::K_IF) {
+            _text += " {";
+            openScope(ScopeType::ELSE_SCOPE);
+            checkTrailingBracket(instruction);
+            return;
+        }
+        iterator += 2;
+        _text += "if";
+        if(std::string error = transpileCondition(iterator, tokens.end()); !error.empty()) {
+            throw TranspilerException(error, instruction);
+        }
+        openScope(ScopeType::IF_SCOPE);
         checkTrailingBracket(instruction);
     }
 
@@ -536,6 +556,18 @@ namespace vnd {
             iterator++;
         }
         return {type, prefix + typeValue + suffix};
+    }
+
+    std::string Transpiler::transpileCondition(std::vector<Token>::iterator &iterator, const std::vector<Token>::iterator &end) noexcept {
+        auto factory = ExpressionFactory::create(iterator, end, _scope, false);
+        std::string value;
+        if(std::string error = factory.parse({TokenType::CLOSE_PARENTESIS}); !error.empty()) { return error; }
+        Expression expression = factory.getExpression();
+        if(expression.getType() != "bool") { return "Invalid condition type"; }
+        value = expression.getText();
+        if(value.starts_with(' ')) { value.erase(0, 1); }
+        _text += FORMAT("({}) {{", value);
+        return {};
     }
 
     void Transpiler::openScope(const ScopeType &type) noexcept {
