@@ -1,4 +1,8 @@
 #pragma once
+#if defined(__GNUC__) && (__GNUC__ >= 11)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wuseless-cast"
+#endif
 #include "Log.hpp"
 #include "disableWarn.hpp"
 #include "format.hpp"
@@ -245,3 +249,6 @@ inline std::ostream &operator<<(std::ostream &in, const vnd::Timer &timer) { ret
 
 // OLINTEND
 DISABLE_WARNINGS_POP()
+#if defined(__GNUC__) && (__GNUC__ >= 11)
+#pragma GCC diagnostic pop
+#endif
