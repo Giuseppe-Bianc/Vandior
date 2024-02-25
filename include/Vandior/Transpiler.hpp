@@ -77,6 +77,12 @@ namespace vnd {
         void transpileAssignation(const Instruction &instruction);
 
         /**
+         * @brief Transpile a structure instruction of the program.
+         * @param instruction The instruction to transpile.
+         */
+        void transpileStructure(const Instruction &instruction);
+
+        /**
          * @brief Extracts identifiers of declared variables from a declaration instruction.
          * @param iterator The iterator to the instruction.
          * @param instruction The instruction to extract variables from.

@@ -1,29 +1,14 @@
 main {
-	const constFloat1, constFloat2: float = 2 ^ 8 * 2.5, 20 - 9
-	const constBool: bool = 1 ^ 1 == 1 && !false || 2 <= 3
-	var array, array1: int[2 ^ 10]
-	var a, b: int = 1, 2 + constFloat1
-	println("{} {}", a, b)
-	a, b = b, a
-	print("{} {}", a, b)
-	var obj: Object = Object()
-	var c: float = -67.532
-	obj.a, c += obj.a ^ 2, obj.a ^ c
-	var ar: string[] = {"Ciao"}
-	a, Derived().obj.a = 1, -6
-	ar[0] = "Mondo"
-	{
-		var test: int
-		println("\ntest:\t{}", test)
+	var num: int = 10
+	var num1: float = 10
+	if(num % 2 == 0) {
+		println("Pari")
+	} else {
+		println("Dispari")
 	}
-	a, b ^= 2, 5
-	val s: string = "Ciao"
-	_, _, a = 45 ^ 67, 'c', testPar("Ciao")
-	var maxValue: float
-	a, obj.a = max({1})
-	createDerived().obj.a ^= obj.a ^ 2
-	var der: Derived = nullptr
-	var boolean: bool = "Ciao" < s
-	break
-	continue
+	while(num1 > 0) {
+		num1 -= num / 1.5
+		println("num1:\t{}", num1)
+	}
+	while(false) {}
 }

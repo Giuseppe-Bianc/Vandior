@@ -12,6 +12,7 @@ namespace vnd {
         MAIN_FUNCTION_SCOPE,    ///< The scope of the main funtion.
         IF_SCOPE,               ///< An if scope.
         ELSE_SCOPE,             ///< An else scope.
+        WHILE_SCOPE,            ///< A whilw scope.
         SCOPE                   ///< A scope defined with a curly bracket.
     };
 }  // namespace vnd
@@ -35,6 +36,9 @@ template <> struct fmt::formatter<vnd::ScopeType> : fmt::formatter<std::string_v
             break;
         case ELSE_SCOPE:
             name = "ELSE_SCOPE";
+            break;
+        case WHILE_SCOPE:
+            name = "WHILE_SCOPE";
             break;
         case SCOPE:
             [[fallthrough]];

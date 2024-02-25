@@ -39,6 +39,9 @@ namespace vnd {
                 case ASSIGNATION:
                     transpileAssignation(instruction);
                     break;
+                case STRUCTURE:
+                    transpileStructure(instruction);
+                    break;
                 case OPEN_SCOPE:
                     _text += "{";
                     openScope(ScopeType::SCOPE);
@@ -164,6 +167,27 @@ namespace vnd {
         return iterator->getValue() == value;
     }
 
+    void Transpiler::transpileOperation(const Instruction &instruction) {
+        auto tokens = instruction.getTokens();
+        auto iterator = tokens.begin();
+        const auto endToken = tokens.end();
+        std::vector<Expression> expressions;
+        auto factory = ExpressionFactory::create(iterator, endToken, _scope, false);
+        while(iterator != endToken) {
+            if(auto error = factory.parse({TokenType::COMMA}); !error.empty()) { throw TranspilerException(error, instruction); }
+            if(iterator != endToken) { iterator++; }
+        }
+        for(const auto &expression : factory.getExpressions()) {
+            std::string text = expression.getText();
+            if(expression.getType() != "void" && !(text.ends_with("++") || text.ends_with("--"))) {
+                throw TranspilerException(FORMAT("Invalid operation {}", text), instruction);
+            }
+            if(text.starts_with(' ')) { text.erase(0, 1); }
+            _text += FORMAT("{};\n{:\t^{}}", text, "", C_ST(_tabs));
+        }
+        _text.erase(_text.size() - C_ST(_tabs) - 1, C_ST(_tabs) + 1);
+    }
+
     // NOLINTNEXTLINE(*-function-cognitive-complexity)
     void Transpiler::transpileAssignation(const Instruction &instruction) {
         auto tokens = instruction.getTokens();
@@ -247,25 +271,28 @@ namespace vnd {
         _scope->clearTmp();
     }
 
-    void Transpiler::transpileOperation(const Instruction &instruction) {
+    void Transpiler::transpileStructure(const Instruction &instruction) {
         auto tokens = instruction.getTokens();
         auto iterator = tokens.begin();
         const auto endToken = tokens.end();
-        std::vector<Expression> expressions;
         auto factory = ExpressionFactory::create(iterator, endToken, _scope, false);
-        while(iterator != endToken) {
-            if(auto error = factory.parse({TokenType::COMMA}); !error.empty()) { throw TranspilerException(error, instruction); }
-            if(iterator != endToken) { iterator++; }
+        std::string value;
+        if(iterator->getValue() == "if") {
+            openScope(ScopeType::IF_SCOPE);
+        } else {
+            openScope(ScopeType::WHILE_SCOPE);
         }
-        for(const auto &expression : factory.getExpressions()) {
-            std::string text = expression.getText();
-            if(expression.getType() != "void" && !(text.ends_with("++") || text.ends_with("--"))) {
-                throw TranspilerException(FORMAT("Invalid operation {}", text), instruction);
-            }
-            if(text.starts_with(' ')) { text.erase(0, 1); }
-            _text += FORMAT("{};\n{:\t^{}}", text, "", C_ST(_tabs));
+        _text += iterator->getValue();
+        iterator += 2;
+        if(std::string error = factory.parse({TokenType::CLOSE_PARENTESIS}); !error.empty()) {
+            throw TranspilerException(error, instruction);
         }
-        _text.erase(_text.size() - C_ST(_tabs) - 1, C_ST(_tabs) + 1);
+        Expression expression = factory.getExpression();
+        if(expression.getType() != "bool") { throw TranspilerException("Invalid condition type", instruction); }
+        value = expression.getText();
+        if(value.starts_with(' ')) { value.erase(0, 1); }
+        _text += FORMAT("({}) {{", value);
+        checkTrailingBracket(instruction);
     }
 
     std::vector<std::string_view> Transpiler::extractIdentifiers(std::vector<Token>::iterator &iterator,
