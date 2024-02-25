@@ -652,11 +652,9 @@ TEST_CASE("Instruction toString() FMT", "[Instruction]") {
 }
 
 TEST_CASE("ExpressionFactory emit int type", "[factory]") {
-    std::vector<vnd::Token> tokens = {
-        {inte, "1", vnd::CodeSourceLocation(filename, 1, 0)},
-        {oper, "+", vnd::CodeSourceLocation(filename, 1, 1)},
-        {inte, "2", vnd::CodeSourceLocation(filename, 1, 2)},
-    };
+    std::vector<vnd::Token> tokens = {{inte, "1", vnd::CodeSourceLocation(filename, 1, 0)},
+                                      {oper, "+", vnd::CodeSourceLocation(filename, 1, 1)},
+                                      {inte, "2", vnd::CodeSourceLocation(filename, 1, 2)}};
     std::shared_ptr<vnd::Scope> scope = vnd::Scope::createMain();
     auto iterator = tokens.begin();
     vnd::ExpressionFactory factory = vnd::ExpressionFactory::create(iterator, tokens.end(), scope, false, false);
@@ -666,11 +664,9 @@ TEST_CASE("ExpressionFactory emit int type", "[factory]") {
 }
 
 TEST_CASE("ExpressionFactory emit float type", "[factory]") {
-    std::vector<vnd::Token> tokens = {
-        {doub, "1", vnd::CodeSourceLocation(filename, 1, 0)},
-        {oper, "+", vnd::CodeSourceLocation(filename, 1, 1)},
-        {inte, "2", vnd::CodeSourceLocation(filename, 1, 2)},
-    };
+    std::vector<vnd::Token> tokens = {{doub, "1", vnd::CodeSourceLocation(filename, 1, 0)},
+                                      {oper, "+", vnd::CodeSourceLocation(filename, 1, 1)},
+                                      {inte, "2", vnd::CodeSourceLocation(filename, 1, 2)}};
     std::shared_ptr<vnd::Scope> scope = vnd::Scope::createMain();
     auto iterator = tokens.begin();
     vnd::ExpressionFactory factory = vnd::ExpressionFactory::create(iterator, tokens.end(), scope, false, false);
@@ -680,13 +676,11 @@ TEST_CASE("ExpressionFactory emit float type", "[factory]") {
 }
 
 TEST_CASE("ExpressionFactory emit bool type", "[factory]") {
-    std::vector<vnd::Token> tokens = {
-        {vnd::TokenType::OPEN_PARENTESIS, "(", vnd::CodeSourceLocation(filename, 1, 0)},
-        {vnd::TokenType::BOOLEAN, "true", vnd::CodeSourceLocation(filename, 1, 1)},
-        {vnd::TokenType::LOGICAL_OPERATOR, "||", vnd::CodeSourceLocation(filename, 1, 2)},
-        {vnd::TokenType::BOOLEAN, "false", vnd::CodeSourceLocation(filename, 1, colum2)},
-        {vnd::TokenType::CLOSE_PARENTESIS, ")", vnd::CodeSourceLocation(filename, 1, colum)},
-    };
+    std::vector<vnd::Token> tokens = {{vnd::TokenType::OPEN_PARENTESIS, "(", vnd::CodeSourceLocation(filename, 1, 0)},
+                                      {vnd::TokenType::BOOLEAN, "true", vnd::CodeSourceLocation(filename, 1, 1)},
+                                      {vnd::TokenType::LOGICAL_OPERATOR, "||", vnd::CodeSourceLocation(filename, 1, 2)},
+                                      {vnd::TokenType::BOOLEAN, "false", vnd::CodeSourceLocation(filename, 1, colum2)},
+                                      {vnd::TokenType::CLOSE_PARENTESIS, ")", vnd::CodeSourceLocation(filename, 1, colum)}};
     std::shared_ptr<vnd::Scope> scope = vnd::Scope::createMain();
     auto iterator = tokens.begin();
     vnd::ExpressionFactory factory = vnd::ExpressionFactory::create(iterator, tokens.end(), scope, false, false);
@@ -696,12 +690,10 @@ TEST_CASE("ExpressionFactory emit bool type", "[factory]") {
 }
 
 TEST_CASE("ExpressionFactory emit function type", "[factory]") {
-    std::vector<vnd::Token> tokens = {
-        {vnd::TokenType::IDENTIFIER, "testPar", vnd::CodeSourceLocation(filename, 1, 0)},
-        {vnd::TokenType::OPEN_PARENTESIS, "(", vnd::CodeSourceLocation(filename, 1, 1)},
-        {vnd::TokenType::STRING, "Hello", vnd::CodeSourceLocation(filename, 1, 3)},
-        {vnd::TokenType::CLOSE_PARENTESIS, ")", vnd::CodeSourceLocation(filename, 1, colum4)},
-    };
+    std::vector<vnd::Token> tokens = {{vnd::TokenType::IDENTIFIER, "testPar", vnd::CodeSourceLocation(filename, 1, 0)},
+                                      {vnd::TokenType::OPEN_PARENTESIS, "(", vnd::CodeSourceLocation(filename, 1, 1)},
+                                      {vnd::TokenType::STRING, "Hello", vnd::CodeSourceLocation(filename, 1, 3)},
+                                      {vnd::TokenType::CLOSE_PARENTESIS, ")", vnd::CodeSourceLocation(filename, 1, colum4)}};
     std::shared_ptr<vnd::Scope> scope = vnd::Scope::createMain();
     auto iterator = tokens.begin();
     vnd::ExpressionFactory factory = vnd::ExpressionFactory::create(iterator, tokens.end(), scope, false, false);
