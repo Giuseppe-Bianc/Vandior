@@ -62,8 +62,8 @@ constexpr std::string_view filename = "../../../../input.vn";  // windows mingw 
 constexpr std::string_view filename = "../../../input.vn";
 #endif
 #elif defined __unix__  // Linux and Unix-like systems
-constexpr std::string_view filename = "../../../../input.vn";  // Linux and Unix  form editor
-//constexpr std::string_view filename = "../../../input.vn";  // Linux and Unix
+//constexpr std::string_view filename = "../../../../input.vn";  // Linux and Unix  form editor
+constexpr std::string_view filename = "../../../input.vn";  // Linux and Unix
 #endif
 auto extractInstructions(const std::vector<vnd::Token> &tokens) -> std::vector<vnd::Instruction> {
     std::vector<vnd::Instruction> instructions;
