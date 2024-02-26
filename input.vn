@@ -20,4 +20,10 @@ main {
 	} else {
 		while(false) {}
 	}
+	for num = num + 3 ^ 4, 1, 1 {
+	}
+	
+	for var i: int = 45.43 ^ (num / num1), 1, 1 {
+	}
+	
 }

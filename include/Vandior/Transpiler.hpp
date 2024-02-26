@@ -89,6 +89,12 @@ namespace vnd {
         void transpileElse(const Instruction &instruction);
 
         /**
+         * @brief Transpile a for instruction of the program.
+         * @param instruction The instruction to transpile.
+         */
+        void transpileFor(const Instruction &instruction);
+
+        /**
          * @brief Extracts identifiers of declared variables from a declaration instruction.
          * @param iterator The iterator to the instruction.
          * @param instruction The instruction to extract variables from.
@@ -158,7 +164,6 @@ namespace vnd {
          * @param endTokens Vector of token types indicating the end of parsing.
          * @param instruction The instruction to extract type from.
          * @return Pair that represent the type and the value to transpile.
-         * @return Parsed string if there is an error. If no error occurs, an empty string is returned.
          */
         [[nodiscard]] std::pair<std::string, std::string> transpileType(TokenVecIter &iterator, const TokenVecIter &end,
                                                                         const std::vector<TokenType> &endTokens,
@@ -167,10 +172,20 @@ namespace vnd {
         /**
          * @brief Transpile an if or while condition.
          * @param iterator The iterator pointing to the condition token sequence.
-         * @param end The iterator pointing to the end of the instruction
+         * @param end The iterator pointing to the end of the instruction.
          * @return Parsed string if there is an error. If no error occurs, an empty string is returned.
          */
         [[nodiscard]] std::string transpileCondition(TokenVecIter &iterator, const TokenVecIter &end) noexcept;
+
+        /**
+         * @brief Transpile the initialization part of a for instruction.
+         * @param iterator The iterator pointing to the condition token sequence.
+         * @param end The iterator pointing to the end of the instruction.
+         * @param instruction The instruction to containing the for loop.
+         * @return String representing the index variable.
+         */
+        std::string transpileForInitialization(TokenVecIter &iterator, const TokenVecIter &end,
+                                                             const Instruction &instruction);
 
         /**
          * @brief Opens a new scope.
