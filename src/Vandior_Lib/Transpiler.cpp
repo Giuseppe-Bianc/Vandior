@@ -321,7 +321,6 @@ namespace vnd {
     void Transpiler::transpileFor(const Instruction &instruction) {
         std::vector<Token> tmp;
         auto tokens = instruction.getTokens();
-        std::string identifier;
         tmp.emplace_back(tokens.back());
         tokens.pop_back();
         if(tokens.back().getType() == TokenType::OPEN_SQ_PARENTESIS) {
@@ -329,11 +328,34 @@ namespace vnd {
             tokens.pop_back();
         }
         auto iterator = tokens.begin();
-        _text += "for(";
+        auto endToken = tokens.end();
+        auto factory = ExpressionFactory::create(iterator, endToken, _scope, false);
+        _text += "FOR_LOOP(";
         openScope(ScopeType::LOOP_SCOPE);
         iterator++;
-        identifier = transpileForInitialization(iterator, tokens.end(), instruction);
-        checkTrailingBracket(instruction);
+        auto [identifier, type] = transpileForInitialization(iterator, endToken, instruction);
+        iterator++;
+        if(std::string error = factory.parse({TokenType::COMMA}); !error.empty()) {
+            throw TranspilerException(error, instruction);
+        }
+        auto condition = factory.getExpression();
+        if(!Scope::isNumber(condition.getType())) {
+            throw TranspilerException("For final value must be of numeric type", instruction);
+        }
+        iterator++;
+        if(std::string error = factory.parse({}); !error.empty()) {
+            throw TranspilerException(error, instruction);
+        }
+        auto step = factory.getExpression();
+        if(!Scope::isNumber(step.getType())) {
+            throw TranspilerException("For step value must be of numeric type", instruction);
+        }
+        _text += FORMAT("{},{}) {{", condition.getText(), step.getText());
+        if(tmp.begin()->getType() == TokenType::CLOSE_SQ_PARENTESIS) {
+            tokens.emplace_back(tmp.at(0));
+            checkTrailingBracket(instruction);
+        }
+        if(!identifier.empty()) { _scope->addVariable(identifier, type, false); }
     }
 
     std::vector<std::string_view> Transpiler::extractIdentifiers(TokenVecIter &iterator, const Instruction &instruction) const {
@@ -585,40 +607,36 @@ namespace vnd {
     }
 
     
-    std::string Transpiler::transpileForInitialization(TokenVecIter &iterator, const TokenVecIter &end,
-                                                       const Instruction &instruction) {
+    std::pair<std::string, std::string> Transpiler::transpileForInitialization(TokenVecIter &iterator, const TokenVecIter &end,
+                                                const Instruction &instruction) {
         auto factory = ExpressionFactory::create(iterator, end, _scope, false);
         std::string identifier;
+        std::string type;
+        std::string typeValue;
+        std::string declaration;
         if(iterator->getType() == TokenType::K_VAR) {
             if(iterator->getValue() != "var") { throw TranspilerException("For variables must be decalred using var", instruction); }
             iterator++;
             identifier = iterator->getValue();
             iterator++;
-            auto [type, typeValue] = transpileType(iterator, end, {TokenType::EQUAL_OPERATOR}, instruction);
+            std::tie(type, typeValue) = transpileType(iterator, end, {TokenType::EQUAL_OPERATOR}, instruction);
             if(!Scope::isNumber(type)) { throw TranspilerException("For variables must be of numeric type", instruction); }
             auto [check, shadowing] = _scope->checkVariable(identifier);
             if(check) {
                 if(!shadowing) { throw TRANSPILER_EXCEPTIONF(instruction , "{} already defined", identifier); }
                 LWARN("{} already defined", identifier);
             }
-            if(identifier.starts_with("_")) {
-                identifier = FORMAT("v{}", identifier);
-            } else {
-                identifier = FORMAT("_{}", identifier);
-            }
-            _text += FORMAT("{} {} =", typeValue, identifier);
+            declaration = identifier;
         } else {
-            if(std::string error = factory.parse({TokenType::EQUAL_OPERATOR}); !error.empty()) {
-                throw TranspilerException(error, instruction);
-            }
-            auto expression = factory.getExpression();
-            if(!Scope::isNumber(expression.getType())) {
-                throw TranspilerException("For variables must be of numeric type", instruction);
-            }
-            identifier = expression.getText();
-            while(identifier.starts_with(' ')) { identifier.erase(0, 1); }
-            _text += FORMAT("{} =", identifier);
+            identifier = iterator->getValue();
+            iterator++;
         }
+        if(identifier.starts_with("_")) {
+            identifier = FORMAT("v{}", identifier);
+        } else {
+            identifier = FORMAT("_{}", identifier);
+        }
+        _text += FORMAT("{}, {},", typeValue, identifier);
         iterator++;
         if(std::string error = factory.parse({TokenType::COMMA}); !error.empty()) {
             throw TranspilerException(error, instruction);
@@ -627,8 +645,8 @@ namespace vnd {
         if(!Scope::isNumber(expression.getType())) {
             throw TranspilerException("For variables must be of numeric type", instruction);
         }
-        _text += FORMAT("{};", expression.getText());
-        return identifier;
+        _text += FORMAT("{},", expression.getText());
+        return {declaration, type};
     }
 
     void Transpiler::openScope(const ScopeType &type) noexcept {

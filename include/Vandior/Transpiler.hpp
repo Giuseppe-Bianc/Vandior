@@ -182,10 +182,10 @@ namespace vnd {
          * @param iterator The iterator pointing to the condition token sequence.
          * @param end The iterator pointing to the end of the instruction.
          * @param instruction The instruction to containing the for loop.
-         * @return String representing the index variable.
+         * @return Pair representing the declared index identifier and type.
          */
-        std::string transpileForInitialization(TokenVecIter &iterator, const TokenVecIter &end,
-                                                             const Instruction &instruction);
+        [[nodiscard]] std::pair<std::string, std::string> transpileForInitialization(TokenVecIter &iterator, const TokenVecIter &end,
+                                               const Instruction &instruction);
 
         /**
          * @brief Opens a new scope.

@@ -11,6 +11,9 @@
 #include <functional>
 #include <cstdint>
 
+#define FOR_LOOP(type, var, initial, final, step) \
+for (type var = initial; (step > 0 ? var < final : var > final); var += step)
+
 class string: public std::string {
 	public:
 		using std::string::string;
