@@ -204,7 +204,12 @@ namespace vnd {
         }
         for(auto &var : variables) {
             auto expression = factory.getExpression();
-            if(expression.getType().contains(' ')) {
+#ifdef __llvm__
+            bool exprContainsSpace = expression.getType().find(' ') != std::string::npos;
+#else
+            bool exprContainsSpace = expression.getType().contains(' ');
+#endif
+            if(exprContainsSpace) {
                 throw TranspilerException("Multiple return value functions must be used alone", instruction);
             }
             if(equalToken.getType() == TokenType::OPERATION_EQUAL && !Scope::isNumber(var.second)) {

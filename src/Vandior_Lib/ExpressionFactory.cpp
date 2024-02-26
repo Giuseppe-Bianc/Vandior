@@ -127,7 +127,11 @@ namespace vnd {
 
     bool ExpressionFactory::isMultiplefun() const noexcept {
         if(_expressions.size() != 1) { return false; }
+#ifdef __llvm__
+        return _expressions.front().getType().find(' ') != std::string::npos;
+#else
         return _expressions.front().getType().contains(' ');
+#endif
     }
 
     std::string_view ExpressionFactory::getTokenType() noexcept {
@@ -381,8 +385,18 @@ namespace vnd {
         static const std::string nots = "not";   // not string
         static const std::string bols = "bool";  // bool string
         if(newType == "dot" || isTokentype(TokenType::DOT_OPERATOR)) { return {}; }
-        if(std::get<2>(oldType).contains(sps)) { return "Multiple return value functions must be used alone"; }
-        if(newType.contains(sps)) {
+#ifdef __llvm__
+        bool oldTypeContains = std::get<2>(oldType).find(sps) != std::string::npos;
+#else
+        bool oldTypeContains = std::get<2>(oldType).contains(sps);
+#endif
+        if(oldTypeContains) { return "Multiple return value functions must be used alone"; }
+#ifdef __llvm__
+        bool newTypeContains = newType.find(sps) != std::string::npos;
+#else
+        bool newTypeContains = newType.contains(sps);
+#endif
+        if(newTypeContains) {
             if(!std::get<2>(oldType).empty()) { return "Multiple return value functions must be used alone"; }
             std::get<2>(oldType) = newType;
             return {};
