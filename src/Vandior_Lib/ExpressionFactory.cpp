@@ -12,17 +12,17 @@
 
 namespace vnd {
 
-    // NOLINTBEGIN
+    // NOLINTBEGIN(*-pass-by-value, *-identifier-length)
     ExpressionFactory::ExpressionFactory(TokenVecIter &iterator, const TokenVecIter &end, std::shared_ptr<Scope> scope,
                                          const bool isConst, const bool sq) noexcept
-      : _iterator(iterator), _end(end), _scope(std::move(scope)), _text({}), _expressions({}), _power(), _divide(false),
-        _dot(false), _const(isConst), _sq(sq), _expressionText(""), _type(""), _temp("") {}
+      : _iterator(iterator), _end(end), _scope(std::move(scope)), _text({}), _expressions({}), _divide(false), _dot(false),
+        _const(isConst), _sq(sq) {}
 
     ExpressionFactory ExpressionFactory::create(TokenVecIter &iterator, const TokenVecIter &end, std::shared_ptr<Scope> scope,
                                                 const bool isConst, bool sq) noexcept {
         return {iterator, end, std::move(scope), isConst, sq};
     }
-    // NOLINTEND
+    // NOLINTEND(*-pass-by-value, *-identifier-length)
 
     std::string ExpressionFactory::transpileFun(const std::vector<Expression> &expressions,
                                                 std::optional<size_t> variadic) noexcept {
@@ -47,7 +47,11 @@ namespace vnd {
     bool ExpressionFactory::isSquareType(const std::string_view &type) noexcept { return type == "int" || type == "operator"; }
 
     std::string ExpressionFactory::evaluate(const std::string &expression) noexcept {
+#ifdef _WIN32
         std::string command = FORMAT("python -c \"print({})\"", expression);
+#else
+        std::string command = FORMAT("python3 -c \"print({})\"", expression);
+#endif
 
         double result = 0.0;
         std::unique_ptr<FILE, decltype(&PCLOSE)> pipe(POPEN(command.c_str(), "r"), PCLOSE);
@@ -126,7 +130,7 @@ namespace vnd {
 
     bool ExpressionFactory::isMultiplefun() const noexcept {
         if(_expressions.size() != 1) { return false; }
-        return _expressions.front().getType().contains(' ');
+        return _expressions.front().getType().find(' ') != std::string::npos;
     }
 
     std::string_view ExpressionFactory::getTokenType() noexcept {
@@ -219,7 +223,7 @@ namespace vnd {
 
     std::string ExpressionFactory::writeToken() noexcept {
         auto value = std::string{_iterator->getValue()};
-        if(_iterator->getType() == TokenType::STRING) { value = FORMAT(R"(string("{}"))", std::string{_iterator->getValue()}); }
+        if(_iterator->getType() == TokenType::STRING) { value = FORMAT(R"(string("{}"))", value); }
         if(_iterator->getType() == TokenType::IDENTIFIER) {
             if(_temp.empty()) {
                 if(!value.empty() && value.at(0) == '_') {
@@ -291,13 +295,12 @@ namespace vnd {
 
     // NOLINTNEXTLINE(*-no-recursion)
     std::string ExpressionFactory::handleSquareExpression(TupType &type) noexcept {
-        std::string newType;
         if(!Scope::checkVector(_type)) { return FORMAT("Indexing not allowed for {} type", _type); }
-        ExpressionFactory factory = ExpressionFactory::create(_iterator, _end, _scope, _const, true);
+        auto factory = ExpressionFactory::create(_iterator, _end, _scope, _const, true);
         _iterator++;
-        if(std::string error = factory.parse({TokenType::CLOSE_SQ_PARENTESIS}); !error.empty()) { return error; }
-        Expression expression = factory.getExpression();
-        newType = expression.getType();
+        if(auto error = factory.parse({TokenType::CLOSE_SQ_PARENTESIS}); !error.empty()) { return error; }
+        auto expression = factory.getExpression();
+        auto newType = expression.getType();
         if(newType != "int") { return FORMAT("{} index not allowed", newType); }
         if(auto error = ExpressionFactory::checkType(type, _type); !error.empty()) { return error; }
         _const = false;
@@ -307,17 +310,16 @@ namespace vnd {
 
     // NOLINTNEXTLINE(*-no-recursion)
     std::string ExpressionFactory::handleVectorInitialization(TupType &type) noexcept {
-        std::string oldType;
         std::string vectorType;
         std::string value;
         std::string constValue;
         std::vector<Expression> expressions;
-        ExpressionFactory factory = ExpressionFactory::create(_iterator, _end, _scope, _const);
+        auto factory = ExpressionFactory::create(_iterator, _end, _scope, _const);
         while(_iterator->getType() != TokenType::CLOSE_CUR_PARENTESIS) {
             using enum vnd::TokenType;
             _iterator++;
             if(_iterator->getType() != CLOSE_CUR_PARENTESIS) {
-                if(std::string error = factory.parse({COMMA, CLOSE_CUR_PARENTESIS}); !error.empty()) { return error; }
+                if(auto error = factory.parse({COMMA, CLOSE_CUR_PARENTESIS}); !error.empty()) { return error; }
             }
         }
         for(const auto &expression : factory.getExpressions()) {
@@ -343,7 +345,7 @@ namespace vnd {
             value.pop_back();
             if(value.at(0) == ' ') { value.erase(0, 1); }
         }
-        oldType = vectorType;
+        auto oldType = vectorType;
         vectorType += "[]";
         if(std::string error = checkType(type, vectorType); !error.empty()) { return error; }
         if(_const) {
@@ -355,12 +357,11 @@ namespace vnd {
     }
 
     std::string ExpressionFactory::handleInnerExpression(TupType &type) noexcept {  // NOLINT(*-no-recursion)
-        std::string newType;
         auto factory = ExpressionFactory::create(_iterator, _end, _scope, _const);
         _iterator++;
-        if(std::string error = factory.parse({TokenType::CLOSE_PARENTESIS}); !error.empty()) { return error; }
+        if(auto error = factory.parse({TokenType::CLOSE_PARENTESIS}); !error.empty()) { return error; }
         auto expression = factory.getExpression();
-        newType = expression.getType();
+        auto newType = expression.getType();
         if(newType.empty()) { return FORMAT("Identifier {}.{} not found", _type, expression.getType()); }
         if(auto error = ExpressionFactory::checkType(type, newType); !error.empty()) { return error; }
         if(expression.isConst()) {
@@ -390,8 +391,8 @@ namespace vnd {
         static const std::string nots = "not";   // not string
         static const std::string bols = "bool";  // bool string
         if(newType == "dot" || isTokentype(TokenType::DOT_OPERATOR)) { return {}; }
-        if(std::get<2>(oldType).contains(sps)) { return "Multiple return value functions must be used alone"; }
-        if(newType.contains(sps)) {
+        if(std::get<2>(oldType).find(sps) != std::string::npos) { return "Multiple return value functions must be used alone"; }
+        if(newType.find(sps) != std::string::npos) {
             if(!std::get<2>(oldType).empty()) { return "Multiple return value functions must be used alone"; }
             std::get<2>(oldType) = newType;
             return {};

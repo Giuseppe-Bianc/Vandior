@@ -94,10 +94,14 @@ auto main(int argc, const char *const argv[]) -> int {
 #ifdef _WIN32
     command = "python --version > NUL";
 #else
-    command = "python --version > /dev/null";
+    command = "python3 --version > /dev/null";
 #endif
 #else
+#ifdef _WIN32
     command = "python --version";
+#else
+    command = "python3 --version";
+#endif
 #endif
     if(std::system(command.data()) != 0) {
         LERROR("Python not found");

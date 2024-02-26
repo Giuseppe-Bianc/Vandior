@@ -239,7 +239,7 @@ namespace vnd {
         while(positionIsInText() && vnd::TokenizerUtility::isOperator(_input[position])) { incPosAndColumn(); }
     }
 
-    TokenType Tokenizer::singoleCharOp(const char &view) noexcept {
+    TokenType Tokenizer::singoleCharOp(const char view) noexcept {
         switch(view) {
             using enum TokenType;
         case '-':
