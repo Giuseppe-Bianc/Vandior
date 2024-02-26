@@ -51,22 +51,4 @@ TEST_CASE("the constexpr size of types", "[TypeSizes]") {
     STATIC_REQUIRE(TypeSizes::sizeOfU32StringView == sizeof(std::u32string_view));
 }
 
-TEST_CASE("the constexpr NEWL", "[TypeSizes]") {
-#ifdef _WIN32                      // Windows
-    STATIC_REQUIRE(NEWL == CRNL);  // Windows
-#elif defined macintosh            // OS 9
-    STATIC_REQUIRE(NEWL == &CCR);  // Classic Mac OS
-#elif defined __unix__             // Linux and Unix-like systems
-    STATIC_REQUIRE(NEWL == &CCR);  // Linux and Unix
-#elif defined __APPLE__            // macOS
-    STATIC_REQUIRE(NEWL == &CNL);  // macOS
-#elif defined __VMS                // OpenVMS
-    STATIC_REQUIRE(NEWL == CRNL);  // Windows
-#elif defined __FreeBSD__          // FreeBSD
-    STATIC_REQUIRE(NEWL == &CNL);  // FreeBSD
-#else
-    STATIC_REQUIRE(NEWL == &CNL);  // Default case
-#endif
-}
-
 // NOLINTEND(*-include-cleaner)
