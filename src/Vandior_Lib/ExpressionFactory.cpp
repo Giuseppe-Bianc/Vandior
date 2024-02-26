@@ -44,7 +44,11 @@ namespace vnd {
     bool ExpressionFactory::isSquareType(const std::string_view &type) noexcept { return type == "int" || type == "operator"; }
 
     std::string ExpressionFactory::evaluate(const std::string &expression) noexcept {
+#ifdef _WIN32
         std::string command = FORMAT("python -c \"print({})\"", expression);
+#else
+        std::string command = FORMAT("python3 -c \"print({})\"", expression);
+#endif
 
         double result = 0.0;
         std::unique_ptr<FILE, decltype(&PCLOSE)> pipe(POPEN(command.c_str(), "r"), PCLOSE);

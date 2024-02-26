@@ -3,16 +3,16 @@
 
 #include <Vandior/vandior.hpp>
 
-static inline constexpr std::size_t line = 5;
-static inline constexpr std::size_t line2 = 42;
-static inline constexpr std::size_t line3 = 100;
-static inline constexpr std::size_t line4 = 10;
-static inline constexpr std::size_t colum = 6;
-static inline constexpr std::size_t colum2 = 5;
-static inline constexpr std::size_t colum3 = 7;
-static inline constexpr std::size_t colum4 = 8;
-static inline constexpr std::size_t colum5 = 9;
-static inline constexpr std::size_t colum6 = line4;
+static inline constexpr std::size_t t_line = 5;
+static inline constexpr std::size_t t_line2 = 42;
+static inline constexpr std::size_t t_line3 = 100;
+static inline constexpr std::size_t t_line4 = 10;
+static inline constexpr std::size_t t_colum = 6;
+static inline constexpr std::size_t t_colum2 = 5;
+static inline constexpr std::size_t t_colum3 = 7;
+static inline constexpr std::size_t t_colum4 = 8;
+static inline constexpr std::size_t t_colum5 = 9;
+static inline constexpr std::size_t t_colum6 = t_line4;
 static inline constexpr auto identf = vnd::TokenType::IDENTIFIER;
 static inline constexpr auto inte = vnd::TokenType::INTEGER;
 static inline constexpr auto doub = vnd::TokenType::DOUBLE;
@@ -100,20 +100,20 @@ TEST_CASE("CodeSourceLocation default constructor sets default values", "[CodeSo
 }
 
 TEST_CASE("CodeSourceLocation constructor sets values correctly", "[CodeSourceLocation]") {
-    vnd::CodeSourceLocation location(filename2, line2, colum6);
+    vnd::CodeSourceLocation location(filename2, t_line2, t_colum6);
     REQUIRE(location.getFileName() == filename2);
-    REQUIRE(location.getLine() == line2);
-    REQUIRE(location.getColumn() == colum6);
+    REQUIRE(location.getLine() == t_line2);
+    REQUIRE(location.getColumn() == t_colum6);
 }
 
 TEST_CASE("CodeSourceLocation setters update values", "[CodeSourceLocation]") {
     vnd::CodeSourceLocation location;
     location.setFileName(filename3);
-    location.setLine(line3);
-    location.setColumn(colum6 * 2);
+    location.setLine(t_line3);
+    location.setColumn(t_colum6 * 2);
     REQUIRE(location.getFileName() == filename3);
-    REQUIRE(location.getLine() == line3);
-    REQUIRE(location.getColumn() == colum6 * 2);
+    REQUIRE(location.getLine() == t_line3);
+    REQUIRE(location.getColumn() == t_colum6 * 2);
 }
 
 TEST_CASE("CodeSourceLocation unknown() creates object with default values", "[CodeSourceLocation]") {
@@ -124,16 +124,16 @@ TEST_CASE("CodeSourceLocation unknown() creates object with default values", "[C
 }
 
 TEST_CASE("CodeSourceLocation equality and inequality operators work correctly", "[CodeSourceLocation]") {
-    vnd::CodeSourceLocation location1("file1.cpp", line4, colum2);
-    vnd::CodeSourceLocation location2("file1.cpp", line4, colum2);
-    vnd::CodeSourceLocation location3("file2.cpp", line4, colum2);
+    vnd::CodeSourceLocation location1("file1.cpp", t_line4, t_colum2);
+    vnd::CodeSourceLocation location2("file1.cpp", t_line4, t_colum2);
+    vnd::CodeSourceLocation location3("file2.cpp", t_line4, t_colum2);
 
     REQUIRE(location1 == location2);
     REQUIRE(location1 != location3);
 }
 
 TEST_CASE("CodeSourceLocation toString() produces expected string", "[CodeSourceLocation]") {
-    vnd::CodeSourceLocation location(filename2, line2, colum6);
+    vnd::CodeSourceLocation location(filename2, t_line2, t_colum6);
     REQUIRE(location.toString() == "(file:example.cpp, line:42, column:10)");
 }
 
@@ -267,14 +267,14 @@ TEST_CASE("default constructed token set propriety format", "[token]") {
 }
 
 TEST_CASE("Token Comparison Equality", "[Token]") {
-    vnd::Token token1(oper, "+", vnd::CodeSourceLocation(filename, line, colum));
-    vnd::Token token2(oper, "+", vnd::CodeSourceLocation(filename, line, colum));
+    vnd::Token token1(oper, "+", vnd::CodeSourceLocation(filename, t_line, t_colum));
+    vnd::Token token2(oper, "+", vnd::CodeSourceLocation(filename, t_line, t_colum));
     REQUIRE(token1 == token2);
 }
 
 TEST_CASE("Token Comparison Inequality", "[Token]") {
-    vnd::Token token1(identf, "variable", vnd::CodeSourceLocation(filename, line, colum));
-    vnd::Token token2(identf, "variable2", vnd::CodeSourceLocation(filename, line, colum));
+    vnd::Token token1(identf, "variable", vnd::CodeSourceLocation(filename, t_line, t_colum));
+    vnd::Token token2(identf, "variable2", vnd::CodeSourceLocation(filename, t_line, t_colum));
     REQUIRE(token1 != token2);
 }
 
@@ -565,14 +565,14 @@ TEST_CASE("Corrected type of multy assignation instruction", "[Instruction]") {
     instruction.checkToken(vnd::Token{vnd::TokenType::IDENTIFIER, "", vnd::CodeSourceLocation(filename, 0, 3)});
     instruction.checkToken(vnd::Token{vnd::TokenType::OPEN_SQ_PARENTESIS, "", vnd::CodeSourceLocation(filename, 0, 4)});
     REQUIRE(instruction.getLastType() == vnd::InstructionType::SQUARE_EXPRESSION);
-    instruction.checkToken(vnd::Token{vnd::TokenType::CLOSE_SQ_PARENTESIS, "", vnd::CodeSourceLocation(filename, 0, colum2)});
-    instruction.checkToken(vnd::Token{vnd::TokenType::EQUAL_OPERATOR, "", vnd::CodeSourceLocation(filename, 0, colum)});
+    instruction.checkToken(vnd::Token{vnd::TokenType::CLOSE_SQ_PARENTESIS, "", vnd::CodeSourceLocation(filename, 0, t_colum2)});
+    instruction.checkToken(vnd::Token{vnd::TokenType::EQUAL_OPERATOR, "", vnd::CodeSourceLocation(filename, 0, t_colum)});
     REQUIRE(instruction.getLastType() == vnd::InstructionType::INITIALIZATION);
-    instruction.checkToken(vnd::Token{vnd::TokenType::IDENTIFIER, "", vnd::CodeSourceLocation(filename, 0, colum3)});
-    instruction.checkToken(vnd::Token{vnd::TokenType::OPEN_SQ_PARENTESIS, "", vnd::CodeSourceLocation(filename, 0, colum4)});
-    instruction.checkToken(vnd::Token{vnd::TokenType::INTEGER, "", vnd::CodeSourceLocation(filename, 0, colum5)});
+    instruction.checkToken(vnd::Token{vnd::TokenType::IDENTIFIER, "", vnd::CodeSourceLocation(filename, 0, t_colum3)});
+    instruction.checkToken(vnd::Token{vnd::TokenType::OPEN_SQ_PARENTESIS, "", vnd::CodeSourceLocation(filename, 0, t_colum4)});
+    instruction.checkToken(vnd::Token{vnd::TokenType::INTEGER, "", vnd::CodeSourceLocation(filename, 0, t_colum5)});
     REQUIRE(instruction.getLastType() == vnd::InstructionType::SQUARE_EXPRESSION);
-    instruction.checkToken(vnd::Token{vnd::TokenType::CLOSE_SQ_PARENTESIS, "", vnd::CodeSourceLocation(filename, 0, colum6)});
+    instruction.checkToken(vnd::Token{vnd::TokenType::CLOSE_SQ_PARENTESIS, "", vnd::CodeSourceLocation(filename, 0, t_colum6)});
 }
 
 TEST_CASE("Corrected type of parameter expression instruction", "[Instruction]") {
@@ -615,8 +615,8 @@ TEST_CASE("Corrected type of for instruction", "[Instruction]") {
     instruction.checkToken(vnd::Token{vnd::TokenType::DOUBLE, "", vnd::CodeSourceLocation(filename, 0, 3)});
     instruction.checkToken(vnd::Token{vnd::TokenType::COMMA, "", vnd::CodeSourceLocation(filename, 0, 4)});
     REQUIRE(instruction.getLastType() == vnd::InstructionType::FOR_CONDITION);
-    instruction.checkToken(vnd::Token{vnd::TokenType::DOUBLE, "", vnd::CodeSourceLocation(filename, 0, colum2)});
-    instruction.checkToken(vnd::Token{vnd::TokenType::COMMA, "", vnd::CodeSourceLocation(filename, 0, colum)});
+    instruction.checkToken(vnd::Token{vnd::TokenType::DOUBLE, "", vnd::CodeSourceLocation(filename, 0, t_colum2)});
+    instruction.checkToken(vnd::Token{vnd::TokenType::COMMA, "", vnd::CodeSourceLocation(filename, 0, t_colum)});
     REQUIRE(instruction.getLastType() == vnd::InstructionType::FOR_STEP);
 }
 TEST_CASE("Instruction toString() Empty tokens", "[Instruction]") {
@@ -679,8 +679,8 @@ TEST_CASE("ExpressionFactory emit bool type", "[factory]") {
     std::vector<vnd::Token> tokens = {{vnd::TokenType::OPEN_PARENTESIS, "(", vnd::CodeSourceLocation(filename, 1, 0)},
                                       {vnd::TokenType::BOOLEAN, "true", vnd::CodeSourceLocation(filename, 1, 1)},
                                       {vnd::TokenType::LOGICAL_OPERATOR, "||", vnd::CodeSourceLocation(filename, 1, 2)},
-                                      {vnd::TokenType::BOOLEAN, "false", vnd::CodeSourceLocation(filename, 1, colum2)},
-                                      {vnd::TokenType::CLOSE_PARENTESIS, ")", vnd::CodeSourceLocation(filename, 1, colum)}};
+                                      {vnd::TokenType::BOOLEAN, "false", vnd::CodeSourceLocation(filename, 1, t_colum2)},
+                                      {vnd::TokenType::CLOSE_PARENTESIS, ")", vnd::CodeSourceLocation(filename, 1, t_colum)}};
     std::shared_ptr<vnd::Scope> scope = vnd::Scope::createMain();
     auto iterator = tokens.begin();
     vnd::ExpressionFactory factory = vnd::ExpressionFactory::create(iterator, tokens.end(), scope, false, false);
@@ -693,7 +693,7 @@ TEST_CASE("ExpressionFactory emit function type", "[factory]") {
     std::vector<vnd::Token> tokens = {{vnd::TokenType::IDENTIFIER, "testPar", vnd::CodeSourceLocation(filename, 1, 0)},
                                       {vnd::TokenType::OPEN_PARENTESIS, "(", vnd::CodeSourceLocation(filename, 1, 1)},
                                       {vnd::TokenType::STRING, "Hello", vnd::CodeSourceLocation(filename, 1, 3)},
-                                      {vnd::TokenType::CLOSE_PARENTESIS, ")", vnd::CodeSourceLocation(filename, 1, colum4)}};
+                                      {vnd::TokenType::CLOSE_PARENTESIS, ")", vnd::CodeSourceLocation(filename, 1, t_colum4)}};
     std::shared_ptr<vnd::Scope> scope = vnd::Scope::createMain();
     auto iterator = tokens.begin();
     vnd::ExpressionFactory factory = vnd::ExpressionFactory::create(iterator, tokens.end(), scope, false, false);

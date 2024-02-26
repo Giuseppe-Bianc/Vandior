@@ -30,6 +30,7 @@
 #pragma GCC diagnostic ignored "-Wuseless-cast"
 #pragma GCC diagnostic ignored "-Wmissing-field-initializers"
 #pragma GCC diagnostic ignored "-Wmissing-braces"
+#pragma GCC diagnostic ignored "-Wconversion"
 #endif
 
 // NOLINTBEGIN(*-diagnostic-implicit-int-float-conversion)
