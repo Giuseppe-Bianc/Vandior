@@ -315,7 +315,7 @@ namespace glmp {
              * @return The string representation of  glm::mat2x2.
              */
             [[nodiscard]] GLMP_FUN_QUAL static std::string call(glm::mat<2, 2, T, Q> const &x) {
-                return FORMAT("{}mat2x2(({},{}), ({},{})) ", prefix<T>::value(), x[0][0], x[0][1], x[1][0], x[1][1]);
+                return FORMAT("{}mat2x2(({},{}), ({},{}))", prefix<T>::value(), x[0][0], x[0][1], x[1][0], x[1][1]);
             }
         };
 
