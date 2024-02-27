@@ -12,14 +12,14 @@ namespace vnd {
         TokenType::K_NULLPTR};
 
     Instruction::Instruction(const std::string_view filename) noexcept
-      : _allowedTokens({TokenType::K_MAIN, TokenType::K_VAR, TokenType::K_IF, TokenType::K_WHILE, TokenType::K_FOR, TokenType::K_FUN,
-                        TokenType::K_RETURN, TokenType::K_BREAK, TokenType::IDENTIFIER, TokenType::OPEN_CUR_PARENTESIS,
-                        TokenType::CLOSE_CUR_PARENTESIS, eofTokenType}),
+      : _allowedTokens({TokenType::K_MAIN, TokenType::K_VAR, TokenType::K_IF, TokenType::K_WHILE, TokenType::K_FOR,
+                        TokenType::K_FUN, TokenType::K_RETURN, TokenType::K_BREAK, TokenType::IDENTIFIER,
+                        TokenType::OPEN_CUR_PARENTESIS, TokenType::CLOSE_CUR_PARENTESIS, eofTokenType}),
         _types({InstructionType::BLANK}), _booleanOperators({false}), _filename(filename) {
         _tokens.reserve({});
     }
 
-    Instruction Instruction::create(const std::string_view filename) noexcept { return {filename}; }
+    Instruction Instruction::create(const std::string_view filename) noexcept { return Instruction{filename}; }
 
     std::vector<Token> Instruction::getTokens() const noexcept {
         if(_tokens.empty()) { return {{TokenType::UNKNOWN, "", {_filename, 0, 0}}}; }
@@ -519,11 +519,11 @@ namespace vnd {
     }
 
     inline void Instruction::emplaceUnaryOperator(const TokenType &type) noexcept {
-        if(type == TokenType::IDENTIFIER) {
-            _allowedTokens.insert(_allowedTokens.end(),
-                                  {TokenType::DOT_OPERATOR, TokenType::OPEN_PARENTESIS, TokenType::OPEN_SQ_PARENTESIS});
+        using enum vnd::TokenType;
+        if(type == IDENTIFIER) {
+            _allowedTokens.insert(_allowedTokens.end(), {DOT_OPERATOR, OPEN_PARENTESIS, OPEN_SQ_PARENTESIS});
         }
-        if(type != TokenType::UNARY_OPERATOR) { _allowedTokens.emplace_back(TokenType::UNARY_OPERATOR); }
+        if(type != UNARY_OPERATOR) { _allowedTokens.emplace_back(UNARY_OPERATOR); }
     }
     // NOLINTEND(*-include-cleaner)
 }  // namespace vnd

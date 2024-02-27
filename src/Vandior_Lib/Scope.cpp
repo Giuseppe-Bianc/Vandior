@@ -1,8 +1,13 @@
 #include "Vandior/Scope.hpp"
 #include <Vandior/Log.hpp>
 // NOLINTBEGIN(*-include-cleaner,*-identifier-length)
+/**
+ * This macro disable some msvc warnigs.
+ * \cond
+ */
 DISABLE_WARNINGS_PUSH(
     4005 4201 4459 4514 4625 4626 4820 6244 6285 6385 6386 26409 26415 26418 26429 26432 26437 26438 26440 26446 26447 26450 26451 26455 26457 26459 26460 26461 26467 26472 26473 26474 26475 26481 26482 26485 26490 26491 26493 26494 26495 26496 26497 26498 26800 26814 26818 26826)
+/** \endcond */
 
 namespace vnd {
     // NOLINTBEGIN
@@ -81,9 +86,9 @@ namespace vnd {
         size_t pos = type.find('[');
         if(pos == std::string::npos) { pos = type.size(); }
         typeValue = type.substr(0, pos);
-        if(!Scope::isPrimitive(typeValue)) { typeValue = FORMAT("std::shared_ptr<{}>", typeValue); };
+        if(!Scope::isPrimitive(typeValue)) { typeValue = FORMAT("std::shared_ptr<{}>", typeValue); }
         if(pos != type.size()) {
-            std::string::iterator iterator = type.begin();
+            auto iterator = type.begin();
             std::string size;
             while(iterator != type.end()) {
                 if(*iterator == '[') {
@@ -265,14 +270,14 @@ namespace vnd {
             key.replace(key.find_last_of('>') + 1, 1, "g");
             key = FORMAT("{})", key);
         }
-        key.erase(std::remove(key.begin(), key.end(), ' '), key.end());
-        _tmp.emplace(key, type);
+        std::erase(key, ' ');
+        _tmp.try_emplace(key, type);
         return key;
     }
 
     std::string Scope::getTmp(const std::string &tmp) const noexcept {
         auto key = tmp;
-        key.erase(std::remove(key.begin(), key.end(), ' '), key.end());
+        std::erase(key, ' ');
         if(_tmp.contains(key)) { return FORMAT("std::any_cast<{}>(vnd::tmp.at(\"{}\"))", _tmp.at(key), key); }
         return tmp;
     }

@@ -21,6 +21,7 @@ namespace vnd {
         using enum InstructionType;
         _output.open("output.cpp");
         _text += R"(#include "../../../base.hpp")";
+        _text += "\n";
         try {
             for(const auto &instruction : _instructions) {
                 _text += std::string(C_ST(_tabs), '\t');
@@ -95,7 +96,7 @@ namespace vnd {
         if(!_scope->isMainScope()) { throw TranspilerException("Cannot declare main here", instruction); }
         if(_main) { throw TranspilerException("Main already declared", instruction); }
         if(_scope->getParent() != nullptr) { throw TranspilerException("Cannot declare main here", instruction); }
-        _text += "\nint main(int argc, char **argv) {\n";
+        _text += "int main(int argc, char **argv) {\n";
         _main = true;
         openScope(ScopeType::MAIN_FUNCTION_SCOPE);
         auto value = FORMAT("{:\t^{}}const vnd::vector<string> _args(argv, argv + argc);", "", C_ST(_tabs));
@@ -209,10 +210,10 @@ namespace vnd {
         auto variables = extractVariables(iterator, endToken, instruction);
         equalToken = *iterator;
         iterator++;
-        for(auto &var : variables) {
-            if(var.first != "_") {
-                auto typeValue = Scope::getTypeValue(var.second);
-                auto key = _scope->addTmp(var.first, var.second);
+        for(auto &[first, second] : variables) {
+            if(first != "_") {
+                auto typeValue = Scope::getTypeValue(second);
+                auto key = _scope->addTmp(first, second);
                 tmp.push_back(FORMAT("std::any_cast<{}>(vnd::tmp[\"{}\"])", typeValue, key));
             }
         }
@@ -238,7 +239,7 @@ namespace vnd {
             throw TRANSPILER_EXCEPTIONF(instruction, "inconsistent assignation: {} values for {} variables", factory.size(),
                                         variables.size());
         }
-        for(auto &var : variables) {
+        for(auto &[first, second] : variables) {
             auto expression = factory.getExpression();
 #ifdef __llvm__
             bool exprContainsSpace = expression.getType().find(' ') != std::string::npos;
@@ -248,15 +249,14 @@ namespace vnd {
             if(exprContainsSpace) {
                 throw TranspilerException("Multiple return value functions must be used alone", instruction);
             }
-            if(equalToken.getType() == TokenType::OPERATION_EQUAL && !Scope::isNumber(var.second)) {
-                if(var.first == "_") {
+            if(equalToken.getType() == TokenType::OPERATION_EQUAL && !Scope::isNumber(second)) {
+                if(first == "_") {
                     throw TRANSPILER_EXCEPTIONF(instruction, "incompatible operator {} for blank identifier",
-                                                equalToken.getValue(), var.second);
+                                                equalToken.getValue(), second);
                 }
-                throw TRANSPILER_EXCEPTIONF(instruction, "incompatible operator {} for {} type", equalToken.getValue(),
-                                            var.second);
+                throw TRANSPILER_EXCEPTIONF(instruction, "incompatible operator {} for {} type", equalToken.getValue(), second);
             }
-            if(var.first == "_") {
+            if(first == "_") {
                 if(expression.getType() == "void") {
                     throw TranspilerException("Cannot assign void expression", instruction);
                 } else {
@@ -264,11 +264,11 @@ namespace vnd {
                     continue;
                 }
             }
-            if(!_scope->canAssign(var.second, expression.getType())) {
-                throw TRANSPILER_EXCEPTIONF(instruction, "Cannot assign {} to {}", expression.getType(), var.second);
+            if(!_scope->canAssign(second, expression.getType())) {
+                throw TRANSPILER_EXCEPTIONF(instruction, "Cannot assign {} to {}", expression.getType(), second);
             }
-            std::string text = var.first;
-            if(!var.first.ends_with('(')) { text += " = "; }
+            std::string text = first;
+            if(!first.ends_with('(')) { text += " = "; }
             if(equalToken.getType() == TokenType::OPERATION_EQUAL) {
                 if(equalToken.getValue() == "^=") {
                     text += FORMAT("std::pow({},", tmp.front());
@@ -278,7 +278,7 @@ namespace vnd {
             }
             text += expression.getText();
             if(equalToken.getValue() == "^=") { text += ")"; }
-            if(var.first.ends_with('(')) { text += ")"; }
+            if(first.ends_with('(')) { text += ")"; }
             tmp.erase(tmp.begin());
             _text += FORMAT("{};\n{:\t^{}}", text, "", C_ST(_tabs));
         }
@@ -486,6 +486,7 @@ namespace vnd {
 
     std::string Transpiler::extractFun(TokenVecIter &iterator, const TokenVecIter &end, std::string &currentVariable,
                                        std::string &type) const noexcept {
+        using enum vnd::TokenType;
         auto identifier = iterator->getValue();
         auto factory = ExpressionFactory::create(iterator, end, _scope, false);
         std::vector<Expression> expressions;
@@ -493,8 +494,8 @@ namespace vnd {
         iterator++;
         while(iterator->getType() != TokenType::CLOSE_PARENTESIS) {
             iterator++;
-            if(iterator->getType() != TokenType::CLOSE_PARENTESIS) {
-                if(auto error = factory.parse({TokenType::COMMA, TokenType::CLOSE_PARENTESIS}); !error.empty()) { return error; }
+            if(iterator->getType() != CLOSE_PARENTESIS) {
+                if(auto error = factory.parse({COMMA, CLOSE_PARENTESIS}); !error.empty()) { return error; }
             }
         }
         expressions = factory.getExpressions();
@@ -606,7 +607,7 @@ namespace vnd {
                     ExpressionFactory factory = ExpressionFactory::create(iterator, end, _scope, true, true);
                     if(auto error = factory.parse({TokenType::CLOSE_SQ_PARENTESIS, TokenType::EQUAL_OPERATOR}); !error.empty()) {
                         throw TranspilerException(error, instruction);
-                    };
+                    }
                     Expression expression = factory.getExpression();
                     if(!expression.isConst()) {
                         throw TranspilerException("Cannot evaluate array dimension at compile time", instruction);

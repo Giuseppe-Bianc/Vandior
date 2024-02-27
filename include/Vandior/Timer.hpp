@@ -230,6 +230,10 @@ namespace vnd {
 }  // namespace vnd
 
 /**
+ * This function is a formatter for Timer using fmt.
+ * \cond
+ */
+/**
  * @brief Specialization of the fmt::formatter for the Timer class.
  */
 template <> struct fmt::formatter<vnd::Timer> : formatter<std::string_view> {  // NOLINT(*-include-cleaner)
@@ -243,6 +247,7 @@ template <> struct fmt::formatter<vnd::Timer> : formatter<std::string_view> {  /
         return formatter<std::string_view>::format(timer.to_string(), ctx);
     }
 };
+/** \endcond */
 
 /// This prints out the time if shifted into a std::cout like stream.
 inline std::ostream &operator<<(std::ostream &in, const vnd::Timer &timer) { return in << timer.to_string(); }

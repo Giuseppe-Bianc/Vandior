@@ -250,6 +250,7 @@ namespace vnd {
     }
 
     std::string ExpressionFactory::handleFun(TupType &type) noexcept {  // NOLINT(*-no-recursion)
+        using enum vnd::TokenType;
         std::string_view identifier = _iterator->getValue();
         ExpressionFactory factory = ExpressionFactory::create(_iterator, _end, _scope, false);
         std::vector<Expression> expressions;
@@ -258,13 +259,11 @@ namespace vnd {
         _iterator++;
         while(_iterator->getType() != TokenType::CLOSE_PARENTESIS) {
             _iterator++;
-            if(_iterator->getType() != TokenType::CLOSE_PARENTESIS) {
-                if(std::string error = factory.parse({TokenType::COMMA, TokenType::CLOSE_PARENTESIS}); !error.empty()) {
-                    return error;
-                }
+            if(_iterator->getType() != CLOSE_PARENTESIS) {
+                if(std::string error = factory.parse({COMMA, CLOSE_PARENTESIS}); !error.empty()) { return error; }
             }
         }
-        if((_iterator + 1) == _end || (_iterator + 1)->getType() != TokenType::DOT_OPERATOR) { _const = false; }
+        if((_iterator + 1) == _end || (_iterator + 1)->getType() != DOT_OPERATOR) { _const = false; }
         expressions = factory.getExpressions();
         auto [newType, constructor, variadic] = _scope->getFunType(_type, identifier, expressions);
         if(newType.empty()) {
@@ -300,8 +299,7 @@ namespace vnd {
         _iterator++;
         if(auto error = factory.parse({TokenType::CLOSE_SQ_PARENTESIS}); !error.empty()) { return error; }
         auto expression = factory.getExpression();
-        auto newType = expression.getType();
-        if(newType != "int") { return FORMAT("{} index not allowed", newType); }
+        if(auto newType = expression.getType(); newType != "int") { return FORMAT("{} index not allowed", newType); }
         if(auto error = ExpressionFactory::checkType(type, _type); !error.empty()) { return error; }
         _const = false;
         write(FORMAT("at({})", expression.getText().substr(1)), _type);
@@ -474,7 +472,7 @@ namespace vnd {
             value = FORMAT("{})", value);
             if(_sq) { value = FORMAT("{})", value); }
         }
-        if(((_iterator + 1) == _end || (_iterator + 1)->getValue() != "^")) { _power.reset(); }
+        if((_iterator + 1) == _end || (_iterator + 1)->getValue() != "^") { _power.reset(); }
     }
 
     void ExpressionFactory::write(const std::string &value, const std::string_view &type) noexcept {
