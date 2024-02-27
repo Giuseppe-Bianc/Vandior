@@ -51,7 +51,7 @@ namespace vnd {
                     transpileFor(instruction);
                     break;
                 case BREAK:
-                    _text += FORMAT("{};", instruction.getTokens().begin()->getValue());
+                    transpileBreak(instruction);
                     break;
                 case OPEN_SCOPE:
                     _text += "{";
@@ -373,6 +373,18 @@ namespace vnd {
             _text += "}";
             closeScope();
         }
+    }
+
+    void Transpiler::transpileBreak(const Instruction &instruction) {
+        std::string_view identifier = instruction.getTokens().begin()->getValue();
+        auto scope = _scope;
+        while(scope->getType() != ScopeType::LOOP_SCOPE) {
+            if(scope->getType() == ScopeType::MAIN_SCOPE) {
+                throw TRANSPILER_EXCEPTIONF(instruction, "Cannot use {} outside a loop", identifier);
+            }
+            scope = scope->getParent();
+        }
+        _text += FORMAT("{};", identifier);
     }
 
     std::vector<std::string_view> Transpiler::extractIdentifiers(TokenVecIter &iterator, const Instruction &instruction) const {
