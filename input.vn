@@ -20,6 +20,8 @@ main {
 	} else {
 		while(false) {}
 	}
+	var s: string = readLine()
+	println(s)
 	for num = num + 3 ^ 4, 100, 1 + 1 {
 		println("for 1:\t {}", num)
 	}
@@ -29,5 +31,7 @@ main {
 	for var i: float = 0.4, 5.6 {
 		println("for 3:\t {}", i)
 	}
+	for num = 1, 10, 10 {}
+	for var j: float = 1, 10 {}
 	
 }

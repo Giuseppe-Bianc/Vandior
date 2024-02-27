@@ -329,8 +329,7 @@ namespace vnd {
         auto tokens = instruction.getTokens();
         tmp.emplace_back(tokens.back());
         tokens.pop_back();
-        if(tokens.back().getType() == TokenType::OPEN_SQ_PARENTESIS) {
-            tmp.emplace_back(tokens.back());
+        if(tokens.back().getType() == TokenType::OPEN_CUR_PARENTESIS) {
             tokens.pop_back();
         }
         auto iterator = tokens.begin();
@@ -351,7 +350,7 @@ namespace vnd {
         if(iterator == endToken) {
             _text += FORMAT("{}, 1) {{", condition.getText());
             if(!identifier.empty()) { _scope->addVariable(identifier, type, false); }
-            if(tmp.begin()->getType() == TokenType::CLOSE_SQ_PARENTESIS) {
+            if(tmp.begin()->getType() == TokenType::CLOSE_CUR_PARENTESIS) {
                 _text += "}";
                 closeScope();
             }
@@ -367,7 +366,7 @@ namespace vnd {
         }
         _text += FORMAT("{},{}) {{", condition.getText(), step.getText());
         if(!identifier.empty()) { _scope->addVariable(identifier, type, false); }
-        if(tmp.begin()->getType() == TokenType::CLOSE_SQ_PARENTESIS) {
+        if(tmp.begin()->getType() == TokenType::CLOSE_CUR_PARENTESIS) {
             _text += "}";
             closeScope();
         }

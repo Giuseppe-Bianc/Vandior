@@ -176,6 +176,11 @@ void _println(std::string_view text, const vnd::vector<std::variant<int, float, 
 	std::cout << std::endl;
 	
 }
+string _readLine() {
+	std::string input;
+	std::getline (std::cin, input);
+	return string(input);
+}
 std::tuple<int, float> _max(vnd::vector<float>) {
 	
 	return {0, 0};

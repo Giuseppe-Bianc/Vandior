@@ -38,6 +38,7 @@ namespace vnd {
         mainScope->addConstant("Derived._derivedConst", "bool", "true");
         mainScope->addFun("print", FunType::create("void", {"string", "any..."}));
         mainScope->addFun("println", FunType::create("void", {"string", "any..."}));
+        mainScope->addFun("readLine", FunType::create("string", {}));
         mainScope->addFun("_test", FunType::create("int", {}));
         mainScope->addFun("testPar", FunType::create("int", {"int", "int"}));
         mainScope->addFun("testPar", FunType::create("int", {"string"}));
