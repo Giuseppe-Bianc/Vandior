@@ -116,6 +116,10 @@ static inline constexpr const char *NEWL = &CNL;  // Default case
     } while(0);
 
 /**
+ * This functions is are varius fmt formater used in the code.
+ * \cond
+ */
+/**
  * @brief Specialization of fmt::formatter for std::filesystem::path.
  */
 template <> struct fmt::formatter<std::filesystem::path> : formatter<std::string_view> {
@@ -175,5 +179,5 @@ template <typename T, glm::qualifier Q> struct fmt::formatter<glm::qua<T, Q>> : 
         return formatter<std::string_view>::format(glmp::to_string(quaternion), ctx);
     }
 };
-
+/** \endcond */
 // NOLINTEND

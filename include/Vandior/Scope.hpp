@@ -47,7 +47,7 @@ namespace vnd {
 
         /**
          * @brief Gets the C++ equivalent of a type.
-         * @param String representing the type to transpile.
+         * @param type representing the type to transpile.
          * @return String representing the C++ transpiled type.
          */
         [[nodiscard]] static std::string getTypeValue(std::string &type) noexcept;
@@ -168,7 +168,7 @@ namespace vnd {
         /**
          * @brief Adds a temporary variable to the tmp map.
          * @param key String representing the identifier of the variable.
-         * @param key String representing the type of the variable.
+         * @param type String representing the type of the variable.
          * @return String containing the modified key used by the map.
          */
         [[nodiscard]] std::string addTmp(std::string key, std::string &type) noexcept;

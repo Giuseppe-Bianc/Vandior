@@ -8,32 +8,36 @@ namespace vnd {
      * @brief Represents the types of instruction in the programming language.
      */
     enum class InstructionType : short {
-        PARAMETER_EXPRESSION,   ///< An epxression used as function parameter.
-        OPERATION,              ///< An operation (call to function or use of ++ or --).
-        ASSIGNATION,            ///< An assignation.
-        EXPRESSION,             ///< An expression.
-        SQUARE_EXPRESSION,      ///< An expression used as array size or index.
-        RETURN_EXPRESSION,      ///< An expression used as return value of a function.
-        DECLARATION,            ///< A declaration of variables.
-        INITIALIZATION,         ///< A declaration with the initialization.
-        ARRAY_INIZIALIZATION,   ///< An array literals.
-        MAIN,                   ///< The main instruction.
-        STRUCTURE,              ///< A if or while structure.
-        ELSE,                   ///< An else structure.
-        FOR_STRUCTURE,          ///< A for structure.
-        BREAK,                  ///< A break or continue instruction.
-        FOR_INITIALIZATION,     ///< The initialization part of a for.
-        FOR_CONDITION,          ///< The condition part of a for.
-        FOR_STEP,               ///< The step part of a for.
-        DEFINITION,             ///< A function definition instruction.
-        PARAMETER_DEFINITION,   ///< The parameter definition of a function.
-        RETURN_DEFINITION,      ///< The return type definition of a function.
-        OPEN_SCOPE,             ///< An open scope instruction.
-        CLOSE_SCOPE,            ///< A close scope instruction.
-        BLANK                   ///< A blank instruction.
+        PARAMETER_EXPRESSION,  ///< An epxression used as function parameter.
+        OPERATION,             ///< An operation (call to function or use of ++ or --).
+        ASSIGNATION,           ///< An assignation.
+        EXPRESSION,            ///< An expression.
+        SQUARE_EXPRESSION,     ///< An expression used as array size or index.
+        RETURN_EXPRESSION,     ///< An expression used as return value of a function.
+        DECLARATION,           ///< A declaration of variables.
+        INITIALIZATION,        ///< A declaration with the initialization.
+        ARRAY_INIZIALIZATION,  ///< An array literals.
+        MAIN,                  ///< The main instruction.
+        STRUCTURE,             ///< A if or while structure.
+        ELSE,                  ///< An else structure.
+        FOR_STRUCTURE,         ///< A for structure.
+        BREAK,                 ///< A break or continue instruction.
+        FOR_INITIALIZATION,    ///< The initialization part of a for.
+        FOR_CONDITION,         ///< The condition part of a for.
+        FOR_STEP,              ///< The step part of a for.
+        DEFINITION,            ///< A function definition instruction.
+        PARAMETER_DEFINITION,  ///< The parameter definition of a function.
+        RETURN_DEFINITION,     ///< The return type definition of a function.
+        OPEN_SCOPE,            ///< An open scope instruction.
+        CLOSE_SCOPE,           ///< A close scope instruction.
+        BLANK                  ///< A blank instruction.
     };
-}
+}  // namespace vnd
 
+/**
+ * This function is a formatter for InstructionType using fmt.
+ * \cond
+ */
 template <> struct fmt::formatter<vnd::InstructionType> : fmt::formatter<std::string_view> {  // NOLINT(*-include-cleaner)
     template <typename FormatContext> auto format(vnd::InstructionType instructionType, FormatContext &ctx) {
         std::string_view name;
@@ -115,3 +119,4 @@ template <> struct fmt::formatter<vnd::InstructionType> : fmt::formatter<std::st
         return fmt::formatter<std::string_view>::format(name, ctx);
     }
 };
+/** \endcond */

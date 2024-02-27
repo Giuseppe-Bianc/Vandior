@@ -256,8 +256,14 @@ namespace vnd {
     };
 }  // namespace vnd
 
-template <> struct fmt::formatter<vnd::Instruction> : fmt::formatter<std::string_view> {  // NOLINT(*-include-cleaner)
+/**
+ * This function is a formatter for Instruction using fmt.
+ * \cond
+ */
+// NOLINTNEXTLINE
+template <> struct fmt::formatter<vnd::Instruction> : fmt::formatter<std::string_view> {
     template <typename FormatContext> auto format(const vnd::Instruction &val, FormatContext &ctx) {
         return fmt::formatter<std::string_view>::format(val.toString(), ctx);
     }
 };
+/** \endcond */
