@@ -20,12 +20,13 @@ main {
 	} else {
 		while(false) {}
 	}
-	var s: string = readLine()
-	println(s)
 	for num = num + 3 ^ 4, 100, 1 + 1 {
 		println("for 1:\t {}", num)
 	}
 	for var i: int = 45.43 ^ (num / num1), -100, -1 {
+		if(i < 0 && i > -50) {
+			continue
+		}
 		println("for 2:\t {}", i)
 	}
 	for var i: float = 0.4, 5.6 {
@@ -33,5 +34,12 @@ main {
 	}
 	for num = 1, 10, 10 {}
 	for var j: float = 1, 10 {}
+	while(true) {
+		var s: string = readLine()
+		if(s == "Exit") {
+			break
+		}
+		println(s)
+	}
 	
 }

@@ -50,6 +50,9 @@ namespace vnd {
                 case FOR_STEP:
                     transpileFor(instruction);
                     break;
+                case BREAK:
+                    _text += FORMAT("{};", instruction.getTokens().begin()->getValue());
+                    break;
                 case OPEN_SCOPE:
                     _text += "{";
                     openScope(ScopeType::SCOPE);
@@ -615,7 +618,7 @@ namespace vnd {
         Expression expression = factory.getExpression();
         if(expression.getType() != "bool") { return "Invalid condition type"; }
         value = expression.getText();
-        if(value.starts_with(' ')) { value.erase(0, 1); }
+        while(value.starts_with(' ')) { value.erase(0, 1); }
         _text += FORMAT("({}) {{", value);
         return {};
     }

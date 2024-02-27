@@ -77,7 +77,7 @@ namespace vnd {
         void transpileAssignation(const Instruction &instruction);
 
         /**
-         * @brief Transpile a structure instruction of the program.
+         * @brief Transpile a if or while instruction of the program.
          * @param instruction The instruction to transpile.
          */
         void transpileStructure(const Instruction &instruction);
