@@ -77,9 +77,9 @@ namespace vnd {
         size_t pos = type.find('[');
         if(pos == std::string::npos) { pos = type.size(); }
         typeValue = type.substr(0, pos);
-        if(!Scope::isPrimitive(typeValue)) { typeValue = FORMAT("std::shared_ptr<{}>", typeValue); };
+        if(!Scope::isPrimitive(typeValue)) { typeValue = FORMAT("std::shared_ptr<{}>", typeValue); }
         if(pos != type.size()) {
-            std::string::iterator iterator = type.begin();
+            auto iterator = type.begin();
             std::string size;
             while(iterator != type.end()) {
                 if(*iterator == '[') {
@@ -259,14 +259,14 @@ namespace vnd {
             key.replace(key.find_last_of('>') + 1, 1, "g");
             key = FORMAT("{})", key);
         }
-        key.erase(std::remove(key.begin(), key.end(), ' '), key.end());
-        _tmp.emplace(key, type);
+        std::erase(key, ' ');
+        _tmp.try_emplace(key, type);
         return key;
     }
 
     std::string Scope::getTmp(const std::string &tmp) const noexcept {
         auto key = tmp;
-        key.erase(std::remove(key.begin(), key.end(), ' '), key.end());
+        std::erase(key, ' ');
         if(_tmp.contains(key)) { return FORMAT("std::any_cast<{}>(vnd::tmp.at(\"{}\"))", _tmp.at(key), key); }
         return tmp;
     }

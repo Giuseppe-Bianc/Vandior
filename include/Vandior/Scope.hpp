@@ -39,7 +39,8 @@ namespace vnd {
 
         /**
          * @brief Checks if a type is a vector type.
-         * @param type String representing the type to check. If the checks succeeds, the string is modified into the indexed type.
+         * @param type String representing the type to check. If the checks succeeds, the string is modified into the indexed
+         * type.
          * @return Bool indicating the result of the check.
          */
         [[nodiscard]] static bool checkVector(std::string &type) noexcept;
@@ -116,7 +117,8 @@ namespace vnd {
 
         /**
          * @brief Gets the type of a variable.
-         * @param type String representing the type containing the property. Is the variable is not a property, the parameter is empty.
+         * @param type String representing the type containing the property. Is the variable is not a property, the parameter is
+         * empty.
          * @param identifier String_view representing the identifier of the variable.
          * @return String containing the type. Is the variable does not exist, the result is empty.
          */
@@ -125,7 +127,8 @@ namespace vnd {
 
         /**
          * @brief Gets the type of a function.
-         * @param type String representing the type containing the method. Is the function is not a method, the parameter is empty.
+         * @param type String representing the type containing the method. Is the function is not a method, the parameter is
+         * empty.
          * @param identifier String_view representing the identifier of the function.
          * @param expressions Vector of parameter types.
          * @return Tuple containing the function informations: the type (empty if the function does not exist),
@@ -137,16 +140,18 @@ namespace vnd {
 
         /**
          * @brief Gets the value of a compile time evaluated constant.
-         * @param type String representing the type containing the property. Is the variable is not a property, the parameter is empty.
+         * @param type String representing the type containing the property. Is the variable is not a property, the parameter is
+         * empty.
          * @param identifier String_view representing the identifier of the function.
-         * @return String containing value of the conatant. Is the variable does not exist or is not a compile time evaluated constant,
-         * the result is empty.
+         * @return String containing value of the conatant. Is the variable does not exist or is not a compile time evaluated
+         * constant, the result is empty.
          */
         [[nodiscard]] std::string getConstValue(const std::string &type, const std::string_view &identifier) const noexcept;
 
         /**
          * @brief Checks if a variable is a constant.
-         * @param type String representing the type containing the property. Is the variable is not a property, the parameter is empty.
+         * @param type String representing the type containing the property. Is the variable is not a property, the parameter is
+         * empty.
          * @param identifier String_view representing the identifier of the function.
          * @return Bool containing the result of the check.
          */
@@ -191,10 +196,10 @@ namespace vnd {
          * @brief Constructor of a Scope.
          * @param parent Shared pointer to the parent scope.
          */
-        Scope(std::shared_ptr<Scope> parent) noexcept;
+        explicit Scope(std::shared_ptr<Scope> parent) noexcept;
 
-        static std::vector<std::string> _numberTypes;       ///< Vector of numeric types
-        static std::vector<std::string> _primitiveTypes;    ///< Vector of primitive types
+        static std::vector<std::string> _numberTypes;     ///< Vector of numeric types
+        static std::vector<std::string> _primitiveTypes;  ///< Vector of primitive types
 
         /**
          * @brief Gets key used by the maps.
@@ -207,17 +212,19 @@ namespace vnd {
         /**
          * @brief Gets the internal representation of an array or vector type.
          * @param type String representing the type.
-         * @return String containing the internal representation. If the type is not an array or vector, the result is the same as the parameter.
+         * @return String containing the internal representation. If the type is not an array or vector, the result is the same as
+         * the parameter.
          */
         [[nodiscard]] static std::string getType(const std::string &type) noexcept;
 
-        std::unordered_map<std::string, std::string> _vars;                             ///< Map of variables identifiers and types.
-        std::unordered_map<std::string, std::string> _vals;                             ///< Map of constants identifiers and types.
-        std::unordered_map<std::string, std::pair<std::string, std::string>> _consts;   ///< Map of compile time constants identifiers and types.
-        std::unordered_map<std::string, std::vector<std::string>> _types;               ///< Map of types and assignabled types.
-        std::unordered_map<std::string, std::vector<FunType>> _funs;                    ///< Map of function identifiers and informations.
-        std::unordered_map<std::string, std::string> _tmp;                              ///< Map of temporary variables and types.
-        std::shared_ptr<Scope> _parent;                                                 ///< Shared pointer to the parent scope.
+        std::unordered_map<std::string, std::string> _vars;  ///< Map of variables identifiers and types.
+        std::unordered_map<std::string, std::string> _vals;  ///< Map of constants identifiers and types.
+        std::unordered_map<std::string, std::pair<std::string, std::string>>
+            _consts;  ///< Map of compile time constants identifiers and types.
+        std::unordered_map<std::string, std::vector<std::string>> _types;  ///< Map of types and assignabled types.
+        std::unordered_map<std::string, std::vector<FunType>> _funs;       ///< Map of function identifiers and informations.
+        std::unordered_map<std::string, std::string> _tmp;                 ///< Map of temporary variables and types.
+        std::shared_ptr<Scope> _parent;                                    ///< Shared pointer to the parent scope.
     };
 
 }  // namespace vnd

@@ -52,13 +52,13 @@ namespace vnd {
          * @brief Constructs an Instruction.
          * @param filename String representing the filename that contains the instruction.
          */
-        Instruction(const std::string_view filename) noexcept;
-        static const std::vector<TokenType> _expressionStartTokens; ///< Vector of the token types that can start an expression.
-        std::vector<TokenType> _allowedTokens;                      ///< Vector of tokens that are allowed.
-        std::vector<Token> _tokens;                                 ///< Vector of previous tokens.
-        std::vector<InstructionType> _types;                        ///< Vector of the types of the instruction.
-        std::vector<bool> _booleanOperators;                        ///< Vector of the flags for boolean operators.
-        std::string_view _filename;                                 ///< Filename that contains the instruction.
+        explicit Instruction(const std::string_view filename) noexcept;
+        static const std::vector<TokenType> _expressionStartTokens;  ///< Vector of the token types that can start an expression.
+        std::vector<TokenType> _allowedTokens;                       ///< Vector of tokens that are allowed.
+        std::vector<Token> _tokens;                                  ///< Vector of previous tokens.
+        std::vector<InstructionType> _types;                         ///< Vector of the types of the instruction.
+        std::vector<bool> _booleanOperators;                         ///< Vector of the flags for boolean operators.
+        std::string_view _filename;                                  ///< Filename that contains the instruction.
 
         /**
          * @brief Checks an identifier or unary operator token.
@@ -82,7 +82,7 @@ namespace vnd {
          * @brief Checks an operator token.
          */
         void checkEqualOperator() noexcept;
-    
+
         /**
          * @brief Checks a boolean or logical operator token.
          * @param type TokenType of the token.
@@ -253,7 +253,6 @@ namespace vnd {
          * @brief Adds the unary operator related token types to the allowed types.
          */
         inline void emplaceUnaryOperator(const TokenType &type) noexcept;
-
     };
 }  // namespace vnd
 

@@ -167,43 +167,43 @@ TEST_CASE("CodeSourceLocation toString() produces expected string", "[CodeSource
 
 TEST_CASE("corrected format for Tokentype", "[token_type]") {
     using enum vnd::TokenType;
-    REQ_FORMAT(INTEGER, "INTEGER");
-    REQ_FORMAT(DOUBLE, "DOUBLE");
+    REQ_FORMAT(INTEGER, "INTEGER")
+    REQ_FORMAT(DOUBLE, "DOUBLE")
     REQ_FORMAT(BOOLEAN, "BOOLEAN")
-    REQ_FORMAT(OPERATOR, "OPERATOR");
-    REQ_FORMAT(MINUS_OPERATOR, "MINUS_OPERATOR");
-    REQ_FORMAT(EQUAL_OPERATOR, "EQUAL_OPERATOR");
-    REQ_FORMAT(DOT_OPERATOR, "DOT_OPERATOR");
-    REQ_FORMAT(IDENTIFIER, "IDENTIFIER");
-    REQ_FORMAT(CHAR, "CHAR");
-    REQ_FORMAT(STRING, "STRING");
-    REQ_FORMAT(K_MAIN, "K_MAIN");
-    REQ_FORMAT(K_VAR, "K_VAR");
-    REQ_FORMAT(K_FOR, "K_FOR");
-    REQ_FORMAT(K_IF, "K_IF");
-    REQ_FORMAT(K_WHILE, "K_WHILE");
-    REQ_FORMAT(K_ELSE, "K_ELSE");
-    REQ_FORMAT(K_FOR, "K_FOR");
-    REQ_FORMAT(K_BREAK, "BREAK");
-    REQ_FORMAT(K_FUN, "K_FUN");
-    REQ_FORMAT(K_RETURN, "K_RETURN");
-    REQ_FORMAT(K_NULLPTR, "K_NULLPTR");
-    REQ_FORMAT(OPEN_PARENTESIS, "OPEN_PARENTESIS");
-    REQ_FORMAT(OPEN_SQ_PARENTESIS, "OPEN_SQ_PARENTESIS");
-    REQ_FORMAT(OPEN_CUR_PARENTESIS, "OPEN_CUR_PARENTESIS");
-    REQ_FORMAT(CLOSE_PARENTESIS, "CLOSE_PARENTESIS");
-    REQ_FORMAT(CLOSE_SQ_PARENTESIS, "CLOSE_SQ_PARENTESIS");
-    REQ_FORMAT(CLOSE_CUR_PARENTESIS, "CLOSE_CUR_PARENTESIS");
-    REQ_FORMAT(OPERATION_EQUAL, "OPERATION_EQUAL");
-    REQ_FORMAT(BOOLEAN_OPERATOR, "BOOLEAN_OPERATOR");
-    REQ_FORMAT(NOT_OPERATOR, "NOT_OPERATOR");
-    REQ_FORMAT(LOGICAL_OPERATOR, "LOGICAL_OPERATOR");
-    REQ_FORMAT(UNARY_OPERATOR, "UNARY_OPERATOR");
-    REQ_FORMAT(COMMA, "COMMA");
-    REQ_FORMAT(COLON, "COLON");
-    REQ_FORMAT(COMMENT, "COMMENT");
-    REQ_FORMAT(EOFT, "EOF");
-    REQ_FORMAT(UNKNOWN, "UNKNOWN");
+    REQ_FORMAT(OPERATOR, "OPERATOR")
+    REQ_FORMAT(MINUS_OPERATOR, "MINUS_OPERATOR")
+    REQ_FORMAT(EQUAL_OPERATOR, "EQUAL_OPERATOR")
+    REQ_FORMAT(DOT_OPERATOR, "DOT_OPERATOR")
+    REQ_FORMAT(IDENTIFIER, "IDENTIFIER")
+    REQ_FORMAT(CHAR, "CHAR")
+    REQ_FORMAT(STRING, "STRING")
+    REQ_FORMAT(K_MAIN, "K_MAIN")
+    REQ_FORMAT(K_VAR, "K_VAR")
+    REQ_FORMAT(K_FOR, "K_FOR")
+    REQ_FORMAT(K_IF, "K_IF")
+    REQ_FORMAT(K_WHILE, "K_WHILE")
+    REQ_FORMAT(K_ELSE, "K_ELSE")
+    REQ_FORMAT(K_FOR, "K_FOR")
+    REQ_FORMAT(K_BREAK, "BREAK")
+    REQ_FORMAT(K_FUN, "K_FUN")
+    REQ_FORMAT(K_RETURN, "K_RETURN")
+    REQ_FORMAT(K_NULLPTR, "K_NULLPTR")
+    REQ_FORMAT(OPEN_PARENTESIS, "OPEN_PARENTESIS")
+    REQ_FORMAT(OPEN_SQ_PARENTESIS, "OPEN_SQ_PARENTESIS")
+    REQ_FORMAT(OPEN_CUR_PARENTESIS, "OPEN_CUR_PARENTESIS")
+    REQ_FORMAT(CLOSE_PARENTESIS, "CLOSE_PARENTESIS")
+    REQ_FORMAT(CLOSE_SQ_PARENTESIS, "CLOSE_SQ_PARENTESIS")
+    REQ_FORMAT(CLOSE_CUR_PARENTESIS, "CLOSE_CUR_PARENTESIS")
+    REQ_FORMAT(OPERATION_EQUAL, "OPERATION_EQUAL")
+    REQ_FORMAT(BOOLEAN_OPERATOR, "BOOLEAN_OPERATOR")
+    REQ_FORMAT(NOT_OPERATOR, "NOT_OPERATOR")
+    REQ_FORMAT(LOGICAL_OPERATOR, "LOGICAL_OPERATOR")
+    REQ_FORMAT(UNARY_OPERATOR, "UNARY_OPERATOR")
+    REQ_FORMAT(COMMA, "COMMA")
+    REQ_FORMAT(COLON, "COLON")
+    REQ_FORMAT(COMMENT, "COMMENT")
+    REQ_FORMAT(EOFT, "EOF")
+    REQ_FORMAT(UNKNOWN, "UNKNOWN")
 }
 
 TEST_CASE("default constructed token", "[token]") {
@@ -528,29 +528,29 @@ TEST_CASE("tokenizer emit unknown token on non closed string token", "[tokenizer
 
 TEST_CASE("corrected format for InstructionType", "[Instruction_type]") {
     using enum vnd::InstructionType;
-    REQ_FORMAT(PARAMETER_EXPRESSION, "PARAMETER_EXPRESSION");
-    REQ_FORMAT(OPERATION, "OPERATION");
-    REQ_FORMAT(ASSIGNATION, "ASSIGNATION");
-    REQ_FORMAT(EXPRESSION, "EXPRESSION");
-    REQ_FORMAT(SQUARE_EXPRESSION, "SQUARE_EXPRESSION");
-    REQ_FORMAT(RETURN_EXPRESSION, "RETURN_EXPRESSION");
-    REQ_FORMAT(DECLARATION, "DECLARATION");
-    REQ_FORMAT(INITIALIZATION, "INITIALIZATION");
-    REQ_FORMAT(ARRAY_INIZIALIZATION, "ARRAY_INIZIALIZATION");
-    REQ_FORMAT(MAIN, "MAIN");
-    REQ_FORMAT(STRUCTURE, "STRUCTURE");
-    REQ_FORMAT(ELSE, "ELSE");
-    REQ_FORMAT(FOR_STRUCTURE, "FOR_STRUCTURE");
-    REQ_FORMAT(BREAK, "BREAK");
-    REQ_FORMAT(FOR_INITIALIZATION, "FOR_INITIALIZATION");
-    REQ_FORMAT(FOR_CONDITION, "FOR_CONDITION");
-    REQ_FORMAT(FOR_STEP, "FOR_STEP");
-    REQ_FORMAT(DEFINITION, "DEFINITION");
-    REQ_FORMAT(PARAMETER_DEFINITION, "PARAMETER_DEFINITION");
-    REQ_FORMAT(RETURN_DEFINITION, "RETURN_DEFINITION");
-    REQ_FORMAT(OPEN_SCOPE, "OPEN_SCOPE");
-    REQ_FORMAT(CLOSE_SCOPE, "CLOSE_SCOPE");
-    REQ_FORMAT(BLANK, "BLANK");
+    REQ_FORMAT(PARAMETER_EXPRESSION, "PARAMETER_EXPRESSION")
+    REQ_FORMAT(OPERATION, "OPERATION")
+    REQ_FORMAT(ASSIGNATION, "ASSIGNATION")
+    REQ_FORMAT(EXPRESSION, "EXPRESSION")
+    REQ_FORMAT(SQUARE_EXPRESSION, "SQUARE_EXPRESSION")
+    REQ_FORMAT(RETURN_EXPRESSION, "RETURN_EXPRESSION")
+    REQ_FORMAT(DECLARATION, "DECLARATION")
+    REQ_FORMAT(INITIALIZATION, "INITIALIZATION")
+    REQ_FORMAT(ARRAY_INIZIALIZATION, "ARRAY_INIZIALIZATION")
+    REQ_FORMAT(MAIN, "MAIN")
+    REQ_FORMAT(STRUCTURE, "STRUCTURE")
+    REQ_FORMAT(ELSE, "ELSE")
+    REQ_FORMAT(FOR_STRUCTURE, "FOR_STRUCTURE")
+    REQ_FORMAT(BREAK, "BREAK")
+    REQ_FORMAT(FOR_INITIALIZATION, "FOR_INITIALIZATION")
+    REQ_FORMAT(FOR_CONDITION, "FOR_CONDITION")
+    REQ_FORMAT(FOR_STEP, "FOR_STEP")
+    REQ_FORMAT(DEFINITION, "DEFINITION")
+    REQ_FORMAT(PARAMETER_DEFINITION, "PARAMETER_DEFINITION")
+    REQ_FORMAT(RETURN_DEFINITION, "RETURN_DEFINITION")
+    REQ_FORMAT(OPEN_SCOPE, "OPEN_SCOPE")
+    REQ_FORMAT(CLOSE_SCOPE, "CLOSE_SCOPE")
+    REQ_FORMAT(BLANK, "BLANK")
 }
 
 TEST_CASE("Instruction typeToString function", "[Instruction]") {
@@ -574,33 +574,35 @@ TEST_CASE("Instruction checkToken function for invalid tokens", "[Instruction]")
 }
 
 TEST_CASE("Corrected type of assignation instruction", "[Instruction]") {
+    using enum vnd::TokenType;
     vnd::Instruction instruction = vnd::Instruction::create(filename);
     REQUIRE(instruction.getLastType() == vnd::InstructionType::BLANK);
-    instruction.checkToken(vnd::Token{vnd::TokenType::IDENTIFIER, "a", vnd::CodeSourceLocation(filename, 1, 0)});
+    instruction.checkToken(vnd::Token{IDENTIFIER, "a", vnd::CodeSourceLocation(filename, 1, 0)});
     REQUIRE(instruction.getLastType() == vnd::InstructionType::OPERATION);
-    instruction.checkToken(vnd::Token{vnd::TokenType::EQUAL_OPERATOR, "", vnd::CodeSourceLocation(filename, 1, 1)});
+    instruction.checkToken(vnd::Token{EQUAL_OPERATOR, "", vnd::CodeSourceLocation(filename, 1, 1)});
     REQUIRE(instruction.getLastType() == vnd::InstructionType::ASSIGNATION);
-    instruction.checkToken(vnd::Token{vnd::TokenType::OPEN_PARENTESIS, "", vnd::CodeSourceLocation(filename, 1, 2)});
+    instruction.checkToken(vnd::Token{OPEN_PARENTESIS, "", vnd::CodeSourceLocation(filename, 1, 2)});
     REQUIRE(instruction.getLastType() == vnd::InstructionType::EXPRESSION);
 }
 
 TEST_CASE("Corrected type of multy assignation instruction", "[Instruction]") {
+    using enum vnd::TokenType;
     vnd::Instruction instruction = vnd::Instruction::create(filename);
-    instruction.checkToken(vnd::Token{vnd::TokenType::K_VAR, "", vnd::CodeSourceLocation(filename, 0, 0)});
-    instruction.checkToken(vnd::Token{vnd::TokenType::IDENTIFIER, "", vnd::CodeSourceLocation(filename, 0, 1)});
+    instruction.checkToken(vnd::Token{K_VAR, "", vnd::CodeSourceLocation(filename, 0, 0)});
+    instruction.checkToken(vnd::Token{IDENTIFIER, "", vnd::CodeSourceLocation(filename, 0, 1)});
     REQUIRE(instruction.getLastType() == vnd::InstructionType::DECLARATION);
-    instruction.checkToken(vnd::Token{vnd::TokenType::COLON, "", vnd::CodeSourceLocation(filename, 0, 2)});
-    instruction.checkToken(vnd::Token{vnd::TokenType::IDENTIFIER, "", vnd::CodeSourceLocation(filename, 0, 3)});
-    instruction.checkToken(vnd::Token{vnd::TokenType::OPEN_SQ_PARENTESIS, "", vnd::CodeSourceLocation(filename, 0, 4)});
+    instruction.checkToken(vnd::Token{COLON, "", vnd::CodeSourceLocation(filename, 0, 2)});
+    instruction.checkToken(vnd::Token{IDENTIFIER, "", vnd::CodeSourceLocation(filename, 0, 3)});
+    instruction.checkToken(vnd::Token{OPEN_SQ_PARENTESIS, "", vnd::CodeSourceLocation(filename, 0, 4)});
     REQUIRE(instruction.getLastType() == vnd::InstructionType::SQUARE_EXPRESSION);
-    instruction.checkToken(vnd::Token{vnd::TokenType::CLOSE_SQ_PARENTESIS, "", vnd::CodeSourceLocation(filename, 0, t_colum2)});
-    instruction.checkToken(vnd::Token{vnd::TokenType::EQUAL_OPERATOR, "", vnd::CodeSourceLocation(filename, 0, t_colum)});
+    instruction.checkToken(vnd::Token{CLOSE_SQ_PARENTESIS, "", vnd::CodeSourceLocation(filename, 0, t_colum2)});
+    instruction.checkToken(vnd::Token{EQUAL_OPERATOR, "", vnd::CodeSourceLocation(filename, 0, t_colum)});
     REQUIRE(instruction.getLastType() == vnd::InstructionType::INITIALIZATION);
-    instruction.checkToken(vnd::Token{vnd::TokenType::IDENTIFIER, "", vnd::CodeSourceLocation(filename, 0, t_colum3)});
-    instruction.checkToken(vnd::Token{vnd::TokenType::OPEN_SQ_PARENTESIS, "", vnd::CodeSourceLocation(filename, 0, t_colum4)});
-    instruction.checkToken(vnd::Token{vnd::TokenType::INTEGER, "", vnd::CodeSourceLocation(filename, 0, t_colum5)});
+    instruction.checkToken(vnd::Token{IDENTIFIER, "", vnd::CodeSourceLocation(filename, 0, t_colum3)});
+    instruction.checkToken(vnd::Token{OPEN_SQ_PARENTESIS, "", vnd::CodeSourceLocation(filename, 0, t_colum4)});
+    instruction.checkToken(vnd::Token{INTEGER, "", vnd::CodeSourceLocation(filename, 0, t_colum5)});
     REQUIRE(instruction.getLastType() == vnd::InstructionType::SQUARE_EXPRESSION);
-    instruction.checkToken(vnd::Token{vnd::TokenType::CLOSE_SQ_PARENTESIS, "", vnd::CodeSourceLocation(filename, 0, t_colum6)});
+    instruction.checkToken(vnd::Token{CLOSE_SQ_PARENTESIS, "", vnd::CodeSourceLocation(filename, 0, t_colum6)});
 }
 
 TEST_CASE("Corrected type of parameter expression instruction", "[Instruction]") {
@@ -611,12 +613,13 @@ TEST_CASE("Corrected type of parameter expression instruction", "[Instruction]")
 }
 
 TEST_CASE("Corrected type of parameter definition instruction", "[Instruction]") {
+    using enum vnd::TokenType;
     vnd::Instruction instruction = vnd::Instruction::create(filename);
-    instruction.checkToken(vnd::Token{vnd::TokenType::K_FUN, "", vnd::CodeSourceLocation(filename, 0, 0)});
-    instruction.checkToken(vnd::Token{vnd::TokenType::IDENTIFIER, "", vnd::CodeSourceLocation(filename, 0, 1)});
-    instruction.checkToken(vnd::Token{vnd::TokenType::OPEN_PARENTESIS, "", vnd::CodeSourceLocation(filename, 0, 2)});
+    instruction.checkToken(vnd::Token{K_FUN, "", vnd::CodeSourceLocation(filename, 0, 0)});
+    instruction.checkToken(vnd::Token{IDENTIFIER, "", vnd::CodeSourceLocation(filename, 0, 1)});
+    instruction.checkToken(vnd::Token{OPEN_PARENTESIS, "", vnd::CodeSourceLocation(filename, 0, 2)});
     REQUIRE(instruction.getLastType() == vnd::InstructionType::PARAMETER_DEFINITION);
-    instruction.checkToken(vnd::Token{vnd::TokenType::CLOSE_PARENTESIS, "", vnd::CodeSourceLocation(filename, 0, 3)});
+    instruction.checkToken(vnd::Token{CLOSE_PARENTESIS, "", vnd::CodeSourceLocation(filename, 0, 3)});
 }
 
 TEST_CASE("Corrected type of return expression instruction", "[Instruction]") {
@@ -634,17 +637,18 @@ TEST_CASE("Corrected type of main instruction", "[Instruction]") {
 }
 
 TEST_CASE("Corrected type of for instruction", "[Instruction]") {
+    using enum vnd::TokenType;
     vnd::Instruction instruction = vnd::Instruction::create(filename);
-    instruction.checkToken(vnd::Token{vnd::TokenType::K_FOR, "", vnd::CodeSourceLocation(filename, 0, 0)});
+    instruction.checkToken(vnd::Token{K_FOR, "", vnd::CodeSourceLocation(filename, 0, 0)});
     REQUIRE(instruction.getLastType() == vnd::InstructionType::FOR_STRUCTURE);
-    instruction.checkToken(vnd::Token{vnd::TokenType::IDENTIFIER, "", vnd::CodeSourceLocation(filename, 0, 1)});
-    instruction.checkToken(vnd::Token{vnd::TokenType::EQUAL_OPERATOR, "", vnd::CodeSourceLocation(filename, 0, 2)});
+    instruction.checkToken(vnd::Token{IDENTIFIER, "", vnd::CodeSourceLocation(filename, 0, 1)});
+    instruction.checkToken(vnd::Token{EQUAL_OPERATOR, "", vnd::CodeSourceLocation(filename, 0, 2)});
     REQUIRE(instruction.getLastType() == vnd::InstructionType::FOR_INITIALIZATION);
-    instruction.checkToken(vnd::Token{vnd::TokenType::DOUBLE, "", vnd::CodeSourceLocation(filename, 0, 3)});
-    instruction.checkToken(vnd::Token{vnd::TokenType::COMMA, "", vnd::CodeSourceLocation(filename, 0, 4)});
+    instruction.checkToken(vnd::Token{DOUBLE, "", vnd::CodeSourceLocation(filename, 0, 3)});
+    instruction.checkToken(vnd::Token{COMMA, "", vnd::CodeSourceLocation(filename, 0, 4)});
     REQUIRE(instruction.getLastType() == vnd::InstructionType::FOR_CONDITION);
-    instruction.checkToken(vnd::Token{vnd::TokenType::DOUBLE, "", vnd::CodeSourceLocation(filename, 0, t_colum2)});
-    instruction.checkToken(vnd::Token{vnd::TokenType::COMMA, "", vnd::CodeSourceLocation(filename, 0, t_colum)});
+    instruction.checkToken(vnd::Token{DOUBLE, "", vnd::CodeSourceLocation(filename, 0, t_colum2)});
+    instruction.checkToken(vnd::Token{COMMA, "", vnd::CodeSourceLocation(filename, 0, t_colum)});
     REQUIRE(instruction.getLastType() == vnd::InstructionType::FOR_STEP);
 }
 TEST_CASE("Instruction toString() Empty tokens", "[Instruction]") {
@@ -654,7 +658,7 @@ TEST_CASE("Instruction toString() Empty tokens", "[Instruction]") {
 
 TEST_CASE("Instruction toString() Empty tokens FMT", "[Instruction]") {
     vnd::Instruction instruction = vnd::Instruction::create(filename);
-    REQ_FORMAT(instruction, "");
+    REQ_FORMAT(instruction, "")
 }
 
 TEST_CASE("Instruction toString()", "[Instruction]") {
@@ -676,7 +680,7 @@ TEST_CASE("Instruction toString() FMT", "[Instruction]") {
     vnd::Instruction instruction = vnd::Instruction::create(filename);
     instruction.checkToken(vnd::Token{vnd::TokenType::K_MAIN, "", vnd::CodeSourceLocation(filename, 0, 0)});
     instruction.checkToken(vnd::Token{vnd::TokenType::OPEN_CUR_PARENTESIS, "", vnd::CodeSourceLocation(filename, 0, 1)});
-    REQ_FORMAT(instruction, "0\t  ");
+    REQ_FORMAT(instruction, "0\t  ")
 }
 
 TEST_CASE("ExpressionFactory emit int type", "[factory]") {
@@ -704,28 +708,30 @@ TEST_CASE("ExpressionFactory emit float type", "[factory]") {
 }
 
 TEST_CASE("ExpressionFactory emit bool type", "[factory]") {
-    std::vector<vnd::Token> tokens = {{vnd::TokenType::OPEN_PARENTESIS, "(", vnd::CodeSourceLocation(filename, 1, 0)},
-                                      {vnd::TokenType::BOOLEAN, "true", vnd::CodeSourceLocation(filename, 1, 1)},
-                                      {vnd::TokenType::LOGICAL_OPERATOR, "||", vnd::CodeSourceLocation(filename, 1, 2)},
-                                      {vnd::TokenType::BOOLEAN, "false", vnd::CodeSourceLocation(filename, 1, t_colum2)},
-                                      {vnd::TokenType::CLOSE_PARENTESIS, ")", vnd::CodeSourceLocation(filename, 1, t_colum)}};
+    using enum vnd::TokenType;
+    std::vector<vnd::Token> tokens = {{OPEN_PARENTESIS, "(", vnd::CodeSourceLocation(filename, 1, 0)},
+                                      {BOOLEAN, "true", vnd::CodeSourceLocation(filename, 1, 1)},
+                                      {LOGICAL_OPERATOR, "||", vnd::CodeSourceLocation(filename, 1, 2)},
+                                      {BOOLEAN, "false", vnd::CodeSourceLocation(filename, 1, t_colum2)},
+                                      {CLOSE_PARENTESIS, ")", vnd::CodeSourceLocation(filename, 1, t_colum)}};
     std::shared_ptr<vnd::Scope> scope = vnd::Scope::createMain();
     auto iterator = tokens.begin();
     vnd::ExpressionFactory factory = vnd::ExpressionFactory::create(iterator, tokens.end(), scope, false, false);
-    auto fpr = factory.parse({vnd::TokenType::CLOSE_PARENTESIS});
+    auto fpr = factory.parse({CLOSE_PARENTESIS});
     REQUIRE(factory.size() == 1);
     REQUIRE(factory.getExpression().getType() == "bool");
 }
 
 TEST_CASE("ExpressionFactory emit function type", "[factory]") {
-    std::vector<vnd::Token> tokens = {{vnd::TokenType::IDENTIFIER, "testPar", vnd::CodeSourceLocation(filename, 1, 0)},
-                                      {vnd::TokenType::OPEN_PARENTESIS, "(", vnd::CodeSourceLocation(filename, 1, 1)},
-                                      {vnd::TokenType::STRING, "Hello", vnd::CodeSourceLocation(filename, 1, 3)},
-                                      {vnd::TokenType::CLOSE_PARENTESIS, ")", vnd::CodeSourceLocation(filename, 1, t_colum4)}};
+    using enum vnd::TokenType;
+    std::vector<vnd::Token> tokens = {{IDENTIFIER, "testPar", vnd::CodeSourceLocation(filename, 1, 0)},
+                                      {OPEN_PARENTESIS, "(", vnd::CodeSourceLocation(filename, 1, 1)},
+                                      {STRING, "Hello", vnd::CodeSourceLocation(filename, 1, 3)},
+                                      {CLOSE_PARENTESIS, ")", vnd::CodeSourceLocation(filename, 1, t_colum4)}};
     std::shared_ptr<vnd::Scope> scope = vnd::Scope::createMain();
     auto iterator = tokens.begin();
     vnd::ExpressionFactory factory = vnd::ExpressionFactory::create(iterator, tokens.end(), scope, false, false);
-    auto fpr = factory.parse({vnd::TokenType::CLOSE_PARENTESIS});
+    auto fpr = factory.parse({CLOSE_PARENTESIS});
     REQUIRE(factory.size() == 1);
     REQUIRE(factory.getExpression().getType() == "int");
 }
