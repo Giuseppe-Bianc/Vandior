@@ -155,7 +155,7 @@ namespace vnd {
                         throw TRANSPILER_EXCEPTIONF(instruction, "Cannot evaluate {} at compile time", jvar);
                     }
                 } else {
-                    _text += FORMAT(" = {}", expression.getText());
+                    _text += FORMAT(" ={}", expression.getText());
                 }
             } else {
                 _text += "{}";
