@@ -45,6 +45,8 @@ namespace vnd {
                 case ELSE:
                     transpileElse(instruction);
                     break;
+                case FOR_CONDITION:
+                    [[fallthrough]];
                 case FOR_STEP:
                     transpileFor(instruction);
                     break;
@@ -77,7 +79,6 @@ namespace vnd {
 
     void Transpiler::checkTrailingBracket(const Instruction &instruction) {
         if(instruction.getTokens().back().getType() == TokenType::CLOSE_CUR_PARENTESIS) {
-            auto parent = _scope->getParent();
             if(_scope->getType() == ScopeType::MAIN_FUNCTION_SCOPE) {
                 if(instruction.getLastType() == InstructionType::MAIN) { _text += "\n"; }
                 _text += FORMAT("{:\t^{}}return 0;\n{:\t^{}}", "", C_ST(_tabs), "", C_ST(_tabs) - 1);
@@ -347,6 +348,15 @@ namespace vnd {
         if(!Scope::isNumber(condition.getType())) {
             throw TranspilerException("For final value must be of numeric type", instruction);
         }
+        if(iterator == endToken) {
+            _text += FORMAT("{}, 1) {{", condition.getText());
+            if(!identifier.empty()) { _scope->addVariable(identifier, type, false); }
+            if(tmp.begin()->getType() == TokenType::CLOSE_SQ_PARENTESIS) {
+                _text += "}";
+                closeScope();
+            }
+            return;
+        }
         iterator++;
         if(std::string error = factory.parse({}); !error.empty()) {
             throw TranspilerException(error, instruction);
@@ -356,11 +366,11 @@ namespace vnd {
             throw TranspilerException("For step value must be of numeric type", instruction);
         }
         _text += FORMAT("{},{}) {{", condition.getText(), step.getText());
-        if(tmp.begin()->getType() == TokenType::CLOSE_SQ_PARENTESIS) {
-            tokens.emplace_back(tmp.at(0));
-            checkTrailingBracket(instruction);
-        }
         if(!identifier.empty()) { _scope->addVariable(identifier, type, false); }
+        if(tmp.begin()->getType() == TokenType::CLOSE_SQ_PARENTESIS) {
+            _text += "}";
+            closeScope();
+        }
     }
 
     std::vector<std::string_view> Transpiler::extractIdentifiers(TokenVecIter &iterator, const Instruction &instruction) const {

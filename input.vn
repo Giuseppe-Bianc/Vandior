@@ -26,6 +26,8 @@ main {
 	for var i: int = 45.43 ^ (num / num1), -100, -1 {
 		println("for 2:\t {}", i)
 	}
-	for num = 1, 1 {} 
+	for var i: float = 0.4, 5.6 {
+		println("for 3:\t {}", i)
+	}
 	
 }
