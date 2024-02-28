@@ -756,11 +756,19 @@ TEST_CASE("Transpiler transpile main instruction", "[transpiler]") {
     REQUIRE(std::filesystem::exists("./output.cpp"));
     std::ifstream stream("./output.cpp");
     std::string code(std::istreambuf_iterator<char>{stream}, {});
+#ifdef __clang__
+    REQUIRE(code == "#include \"../../../../base.hpp\"\n"
+                    "int main(int argc, char **argv) {\n"
+                    "\tconst vnd::vector<string> _args(argv, argv + argc);\n"
+                    "\treturn 0;\n"
+                    "}\n");
+#else
     REQUIRE(code == "#include \"../../../base.hpp\"\n"
                     "int main(int argc, char **argv) {\n"
                     "\tconst vnd::vector<string> _args(argv, argv + argc);\n"
                     "\treturn 0;\n"
                     "}\n");
+#endif
 }
 
 TEST_CASE("Transpiler transpile declaration instruction", "[transpiler]") {
@@ -778,8 +786,13 @@ TEST_CASE("Transpiler transpile declaration instruction", "[transpiler]") {
     REQUIRE(std::filesystem::exists("./output.cpp"));
     std::ifstream stream("./output.cpp");
     std::string code(std::istreambuf_iterator<char>{stream}, {});
+#ifdef __clang__
+    REQUIRE(code == "#include \"../../../../base.hpp\"\n"
+                    "int _num{}, _num1{};\n");
+#else
     REQUIRE(code == "#include \"../../../base.hpp\"\n"
                     "int _num{}, _num1{};\n");
+#endif
 }
 
 TEST_CASE("Transpiler transpile initialization instruction", "[transpiler]") {
@@ -799,8 +812,13 @@ TEST_CASE("Transpiler transpile initialization instruction", "[transpiler]") {
     REQUIRE(std::filesystem::exists("./output.cpp"));
     std::ifstream stream("./output.cpp");
     std::string code(std::istreambuf_iterator<char>{stream}, {});
+#ifdef __clang__
+    REQUIRE(code == "#include \"../../../../base.hpp\"\n"
+                    "int _num = 1, _num1{};\n");
+#else
     REQUIRE(code == "#include \"../../../base.hpp\"\n"
                     "int _num = 1, _num1{};\n");
+#endif
 }
 
 TEST_CASE("Transpiler transpile operation instruction", "[transpiler]") {
@@ -831,12 +849,21 @@ TEST_CASE("Transpiler transpile operation instruction", "[transpiler]") {
     REQUIRE(std::filesystem::exists("./output.cpp"));
     std::ifstream stream("./output.cpp");
     std::string code(std::istreambuf_iterator<char>{stream}, {});
+#ifdef __clang__
+    REQUIRE(code == "#include \"../../../../base.hpp\"\n\n"
+                    "int main(int argc, char **argv) {\n"
+                    "\tconst vnd::vector<string> _args(argv, argv + argc);\n"
+                    "\t_print(string(\"Test {}\"),{ _args.at(0)});\n"
+                    "\treturn 0;\n"
+                    "}\n");
+#else
     REQUIRE(code == "#include \"../../../base.hpp\"\n\n"
                     "int main(int argc, char **argv) {\n"
                     "\tconst vnd::vector<string> _args(argv, argv + argc);\n"
                     "\t_print(string(\"Test {}\"),{ _args.at(0)});\n"
                     "\treturn 0;\n"
                     "}\n");
+#endif
 }
 
 TEST_CASE("Transpiler transpile assignation instruction", "[transpiler]") {
@@ -865,7 +892,19 @@ TEST_CASE("Transpiler transpile assignation instruction", "[transpiler]") {
     REQUIRE(std::filesystem::exists("./output.cpp"));
     std::ifstream stream("./output.cpp");
     std::string code(std::istreambuf_iterator<char>{stream}, {});
-    LINFO("{}", code);
+#ifdef __clang__
+    REQUIRE(code == R"(#include "../../../../base.hpp"
+
+int main(int argc, char **argv) {
+	const vnd::vector<string> _args(argv, argv + argc);
+	int _num{};
+	vnd::tmp["_num"] = _num;
+	_num =  1;
+	vnd::tmp.clear();
+	return 0;
+}
+)");
+#else
     REQUIRE(code == R"(#include "../../../base.hpp"
 
 int main(int argc, char **argv) {
@@ -877,6 +916,7 @@ int main(int argc, char **argv) {
 	return 0;
 }
 )");
+#endif
 }
 
 TEST_CASE("Transpiler transpile if instruction", "[transpiler]") {
@@ -914,6 +954,16 @@ TEST_CASE("Transpiler transpile if instruction", "[transpiler]") {
     REQUIRE(std::filesystem::exists("./output.cpp"));
     std::ifstream stream("./output.cpp");
     std::string code(std::istreambuf_iterator<char>{stream}, {});
+#ifdef __clang__
+    REQUIRE(code == "#include \"../../../../base.hpp\"\n\n"
+                    "int main(int argc, char **argv) {\n"
+                    "\tconst vnd::vector<string> _args(argv, argv + argc);\n"
+                    "\tif(true) {\n"
+                    "\t} else if(false) {\n"
+                    "\t} else {}\n"
+                    "\treturn 0;\n"
+                    "}\n");
+#else
     REQUIRE(code == "#include \"../../../base.hpp\"\n\n"
                     "int main(int argc, char **argv) {\n"
                     "\tconst vnd::vector<string> _args(argv, argv + argc);\n"
@@ -922,6 +972,7 @@ TEST_CASE("Transpiler transpile if instruction", "[transpiler]") {
                     "\t} else {}\n"
                     "\treturn 0;\n"
                     "}\n");
+#endif
 }
 
 TEST_CASE("Transpiler transpile while and break instructions", "[transpiler]") {
@@ -950,6 +1001,16 @@ TEST_CASE("Transpiler transpile while and break instructions", "[transpiler]") {
     REQUIRE(std::filesystem::exists("./output.cpp"));
     std::ifstream stream("./output.cpp");
     std::string code(std::istreambuf_iterator<char>{stream}, {});
+#ifdef __clang__
+    REQUIRE(code == "#include \"../../../../base.hpp\"\n\n"
+                    "int main(int argc, char **argv) {\n"
+                    "\tconst vnd::vector<string> _args(argv, argv + argc);\n"
+                    "\twhile(true) {\n"
+                    "\t\tbreak;\n"
+                    "\t}\n"
+                    "\treturn 0;\n"
+                    "}\n");
+#else
     REQUIRE(code == "#include \"../../../base.hpp\"\n\n"
                     "int main(int argc, char **argv) {\n"
                     "\tconst vnd::vector<string> _args(argv, argv + argc);\n"
@@ -958,6 +1019,7 @@ TEST_CASE("Transpiler transpile while and break instructions", "[transpiler]") {
                     "\t}\n"
                     "\treturn 0;\n"
                     "}\n");
+#endif
 }
 
 TEST_CASE("Transpiler transpile for instruction", "[transpiler]") {
@@ -992,12 +1054,21 @@ TEST_CASE("Transpiler transpile for instruction", "[transpiler]") {
     REQUIRE(std::filesystem::exists("./output.cpp"));
     std::ifstream stream("./output.cpp");
     std::string code(std::istreambuf_iterator<char>{stream}, {});
+#ifdef __clang__
+    REQUIRE(code == "#include \"../../../../base.hpp\"\n\n"
+                    "int main(int argc, char **argv) {\n"
+                    "\tconst vnd::vector<string> _args(argv, argv + argc);\n"
+                    "\tFOR_LOOP(int, _i, 0, 10, 1) {}\n"
+                    "\treturn 0;\n"
+                    "}\n");
+#else
     REQUIRE(code == "#include \"../../../base.hpp\"\n\n"
                     "int main(int argc, char **argv) {\n"
                     "\tconst vnd::vector<string> _args(argv, argv + argc);\n"
                     "\tFOR_LOOP(int, _i, 0, 10, 1) {}\n"
                     "\treturn 0;\n"
                     "}\n");
+#endif
 }
 
 TEST_CASE("Transpiler transpile open and close scope instructions", "[transpiler]") {
@@ -1021,6 +1092,15 @@ TEST_CASE("Transpiler transpile open and close scope instructions", "[transpiler
     REQUIRE(std::filesystem::exists("./output.cpp"));
     std::ifstream stream("./output.cpp");
     std::string code(std::istreambuf_iterator<char>{stream}, {});
+#ifdef __clang__
+    REQUIRE(code == "#include \"../../../../base.hpp\"\n\n"
+                    "int main(int argc, char **argv) {\n"
+                    "\tconst vnd::vector<string> _args(argv, argv + argc);\n"
+                    "\t{\n"
+                    "\t}\n"
+                    "\treturn 0;\n"
+                    "}\n");
+#else
     REQUIRE(code == "#include \"../../../base.hpp\"\n\n"
                     "int main(int argc, char **argv) {\n"
                     "\tconst vnd::vector<string> _args(argv, argv + argc);\n"
@@ -1028,5 +1108,6 @@ TEST_CASE("Transpiler transpile open and close scope instructions", "[transpiler
                     "\t}\n"
                     "\treturn 0;\n"
                     "}\n");
+#endif
 }
 // NOLINTEND(*-include-cleaner)

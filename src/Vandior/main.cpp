@@ -58,6 +58,8 @@ DISABLE_WARNINGS_PUSH(26461 26821)
 #ifdef _WIN32  // Windows
 #ifdef __MINGW32__
 constexpr std::string_view filename = "../../../../input.vn";  // windows mingw form editor, use this when building for mingw
+#elifdef __clang__
+constexpr std::string_view filename = "../../../../input.vn";  // windows mingw form editor, use this when building for clang
 #else
 constexpr std::string_view filename = "../../../input.vn";
 #endif

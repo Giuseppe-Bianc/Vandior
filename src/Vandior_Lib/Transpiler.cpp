@@ -16,7 +16,7 @@ namespace vnd {
         return result;
     }
 
-    bool Transpiler::checkGlobalScope(const InstructionType& type) noexcept {
+    bool Transpiler::checkGlobalScope(const InstructionType &type) noexcept {
         using enum InstructionType;
         return type != OPERATION && type != ASSIGNATION && type != STRUCTURE && type != FOR_CONDITION && type != FOR_STEP &&
                type != OPEN_SCOPE;
@@ -26,7 +26,12 @@ namespace vnd {
         using enum TokenType;
         using enum InstructionType;
         _output.open("output.cpp");
+
+#ifdef __clang__
+        _text += R"(#include "../../../../base.hpp")";
+#else
         _text += R"(#include "../../../base.hpp")";
+#endif
         _text += "\n";
         try {
             for(const auto &instruction : _instructions) {
@@ -344,9 +349,7 @@ namespace vnd {
         auto tokens = instruction.getTokens();
         tmp.emplace_back(tokens.back());
         tokens.pop_back();
-        if(tokens.back().getType() == TokenType::OPEN_CUR_PARENTESIS) {
-            tokens.pop_back();
-        }
+        if(tokens.back().getType() == TokenType::OPEN_CUR_PARENTESIS) { tokens.pop_back(); }
         auto iterator = tokens.begin();
         auto endToken = tokens.end();
         auto factory = ExpressionFactory::create(iterator, endToken, _scope, false);
@@ -372,13 +375,9 @@ namespace vnd {
             return;
         }
         iterator++;
-        if(std::string error = factory.parse({}); !error.empty()) {
-            throw TranspilerException(error, instruction);
-        }
+        if(std::string error = factory.parse({}); !error.empty()) { throw TranspilerException(error, instruction); }
         auto step = factory.getExpression();
-        if(!Scope::isNumber(step.getType())) {
-            throw TranspilerException("For step value must be of numeric type", instruction);
-        }
+        if(!Scope::isNumber(step.getType())) { throw TranspilerException("For step value must be of numeric type", instruction); }
         _text += FORMAT("{},{}) {{", condition.getText(), step.getText());
         if(!identifier.empty()) { _scope->addVariable(identifier, type, false); }
         if(tmp.begin()->getType() == TokenType::CLOSE_CUR_PARENTESIS) {
@@ -391,9 +390,7 @@ namespace vnd {
         std::string_view identifier = instruction.getTokens().begin()->getValue();
         auto scope = _scope;
         while(scope->getType() != ScopeType::LOOP_SCOPE) {
-            if(scope->isGlobalScope()) {
-                throw TRANSPILER_EXCEPTIONF(instruction, "Cannot use {} outside a loop", identifier);
-            }
+            if(scope->isGlobalScope()) { throw TRANSPILER_EXCEPTIONF(instruction, "Cannot use {} outside a loop", identifier); }
             scope = scope->getParent();
         }
         _text += FORMAT("{};", identifier);
@@ -648,16 +645,17 @@ namespace vnd {
         return {};
     }
 
-    
     std::pair<std::string, std::string> Transpiler::transpileForInitialization(TokenVecIter &iterator, const TokenVecIter &end,
-                                                const Instruction &instruction) {
+                                                                               const Instruction &instruction) {
         auto factory = ExpressionFactory::create(iterator, end, _scope, false);
         std::string identifier;
         std::string type;
         std::string typeValue;
         std::string declaration;
         if(iterator->getType() == TokenType::K_VAR) {
-            if(iterator->getValue() != "var") { throw TranspilerException("For variables must be decalred using var", instruction); }
+            if(iterator->getValue() != "var") {
+                throw TranspilerException("For variables must be decalred using var", instruction);
+            }
             iterator++;
             identifier = iterator->getValue();
             iterator++;
@@ -665,7 +663,7 @@ namespace vnd {
             if(!Scope::isNumber(type)) { throw TranspilerException("For variables must be of numeric type", instruction); }
             auto [check, shadowing] = _scope->checkVariable(identifier);
             if(check) {
-                if(!shadowing) { throw TRANSPILER_EXCEPTIONF(instruction , "{} already defined", identifier); }
+                if(!shadowing) { throw TRANSPILER_EXCEPTIONF(instruction, "{} already defined", identifier); }
                 LWARN("{} already defined", identifier);
             }
             declaration = identifier;

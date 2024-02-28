@@ -1,4 +1,5 @@
 #include "Vandior/ExpressionFactory.hpp"
+#include "Vandior/Log.hpp"
 #include <algorithm>
 
 // NOLINTBEGIN(*-include-cleaner, *-env33-c)
@@ -53,14 +54,16 @@ namespace vnd {
         std::string command = FORMAT("python3 -c \"print({})\"", expression);
 #endif
 
-        double result = 0.0;
         std::unique_ptr<FILE, decltype(&PCLOSE)> pipe(POPEN(command.c_str(), "r"), PCLOSE);
         if(!pipe) { return "0"; }
 
-        // NOLINTNEXTLINE(*-err34-c, *-pro-type-vararg, hicpp-vararg)
-        if(fscanf_s(pipe.get(), "%lf", &result) != 1) { result = 0; }
-
-        return std::to_string(result);
+        std::stringstream sss;
+        const std::size_t buffer_size = 128;
+        std::array<char, buffer_size> buffer{};
+        while(fgets(buffer.data(), buffer_size, pipe.get()) != nullptr) { sss << buffer.data(); }
+        std::string result = sss.str();
+        LINFO("{}", result);
+        return result;
     }
 
     void ExpressionFactory::resetVariables() noexcept {
