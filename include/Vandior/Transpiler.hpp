@@ -47,6 +47,13 @@ namespace vnd {
         static std::vector<std::string> tokenize(const std::string &str) noexcept;
 
         /**
+         * @brief Check if an instruction can be placed in the global scope.
+         * @param type InstructionType of the instruction.
+         * @return Bool containing the result of the check.
+         */
+        [[nodiscard]] static bool checkGlobalScope(const InstructionType &type) noexcept;
+
+        /**
          * @brief Checks if there's a trailing bracket in the instruction.
          * @param instruction The instruction to check.
          */

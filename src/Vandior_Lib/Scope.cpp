@@ -24,7 +24,7 @@ namespace vnd {
     }
 
     std::shared_ptr<Scope> Scope::createMain() noexcept {
-        auto mainScope = std::make_shared<Scope>(Scope{nullptr, ScopeType::MAIN_SCOPE});
+        auto mainScope = std::make_shared<Scope>(Scope{nullptr, ScopeType::GLOBAL_SCOPE});
         mainScope->addType("void", {});
         mainScope->addType("int", {});
         mainScope->addType("float", {});
@@ -143,7 +143,7 @@ namespace vnd {
         _funs[key].emplace_back(fun);
     }
 
-    bool Scope::isMainScope() const noexcept { return _parent == nullptr && _type == ScopeType::MAIN_SCOPE; }
+    bool Scope::isGlobalScope() const noexcept { return _parent == nullptr && _type == ScopeType::GLOBAL_SCOPE; }
 
     bool Scope::checkType(const std::string_view type) const noexcept {  // NOLINT(*-no-recursion)
         if(_types.contains(std::string{type})) { return true; }

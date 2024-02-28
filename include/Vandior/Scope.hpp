@@ -102,10 +102,10 @@ namespace vnd {
         void addFun(const std::string_view identifier, const FunType &fun) noexcept;
 
         /**
-         * @brief Checks if it's the main scope.
+         * @brief Checks if it's the global scope.
          * @return Bool containing the result of the check.
          */
-        [[nodiscard]] bool isMainScope() const noexcept;
+        [[nodiscard]] bool isGlobalScope() const noexcept;
 
         /**
          * @brief Checks if a type exixst in the scope.

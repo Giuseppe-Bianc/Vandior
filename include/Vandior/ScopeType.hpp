@@ -7,9 +7,9 @@ namespace vnd {
      * @brief Represents the types of scopes in the programming language.
      */
     enum class ScopeType : short {
-        MAIN_SCOPE,             ///< The main scope of the program.
+        GLOBAL_SCOPE,           ///< The global scope of the program.
+        MAIN_SCOPE,             ///< The scope of the main function.
         FUNCTION_SCOPE,         ///< A function definition scope.
-        MAIN_FUNCTION_SCOPE,    ///< The scope of the main funtion.
         IF_SCOPE,               ///< An if scope.
         ELSE_SCOPE,             ///< An else scope.
         LOOP_SCOPE,             ///< A while or for scope.
@@ -22,14 +22,14 @@ template <> struct fmt::formatter<vnd::ScopeType> : fmt::formatter<std::string_v
         std::string_view name;
         switch(scopeType) {
             using enum vnd::ScopeType;
+        case GLOBAL_SCOPE:
+            name = "GLOBAL_SCOPE";
+            break;
         case MAIN_SCOPE:
             name = "MAIN_SCOPE";
             break;
         case FUNCTION_SCOPE:
             name = "FUNCTION_SCOPE";
-            break;
-        case MAIN_FUNCTION_SCOPE:
-            name = "MAIN_FUNCTION_SCOPE";
             break;
         case IF_SCOPE:
             name = "IF_SCOPE";

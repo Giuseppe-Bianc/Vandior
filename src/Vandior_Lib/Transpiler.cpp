@@ -16,6 +16,12 @@ namespace vnd {
         return result;
     }
 
+    bool Transpiler::checkGlobalScope(const InstructionType& type) noexcept {
+        using enum InstructionType;
+        return type != OPERATION && type != ASSIGNATION && type != STRUCTURE && type != FOR_CONDITION && type != FOR_STEP &&
+               type != OPEN_SCOPE;
+    }
+
     bool Transpiler::transpile() {
         using enum TokenType;
         using enum InstructionType;
@@ -24,8 +30,12 @@ namespace vnd {
         _text += "\n";
         try {
             for(const auto &instruction : _instructions) {
+                const InstructionType type = instruction.getLastType();
+                if(_scope->isGlobalScope() && !Transpiler::checkGlobalScope(type)) {
+                    throw TranspilerException("Cannot place this instruction in the global scope", instruction);
+                }
                 _text += std::string(C_ST(_tabs), '\t');
-                switch(instruction.getLastType()) {
+                switch(type) {
                 case MAIN:
                     transpileMain(instruction);
                     break;
@@ -61,7 +71,7 @@ namespace vnd {
                     break;
                 case CLOSE_SCOPE:
                     _text.pop_back();
-                    if(_scope->isMainScope()) { throw TranspilerException("Unexpected '}'", instruction); }
+                    if(_scope->isGlobalScope()) { throw TranspilerException("Unexpected '}'", instruction); }
                     checkTrailingBracket(instruction);
                     break;
                 default:
@@ -69,7 +79,7 @@ namespace vnd {
                 }
                 _text += "\n";
             }
-            if(!_scope->isMainScope()) { throw TranspilerException("Expected '}'", Instruction::create("")); }
+            if(!_scope->isGlobalScope()) { throw TranspilerException("Expected '}'", Instruction::create("")); }
             _output << _text;
             _output.close();
             LINFO("Transpiling successfully");
@@ -83,7 +93,7 @@ namespace vnd {
 
     void Transpiler::checkTrailingBracket(const Instruction &instruction) {
         if(instruction.getTokens().back().getType() == TokenType::CLOSE_CUR_PARENTESIS) {
-            if(_scope->getType() == ScopeType::MAIN_FUNCTION_SCOPE) {
+            if(_scope->getType() == ScopeType::MAIN_SCOPE) {
                 if(instruction.getLastType() == InstructionType::MAIN) { _text += "\n"; }
                 _text += FORMAT("{:\t^{}}return 0;\n{:\t^{}}", "", C_ST(_tabs), "", C_ST(_tabs) - 1);
             }
@@ -93,12 +103,12 @@ namespace vnd {
     }
 
     void Transpiler::transpileMain(const Instruction &instruction) {
-        if(!_scope->isMainScope()) { throw TranspilerException("Cannot declare main here", instruction); }
+        if(!_scope->isGlobalScope()) { throw TranspilerException("Cannot declare main here", instruction); }
         if(_main) { throw TranspilerException("Main already declared", instruction); }
         if(_scope->getParent() != nullptr) { throw TranspilerException("Cannot declare main here", instruction); }
         _text += "int main(int argc, char **argv) {\n";
         _main = true;
-        openScope(ScopeType::MAIN_FUNCTION_SCOPE);
+        openScope(ScopeType::MAIN_SCOPE);
         auto value = FORMAT("{:\t^{}}const vnd::vector<string> _args(argv, argv + argc);", "", C_ST(_tabs));
         _text += value;
         _scope->addConstant("args", "string[]", value);
@@ -155,7 +165,9 @@ namespace vnd {
                         throw TRANSPILER_EXCEPTIONF(instruction, "Cannot evaluate {} at compile time", jvar);
                     }
                 } else {
-                    _text += FORMAT(" ={}", expression.getText());
+                    value = expression.getText();
+                    while(value.starts_with(' ')) { value.erase(0, 1); }
+                    _text += FORMAT(" = {}", value);
                 }
             } else {
                 _text += "{}";
@@ -379,7 +391,7 @@ namespace vnd {
         std::string_view identifier = instruction.getTokens().begin()->getValue();
         auto scope = _scope;
         while(scope->getType() != ScopeType::LOOP_SCOPE) {
-            if(scope->getType() == ScopeType::MAIN_SCOPE) {
+            if(scope->isGlobalScope()) {
                 throw TRANSPILER_EXCEPTIONF(instruction, "Cannot use {} outside a loop", identifier);
             }
             scope = scope->getParent();
