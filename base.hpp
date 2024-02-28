@@ -11,6 +11,9 @@
 #include <functional>
 #include <cstdint>
 
+#define FOR_LOOP(type, var, initial, final, step) \
+for (type var = initial; (step > 0 ? var < final : var > final); var += step)
+
 class string: public std::string {
 	public:
 		using std::string::string;
@@ -172,6 +175,11 @@ void _println(std::string_view text, const vnd::vector<std::variant<int, float, 
 	_print(text, args);
 	std::cout << std::endl;
 	
+}
+string _readLine() {
+	std::string input;
+	std::getline (std::cin, input);
+	return string(input);
 }
 std::tuple<int, float> _max(vnd::vector<float>) {
 	

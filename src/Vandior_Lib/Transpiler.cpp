@@ -4,7 +4,7 @@
 namespace vnd {
     // NOLINTBEGIN(*-include-cleaner, *-easily-swappable-parameters)
     Transpiler::Transpiler(const std::vector<Instruction> &instructions) noexcept
-      : _tabs(0), _instructions(instructions), _scope(Scope::createMain()), _main(0) {}
+      : _tabs(0), _instructions(instructions), _scope(Scope::createMain()), _main(false) {}
 
     Transpiler Transpiler::create(const std::vector<Instruction> &instructions) noexcept { return {instructions}; }
 
@@ -16,15 +16,26 @@ namespace vnd {
         return result;
     }
 
+    bool Transpiler::checkGlobalScope(const InstructionType& type) noexcept {
+        using enum InstructionType;
+        return type != OPERATION && type != ASSIGNATION && type != STRUCTURE && type != FOR_CONDITION && type != FOR_STEP &&
+               type != OPEN_SCOPE;
+    }
+
     bool Transpiler::transpile() {
         using enum TokenType;
         using enum InstructionType;
         _output.open("output.cpp");
         _text += R"(#include "../../../base.hpp")";
+        _text += "\n";
         try {
             for(const auto &instruction : _instructions) {
+                const InstructionType type = instruction.getLastType();
+                if(_scope->isGlobalScope() && !Transpiler::checkGlobalScope(type)) {
+                    throw TranspilerException("Cannot place this instruction in the global scope", instruction);
+                }
                 _text += std::string(C_ST(_tabs), '\t');
-                switch(instruction.getLastType()) {
+                switch(type) {
                 case MAIN:
                     transpileMain(instruction);
                     break;
@@ -39,14 +50,28 @@ namespace vnd {
                 case ASSIGNATION:
                     transpileAssignation(instruction);
                     break;
+                case STRUCTURE:
+                    transpileStructure(instruction);
+                    break;
+                case ELSE:
+                    transpileElse(instruction);
+                    break;
+                case FOR_CONDITION:
+                    [[fallthrough]];
+                case FOR_STEP:
+                    transpileFor(instruction);
+                    break;
+                case BREAK:
+                    transpileBreak(instruction);
+                    break;
                 case OPEN_SCOPE:
                     _text += "{";
-                    openScope();
+                    openScope(ScopeType::SCOPE);
                     checkTrailingBracket(instruction);
                     break;
                 case CLOSE_SCOPE:
                     _text.pop_back();
-                    if(_scope->isMainScope()) { throw TranspilerException("Unexpected '}'", instruction); }
+                    if(_scope->isGlobalScope()) { throw TranspilerException("Unexpected '}'", instruction); }
                     checkTrailingBracket(instruction);
                     break;
                 default:
@@ -54,7 +79,7 @@ namespace vnd {
                 }
                 _text += "\n";
             }
-            if(!_scope->isMainScope()) { throw TranspilerException("Expected '}'", Instruction::create("")); }
+            if(!_scope->isGlobalScope()) { throw TranspilerException("Expected '}'", Instruction::create("")); }
             _output << _text;
             _output.close();
             LINFO("Transpiling successfully");
@@ -68,11 +93,9 @@ namespace vnd {
 
     void Transpiler::checkTrailingBracket(const Instruction &instruction) {
         if(instruction.getTokens().back().getType() == TokenType::CLOSE_CUR_PARENTESIS) {
-            auto parent = _scope->getParent();
-            if(_main == 1 && parent && parent->isMainScope()) {
+            if(_scope->getType() == ScopeType::MAIN_SCOPE) {
                 if(instruction.getLastType() == InstructionType::MAIN) { _text += "\n"; }
                 _text += FORMAT("{:\t^{}}return 0;\n{:\t^{}}", "", C_ST(_tabs), "", C_ST(_tabs) - 1);
-                _main = -1;
             }
             _text += "}";
             closeScope();
@@ -80,12 +103,12 @@ namespace vnd {
     }
 
     void Transpiler::transpileMain(const Instruction &instruction) {
-        if(!_scope->isMainScope()) { throw TranspilerException("Cannot declare main here", instruction); }
-        if(_main == -1) { throw TranspilerException("Main already declared", instruction); }
+        if(!_scope->isGlobalScope()) { throw TranspilerException("Cannot declare main here", instruction); }
+        if(_main) { throw TranspilerException("Main already declared", instruction); }
         if(_scope->getParent() != nullptr) { throw TranspilerException("Cannot declare main here", instruction); }
-        _text += "\nint main(int argc, char **argv) {\n";
-        _main = 1;
-        openScope();
+        _text += "int main(int argc, char **argv) {\n";
+        _main = true;
+        openScope(ScopeType::MAIN_SCOPE);
         auto value = FORMAT("{:\t^{}}const vnd::vector<string> _args(argv, argv + argc);", "", C_ST(_tabs));
         _text += value;
         _scope->addConstant("args", "string[]", value);
@@ -142,8 +165,12 @@ namespace vnd {
                         throw TRANSPILER_EXCEPTIONF(instruction, "Cannot evaluate {} at compile time", jvar);
                     }
                 } else {
-                    _text += FORMAT(" = {}", expression.getText());
+                    value = expression.getText();
+                    while(value.starts_with(' ')) { value.erase(0, 1); }
+                    _text += FORMAT(" = {}", value);
                 }
+            } else {
+                _text += "{}";
             }
             auto [check, shadowing] = _scope->checkVariable(jvar);
             if(check) {
@@ -158,8 +185,30 @@ namespace vnd {
             emplaceCommaColon(jvar == variables.back());
         }
     }
+
     bool Transpiler::iteratorIs(const TokenVecIter &iterator, const std::string &value) const noexcept {
         return iterator->getValue() == value;
+    }
+
+    void Transpiler::transpileOperation(const Instruction &instruction) {
+        auto tokens = instruction.getTokens();
+        auto iterator = tokens.begin();
+        const auto endToken = tokens.end();
+        std::vector<Expression> expressions;
+        auto factory = ExpressionFactory::create(iterator, endToken, _scope, false);
+        while(iterator != endToken) {
+            if(auto error = factory.parse({TokenType::COMMA}); !error.empty()) { throw TranspilerException(error, instruction); }
+            if(iterator != endToken) { iterator++; }
+        }
+        for(const auto &expression : factory.getExpressions()) {
+            std::string text = expression.getText();
+            if(expression.getType() != "void" && !(text.ends_with("++") || text.ends_with("--"))) {
+                throw TRANSPILER_EXCEPTIONF(instruction, "Invalid operation {}", text);
+            }
+            if(text.starts_with(' ')) { text.erase(0, 1); }
+            _text += FORMAT("{};\n{:\t^{}}", text, "", C_ST(_tabs));
+        }
+        _text.erase(_text.size() - C_ST(_tabs) - 1, C_ST(_tabs) + 1);
     }
 
     // NOLINTNEXTLINE(*-function-cognitive-complexity)
@@ -249,24 +298,105 @@ namespace vnd {
         _scope->clearTmp();
     }
 
-    void Transpiler::transpileOperation(const Instruction &instruction) {
+    void Transpiler::transpileStructure(const Instruction &instruction) {
+        auto tokens = instruction.getTokens();
+        auto iterator = tokens.begin();
+        if(iterator->getValue() == "if") {
+            openScope(ScopeType::IF_SCOPE);
+        } else {
+            openScope(ScopeType::LOOP_SCOPE);
+        }
+        _text += iterator->getValue();
+        iterator += 2;
+        if(std::string error = transpileCondition(iterator, tokens.end()); !error.empty()) {
+            throw TranspilerException(error, instruction);
+        }
+        checkTrailingBracket(instruction);
+    }
+
+    void Transpiler::transpileElse(const Instruction &instruction) {
         auto tokens = instruction.getTokens();
         auto iterator = tokens.begin();
         const auto endToken = tokens.end();
-        std::vector<Expression> expressions;
         auto factory = ExpressionFactory::create(iterator, endToken, _scope, false);
-        while(iterator != endToken) {
-            if(auto error = factory.parse({TokenType::COMMA}); !error.empty()) { throw TranspilerException(error, instruction); }
-            if(iterator != endToken) { iterator++; }
+        if(_scope->getType() != ScopeType::IF_SCOPE) { throw TranspilerException("Unexpected instruction", instruction); }
+        if(_text.back() == '\t') { _text.pop_back(); }
+        closeScope();
+        _text += "} else ";
+        iterator += 2;
+        if(iterator->getType() != TokenType::K_IF) {
+            _text += "{";
+            openScope(ScopeType::ELSE_SCOPE);
+            checkTrailingBracket(instruction);
+            return;
         }
-        for(const auto &expression : factory.getExpressions()) {
-            std::string text = expression.getText();
-            if(expression.getType() != "void" && !(text.ends_with("++") || text.ends_with("--"))) {
-                throw TRANSPILER_EXCEPTIONF(instruction, "Invalid operation {}", text);
+        iterator += 2;
+        _text += "if";
+        if(std::string error = transpileCondition(iterator, tokens.end()); !error.empty()) {
+            throw TranspilerException(error, instruction);
+        }
+        openScope(ScopeType::IF_SCOPE);
+        checkTrailingBracket(instruction);
+    }
+
+    void Transpiler::transpileFor(const Instruction &instruction) {
+        std::vector<Token> tmp;
+        auto tokens = instruction.getTokens();
+        tmp.emplace_back(tokens.back());
+        tokens.pop_back();
+        if(tokens.back().getType() == TokenType::OPEN_CUR_PARENTESIS) {
+            tokens.pop_back();
+        }
+        auto iterator = tokens.begin();
+        auto endToken = tokens.end();
+        auto factory = ExpressionFactory::create(iterator, endToken, _scope, false);
+        _text += "FOR_LOOP(";
+        openScope(ScopeType::LOOP_SCOPE);
+        iterator++;
+        auto [identifier, type] = transpileForInitialization(iterator, endToken, instruction);
+        iterator++;
+        if(std::string error = factory.parse({TokenType::COMMA}); !error.empty()) {
+            throw TranspilerException(error, instruction);
+        }
+        auto condition = factory.getExpression();
+        if(!Scope::isNumber(condition.getType())) {
+            throw TranspilerException("For final value must be of numeric type", instruction);
+        }
+        if(iterator == endToken) {
+            _text += FORMAT("{}, 1) {{", condition.getText());
+            if(!identifier.empty()) { _scope->addVariable(identifier, type, false); }
+            if(tmp.begin()->getType() == TokenType::CLOSE_CUR_PARENTESIS) {
+                _text += "}";
+                closeScope();
             }
-            _text += FORMAT("{};\n{:\t^{}}", text, "", C_ST(_tabs));
+            return;
         }
-        _text.erase(_text.size() - C_ST(_tabs) - 1, C_ST(_tabs) + 1);
+        iterator++;
+        if(std::string error = factory.parse({}); !error.empty()) {
+            throw TranspilerException(error, instruction);
+        }
+        auto step = factory.getExpression();
+        if(!Scope::isNumber(step.getType())) {
+            throw TranspilerException("For step value must be of numeric type", instruction);
+        }
+        _text += FORMAT("{},{}) {{", condition.getText(), step.getText());
+        if(!identifier.empty()) { _scope->addVariable(identifier, type, false); }
+        if(tmp.begin()->getType() == TokenType::CLOSE_CUR_PARENTESIS) {
+            _text += "}";
+            closeScope();
+        }
+    }
+
+    void Transpiler::transpileBreak(const Instruction &instruction) {
+        std::string_view identifier = instruction.getTokens().begin()->getValue();
+        auto scope = _scope;
+        while(scope->getType() != ScopeType::LOOP_SCOPE) {
+            if(scope->isGlobalScope()) {
+                throw TRANSPILER_EXCEPTIONF(instruction, "Cannot use {} outside a loop", identifier);
+            }
+            scope = scope->getParent();
+        }
+        _text += FORMAT("{};", identifier);
     }
 
     std::vector<std::string_view> Transpiler::extractIdentifiers(TokenVecIter &iterator, const Instruction &instruction) const {
@@ -506,8 +636,63 @@ namespace vnd {
         return {type, prefix + typeValue + suffix};
     }
 
-    void Transpiler::openScope() noexcept {
-        auto newScope = Scope::create(_scope);
+    std::string Transpiler::transpileCondition(TokenVecIter &iterator, const TokenVecIter &end) noexcept {
+        auto factory = ExpressionFactory::create(iterator, end, _scope, false);
+        std::string value;
+        if(std::string error = factory.parse({TokenType::CLOSE_PARENTESIS}); !error.empty()) { return error; }
+        Expression expression = factory.getExpression();
+        if(expression.getType() != "bool") { return "Invalid condition type"; }
+        value = expression.getText();
+        while(value.starts_with(' ')) { value.erase(0, 1); }
+        _text += FORMAT("({}) {{", value);
+        return {};
+    }
+
+    
+    std::pair<std::string, std::string> Transpiler::transpileForInitialization(TokenVecIter &iterator, const TokenVecIter &end,
+                                                const Instruction &instruction) {
+        auto factory = ExpressionFactory::create(iterator, end, _scope, false);
+        std::string identifier;
+        std::string type;
+        std::string typeValue;
+        std::string declaration;
+        if(iterator->getType() == TokenType::K_VAR) {
+            if(iterator->getValue() != "var") { throw TranspilerException("For variables must be decalred using var", instruction); }
+            iterator++;
+            identifier = iterator->getValue();
+            iterator++;
+            std::tie(type, typeValue) = transpileType(iterator, end, {TokenType::EQUAL_OPERATOR}, instruction);
+            if(!Scope::isNumber(type)) { throw TranspilerException("For variables must be of numeric type", instruction); }
+            auto [check, shadowing] = _scope->checkVariable(identifier);
+            if(check) {
+                if(!shadowing) { throw TRANSPILER_EXCEPTIONF(instruction , "{} already defined", identifier); }
+                LWARN("{} already defined", identifier);
+            }
+            declaration = identifier;
+        } else {
+            identifier = iterator->getValue();
+            iterator++;
+        }
+        if(identifier.starts_with("_")) {
+            identifier = FORMAT("v{}", identifier);
+        } else {
+            identifier = FORMAT("_{}", identifier);
+        }
+        _text += FORMAT("{}, {},", typeValue, identifier);
+        iterator++;
+        if(std::string error = factory.parse({TokenType::COMMA}); !error.empty()) {
+            throw TranspilerException(error, instruction);
+        }
+        auto expression = factory.getExpression();
+        if(!Scope::isNumber(expression.getType())) {
+            throw TranspilerException("For variables must be of numeric type", instruction);
+        }
+        _text += FORMAT("{},", expression.getText());
+        return {declaration, type};
+    }
+
+    void Transpiler::openScope(const ScopeType &type) noexcept {
+        auto newScope = Scope::create(_scope, type);
         _scope = newScope;
         _tabs++;
     }

@@ -37,7 +37,10 @@ namespace vnd {
             if(params.at(0) == ' ') { params.erase(0, 1); }
             params.pop_back();
         }
-        if(variadic.has_value()) { params += "}"; }
+        if(variadic.has_value()) {
+            if(pos <= variadic.value()) {params += ", {";}
+            params += "}";
+        }
         return params;
     }
 
@@ -154,6 +157,7 @@ namespace vnd {
         case DOT_OPERATOR:
             return "dot";
         case BOOLEAN_OPERATOR:
+            if(_iterator->getValue() == "==" || _iterator->getValue() == "!=") { return "equal"; }
             return "boolean";
         case NOT_OPERATOR:
             return "not";
@@ -317,11 +321,17 @@ namespace vnd {
             }
         }
         for(const auto &expression : factory.getExpressions()) {
+            bool assignable = false;
             if(vectorType.empty()) {
                 vectorType = expression.getType();
-            } else if(!_scope->canAssign(vectorType, expression.getType())) {
-                return FORMAT("Incompatible types in vector {}, {}", vectorType, expression.getType());
+                assignable = true;
+            } else if(_scope->canAssign(vectorType, expression.getType())) {
+                assignable = true;
+            } else if(_scope->canAssign(expression.getType(), vectorType)) {
+                vectorType = expression.getType();
+                assignable = true;
             }
+            if(!assignable) { return FORMAT("Incompatible types in vector {}, {}", vectorType, expression.getType()); }
             if(expression.isConst()) {
                 constValue += FORMAT("{},", expression.getValue());
             } else {
@@ -386,6 +396,10 @@ namespace vnd {
             return {};
         }
         if(isTokentype(TokenType::OPEN_SQ_PARENTESIS)) { return ""; }
+        if(newType == "nullptr" && !Scope::isNumber(std::get<2>(oldType))) {
+            std::get<2>(oldType) = newType;
+            return {};
+        }
         if(_sq && !isSquareType(newType)) { return FORMAT("Type not allowed {}", newType); }
         if(std::get<2>(oldType).empty()) {
             if(newType == "operator") {
@@ -402,6 +416,10 @@ namespace vnd {
         if(std::get<2>(oldType) == bols && newType == nots) { return ""; }
         if(std::get<2>(oldType) == newType) { return ""; }
         if(Scope::isNumber(std::get<2>(oldType)) && (Scope::isNumber(std::string{newType}) || newType == "operator")) {
+            return {};
+        }
+        if(newType == "equal") {
+            std::get<0>(oldType) = true;
             return {};
         }
         if(newType == "boolean") {

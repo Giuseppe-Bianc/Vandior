@@ -1,4 +1,5 @@
 #pragma once
+#include "ScopeType.hpp"
 #include "Expression.hpp"
 #include "FunType.hpp"
 #include "headers.hpp"
@@ -13,9 +14,10 @@ namespace vnd {
         /**
          * @brief Creates a Scope instance using a shared pointer.
          * @param parent Shared pointer to the parent scope.
+         * @param type ScopeType of the scope.
          * @return Shared pointer to an Scope instance.
          */
-        [[nodiscard]] static std::shared_ptr<Scope> create(std::shared_ptr<Scope> parent) noexcept;
+        [[nodiscard]] static std::shared_ptr<Scope> create(std::shared_ptr<Scope> parent, const ScopeType &type) noexcept;
 
         /**
          * @brief Creates the scope used as main scope in the program (not by the main function).
@@ -59,6 +61,12 @@ namespace vnd {
         [[nodiscard]] std::shared_ptr<Scope> getParent() const noexcept;
 
         /**
+         * @Gets the scope type.
+         * @return ScopeType of the scope.
+         */
+        [[nodiscard]] ScopeType getType() const noexcept;
+
+        /**
          * @brief Removes the parent scope.
          */
         void removeParent() noexcept;
@@ -94,10 +102,10 @@ namespace vnd {
         void addFun(const std::string_view identifier, const FunType &fun) noexcept;
 
         /**
-         * @brief Checks if it's the main scope.
+         * @brief Checks if it's the global scope.
          * @return Bool containing the result of the check.
          */
-        [[nodiscard]] bool isMainScope() const noexcept;
+        [[nodiscard]] bool isGlobalScope() const noexcept;
 
         /**
          * @brief Checks if a type exixst in the scope.
@@ -195,8 +203,9 @@ namespace vnd {
         /**
          * @brief Constructor of a Scope.
          * @param parent Shared pointer to the parent scope.
+         * @param type ScopeType of the scope.
          */
-        explicit Scope(std::shared_ptr<Scope> parent) noexcept;
+        explicit Scope(std::shared_ptr<Scope> parent, const ScopeType &type) noexcept;
 
         static std::vector<std::string> _numberTypes;     ///< Vector of numeric types
         static std::vector<std::string> _primitiveTypes;  ///< Vector of primitive types
@@ -217,14 +226,15 @@ namespace vnd {
          */
         [[nodiscard]] static std::string getType(const std::string &type) noexcept;
 
-        std::unordered_map<std::string, std::string> _vars;  ///< Map of variables identifiers and types.
-        std::unordered_map<std::string, std::string> _vals;  ///< Map of constants identifiers and types.
+        std::unordered_map<std::string, std::string> _vars;                             ///< Map of variables identifiers and types.
+        std::unordered_map<std::string, std::string> _vals;                             ///< Map of constants identifiers and types.
         std::unordered_map<std::string, std::pair<std::string, std::string>>
-            _consts;  ///< Map of compile time constants identifiers and types.
-        std::unordered_map<std::string, std::vector<std::string>> _types;  ///< Map of types and assignabled types.
-        std::unordered_map<std::string, std::vector<FunType>> _funs;       ///< Map of function identifiers and informations.
-        std::unordered_map<std::string, std::string> _tmp;                 ///< Map of temporary variables and types.
-        std::shared_ptr<Scope> _parent;                                    ///< Shared pointer to the parent scope.
+            _consts;   ///< Map of compile time constants identifiers and types.
+        std::unordered_map<std::string, std::vector<std::string>> _types;               ///< Map of types and assignabled types.
+        std::unordered_map<std::string, std::vector<FunType>> _funs;                    ///< Map of function identifiers and informations.
+        std::unordered_map<std::string, std::string> _tmp;                              ///< Map of temporary variables and types.
+        std::shared_ptr<Scope> _parent;                                                 ///< Shared pointer to the parent scope.
+        ScopeType _type;  
     };
 
 }  // namespace vnd

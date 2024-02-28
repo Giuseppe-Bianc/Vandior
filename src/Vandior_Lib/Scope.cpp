@@ -1,4 +1,5 @@
 #include "Vandior/Scope.hpp"
+#include <Vandior/Log.hpp>
 // NOLINTBEGIN(*-include-cleaner,*-identifier-length)
 /**
  * This macro disable some msvc warnigs.
@@ -14,14 +15,16 @@ namespace vnd {
     std::vector<std::string> Scope::_primitiveTypes = {"int", "float", "double", "char", "bool", "string"};
     // NOLINTEND
 
-    Scope::Scope(std::shared_ptr<Scope> parent) noexcept : _parent(std::move(parent)) {}
+    Scope::Scope(std::shared_ptr<Scope> parent, const ScopeType &type) noexcept : _parent(std::move(parent)), _type(type) {
+        LINFO(_type);
+    }
 
-    std::shared_ptr<Scope> Scope::create(std::shared_ptr<Scope> parent) noexcept {
-        return std::make_shared<Scope>(Scope{std::move(parent)});
+    std::shared_ptr<Scope> Scope::create(std::shared_ptr<Scope> parent, const ScopeType &type) noexcept {
+        return std::make_shared<Scope>(Scope{std::move(parent), type});
     }
 
     std::shared_ptr<Scope> Scope::createMain() noexcept {
-        auto mainScope = std::make_shared<Scope>(Scope{nullptr});
+        auto mainScope = std::make_shared<Scope>(Scope{nullptr, ScopeType::GLOBAL_SCOPE});
         mainScope->addType("void", {});
         mainScope->addType("int", {});
         mainScope->addType("float", {});
@@ -40,6 +43,7 @@ namespace vnd {
         mainScope->addConstant("Derived._derivedConst", "bool", "true");
         mainScope->addFun("print", FunType::create("void", {"string", "any..."}));
         mainScope->addFun("println", FunType::create("void", {"string", "any..."}));
+        mainScope->addFun("readLine", FunType::create("string", {}));
         mainScope->addFun("_test", FunType::create("int", {}));
         mainScope->addFun("testPar", FunType::create("int", {"int", "int"}));
         mainScope->addFun("testPar", FunType::create("int", {"string"}));
@@ -116,6 +120,8 @@ namespace vnd {
 
     std::shared_ptr<Scope> Scope::getParent() const noexcept { return _parent; }
 
+    ScopeType Scope::getType() const noexcept { return _type; }
+
     void Scope::removeParent() noexcept { _parent = nullptr; }
 
     void Scope::addType(const std::string_view &type, const std::vector<std::string> &assignable) noexcept {
@@ -137,7 +143,7 @@ namespace vnd {
         _funs[key].emplace_back(fun);
     }
 
-    bool Scope::isMainScope() const noexcept { return _parent == nullptr; }
+    bool Scope::isGlobalScope() const noexcept { return _parent == nullptr && _type == ScopeType::GLOBAL_SCOPE; }
 
     bool Scope::checkType(const std::string_view type) const noexcept {  // NOLINT(*-no-recursion)
         if(_types.contains(std::string{type})) { return true; }

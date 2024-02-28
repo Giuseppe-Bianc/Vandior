@@ -37,7 +37,7 @@ namespace vnd {
         std::ofstream _output;                   ///< Output file stream.
         std::vector<Instruction> _instructions;  ///< Vector of instructions.
         std::shared_ptr<Scope> _scope;           ///< Shared pointer to the current scope.
-        char _main;                              ///< Character used to check main transpiling.
+        bool _main;                              ///< Flag used to check main transpiling.
 
         /**
          * @brief Tokenize a string.
@@ -45,6 +45,13 @@ namespace vnd {
          * @return Vector of tokenized string.
          */
         static std::vector<std::string> tokenize(const std::string &str) noexcept;
+
+        /**
+         * @brief Check if an instruction can be placed in the global scope.
+         * @param type InstructionType of the instruction.
+         * @return Bool containing the result of the check.
+         */
+        [[nodiscard]] static bool checkGlobalScope(const InstructionType &type) noexcept;
 
         /**
          * @brief Checks if there's a trailing bracket in the instruction.
@@ -75,6 +82,30 @@ namespace vnd {
          * @param instruction The instruction to transpile.
          */
         void transpileAssignation(const Instruction &instruction);
+
+        /**
+         * @brief Transpile a if or while instruction of the program.
+         * @param instruction The instruction to transpile.
+         */
+        void transpileStructure(const Instruction &instruction);
+
+        /**
+         * @brief Transpile an else instruction of the program.
+         * @param instruction The instruction to transpile.
+         */
+        void transpileElse(const Instruction &instruction);
+
+        /**
+         * @brief Transpile a for instruction of the program.
+         * @param instruction The instruction to transpile.
+         */
+        void transpileFor(const Instruction &instruction);
+
+        /**
+         * @brief Transpile a break or continue instruction of the program.
+         * @param instruction The instruction to transpile.
+         */
+        void transpileBreak(const Instruction &instruction);
 
         /**
          * @brief Extracts identifiers of declared variables from a declaration instruction.
@@ -152,9 +183,28 @@ namespace vnd {
                                                                         const Instruction &instruction);
 
         /**
-         * @brief Opens a new scope.
+         * @brief Transpile an if or while condition.
+         * @param iterator The iterator pointing to the condition token sequence.
+         * @param end The iterator pointing to the end of the instruction.
+         * @return Parsed string if there is an error. If no error occurs, an empty string is returned.
          */
-        void openScope() noexcept;
+        [[nodiscard]] std::string transpileCondition(TokenVecIter &iterator, const TokenVecIter &end) noexcept;
+
+        /**
+         * @brief Transpile the initialization part of a for instruction.
+         * @param iterator The iterator pointing to the condition token sequence.
+         * @param end The iterator pointing to the end of the instruction.
+         * @param instruction The instruction to containing the for loop.
+         * @return Pair representing the declared index identifier and type.
+         */
+        [[nodiscard]] std::pair<std::string, std::string> transpileForInitialization(TokenVecIter &iterator, const TokenVecIter &end,
+                                               const Instruction &instruction);
+
+        /**
+         * @brief Opens a new scope.
+         * @param type ScopeType of the scope.
+         */
+        void openScope(const ScopeType &type) noexcept;
 
         /**
          * @brief Closes the current scope.
