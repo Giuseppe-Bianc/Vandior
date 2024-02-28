@@ -38,7 +38,7 @@ namespace vnd {
             params.pop_back();
         }
         if(variadic.has_value()) {
-            if(pos <= variadic.value()) {params += ", {";}
+            if(pos <= variadic.value()) { params += ", {"; }
             params += "}";
         }
         return params;
@@ -58,7 +58,7 @@ namespace vnd {
         if(!pipe) { return "0"; }
 
         // NOLINTNEXTLINE(*-err34-c, *-pro-type-vararg, hicpp-vararg)
-        if(std::fscanf(pipe.get(), "%lf", &result) != 1) { result = 0; }
+        if(fscanf_s(pipe.get(), "%lf", &result) != 1) { result = 0; }
 
         return std::to_string(result);
     }
@@ -322,6 +322,7 @@ namespace vnd {
         }
         for(const auto &expression : factory.getExpressions()) {
             bool assignable = false;
+            // NOLINTBEGIN(*-branch-clone)
             if(vectorType.empty()) {
                 vectorType = expression.getType();
                 assignable = true;
@@ -331,6 +332,7 @@ namespace vnd {
                 vectorType = expression.getType();
                 assignable = true;
             }
+            // NOLINTEND(*-branch-clone)
             if(!assignable) { return FORMAT("Incompatible types in vector {}, {}", vectorType, expression.getType()); }
             if(expression.isConst()) {
                 constValue += FORMAT("{},", expression.getValue());

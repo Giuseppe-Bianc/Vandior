@@ -13,6 +13,14 @@ static inline constexpr std::size_t t_colum3 = 7;
 static inline constexpr std::size_t t_colum4 = 8;
 static inline constexpr std::size_t t_colum5 = 9;
 static inline constexpr std::size_t t_colum6 = t_line4;
+static inline constexpr std::size_t t_colum7 = 10;
+static inline constexpr std::size_t t_colum8 = 11;
+static inline constexpr std::size_t t_colum9 = 14;
+static inline constexpr std::size_t t_colum10 = 15;
+static inline constexpr std::size_t t_colum11 = 13;
+static inline constexpr std::size_t t_colum12 = 16;
+static inline constexpr std::size_t t_colum13 = 17;
+static inline constexpr std::size_t t_colum14 = 12;
 static inline constexpr auto identf = vnd::TokenType::IDENTIFIER;
 static inline constexpr auto inte = vnd::TokenType::INTEGER;
 static inline constexpr auto doub = vnd::TokenType::DOUBLE;
@@ -28,7 +36,7 @@ static inline constexpr std::string_view timerTime2 = "ns";
 static inline constexpr long long int timerSleap = 12;
 static inline constexpr long long int timerSleap2 = 5;
 static inline constexpr std::size_t timerCicles = 1000000;
-static inline constexpr long double timerResolution = 5.0;
+static inline constexpr long double timerResolution = 5.0L;
 #define REQ_FORMAT(type, string) REQUIRE(FORMAT("{}", type) == (string));  // NOLINT(*-macro-usage)
 
 TEST_CASE("std::filesystem::path formater", "[FMT]") { REQUIRE(FORMAT("{}", std::filesystem::path("../ssss")) == "../ssss"); }
@@ -313,8 +321,8 @@ TEST_CASE("tokenizer emit identifier token", "[tokenizer]") {
     REQUIRE(tokens[0] == vnd::Token(identf, "a", vnd::CodeSourceLocation(filename, 1, 1)));
     REQUIRE(tokens[1] == vnd::Token(identf, "a_", vnd::CodeSourceLocation(filename, 1, 3)));
     REQUIRE(tokens[2] == vnd::Token(identf, "a0", vnd::CodeSourceLocation(filename, 1, 6)));
-    REQUIRE(tokens[3] == vnd::Token(identf, "a000_", vnd::CodeSourceLocation(filename, 1, 9)));
-    REQUIRE(tokens[4] == vnd::Token(identf, "_a", vnd::CodeSourceLocation(filename, 1, 15)));
+    REQUIRE(tokens[3] == vnd::Token(identf, "a000_", vnd::CodeSourceLocation(filename, 1, t_colum5)));
+    REQUIRE(tokens[4] == vnd::Token(identf, "_a", vnd::CodeSourceLocation(filename, 1, t_colum10)));
 }
 
 TEST_CASE("tokenizer emit identifier token new line", "[tokenizer]") {
@@ -335,9 +343,9 @@ TEST_CASE("tokenizer emit integer token for hexadecimals numbers", "[tokenizer]"
     REQUIRE(tokens.size() == 6);
     REQUIRE(tokens[0] == vnd::Token(inte, "#0", vnd::CodeSourceLocation(filename, 1, 0)));
     REQUIRE(tokens[1] == vnd::Token(inte, "#23", vnd::CodeSourceLocation(filename, 1, 3)));
-    REQUIRE(tokens[2] == vnd::Token(inte, "#24", vnd::CodeSourceLocation(filename, 1, 7)));
-    REQUIRE(tokens[3] == vnd::Token(inte, "#ff", vnd::CodeSourceLocation(filename, 1, 11)));
-    REQUIRE(tokens[4] == vnd::Token(inte, "#7f", vnd::CodeSourceLocation(filename, 1, 15)));
+    REQUIRE(tokens[2] == vnd::Token(inte, "#24", vnd::CodeSourceLocation(filename, 1, t_colum3)));
+    REQUIRE(tokens[3] == vnd::Token(inte, "#ff", vnd::CodeSourceLocation(filename, 1, t_colum8)));
+    REQUIRE(tokens[4] == vnd::Token(inte, "#7f", vnd::CodeSourceLocation(filename, 1, t_colum10)));
 }
 
 TEST_CASE("tokenizer emit integer token for octal numbers", "[tokenizer]") {
@@ -347,7 +355,7 @@ TEST_CASE("tokenizer emit integer token for octal numbers", "[tokenizer]") {
     REQUIRE(tokens.size() == 4);
     REQUIRE(tokens[0] == vnd::Token(inte, "#o0", vnd::CodeSourceLocation(filename, 1, 0)));
     REQUIRE(tokens[1] == vnd::Token(inte, "#o23", vnd::CodeSourceLocation(filename, 1, 4)));
-    REQUIRE(tokens[2] == vnd::Token(inte, "#o24", vnd::CodeSourceLocation(filename, 1, 9)));
+    REQUIRE(tokens[2] == vnd::Token(inte, "#o24", vnd::CodeSourceLocation(filename, 1, t_colum5)));
 }
 
 TEST_CASE("tokenizer emit integer token", "[tokenizer]") {
@@ -356,8 +364,8 @@ TEST_CASE("tokenizer emit integer token", "[tokenizer]") {
     REQUIRE(tokens.size() == 5);
     REQUIRE(tokens[0] == vnd::Token(inte, "42", vnd::CodeSourceLocation(filename, 1, 1)));
     REQUIRE(tokens[1] == vnd::Token(inte, "333", vnd::CodeSourceLocation(filename, 1, 4)));
-    REQUIRE(tokens[2] == vnd::Token(inte, "550", vnd::CodeSourceLocation(filename, 1, 8)));
-    REQUIRE(tokens[3] == vnd::Token(inte, "34000000", vnd::CodeSourceLocation(filename, 1, 12)));
+    REQUIRE(tokens[2] == vnd::Token(inte, "550", vnd::CodeSourceLocation(filename, 1, t_colum4)));
+    REQUIRE(tokens[3] == vnd::Token(inte, "34000000", vnd::CodeSourceLocation(filename, 1, t_colum14)));
 }
 
 TEST_CASE("tokenizer emit integer token new line", "[tokenizer]") {
@@ -376,8 +384,8 @@ TEST_CASE("tokenizer emit double token", "[tokenizer]") {
     REQUIRE(tokens.size() == 12);
     REQUIRE(tokens[0] == vnd::Token(doub, "1.", vnd::CodeSourceLocation(filename, 1, 1)));
     REQUIRE(tokens[1] == vnd::Token(doub, "1.0", vnd::CodeSourceLocation(filename, 1, 4)));
-    REQUIRE(tokens[2] == vnd::Token(doub, "1e+1", vnd::CodeSourceLocation(filename, 1, 8)));
-    REQUIRE(tokens[3] == vnd::Token(doub, "1E+1", vnd::CodeSourceLocation(filename, 1, 13)));
+    REQUIRE(tokens[2] == vnd::Token(doub, "1e+1", vnd::CodeSourceLocation(filename, 1, t_colum4)));
+    REQUIRE(tokens[3] == vnd::Token(doub, "1E+1", vnd::CodeSourceLocation(filename, 1, t_colum11)));
     REQUIRE(tokens[4] == vnd::Token(doub, "1.1e+1", vnd::CodeSourceLocation(filename, 1, 18)));
     REQUIRE(tokens[5] == vnd::Token(doub, "1.1E+1", vnd::CodeSourceLocation(filename, 1, 25)));
     REQUIRE(tokens[6] == vnd::Token(doub, "1e-1", vnd::CodeSourceLocation(filename, 1, 32)));
@@ -394,12 +402,12 @@ TEST_CASE("tokenizer emit operator token", "[tokenizer]") {
     REQUIRE(tokens[0] == vnd::Token(oper, "*", vnd::CodeSourceLocation(filename, 1, 1)));
     REQUIRE(tokens[1] == vnd::Token(oper, "/", vnd::CodeSourceLocation(filename, 1, 3)));
     REQUIRE(tokens[2] == vnd::Token(vnd::TokenType::EQUAL_OPERATOR, "=", vnd::CodeSourceLocation(filename, 1, 5)));
-    REQUIRE(tokens[3] == vnd::Token(vnd::TokenType::COMMA, ",", vnd::CodeSourceLocation(filename, 1, 6)));
-    REQUIRE(tokens[4] == vnd::Token(vnd::TokenType::COLON, ":", vnd::CodeSourceLocation(filename, 1, 8)));
-    REQUIRE(tokens[5] == vnd::Token(vnd::TokenType::BOOLEAN_OPERATOR, "<", vnd::CodeSourceLocation(filename, 1, 11)));
-    REQUIRE(tokens[6] == vnd::Token(vnd::TokenType::BOOLEAN_OPERATOR, ">", vnd::CodeSourceLocation(filename, 1, 13)));
-    REQUIRE(tokens[7] == vnd::Token(vnd::TokenType::NOT_OPERATOR, "!", vnd::CodeSourceLocation(filename, 1, 15)));
-    REQUIRE(tokens[8] == vnd::Token(oper, "|", vnd::CodeSourceLocation(filename, 1, 17)));
+    REQUIRE(tokens[3] == vnd::Token(vnd::TokenType::COMMA, ",", vnd::CodeSourceLocation(filename, 1, t_colum)));
+    REQUIRE(tokens[4] == vnd::Token(vnd::TokenType::COLON, ":", vnd::CodeSourceLocation(filename, 1, t_colum4)));
+    REQUIRE(tokens[5] == vnd::Token(vnd::TokenType::BOOLEAN_OPERATOR, "<", vnd::CodeSourceLocation(filename, 1, t_colum8)));
+    REQUIRE(tokens[6] == vnd::Token(vnd::TokenType::BOOLEAN_OPERATOR, ">", vnd::CodeSourceLocation(filename, 1, t_colum11)));
+    REQUIRE(tokens[7] == vnd::Token(vnd::TokenType::NOT_OPERATOR, "!", vnd::CodeSourceLocation(filename, 1, t_colum10)));
+    REQUIRE(tokens[8] == vnd::Token(oper, "|", vnd::CodeSourceLocation(filename, 1, t_colum13)));
     REQUIRE(tokens[9] == vnd::Token(oper, "&", vnd::CodeSourceLocation(filename, 1, 19)));
     REQUIRE(tokens[10] == vnd::Token(oper, "+", vnd::CodeSourceLocation(filename, 1, 21)));
     REQUIRE(tokens[11] == vnd::Token(vnd::TokenType::MINUS_OPERATOR, "-", vnd::CodeSourceLocation(filename, 1, 23)));
@@ -413,7 +421,7 @@ TEST_CASE("tokenizer emit operationEqual token", "[tokenizer]") {
     REQUIRE(tokens.size() == 5);
     REQUIRE(tokens[0] == vnd::Token(vnd::TokenType::OPERATION_EQUAL, "+=", vnd::CodeSourceLocation(filename, 1, 1)));
     REQUIRE(tokens[1] == vnd::Token(vnd::TokenType::OPERATION_EQUAL, "-=", vnd::CodeSourceLocation(filename, 1, 4)));
-    REQUIRE(tokens[2] == vnd::Token(vnd::TokenType::OPERATION_EQUAL, "*=", vnd::CodeSourceLocation(filename, 1, 7)));
+    REQUIRE(tokens[2] == vnd::Token(vnd::TokenType::OPERATION_EQUAL, "*=", vnd::CodeSourceLocation(filename, 1, t_colum3)));
     REQUIRE(tokens[3] == vnd::Token(vnd::TokenType::OPERATION_EQUAL, "/=", vnd::CodeSourceLocation(filename, 1, 10)));
 }
 
@@ -423,7 +431,7 @@ TEST_CASE("tokenizer emit boolean operator token", "[tokenizer]") {
     REQUIRE(tokens.size() == 5);
     REQUIRE(tokens[0] == vnd::Token(vnd::TokenType::BOOLEAN_OPERATOR, "==", vnd::CodeSourceLocation(filename, 1, 1)));
     REQUIRE(tokens[1] == vnd::Token(vnd::TokenType::BOOLEAN_OPERATOR, ">=", vnd::CodeSourceLocation(filename, 1, 4)));
-    REQUIRE(tokens[2] == vnd::Token(vnd::TokenType::BOOLEAN_OPERATOR, "<=", vnd::CodeSourceLocation(filename, 1, 7)));
+    REQUIRE(tokens[2] == vnd::Token(vnd::TokenType::BOOLEAN_OPERATOR, "<=", vnd::CodeSourceLocation(filename, 1, t_colum3)));
     REQUIRE(tokens[3] == vnd::Token(vnd::TokenType::BOOLEAN_OPERATOR, "!=", vnd::CodeSourceLocation(filename, 1, 10)));
 }
 
@@ -473,8 +481,8 @@ TEST_CASE("Tokenizer emit char token", "[Tokenizer]") {
     std::vector<vnd::Token> tokens = tokenizer.tokenize();
     REQUIRE(tokens.size() == 4);
     REQUIRE(tokens[0] == vnd::Token(vnd::TokenType::CHAR, "a", vnd::CodeSourceLocation(filename, 1, 2)));
-    REQUIRE(tokens[1] == vnd::Token(vnd::TokenType::CHAR, R"(\\)", vnd::CodeSourceLocation(filename, 1, 6)));
-    REQUIRE(tokens[2] == vnd::Token(vnd::TokenType::CHAR, "", vnd::CodeSourceLocation(filename, 1, 11)));
+    REQUIRE(tokens[1] == vnd::Token(vnd::TokenType::CHAR, R"(\\)", vnd::CodeSourceLocation(filename, 1, t_colum)));
+    REQUIRE(tokens[2] == vnd::Token(vnd::TokenType::CHAR, "", vnd::CodeSourceLocation(filename, 1, t_colum8)));
 }
 
 TEST_CASE("Tokenizer emit exception for unknown char", "[Tokenizer]") {
@@ -740,15 +748,15 @@ TEST_CASE("Transpiler transpile main instruction", "[transpiler]") {
     using enum vnd::TokenType;
     std::vector<vnd::Token> tokens = {{K_MAIN, "main", vnd::CodeSourceLocation(filename, 1, 0)},
                                       {OPEN_CUR_PARENTESIS, "{", vnd::CodeSourceLocation(filename, 1, 4)},
-                                      {CLOSE_CUR_PARENTESIS, "}", vnd::CodeSourceLocation(filename, 1, 5)}};
+                                      {CLOSE_CUR_PARENTESIS, "}", vnd::CodeSourceLocation(filename, 1, t_colum2)}};
     vnd::Instruction instruction = vnd::Instruction::create(filename);
-    for(vnd::Token &token : tokens) { instruction.checkToken(token); }
+    for(const auto &token : tokens) { instruction.checkToken(token); }
     vnd::Transpiler transpiler = vnd::Transpiler::create({instruction});
     transpiler.transpile();
     REQUIRE(std::filesystem::exists("./output.cpp"));
     std::ifstream stream("./output.cpp");
     std::string code(std::istreambuf_iterator<char>{stream}, {});
-    REQUIRE(code == "#include \"../../../base.hpp\"\n\n"
+    REQUIRE(code == "#include \"../../../base.hpp\"\n"
                     "int main(int argc, char **argv) {\n"
                     "\tconst vnd::vector<string> _args(argv, argv + argc);\n"
                     "\treturn 0;\n"
@@ -759,12 +767,12 @@ TEST_CASE("Transpiler transpile declaration instruction", "[transpiler]") {
     using enum vnd::TokenType;
     std::vector<vnd::Token> tokens = {{K_VAR, "var", vnd::CodeSourceLocation(filename, 1, 0)},
                                       {IDENTIFIER, "num", vnd::CodeSourceLocation(filename, 1, 3)},
-                                      {COMMA, ",", vnd::CodeSourceLocation(filename, 1, 6)},
-                                      {IDENTIFIER, "num1", vnd::CodeSourceLocation(filename, 1, 7)},
-                                      {COLON, ":", vnd::CodeSourceLocation(filename, 1, 10)},
-                                      {IDENTIFIER, "int", vnd::CodeSourceLocation(filename, 1, 11)}};
+                                      {COMMA, ",", vnd::CodeSourceLocation(filename, 1, t_colum)},
+                                      {IDENTIFIER, "num1", vnd::CodeSourceLocation(filename, 1, t_colum3)},
+                                      {COLON, ":", vnd::CodeSourceLocation(filename, 1, t_colum7)},
+                                      {IDENTIFIER, "int", vnd::CodeSourceLocation(filename, 1, t_colum8)}};
     vnd::Instruction instruction = vnd::Instruction::create(filename);
-    for(vnd::Token &token : tokens) { instruction.checkToken(token); }
+    for(const auto &token : tokens) { instruction.checkToken(token); }
     vnd::Transpiler transpiler = vnd::Transpiler::create({instruction});
     transpiler.transpile();
     REQUIRE(std::filesystem::exists("./output.cpp"));
@@ -778,14 +786,14 @@ TEST_CASE("Transpiler transpile initialization instruction", "[transpiler]") {
     using enum vnd::TokenType;
     std::vector<vnd::Token> tokens = {{K_VAR, "var", vnd::CodeSourceLocation(filename, 1, 0)},
                                       {IDENTIFIER, "num", vnd::CodeSourceLocation(filename, 1, 3)},
-                                      {COMMA, ",", vnd::CodeSourceLocation(filename, 1, 6)},
-                                      {IDENTIFIER, "num1", vnd::CodeSourceLocation(filename, 1, 7)},
-                                      {COLON, ":", vnd::CodeSourceLocation(filename, 1, 10)},
-                                      {IDENTIFIER, "int", vnd::CodeSourceLocation(filename, 1, 11)},
-                                      {EQUAL_OPERATOR, "=", vnd::CodeSourceLocation(filename, 1, 14)},
-                                      {INTEGER, "1", vnd::CodeSourceLocation(filename, 1, 15)}};
+                                      {COMMA, ",", vnd::CodeSourceLocation(filename, 1, t_colum)},
+                                      {IDENTIFIER, "num1", vnd::CodeSourceLocation(filename, 1, t_colum3)},
+                                      {COLON, ":", vnd::CodeSourceLocation(filename, 1, t_colum7)},
+                                      {IDENTIFIER, "int", vnd::CodeSourceLocation(filename, 1, t_colum8)},
+                                      {EQUAL_OPERATOR, "=", vnd::CodeSourceLocation(filename, 1, t_colum9)},
+                                      {INTEGER, "1", vnd::CodeSourceLocation(filename, 1, t_colum10)}};
     vnd::Instruction instruction = vnd::Instruction::create(filename);
-    for(vnd::Token &token : tokens) { instruction.checkToken(token); }
+    for(const auto &token : tokens) { instruction.checkToken(token); }
     vnd::Transpiler transpiler = vnd::Transpiler::create({instruction});
     transpiler.transpile();
     REQUIRE(std::filesystem::exists("./output.cpp"));
@@ -797,22 +805,21 @@ TEST_CASE("Transpiler transpile initialization instruction", "[transpiler]") {
 
 TEST_CASE("Transpiler transpile operation instruction", "[transpiler]") {
     using enum vnd::TokenType;
-    std::vector<vnd::Token> tokens = {
-                                      {K_MAIN, "main", vnd::CodeSourceLocation(filename, 1, 0)},
+    std::vector<vnd::Token> tokens = {{K_MAIN, "main", vnd::CodeSourceLocation(filename, 1, 0)},
                                       {OPEN_CUR_PARENTESIS, "{", vnd::CodeSourceLocation(filename, 1, 4)},
                                       {IDENTIFIER, "print", vnd::CodeSourceLocation(filename, 2, 0)},
-                                      {OPEN_PARENTESIS, "(", vnd::CodeSourceLocation(filename, 2, 5)},
-                                      {STRING, "Test {}", vnd::CodeSourceLocation(filename, 2, 6)},
-                                      {COMMA, ",", vnd::CodeSourceLocation(filename, 2, 13)},
-                                      {IDENTIFIER, "args", vnd::CodeSourceLocation(filename, 2, 14)},
-                                      {OPEN_SQ_PARENTESIS, "[", vnd::CodeSourceLocation(filename, 2, 15)},
-                                      {INTEGER, "0", vnd::CodeSourceLocation(filename, 2, 16)},
-                                      {CLOSE_SQ_PARENTESIS, "]", vnd::CodeSourceLocation(filename, 2, 17)},
-                                      {CLOSE_PARENTESIS, ")", vnd::CodeSourceLocation(filename, 2, 15)},
-                                      {CLOSE_CUR_PARENTESIS, "}", vnd::CodeSourceLocation(filename, 3, 10)}};
+                                      {OPEN_PARENTESIS, "(", vnd::CodeSourceLocation(filename, 2, t_colum2)},
+                                      {STRING, "Test {}", vnd::CodeSourceLocation(filename, 2, t_colum)},
+                                      {COMMA, ",", vnd::CodeSourceLocation(filename, 2, t_colum11)},
+                                      {IDENTIFIER, "args", vnd::CodeSourceLocation(filename, 2, t_colum9)},
+                                      {OPEN_SQ_PARENTESIS, "[", vnd::CodeSourceLocation(filename, 2, t_colum10)},
+                                      {INTEGER, "0", vnd::CodeSourceLocation(filename, 2, t_colum12)},
+                                      {CLOSE_SQ_PARENTESIS, "]", vnd::CodeSourceLocation(filename, 2, t_colum13)},
+                                      {CLOSE_PARENTESIS, ")", vnd::CodeSourceLocation(filename, 2, t_colum10)},
+                                      {CLOSE_CUR_PARENTESIS, "}", vnd::CodeSourceLocation(filename, 3, t_colum7)}};
     std::vector<vnd::Instruction> instructions = {vnd::Instruction::create(filename)};
-    int line = 0;
-    for(vnd::Token &token : tokens) {
+    std::size_t line = 0;
+    for(const auto &token : tokens) {
         if(token.getLine() > line) {
             instructions.emplace_back(vnd::Instruction::create(filename));
             line = token.getLine();
@@ -824,10 +831,10 @@ TEST_CASE("Transpiler transpile operation instruction", "[transpiler]") {
     REQUIRE(std::filesystem::exists("./output.cpp"));
     std::ifstream stream("./output.cpp");
     std::string code(std::istreambuf_iterator<char>{stream}, {});
-    REQUIRE(code == "#include \"../../../base.hpp\"\n"
-                    "\tint main(int argc, char **argv) {\n"
+    REQUIRE(code == "#include \"../../../base.hpp\"\n\n"
+                    "int main(int argc, char **argv) {\n"
                     "\tconst vnd::vector<string> _args(argv, argv + argc);\n"
-                    "\t_print(string(\"Test {}\"), {_args.at(0)});\n"
+                    "\t_print(string(\"Test {}\"),{ _args.at(0)});\n"
                     "\treturn 0;\n"
                     "}\n");
 }
@@ -838,15 +845,15 @@ TEST_CASE("Transpiler transpile assignation instruction", "[transpiler]") {
                                       {OPEN_CUR_PARENTESIS, "{", vnd::CodeSourceLocation(filename, 1, 4)},
                                       {K_VAR, "var", vnd::CodeSourceLocation(filename, 2, 0)},
                                       {IDENTIFIER, "num", vnd::CodeSourceLocation(filename, 2, 3)},
-                                      {COLON, ":", vnd::CodeSourceLocation(filename, 2, 10)},
-                                      {IDENTIFIER, "int", vnd::CodeSourceLocation(filename, 2, 11)},
+                                      {COLON, ":", vnd::CodeSourceLocation(filename, 2, t_colum7)},
+                                      {IDENTIFIER, "int", vnd::CodeSourceLocation(filename, 2, t_colum8)},
                                       {IDENTIFIER, "num", vnd::CodeSourceLocation(filename, 3, 0)},
                                       {EQUAL_OPERATOR, "=", vnd::CodeSourceLocation(filename, 3, 3)},
                                       {INTEGER, "1", vnd::CodeSourceLocation(filename, 3, 4)},
-                                      {CLOSE_CUR_PARENTESIS, "}", vnd::CodeSourceLocation(filename, 4, 10)}};
+                                      {CLOSE_CUR_PARENTESIS, "}", vnd::CodeSourceLocation(filename, 4, t_colum7)}};
     std::vector<vnd::Instruction> instructions = {vnd::Instruction::create(filename)};
-    int line = 0;
-    for(vnd::Token &token : tokens) {
+    std::size_t line = 0;
+    for(const auto &token : tokens) {
         if(token.getLine() > line) {
             instructions.emplace_back(vnd::Instruction::create(filename));
             line = token.getLine();
@@ -858,15 +865,18 @@ TEST_CASE("Transpiler transpile assignation instruction", "[transpiler]") {
     REQUIRE(std::filesystem::exists("./output.cpp"));
     std::ifstream stream("./output.cpp");
     std::string code(std::istreambuf_iterator<char>{stream}, {});
-    REQUIRE(code == "#include \"../../../base.hpp\"\n"
-                    "\tint main(int argc, char **argv) {\n"
-                    "\tconst vnd::vector<string> _args(argv, argv + argc);\n"
-                    "\tint _num{};\n"
-                    "\tvnd::tmp[\"_num\"] = _num;\n"
-                    "\t_num = 1;\n"
-                    "\tvnd::tmp.clear();\n"
-                    "\treturn 0;\n"
-                    "}\n");
+    LINFO("{}", code);
+    REQUIRE(code == R"(#include "../../../base.hpp"
+
+int main(int argc, char **argv) {
+	const vnd::vector<string> _args(argv, argv + argc);
+	int _num{};
+	vnd::tmp["_num"] = _num;
+	_num =  1;
+	vnd::tmp.clear();
+	return 0;
+}
+)");
 }
 
 TEST_CASE("Transpiler transpile if instruction", "[transpiler]") {
@@ -876,23 +886,23 @@ TEST_CASE("Transpiler transpile if instruction", "[transpiler]") {
                                       {K_IF, "if", vnd::CodeSourceLocation(filename, 2, 0)},
                                       {OPEN_PARENTESIS, "(", vnd::CodeSourceLocation(filename, 2, 2)},
                                       {BOOLEAN, "true", vnd::CodeSourceLocation(filename, 2, 3)},
-                                      {CLOSE_PARENTESIS, ")", vnd::CodeSourceLocation(filename, 2, 7)},
-                                      {OPEN_CUR_PARENTESIS, "{", vnd::CodeSourceLocation(filename, 2, 8)},
+                                      {CLOSE_PARENTESIS, ")", vnd::CodeSourceLocation(filename, 2, t_colum3)},
+                                      {OPEN_CUR_PARENTESIS, "{", vnd::CodeSourceLocation(filename, 2, t_colum4)},
                                       {CLOSE_CUR_PARENTESIS, "}", vnd::CodeSourceLocation(filename, 3, 0)},
                                       {K_ELSE, "else", vnd::CodeSourceLocation(filename, 3, 1)},
-                                      {K_IF, "if", vnd::CodeSourceLocation(filename, 3, 5)},
-                                      {OPEN_PARENTESIS, "(", vnd::CodeSourceLocation(filename, 3, 7)},
-                                      {BOOLEAN, "false", vnd::CodeSourceLocation(filename, 3, 8)},
-                                      {CLOSE_PARENTESIS, ")", vnd::CodeSourceLocation(filename, 3, 13)},
-                                      {OPEN_CUR_PARENTESIS, "{", vnd::CodeSourceLocation(filename, 3, 14)},
+                                      {K_IF, "if", vnd::CodeSourceLocation(filename, 3, t_colum2)},
+                                      {OPEN_PARENTESIS, "(", vnd::CodeSourceLocation(filename, 3, t_colum3)},
+                                      {BOOLEAN, "false", vnd::CodeSourceLocation(filename, 3, t_colum4)},
+                                      {CLOSE_PARENTESIS, ")", vnd::CodeSourceLocation(filename, 3, t_colum11)},
+                                      {OPEN_CUR_PARENTESIS, "{", vnd::CodeSourceLocation(filename, 3, t_colum9)},
                                       {CLOSE_CUR_PARENTESIS, "}", vnd::CodeSourceLocation(filename, 4, 0)},
                                       {K_ELSE, "else", vnd::CodeSourceLocation(filename, 4, 1)},
-                                      {OPEN_CUR_PARENTESIS, "{", vnd::CodeSourceLocation(filename, 4, 5)},
-                                      {CLOSE_CUR_PARENTESIS, "}", vnd::CodeSourceLocation(filename, 4, 6)},
-                                      {CLOSE_CUR_PARENTESIS, "}", vnd::CodeSourceLocation(filename, 5, 0)}};
+                                      {OPEN_CUR_PARENTESIS, "{", vnd::CodeSourceLocation(filename, 4, t_colum2)},
+                                      {CLOSE_CUR_PARENTESIS, "}", vnd::CodeSourceLocation(filename, 4, t_colum)},
+                                      {CLOSE_CUR_PARENTESIS, "}", vnd::CodeSourceLocation(filename, t_line, 0)}};
     std::vector<vnd::Instruction> instructions = {vnd::Instruction::create(filename)};
-    int line = 0;
-    for(vnd::Token &token : tokens) {
+    std::size_t line = 0;
+    for(const auto &token : tokens) {
         if(token.getLine() > line) {
             instructions.emplace_back(vnd::Instruction::create(filename));
             line = token.getLine();
@@ -904,7 +914,7 @@ TEST_CASE("Transpiler transpile if instruction", "[transpiler]") {
     REQUIRE(std::filesystem::exists("./output.cpp"));
     std::ifstream stream("./output.cpp");
     std::string code(std::istreambuf_iterator<char>{stream}, {});
-    REQUIRE(code == "#include \"../../../base.hpp\"\n"
+    REQUIRE(code == "#include \"../../../base.hpp\"\n\n"
                     "int main(int argc, char **argv) {\n"
                     "\tconst vnd::vector<string> _args(argv, argv + argc);\n"
                     "\tif(true) {\n"
@@ -919,16 +929,16 @@ TEST_CASE("Transpiler transpile while and break instructions", "[transpiler]") {
     std::vector<vnd::Token> tokens = {{K_MAIN, "main", vnd::CodeSourceLocation(filename, 1, 0)},
                                       {OPEN_CUR_PARENTESIS, "{", vnd::CodeSourceLocation(filename, 1, 4)},
                                       {K_WHILE, "while", vnd::CodeSourceLocation(filename, 2, 0)},
-                                      {OPEN_PARENTESIS, "(", vnd::CodeSourceLocation(filename, 2, 5)},
-                                      {BOOLEAN, "true", vnd::CodeSourceLocation(filename, 2, 6)},
-                                      {CLOSE_PARENTESIS, ")", vnd::CodeSourceLocation(filename, 2, 11)},
-                                      {OPEN_CUR_PARENTESIS, "{", vnd::CodeSourceLocation(filename, 2, 12)},
+                                      {OPEN_PARENTESIS, "(", vnd::CodeSourceLocation(filename, 2, t_colum2)},
+                                      {BOOLEAN, "true", vnd::CodeSourceLocation(filename, 2, t_colum)},
+                                      {CLOSE_PARENTESIS, ")", vnd::CodeSourceLocation(filename, 2, t_colum8)},
+                                      {OPEN_CUR_PARENTESIS, "{", vnd::CodeSourceLocation(filename, 2, t_colum14)},
                                       {K_BREAK, "break", vnd::CodeSourceLocation(filename, 3, 0)},
                                       {CLOSE_CUR_PARENTESIS, "}", vnd::CodeSourceLocation(filename, 4, 0)},
-                                      {CLOSE_CUR_PARENTESIS, "}", vnd::CodeSourceLocation(filename, 5, 0)}};
+                                      {CLOSE_CUR_PARENTESIS, "}", vnd::CodeSourceLocation(filename, t_line, 0)}};
     std::vector<vnd::Instruction> instructions = {vnd::Instruction::create(filename)};
-    int line = 0;
-    for(vnd::Token &token : tokens) {
+    std::size_t line = 0;
+    for(const auto &token : tokens) {
         if(token.getLine() > line) {
             instructions.emplace_back(vnd::Instruction::create(filename));
             line = token.getLine();
@@ -940,11 +950,11 @@ TEST_CASE("Transpiler transpile while and break instructions", "[transpiler]") {
     REQUIRE(std::filesystem::exists("./output.cpp"));
     std::ifstream stream("./output.cpp");
     std::string code(std::istreambuf_iterator<char>{stream}, {});
-    REQUIRE(code == "#include \"../../../base.hpp\"\n"
+    REQUIRE(code == "#include \"../../../base.hpp\"\n\n"
                     "int main(int argc, char **argv) {\n"
                     "\tconst vnd::vector<string> _args(argv, argv + argc);\n"
                     "\twhile(true) {\n"
-		            "\t\tbreak;\n"
+                    "\t\tbreak;\n"
                     "\t}\n"
                     "\treturn 0;\n"
                     "}\n");
@@ -957,20 +967,20 @@ TEST_CASE("Transpiler transpile for instruction", "[transpiler]") {
                                       {K_FOR, "for", vnd::CodeSourceLocation(filename, 2, 0)},
                                       {K_VAR, "var", vnd::CodeSourceLocation(filename, 2, 3)},
                                       {IDENTIFIER, "i", vnd::CodeSourceLocation(filename, 2, 4)},
-                                      {COLON, ":", vnd::CodeSourceLocation(filename, 2, 5)},
-                                      {IDENTIFIER, "int", vnd::CodeSourceLocation(filename, 2, 6)},
-                                      {EQUAL_OPERATOR, "=", vnd::CodeSourceLocation(filename, 2, 9)},
-                                      {INTEGER, "0", vnd::CodeSourceLocation(filename, 2, 10)},
-                                      {COMMA, ",", vnd::CodeSourceLocation(filename, 2, 11)},
-                                      {INTEGER, "10", vnd::CodeSourceLocation(filename, 2, 12)},
-                                      {COMMA, ",", vnd::CodeSourceLocation(filename, 2, 14)},
-                                      {INTEGER, "1", vnd::CodeSourceLocation(filename, 2, 15)},
-                                      {OPEN_CUR_PARENTESIS, "{", vnd::CodeSourceLocation(filename, 2, 16)},
-                                      {CLOSE_CUR_PARENTESIS, "}", vnd::CodeSourceLocation(filename, 2, 17)},
-                                      {CLOSE_CUR_PARENTESIS, "}", vnd::CodeSourceLocation(filename, 3, 0 )}};
+                                      {COLON, ":", vnd::CodeSourceLocation(filename, 2, t_colum2)},
+                                      {IDENTIFIER, "int", vnd::CodeSourceLocation(filename, 2, t_colum)},
+                                      {EQUAL_OPERATOR, "=", vnd::CodeSourceLocation(filename, 2, t_colum5)},
+                                      {INTEGER, "0", vnd::CodeSourceLocation(filename, 2, t_colum7)},
+                                      {COMMA, ",", vnd::CodeSourceLocation(filename, 2, t_colum8)},
+                                      {INTEGER, "10", vnd::CodeSourceLocation(filename, 2, t_colum14)},
+                                      {COMMA, ",", vnd::CodeSourceLocation(filename, 2, t_colum9)},
+                                      {INTEGER, "1", vnd::CodeSourceLocation(filename, 2, t_colum10)},
+                                      {OPEN_CUR_PARENTESIS, "{", vnd::CodeSourceLocation(filename, 2, t_colum12)},
+                                      {CLOSE_CUR_PARENTESIS, "}", vnd::CodeSourceLocation(filename, 2, t_colum13)},
+                                      {CLOSE_CUR_PARENTESIS, "}", vnd::CodeSourceLocation(filename, 3, 0)}};
     std::vector<vnd::Instruction> instructions = {vnd::Instruction::create(filename)};
-    int line = 0;
-    for(vnd::Token &token : tokens) {
+    std::size_t line = 0;
+    for(const auto &token : tokens) {
         if(token.getLine() > line) {
             instructions.emplace_back(vnd::Instruction::create(filename));
             line = token.getLine();
@@ -982,7 +992,7 @@ TEST_CASE("Transpiler transpile for instruction", "[transpiler]") {
     REQUIRE(std::filesystem::exists("./output.cpp"));
     std::ifstream stream("./output.cpp");
     std::string code(std::istreambuf_iterator<char>{stream}, {});
-    REQUIRE(code == "#include \"../../../base.hpp\"\n"
+    REQUIRE(code == "#include \"../../../base.hpp\"\n\n"
                     "int main(int argc, char **argv) {\n"
                     "\tconst vnd::vector<string> _args(argv, argv + argc);\n"
                     "\tFOR_LOOP(int, _i, 0, 10, 1) {}\n"
@@ -998,8 +1008,8 @@ TEST_CASE("Transpiler transpile open and close scope instructions", "[transpiler
                                       {CLOSE_CUR_PARENTESIS, "}", vnd::CodeSourceLocation(filename, 3, 0)},
                                       {CLOSE_CUR_PARENTESIS, "}", vnd::CodeSourceLocation(filename, 4, 0)}};
     std::vector<vnd::Instruction> instructions = {vnd::Instruction::create(filename)};
-    int line = 0;
-    for(vnd::Token &token : tokens) {
+    std::size_t line = 0;
+    for(const vnd::Token &token : tokens) {
         if(token.getLine() > line) {
             instructions.emplace_back(vnd::Instruction::create(filename));
             line = token.getLine();
@@ -1011,7 +1021,7 @@ TEST_CASE("Transpiler transpile open and close scope instructions", "[transpiler
     REQUIRE(std::filesystem::exists("./output.cpp"));
     std::ifstream stream("./output.cpp");
     std::string code(std::istreambuf_iterator<char>{stream}, {});
-    REQUIRE(code == "#include \"../../../base.hpp\"\n"
+    REQUIRE(code == "#include \"../../../base.hpp\"\n\n"
                     "int main(int argc, char **argv) {\n"
                     "\tconst vnd::vector<string> _args(argv, argv + argc);\n"
                     "\t{\n"
