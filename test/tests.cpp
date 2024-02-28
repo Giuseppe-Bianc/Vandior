@@ -757,13 +757,13 @@ TEST_CASE("Transpiler transpile main instruction", "[transpiler]") {
     std::ifstream stream("./output.cpp");
     std::string code(std::istreambuf_iterator<char>{stream}, {});
 #ifdef __clang__
-    REQUIRE(code == "#include \"../../../../base.hpp\"\n"
+    REQUIRE(code == "#include \"../../../../base.hpp\"\n\n"
                     "int main(int argc, char **argv) {\n"
                     "\tconst vnd::vector<string> _args(argv, argv + argc);\n"
                     "\treturn 0;\n"
                     "}\n");
 #else
-    REQUIRE(code == "#include \"../../../base.hpp\"\n"
+    REQUIRE(code == "#include \"../../../base.hpp\"\n\n"
                     "int main(int argc, char **argv) {\n"
                     "\tconst vnd::vector<string> _args(argv, argv + argc);\n"
                     "\treturn 0;\n"
@@ -787,10 +787,10 @@ TEST_CASE("Transpiler transpile declaration instruction", "[transpiler]") {
     std::ifstream stream("./output.cpp");
     std::string code(std::istreambuf_iterator<char>{stream}, {});
 #ifdef __clang__
-    REQUIRE(code == "#include \"../../../../base.hpp\"\n"
+    REQUIRE(code == "#include \"../../../../base.hpp\"\n\n"
                     "int _num{}, _num1{};\n");
 #else
-    REQUIRE(code == "#include \"../../../base.hpp\"\n"
+    REQUIRE(code == "#include \"../../../base.hpp\"\n\n"
                     "int _num{}, _num1{};\n");
 #endif
 }
@@ -813,10 +813,10 @@ TEST_CASE("Transpiler transpile initialization instruction", "[transpiler]") {
     std::ifstream stream("./output.cpp");
     std::string code(std::istreambuf_iterator<char>{stream}, {});
 #ifdef __clang__
-    REQUIRE(code == "#include \"../../../../base.hpp\"\n"
+    REQUIRE(code == "#include \"../../../../base.hpp\"\n\n"
                     "int _num = 1, _num1{};\n");
 #else
-    REQUIRE(code == "#include \"../../../base.hpp\"\n"
+    REQUIRE(code == "#include \"../../../base.hpp\"\n\n"
                     "int _num = 1, _num1{};\n");
 #endif
 }

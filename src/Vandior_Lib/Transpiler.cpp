@@ -32,7 +32,7 @@ namespace vnd {
 #else
         _text += R"(#include "../../../base.hpp")";
 #endif
-        _text += "\n";
+        _text += "\n\n";
         try {
             for(const auto &instruction : _instructions) {
                 const InstructionType type = instruction.getLastType();
@@ -43,46 +43,55 @@ namespace vnd {
                 switch(type) {
                 case MAIN:
                     transpileMain(instruction);
+                    _text += "\n";
                     break;
                 case DECLARATION:
                     [[fallthrough]];
                 case INITIALIZATION:
                     transpileDeclaration(instruction);
+                    _text += "\n";
                     break;
                 case OPERATION:
                     transpileOperation(instruction);
+                    _text += "\n";
                     break;
                 case ASSIGNATION:
                     transpileAssignation(instruction);
+                    _text += "\n";
                     break;
                 case STRUCTURE:
                     transpileStructure(instruction);
+                    _text += "\n";
                     break;
                 case ELSE:
                     transpileElse(instruction);
+                    _text += "\n";
                     break;
                 case FOR_CONDITION:
                     [[fallthrough]];
                 case FOR_STEP:
                     transpileFor(instruction);
+                    _text += "\n";
                     break;
                 case BREAK:
                     transpileBreak(instruction);
+                    _text += "\n";
                     break;
                 case OPEN_SCOPE:
                     _text += "{";
                     openScope(ScopeType::SCOPE);
                     checkTrailingBracket(instruction);
+                    _text += "\n";
                     break;
                 case CLOSE_SCOPE:
                     _text.pop_back();
                     if(_scope->isGlobalScope()) { throw TranspilerException("Unexpected '}'", instruction); }
                     checkTrailingBracket(instruction);
+                    _text += "\n";
                     break;
                 default:
                     break;
                 }
-                _text += "\n";
             }
             if(!_scope->isGlobalScope()) { throw TranspilerException("Expected '}'", Instruction::create("")); }
             _output << _text;
