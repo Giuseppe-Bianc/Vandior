@@ -313,7 +313,7 @@ namespace vnd {
         _text += "} else ";
         iterator += 2;
         if(iterator->getType() != TokenType::K_IF) {
-            _text += " {";
+            _text += "{";
             openScope(ScopeType::ELSE_SCOPE);
             checkTrailingBracket(instruction);
             return;
