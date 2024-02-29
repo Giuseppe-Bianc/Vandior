@@ -1,5 +1,4 @@
 #include "Vandior/ExpressionFactory.hpp"
-#include "Vandior/Log.hpp"
 #include <algorithm>
 
 // NOLINTBEGIN(*-include-cleaner, *-env33-c)
@@ -62,7 +61,7 @@ namespace vnd {
         std::array<char, buffer_size> buffer{};
         while(fgets(buffer.data(), buffer_size, pipe.get()) != nullptr) { sss << buffer.data(); }
         std::string result = sss.str();
-        LINFO("{}", result);
+        while(result.ends_with("\n")) { result.pop_back(); }
         return result;
     }
 

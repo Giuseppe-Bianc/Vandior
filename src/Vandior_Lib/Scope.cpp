@@ -53,7 +53,9 @@ namespace vnd {
         mainScope->addFun("Derived", FunType::create("Derived", {}, true));
         mainScope->addFun("Derived", FunType::create("Derived", {"Object", "bool"}, true));
         mainScope->addFun("createDerived", FunType::create("Derived", {}));
-        mainScope->addFun("[].size", FunType::create("int", {}));
+        mainScope->addFun("vnd::vector<any>.add", FunType::create("void", {"1"}));
+        mainScope->addFun("vnd::vector<any>.size", FunType::create("int", {}));
+        mainScope->addFun("vnd::array<any>.size", FunType::create("int", {}));
         mainScope->addFun("string.size", FunType::create("int", {}));
         mainScope->addFun("Object.f", FunType::create("float", {"float"}));
         mainScope->addFun("Object.fs", FunType::create("string", {}));
@@ -114,7 +116,8 @@ namespace vnd {
     }
 
     std::string Scope::getType(const std::string &type) noexcept {
-        if(type.ends_with("]")) [[unlikely]] { return "[]"; }
+        if(type.ends_with("[]")) [[unlikely]] { return FORMAT("vnd::vector<{}>", type.substr(0, type.size() - 2)); }
+        if(type.ends_with("]")) [[unlikely]] { return FORMAT("vnd::array<{}>", type.substr(0, type.find_last_of('['))); }
         return type;
     }
 
@@ -180,34 +183,31 @@ namespace vnd {
     // NOLINTNEXTLINE(*-no-recursion,readability-function-cognitive-complexity)
     std::tuple<std::string, bool, std::optional<size_t>> Scope::getFunType(
         const std::string &type, const std::string_view &identifier, const std::vector<Expression> &expressions) const noexcept {
-        auto key = Scope::getKey(Scope::getType(type), identifier);
         bool found = false;
-        if(_funs.contains(key)) {
-            for(const auto &i : _funs.at(key)) {
-                auto params = i.getParams();
-                std::optional<size_t> variadic;
-                found = true;
-                if(!params.empty() && params.back().ends_with("...")) {
-                    variadic = params.size() - 1;
-                    if(expressions.size() == params.size() - 1) {
-                        params.pop_back();
-                    } else if(expressions.size() >= params.size()) {
-                        params.back().pop_back();
-                        params.back().pop_back();
-                        params.back().pop_back();
-                        std::string lastPar = params.back();
-                        while(params.size() < expressions.size()) { params.push_back(lastPar); }
-                    }
+        for(const auto &i : getFuncs(Scope::getType(type), identifier)) {
+            auto params = i.getParams();
+            std::optional<size_t> variadic;
+            found = true;
+            if(!params.empty() && params.back().ends_with("...")) {
+                variadic = params.size() - 1;
+                if(expressions.size() == params.size() - 1) {
+                    params.pop_back();
+                } else if(expressions.size() >= params.size()) {
+                    params.back().pop_back();
+                    params.back().pop_back();
+                    params.back().pop_back();
+                    std::string lastPar = params.back();
+                    while(params.size() < expressions.size()) { params.push_back(lastPar); }
                 }
-                if(params.size() != expressions.size()) [[likely]] {
-                    found = false;
-                } else [[unlikely]] {
-                    for(size_t par = 0; par != expressions.size(); par++) {
-                        if(!canAssign(params.at(par), expressions.at(par).getType())) { found = false; }
-                    }
-                }
-                if(found) { return {i.getReturnType(), i.isConstructor(), variadic}; }
             }
+            if(params.size() != expressions.size()) [[likely]] {
+                found = false;
+            } else [[unlikely]] {
+                for(size_t par = 0; par != expressions.size(); par++) {
+                    if(!canAssign(params.at(par), expressions.at(par).getType())) { found = false; }
+                }
+            }
+            if(found) { return {i.getReturnType(), i.isConstructor(), variadic}; }
         }
         if(_types.contains(type)) {
             for(const std::string &i : _types.at(type)) {
@@ -231,6 +231,15 @@ namespace vnd {
         if(_parent) { return _parent->getConstValue(type, identifier); }
         return "";
     }
+
+     std::vector<FunType> Scope::getFuncs(const std::string &type, const std::string_view &identifier) const noexcept {
+        if(!type.contains('<') && !identifier.contains('<')) {
+            std::string key = getKey(type, identifier);
+            if(_funs.contains(key)) { return _funs.at(key);}
+            return {};
+        }
+        return {};
+     }
 
     // NOLINTNEXTLINE(*-no-recursion)
     bool Scope::isConstant(const std::string &type, const std::string_view &identifier) const noexcept {

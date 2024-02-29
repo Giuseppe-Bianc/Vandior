@@ -524,7 +524,6 @@ namespace vnd {
             for(const auto &expression : expressions) { paramTypes += expression.getType() + ","; }
             if(!paramTypes.empty()) { paramTypes.pop_back(); }
             value = FORMAT("{}.{}({})", type, identifier, paramTypes);
-            LINFO(value);
             if(value.starts_with(".")) { value.erase(0, 1); }
             return FORMAT("Function {} not found", value);
         }
@@ -630,7 +629,7 @@ namespace vnd {
                     if(!expression.isConst()) {
                         throw TranspilerException("Cannot evaluate array dimension at compile time", instruction);
                     }
-                    size = expression.getValue().substr(0, expression.getValue().find('.'));
+                    size = expression.getValue();
                     if(std::stoi(size) < 0) { throw TranspilerException("Array cannot have negative size", instruction); }
                     prefix += "vnd::array<";
                     suffix = FORMAT(", {}>{}", size, suffix);

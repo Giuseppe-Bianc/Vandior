@@ -61,7 +61,7 @@ namespace vnd {
         [[nodiscard]] std::shared_ptr<Scope> getParent() const noexcept;
 
         /**
-         * @Gets the scope type.
+         * @brief Gets the scope type.
          * @return ScopeType of the scope.
          */
         [[nodiscard]] ScopeType getType() const noexcept;
@@ -155,6 +155,15 @@ namespace vnd {
          * constant, the result is empty.
          */
         [[nodiscard]] std::string getConstValue(const std::string &type, const std::string_view &identifier) const noexcept;
+
+        /**
+         * @brief gets the function corresponding to an identifier.
+         * @param type String representing the type containing the method. Is the function is not a method, the parameter is
+         * empty.
+         * @param identifier String_view representing the identifier of the function.
+         * @return Vector containing the found functions.
+         */
+        [[nodiscard]] std::vector<FunType> getFuncs(const std::string &type, const std::string_view &identifier) const noexcept;
 
         /**
          * @brief Checks if a variable is a constant.
