@@ -1,8 +1,8 @@
+// NOLINTBEGIN(*-include-cleaner, *-env33-c)
 #include "Vandior/ExpressionFactory.hpp"
 #include "Vandior/Log.hpp"
 #include <algorithm>
 
-// NOLINTBEGIN(*-include-cleaner, *-env33-c)
 #ifdef _MSC_VER
 #define POPEN _popen
 #define PCLOSE _pclose
@@ -16,8 +16,7 @@ namespace vnd {
     // NOLINTBEGIN(*-pass-by-value, *-identifier-length)
     ExpressionFactory::ExpressionFactory(TokenVecIter &iterator, const TokenVecIter &end, std::shared_ptr<Scope> scope,
                                          const bool isConst, const bool sq) noexcept
-      : _iterator(iterator), _end(end), _scope(std::move(scope)), _text({}), _expressions({}), _divide(false), _dot(false),
-        _const(isConst), _sq(sq) {}
+      : _iterator(iterator), _end(end), _scope(std::move(scope)), _const(isConst), _sq(sq) {}
 
     ExpressionFactory ExpressionFactory::create(TokenVecIter &iterator, const TokenVecIter &end, std::shared_ptr<Scope> scope,
                                                 const bool isConst, bool sq) noexcept {
@@ -29,7 +28,7 @@ namespace vnd {
                                                 std::optional<size_t> variadic) noexcept {
         std::string params;
         size_t pos = 0;
-        for(const Expression &expression : expressions) {
+        for(const auto &expression : expressions) {
             if(variadic.has_value() && pos == variadic.value()) { params += "{"; }
             params += expression.getText() + ",";
             pos++;
@@ -47,7 +46,7 @@ namespace vnd {
 
     bool ExpressionFactory::isSquareType(const std::string_view &type) noexcept { return type == "int" || type == "operator"; }
 
-    std::string ExpressionFactory::evaluate(const std::string &expression) noexcept {
+    std::string ExpressionFactory::evaluate(const std::string &expression) const noexcept {
 #ifdef _WIN32
         std::string command = FORMAT("python -c \"print({})\"", expression);
 #else
@@ -61,9 +60,7 @@ namespace vnd {
         const std::size_t buffer_size = 128;
         std::array<char, buffer_size> buffer{};
         while(fgets(buffer.data(), buffer_size, pipe.get()) != nullptr) { sss << buffer.data(); }
-        std::string result = sss.str();
-        LINFO("{}", result);
-        return result;
+        return sss.str();
     }
 
     void ExpressionFactory::resetVariables() noexcept {
@@ -136,7 +133,7 @@ namespace vnd {
         return _expressions.front().getType().find(' ') != std::string::npos;
     }
 
-    std::string_view ExpressionFactory::getTokenType() noexcept {
+    std::string_view ExpressionFactory::getTokenType() const noexcept {
         using enum TokenType;
         // NOLINTBEGIN
         switch(_iterator->getType()) {
@@ -387,9 +384,7 @@ namespace vnd {
 
     // NOLINTNEXTLINE(*-function-cognitive-complexity)
     std::string ExpressionFactory::checkType(TupType &oldType, const std::string_view newType) noexcept {
-        auto isTokentype = [&](TokenType type) {
-            return std::next(_iterator) != _end && std::next(_iterator)->getType() == type;
-        };
+        auto isTokentype = [&](TokenType type) { return std::next(_iterator) != _end && isType(std::next(_iterator), type); };
         static const std::string sps = " ";      // space
         static const std::string nots = "not";   // not string
         static const std::string bols = "bool";  // bool string
@@ -446,8 +441,8 @@ namespace vnd {
 
     // NOLINTNEXTLINE(*-easily-swappable-parameters)
     bool ExpressionFactory::checkNextToken(const std::string &type, const std::string &value) noexcept {
-        if(std::next(_iterator) != _end && (std::next(_iterator)->getType() == TokenType::DOT_OPERATOR ||
-                                            std::next(_iterator)->getType() == TokenType::OPEN_SQ_PARENTESIS)) {
+        if(std::next(_iterator) != _end && (isType(std::next(_iterator), TokenType::DOT_OPERATOR) ||
+                                            isType(std::next(_iterator), TokenType::OPEN_SQ_PARENTESIS))) {
             _type = type;
             if(type == "string" || type.back() == ']') {
                 _temp += value + ".";
@@ -459,6 +454,9 @@ namespace vnd {
             return true;
         }
         return false;
+    }
+    bool ExpressionFactory::isType(const TokenVecIter &nextToken, TokenType type) const noexcept {
+        return nextToken->getType() == type;
     }
 
     bool ExpressionFactory::checkUnaryOperator(const std::string_view &type) const noexcept {

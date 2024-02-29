@@ -91,19 +91,19 @@ namespace vnd {
          * @brief Type definition for a tuple used during parsing for representing the current expression type.
          */
         using TupType = std::tuple<bool, bool, std::string>;
-        TokenVecIter &_iterator;               ///< Iterator pointing to the current position in the token sequence.
-        TokenVecIter _end;                     ///< Iterator pointing to the end of the token sequence.
-        std::shared_ptr<Scope> _scope;         ///< Shared pointer to the current scope.
-        std::vector<std::string> _text;        ///< Vector storing the parsed text.
-        std::vector<Expression> _expressions;  ///< Vector storing the parsed expressions.
-        std::optional<size_t> _power;          ///< Power value used to parse ^ operator.
-        bool _divide;                          ///< Flag indicating division operation during parsing.
-        bool _dot;                             ///< Flag used for indicate the presence of . token.
-        bool _const;                           ///< Flag used to indicate if it's a const expression.
-        bool _sq;                              ///< Flag used to indicate if it's a square expression.
-        std::string _expressionText;           ///< String containing the text to evaluate a constant expression.
-        std::string _type;                     ///< String containing the temp type of the operand.
-        std::string _temp;                     ///< String containing the temp value of the operand.
+        TokenVecIter &_iterator;                 ///< Iterator pointing to the current position in the token sequence.
+        TokenVecIter _end;                       ///< Iterator pointing to the end of the token sequence.
+        std::shared_ptr<Scope> _scope;           ///< Shared pointer to the current scope.
+        std::vector<std::string> _text{};        ///< Vector storing the parsed text.
+        std::vector<Expression> _expressions{};  ///< Vector storing the parsed expressions.
+        std::optional<size_t> _power;            ///< Power value used to parse ^ operator.
+        bool _divide = false;                    ///< Flag indicating division operation during parsing.
+        bool _dot = false;                       ///< Flag used for indicate the presence of . token.
+        bool _const;                             ///< Flag used to indicate if it's a const expression.
+        bool _sq;                                ///< Flag used to indicate if it's a square expression.
+        std::string _expressionText;             ///< String containing the text to evaluate a constant expression.
+        std::string _type;                       ///< String containing the temp type of the operand.
+        std::string _temp;                       ///< String containing the temp value of the operand.
 
         /**
          * @brief Checks if the type of a token is allowed for array indexing.
@@ -116,7 +116,7 @@ namespace vnd {
          * @brief Gets the type of the current token.
          * @return Type of the token as a string.
          */
-        [[nodiscard]] std::string_view getTokenType() noexcept;
+        [[nodiscard]] std::string_view getTokenType() const noexcept;
 
         /**
          * @brief Emplaces the current token into the parsed text vector.
@@ -129,7 +129,7 @@ namespace vnd {
          * @param expression The expression to evaluate
          * @return String containing the result.
          */
-        std::string evaluate(const std::string &expression) noexcept;
+        std::string evaluate(const std::string &expression) const noexcept;
 
         /**
          * @brief Writes the current token to the parsed text.
@@ -223,6 +223,7 @@ namespace vnd {
          * @brief Clears the _type and _temp properties.
          */
         void clearData() noexcept;
+        [[nodiscard]] bool isType(const TokenVecIter &nextToken, TokenType type) const noexcept;
     };
 
 }  // namespace vnd
