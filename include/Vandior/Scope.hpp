@@ -76,7 +76,7 @@ namespace vnd {
          * @param type String_view representing the type to add.
          * @param assignable Vector of types to which the type can be assigned.
          */
-        void addType(const std::string_view &type, const std::vector<std::string> &assignable) noexcept;
+        void addType(const std::string_view &type, const std::vector<std::string> &assignable = {}) noexcept;
 
         /**
          * @brief Adds a compile time evaluated constant to the scope.

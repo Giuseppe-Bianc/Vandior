@@ -3,7 +3,7 @@ main {
 	var array3, array4: Derived[] = {Derived(), Derived()} 
 	var num: int = 5
 	var num1: float = 45
-	println("{}", num1)
+	print("{}", num1)
 	if(true) {
 		if(num == 2) {
 			println("2")

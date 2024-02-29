@@ -1,6 +1,6 @@
+// NOLINTBEGIN(*-include-cleaner,*-identifier-length)
 #include "Vandior/Scope.hpp"
 #include <Vandior/Log.hpp>
-// NOLINTBEGIN(*-include-cleaner,*-identifier-length)
 /**
  * This macro disable some msvc warnigs.
  * \cond
@@ -16,7 +16,9 @@ namespace vnd {
     // NOLINTEND
 
     Scope::Scope(std::shared_ptr<Scope> parent, const ScopeType &type) noexcept : _parent(std::move(parent)), _type(type) {
+#ifdef PRINT_SCOPE_TYPE
         LINFO(_type);
+#endif  // PRINT_SCOPE_TYPE
     }
 
     std::shared_ptr<Scope> Scope::create(std::shared_ptr<Scope> parent, const ScopeType &type) noexcept {
@@ -25,14 +27,14 @@ namespace vnd {
 
     std::shared_ptr<Scope> Scope::createMain() noexcept {
         auto mainScope = std::make_shared<Scope>(Scope{nullptr, ScopeType::GLOBAL_SCOPE});
-        mainScope->addType("void", {});
-        mainScope->addType("int", {});
-        mainScope->addType("float", {});
-        mainScope->addType("double", {});
-        mainScope->addType("char", {});
-        mainScope->addType("bool", {});
-        mainScope->addType("string", {});
-        mainScope->addType("Object", {});
+        mainScope->addType("void");
+        mainScope->addType("int");
+        mainScope->addType("float");
+        mainScope->addType("double");
+        mainScope->addType("char");
+        mainScope->addType("bool");
+        mainScope->addType("string");
+        mainScope->addType("Object");
         mainScope->addType("Derived", {"Object"});
         mainScope->addVariable("Object.a", "int", false);
         mainScope->addVariable("Object.test", "float", true);
