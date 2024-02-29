@@ -1,7 +1,7 @@
 #pragma once
-#include "ScopeType.hpp"
 #include "Expression.hpp"
 #include "FunType.hpp"
+#include "ScopeType.hpp"
 #include "headers.hpp"
 #include <iostream>
 
@@ -235,15 +235,15 @@ namespace vnd {
          */
         [[nodiscard]] static std::string getType(const std::string &type) noexcept;
 
-        std::unordered_map<std::string, std::string> _vars;                             ///< Map of variables identifiers and types.
-        std::unordered_map<std::string, std::string> _vals;                             ///< Map of constants identifiers and types.
+        std::unordered_map<std::string, std::string> _vars;  ///< Map of variables identifiers and types.
+        std::unordered_map<std::string, std::string> _vals;  ///< Map of constants identifiers and types.
         std::unordered_map<std::string, std::pair<std::string, std::string>>
-            _consts;   ///< Map of compile time constants identifiers and types.
-        std::unordered_map<std::string, std::vector<std::string>> _types;               ///< Map of types and assignabled types.
-        std::unordered_map<std::string, std::vector<FunType>> _funs;                    ///< Map of function identifiers and informations.
-        std::unordered_map<std::string, std::string> _tmp;                              ///< Map of temporary variables and types.
-        std::shared_ptr<Scope> _parent;                                                 ///< Shared pointer to the parent scope.
-        ScopeType _type;  
+            _consts;  ///< Map of compile time constants identifiers and types.
+        std::unordered_map<std::string, std::vector<std::string>> _types;  ///< Map of types and assignabled types.
+        std::unordered_map<std::string, std::vector<FunType>> _funs;       ///< Map of function identifiers and informations.
+        std::unordered_map<std::string, std::string> _tmp;                 ///< Map of temporary variables and types.
+        std::shared_ptr<Scope> _parent;                                    ///< Shared pointer to the parent scope.
+        ScopeType _type;
     };
 
 }  // namespace vnd
