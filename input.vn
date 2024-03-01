@@ -43,5 +43,16 @@ main {
 		}
 		println(s)
 	}
-	
+	var intarray: int[] = {1, 2, 3}
+	var size: int = intarray.size()
+	println("Size:\t{}", size)
+	for var i: int = 0, size {
+		println("A\t{}", intarray[i])
+	}
+	intarray.add(-1)
+	size = intarray.size()
+	println("Size:\t{}", size)
+	for var i: int = 0, intarray.size() {
+		println("A\t{}", intarray[i])
+	}
 }

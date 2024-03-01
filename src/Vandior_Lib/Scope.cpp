@@ -298,7 +298,19 @@ namespace vnd {
                         continue;
                     }
                 }
-                for(const auto i : fun.second) { result.emplace_back(i); }
+                for(const auto i : fun.second) {
+                    std::vector<std::string> paramTypes;
+                    for(const auto &j : i.getParams()) {
+                        auto it = std::find_if(genericParams.begin(), genericParams.end(),
+                                               [&j](std::pair<std::string, std::string> element) { return j == element.first; });
+                        if(it == genericParams.end()) {
+                            paramTypes.emplace_back(j);
+                        } else {
+                            paramTypes.emplace_back(it->second);
+                        }
+                    }
+                    result.emplace_back(FunType::create(i.getReturnType(), paramTypes, i.isConstructor()));
+                }
             }
             //if(!identifier.contains('<') && current.second.contains('<')) {
             //    std::string genericIdentifier = type.substr(0, type.find('<'));

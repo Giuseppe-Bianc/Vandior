@@ -81,6 +81,9 @@ namespace vnd {
 				if(index < 0 || index >= static_cast<int64_t>(this->size())) { throw std::runtime_error("Index " + std::to_string(index) +  " out of bounds for size " + std::to_string(static_cast<int64_t>(this->size()))); }
 				return std::vector<T>::at(index);
 			}
+			void add(const T elem) {
+				std::vector<T>::emplace_back(elem);
+			}
 	};
 	std::unordered_map<std::string, std::any> tmp;
 }
