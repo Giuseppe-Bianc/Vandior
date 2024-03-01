@@ -224,6 +224,7 @@ namespace vnd {
          */
         void clearData() noexcept;
         [[nodiscard]] bool isType(const TokenVecIter &nextToken, TokenType type) const noexcept;
+        [[nodiscard]] bool isTokenOfType(const TokenVecIter &iterator, TokenType type) const noexcept;
     };
 
 }  // namespace vnd

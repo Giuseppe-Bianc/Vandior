@@ -383,20 +383,23 @@ namespace vnd {
         return {};
     }
 
+    bool ExpressionFactory::isTokenOfType(const TokenVecIter &iterator, TokenType type) const noexcept {
+        return iterator != _end && isType(iterator, type);
+    }
+
     // NOLINTNEXTLINE(*-function-cognitive-complexity)
     std::string ExpressionFactory::checkType(TupType &oldType, const std::string_view newType) noexcept {
-        auto isTokentype = [&](TokenType type) { return std::next(_iterator) != _end && isType(std::next(_iterator), type); };
         static const std::string sps = " ";      // space
         static const std::string nots = "not";   // not string
         static const std::string bols = "bool";  // bool string
-        if(newType == "dot" || isTokentype(TokenType::DOT_OPERATOR)) { return {}; }
+        if(newType == "dot" || isTokenOfType(std::next(_iterator), TokenType::DOT_OPERATOR)) { return {}; }
         if(std::get<2>(oldType).find(sps) != std::string::npos) { return "Multiple return value functions must be used alone"; }
         if(newType.find(sps) != std::string::npos) {
             if(!std::get<2>(oldType).empty()) { return "Multiple return value functions must be used alone"; }
             std::get<2>(oldType) = newType;
             return {};
         }
-        if(isTokentype(TokenType::OPEN_SQ_PARENTESIS)) { return ""; }
+        if(isTokenOfType(std::next(_iterator), TokenType::OPEN_SQ_PARENTESIS)) { return ""; }
         if(newType == "nullptr" && !Scope::isNumber(std::get<2>(oldType))) {
             std::get<2>(oldType) = newType;
             return {};
