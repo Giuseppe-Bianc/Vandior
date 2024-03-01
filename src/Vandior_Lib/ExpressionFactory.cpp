@@ -85,7 +85,8 @@ namespace vnd {
                 _iterator++;
                 continue;
             }
-            if(iterType == IDENTIFIER && std::next(_iterator) != _end && std::next(_iterator)->getType() == OPEN_PARENTESIS) {
+            if(auto nextIter = std::ranges::next(_iterator);
+               iterType == IDENTIFIER && nextIter != _end && nextIter->getType() == OPEN_PARENTESIS) {
                 if(auto error = handleFun(type); !error.empty()) { return error; }
             } else if(iterType == OPEN_PARENTESIS) {
                 if(auto error = handleInnerExpression(type); !error.empty()) { return error; }
@@ -444,8 +445,8 @@ namespace vnd {
 
     // NOLINTNEXTLINE(*-easily-swappable-parameters)
     bool ExpressionFactory::checkNextToken(const std::string &type, const std::string &value) noexcept {
-        if(std::next(_iterator) != _end && (isType(std::next(_iterator), TokenType::DOT_OPERATOR) ||
-                                            isType(std::next(_iterator), TokenType::OPEN_SQ_PARENTESIS))) {
+        if(std::ranges::next(_iterator) != _end && (isType(std::ranges::next(_iterator), TokenType::DOT_OPERATOR) ||
+                                                    isType(std::ranges::next(_iterator), TokenType::OPEN_SQ_PARENTESIS))) {
             _type = type;
             if(type == "string" || type.back() == ']') {
                 _temp += value + ".";

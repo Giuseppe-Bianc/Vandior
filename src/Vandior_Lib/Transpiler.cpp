@@ -3,10 +3,9 @@
 
 namespace vnd {
     // NOLINTBEGIN(*-include-cleaner, *-easily-swappable-parameters)
-    Transpiler::Transpiler(const std::vector<Instruction> &instructions) noexcept
-      : _tabs(0), _instructions(instructions), _scope(Scope::createMain()), _main(false) {}
+    Transpiler::Transpiler(const std::vector<Instruction> &instructions) noexcept : _instructions(instructions) {}
 
-    Transpiler Transpiler::create(const std::vector<Instruction> &instructions) noexcept { return {instructions}; }
+    Transpiler Transpiler::create(const std::vector<Instruction> &instructions) noexcept { return Transpiler{instructions}; }
 
     std::vector<std::string> Transpiler::tokenize(const std::string &str) noexcept {
         std::vector<std::string> result;
@@ -39,7 +38,7 @@ namespace vnd {
                 if(_scope->isGlobalScope() && !Transpiler::checkGlobalScope(type)) {
                     throw TranspilerException("Cannot place this instruction in the global scope", instruction);
                 }
-                _text += std::string(C_ST(_tabs), '\t');
+                _text += std::string(_tabs, '\t');
                 switch(type) {
                 case MAIN:
                     transpileMain(instruction);
@@ -109,7 +108,7 @@ namespace vnd {
         if(instruction.getTokens().back().getType() == TokenType::CLOSE_CUR_PARENTESIS) {
             if(_scope->getType() == ScopeType::MAIN_SCOPE) {
                 if(instruction.getLastType() == InstructionType::MAIN) { _text += "\n"; }
-                _text += FORMAT("{:\t^{}}return 0;\n{:\t^{}}", "", C_ST(_tabs), "", C_ST(_tabs) - 1);
+                _text += FORMAT("{:\t^{}}return 0;\n{:\t^{}}", "", _tabs, "", _tabs - 1);
             }
             _text += "}";
             closeScope();
@@ -123,7 +122,7 @@ namespace vnd {
         _text += "int main(int argc, char **argv) {\n";
         _main = true;
         openScope(ScopeType::MAIN_SCOPE);
-        auto value = FORMAT("{:\t^{}}const vnd::vector<string> _args(argv, argv + argc);", "", C_ST(_tabs));
+        auto value = FORMAT("{:\t^{}}const vnd::vector<string> _args(argv, argv + argc);", "", _tabs);
         _text += value;
         _scope->addConstant("args", "string[]", value);
         checkTrailingBracket(instruction);
@@ -220,9 +219,9 @@ namespace vnd {
                 throw TRANSPILER_EXCEPTIONF(instruction, "Invalid operation {}", text);
             }
             if(text.starts_with(' ')) { text.erase(0, 1); }
-            _text += FORMAT("{};\n{:\t^{}}", text, "", C_ST(_tabs));
+            _text += FORMAT("{};\n{:\t^{}}", text, "", _tabs);
         }
-        _text.erase(_text.size() - C_ST(_tabs) - 1, C_ST(_tabs) + 1);
+        _text.erase(_text.size() - _tabs - 1, _tabs + 1);
     }
 
     // NOLINTNEXTLINE(*-function-cognitive-complexity)
@@ -244,9 +243,7 @@ namespace vnd {
             }
         }
         while(iterator != endToken) {
-            if(std::string error = factory.parse({TokenType::COMMA}); !error.empty()) {
-                throw TranspilerException(error, instruction);
-            }
+            if(auto error = factory.parse({TokenType::COMMA}); !error.empty()) { throw TranspilerException(error, instruction); }
             if(iterator != endToken) { iterator++; }
         }
         if(factory.isMultiplefun()) {
@@ -258,9 +255,8 @@ namespace vnd {
             }
             return;
         }
-        _scope->eachTmp([this](const std::string &key) -> void {
-            _text += FORMAT("vnd::tmp[\"{}\"] = {};\n{:\t^{}}", key, key, "", C_ST(_tabs));
-        });
+        _scope->eachTmp(
+            [this](const std::string &key) { _text += FORMAT("vnd::tmp[\"{}\"] = {};\n{:\t^{}}", key, key, "", _tabs); });
         if(variables.size() != factory.size()) {
             throw TRANSPILER_EXCEPTIONF(instruction, "inconsistent assignation: {} values for {} variables", factory.size(),
                                         variables.size());
@@ -286,7 +282,7 @@ namespace vnd {
                 if(expression.getType() == "void") {
                     throw TranspilerException("Cannot assign void expression", instruction);
                 } else {
-                    _text += FORMAT("{};\n{:\t^{}}", expression.getText(), "", C_ST(_tabs));
+                    _text += FORMAT("{};\n{:\t^{}}", expression.getText(), "", _tabs);
                     continue;
                 }
             }
@@ -306,7 +302,7 @@ namespace vnd {
             if(equalToken.getValue() == "^=") { text += ")"; }
             if(first.ends_with('(')) { text += ")"; }
             tmp.erase(tmp.begin());
-            _text += FORMAT("{};\n{:\t^{}}", text, "", C_ST(_tabs));
+            _text += FORMAT("{};\n{:\t^{}}", text, "", _tabs);
         }
         _text += "vnd::tmp.clear();";
         _scope->clearTmp();
@@ -346,7 +342,7 @@ namespace vnd {
         }
         iterator += 2;
         _text += "if";
-        if(std::string error = transpileCondition(iterator, tokens.end()); !error.empty()) {
+        if(auto error = transpileCondition(iterator, tokens.end()); !error.empty()) {
             throw TranspilerException(error, instruction);
         }
         openScope(ScopeType::IF_SCOPE);
@@ -430,7 +426,7 @@ namespace vnd {
         std::string currentVariable;
         std::string type;
         while(iterator != end && iterator->getType() != EQUAL_OPERATOR && iterator->getType() != OPERATION_EQUAL) {
-            const auto next = std::next(iterator);
+            const auto next = std::ranges::next(iterator);
             if(iterator->getType() == IDENTIFIER) {
                 if(next != end && next->getType() == OPEN_PARENTESIS) {
                     if(auto error = extractFun(iterator, end, currentVariable, type); !error.empty()) {
@@ -495,9 +491,9 @@ namespace vnd {
                 currentVariable = FORMAT("_{}", currentVariable);
             }
         } else if(next != end && next->getType() == DOT_OPERATOR) {
-            currentVariable += FORMAT("get{}{}()->", char(std::toupper(value[0])), value.substr(1));
+            currentVariable += FORMAT("get{}{}()->", char(std::toupper(C_UC(value[0]))), value.substr(1));
         } else {
-            currentVariable += FORMAT("set{}{}(", char(std::toupper(value[0])), value.substr(1));
+            currentVariable += FORMAT("set{}{}(", char(std::toupper(C_UC(value[0]))), value.substr(1));
         }
         return {};
     }
@@ -524,7 +520,6 @@ namespace vnd {
             for(const auto &expression : expressions) { paramTypes += expression.getType() + ","; }
             if(!paramTypes.empty()) { paramTypes.pop_back(); }
             value = FORMAT("{}.{}({})", type, identifier, paramTypes);
-            LINFO(value);
             if(value.starts_with(".")) { value.erase(0, 1); }
             return FORMAT("Function {} not found", value);
         }
@@ -579,7 +574,7 @@ namespace vnd {
         }
         values.pop_back();
         values.pop_back();
-        _text += FORMAT("std::tie({}) = {};\n{:\t^{}}", values, expression.getText(), "", C_ST(_tabs));
+        _text += FORMAT("std::tie({}) = {};\n{:\t^{}}", values, expression.getText(), "", _tabs);
         for(const auto &[first, second] : variables) {
             if(first != "_") {
                 auto type = types.at(typeIndex);
@@ -587,9 +582,9 @@ namespace vnd {
                 if(!_scope->canAssign(second, type)) { return FORMAT("Cannot assign {}.{}", type, first); }
                 typeIndex++;
                 if(first.ends_with('(')) {
-                    _text += FORMAT("{}std::any_cast<{}>({}));\n{:\t^{}}", first, typeValue, tmp.front(), "", C_ST(_tabs));
+                    _text += FORMAT("{}std::any_cast<{}>({}));\n{:\t^{}}", first, typeValue, tmp.front(), "", _tabs);
                 } else if(first != "_") {
-                    _text += FORMAT("{} = std::any_cast<{}>({});\n{:\t^{}}", first, typeValue, tmp.front(), "", C_ST(_tabs));
+                    _text += FORMAT("{} = std::any_cast<{}>({});\n{:\t^{}}", first, typeValue, tmp.front(), "", _tabs);
                 }
             }
             tmp.erase(tmp.begin());
@@ -612,7 +607,7 @@ namespace vnd {
             throw TranspilerException(FORMAT("Cannot declare {} variables", typeValue), instruction);
         }
         if(!_scope->checkType(type)) { throw TranspilerException(FORMAT("Type {} not valid", type), instruction); }
-        if(!_scope->isPrimitive(type)) { typeValue = FORMAT("std::shared_ptr<{}>", type); }
+        if(!vnd::Scope::isPrimitive(type)) { typeValue = FORMAT("std::shared_ptr<{}>", type); }
         while(iterator != end && std::ranges::find(endTokens, iterator->getType()) == endTokens.end()) {
             if(iterator->getType() == TokenType::OPEN_SQ_PARENTESIS) {
                 if((iterator + 1)->getType() == TokenType::CLOSE_SQ_PARENTESIS) {
@@ -639,7 +634,7 @@ namespace vnd {
             }
             iterator++;
         }
-        return {type, prefix + typeValue + suffix};
+        return {type, FORMAT("{}{}{}", prefix, typeValue, suffix)};
     }
 
     std::string Transpiler::transpileCondition(TokenVecIter &iterator, const TokenVecIter &end) noexcept {
@@ -663,11 +658,11 @@ namespace vnd {
         std::string declaration;
         if(iterator->getType() == TokenType::K_VAR) {
             if(iterator->getValue() != "var") {
-                throw TranspilerException("For variables must be decalred using var", instruction);
+                throw TranspilerException("For variables must be declared using var", instruction);
             }
-            iterator++;
+            ++iterator;
             identifier = iterator->getValue();
-            iterator++;
+            ++iterator;
             std::tie(type, typeValue) = transpileType(iterator, end, {TokenType::EQUAL_OPERATOR}, instruction);
             if(!Scope::isNumber(type)) { throw TranspilerException("For variables must be of numeric type", instruction); }
             auto [check, shadowing] = _scope->checkVariable(identifier);
@@ -678,7 +673,7 @@ namespace vnd {
             declaration = identifier;
         } else {
             identifier = iterator->getValue();
-            iterator++;
+            ++iterator;
         }
         if(identifier.starts_with("_")) {
             identifier = FORMAT("v{}", identifier);
@@ -686,10 +681,8 @@ namespace vnd {
             identifier = FORMAT("_{}", identifier);
         }
         _text += FORMAT("{}, {},", typeValue, identifier);
-        iterator++;
-        if(std::string error = factory.parse({TokenType::COMMA}); !error.empty()) {
-            throw TranspilerException(error, instruction);
-        }
+        ++iterator;
+        if(auto error = factory.parse({TokenType::COMMA}); !error.empty()) { throw TranspilerException(error, instruction); }
         auto expression = factory.getExpression();
         if(!Scope::isNumber(expression.getType())) {
             throw TranspilerException("For variables must be of numeric type", instruction);
