@@ -163,7 +163,7 @@ namespace vnd {
          * @param identifier String_view representing the identifier of the function.
          * @return Vector containing the found functions.
          */
-        [[nodiscard]] std::vector<FunType> getFuncs(const std::string &type, const std::string_view &identifier) const noexcept;
+        [[nodiscard]] std::vector<FunType> getFuns(const std::string &type, const std::string_view &identifier) const noexcept;
 
         /**
          * @brief Checks if a variable is a constant.

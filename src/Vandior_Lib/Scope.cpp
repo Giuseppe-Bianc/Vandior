@@ -55,9 +55,9 @@ namespace vnd {
         mainScope->addFun("Derived", FunType::create("Derived", {}, true));
         mainScope->addFun("Derived", FunType::create("Derived", {"Object", "bool"}, true));
         mainScope->addFun("createDerived", FunType::create("Derived", {}));
-        mainScope->addFun("vnd::vector<any>.add", FunType::create("void", {"1"}));
-        mainScope->addFun("vnd::vector<any>.size", FunType::create("int", {}));
-        mainScope->addFun("vnd::array<any>.size", FunType::create("int", {}));
+        mainScope->addFun("vnd::vector<T any>.add", FunType::create("void", {"T"}));
+        mainScope->addFun("vnd::vector<T any>.size", FunType::create("int", {}));
+        mainScope->addFun("vnd::array<T any>.size", FunType::create("int", {}));
         mainScope->addFun("string.size", FunType::create("int", {}));
         mainScope->addFun("Object.f", FunType::create("float", {"float"}));
         mainScope->addFun("Object.fs", FunType::create("string", {}));
@@ -186,7 +186,7 @@ namespace vnd {
     std::tuple<std::string, bool, std::optional<size_t>> Scope::getFunType(
         const std::string &type, const std::string_view &identifier, const std::vector<Expression> &expressions) const noexcept {
         bool found = false;
-        for(const auto &i : getFuncs(Scope::getType(type), identifier)) {
+        for(const auto &i : getFuns(Scope::getType(type), identifier)) {
             auto params = i.getParams();
             std::optional<size_t> variadic;
             found = true;
@@ -234,13 +234,77 @@ namespace vnd {
         return "";
     }
 
-     std::vector<FunType> Scope::getFuncs(const std::string &type, const std::string_view &identifier) const noexcept {
+     std::vector<FunType> Scope::getFuns(const std::string &type, const std::string_view &identifier) const noexcept {
+        std::vector<FunType> result;
         if(!type.contains('<') && !identifier.contains('<')) {
             std::string key = getKey(type, identifier);
             if(_funs.contains(key)) { return _funs.at(key);}
             return {};
         }
-        return {};
+        for(const auto &fun : _funs) {
+            std::pair<std::string, std::string> current;
+            std::vector<std::pair<std::string, std::string>> genericParams;
+            std::vector<std::string> specializedParams;
+            if(fun.first.contains('.')) {
+                size_t pos = fun.first.find('.');
+                current = {fun.first.substr(0, pos), fun.first.substr(pos + 1, fun.first.size() - pos + 1)};
+            } else {
+                current = {"", fun.first};
+            }
+            if(type.contains('<') && current.first.contains('<')) {
+                std::string genericType = current.first.substr(0, current.first.find('<'));
+                std::string specializeType = type.substr(0, type.find('<'));
+                if(genericType != specializeType) { continue; }
+                std::string currentParam;
+                size_t pos = 0;
+                size_t space;
+                for(const char c : current.first.substr(current.first.find('<') + 1, current.first.find_last_of('>') - 1)) {
+                    if(c == '<') {
+                        pos++;
+                    } else if(c == '>') {
+                        pos--;
+                    } else if(c == ',') {
+                        space = currentParam.find(' ');
+                        genericParams.emplace_back(std::make_pair(currentParam.substr(0, space),
+                                                   currentParam.substr(space + 1, currentParam.size() - space + 1)));
+                        currentParam.clear();
+                    } else {
+                        currentParam += c;
+                    }
+                }
+                space = currentParam.find(' ');
+                genericParams.emplace_back(std::make_pair(currentParam.substr(0, space),
+                                                          currentParam.substr(space + 1, currentParam.size() - space + 1)));
+                currentParam.clear();
+                pos = 0;
+                for(const char c : type.substr(type.find('<') + 1, type.find_last_of('>') - 1)) {
+                    if(c == '<') {
+                        pos++;
+                    } else if(c == '>') {
+                        pos--;
+                    } else if(c == ',') {
+                        specializedParams.emplace_back(currentParam);
+                        currentParam.clear();
+                    } else {
+                        currentParam += c;
+                    }
+                }
+                specializedParams.emplace_back(currentParam);
+                if(genericParams.size() != specializedParams.size()) { continue; }
+                for(size_t i = 0; i != genericParams.size(); i++) {
+                    if(canAssign(genericParams.at(i).second, specializedParams.at(i))) {
+                        genericParams.at(i).second = specializedParams.at(i);
+                    } else {
+                        continue;
+                    }
+                }
+                for(const auto i : fun.second) { result.emplace_back(i); }
+            }
+            //if(!identifier.contains('<') && current.second.contains('<')) {
+            //    std::string genericIdentifier = type.substr(0, type.find('<'));
+            //}
+        }
+        return result;
      }
 
     // NOLINTNEXTLINE(*-no-recursion)
