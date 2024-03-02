@@ -15,6 +15,15 @@
  */
 #pragma once
 
+/**
+ * This macro disable some msvc warnigs.
+ * \cond
+ */
+DISABLE_WARNINGS_PUSH(
+    4005 4201 4459 4514 4625 4626 4820 6244 6285 6385 6386 26409 26415 26418 26429 26432 26437 26438 26440 26446 26447 26450 26451 26455 26457 26459 26460 26461 26467 26472 26473 26474 26475 26481 26482 26485 26490 26491 26493 26494 26495 26496 26497 26498 26800 26814 26818 26826 26471 26466 26400 26813
+26819 26401)
+/** \endcond */
+
 #if defined(__clang__)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wsign-conversion"
@@ -34464,3 +34473,5 @@ namespace exprtk {
 #pragma GCC diagnostic pop
 #endif
 // NOLINTEND(*-diagnostic-implicit-int-float-conversion)
+
+DISABLE_WARNINGS_POP()

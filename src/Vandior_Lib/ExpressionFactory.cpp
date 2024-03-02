@@ -1,6 +1,14 @@
 // NOLINTBEGIN(*-include-cleaner, *-env33-c)
 #include "Vandior/ExpressionFactory.hpp"
+#include "Vandior/disableWarn.hpp"
 #include <algorithm>
+
+/**
+ * This macro disable some msvc warnigs.
+ * \cond
+ */
+DISABLE_WARNINGS_PUSH(26447)
+/** \endcond */
 
 #ifdef _MSC_VER
 #define POPEN _popen
@@ -11,7 +19,7 @@
 #endif
 
 namespace vnd {
-
+    static inline constexpr std::size_t buffer_size = 128;
     // NOLINTBEGIN(*-pass-by-value, *-identifier-length)
     ExpressionFactory::ExpressionFactory(TokenVecIter &iterator, const TokenVecIter &end, std::shared_ptr<Scope> scope,
                                          const bool isConst, const bool sq) noexcept
@@ -56,7 +64,6 @@ namespace vnd {
         if(!pipe) { return "0"; }
 
         std::stringstream sss;
-        const std::size_t buffer_size = 128;
         std::array<char, buffer_size> buffer{};
         while(fgets(buffer.data(), buffer_size, pipe.get()) != nullptr) { sss << buffer.data(); }
         std::string result = sss.str();
@@ -81,7 +88,7 @@ namespace vnd {
         exprtk::parser<double> parser;
         std::tuple<bool, bool, std::string> type;
         while(_iterator != _end && std::ranges::find(endToken, _iterator->getType()) == endToken.end()) {
-            auto iterType = _iterator->getType();
+            const auto iterType = _iterator->getType();
             if(iterType == UNARY_OPERATOR) {
                 ++_iterator;
                 continue;
@@ -234,7 +241,7 @@ namespace vnd {
                     value = FORMAT(" _{}", value);
                 }
             } else {
-                value = FORMAT("get{}{}()", char(std::toupper(value[0])), value.substr(1));
+                value = FORMAT("get{}{}()", char(std::toupper(value.at(0))), value.substr(1));
             }
             if((_iterator + 1) != _end && (_iterator + 1)->getType() == TokenType::UNARY_OPERATOR) {
                 value += (_iterator + 1)->getValue();
@@ -347,9 +354,8 @@ namespace vnd {
             value.pop_back();
             if(value.at(0) == ' ') { value.erase(0, 1); }
         }
-        auto oldType = vectorType;
         vectorType += "[]";
-        if(std::string error = checkType(type, vectorType); !error.empty()) { return error; }
+        if(auto error = checkType(type, vectorType); !error.empty()) { return error; }
         if(_const) {
             if(!constValue.empty()) { constValue.pop_back(); }
             _expressionText += FORMAT("{{{}}}", value);
@@ -503,3 +509,5 @@ namespace vnd {
     }
 }  // namespace vnd
 // NOLINTEND(*-include-cleaner, *-env33-c)
+
+DISABLE_WARNINGS_POP()

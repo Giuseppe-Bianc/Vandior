@@ -5,7 +5,7 @@ namespace vnd {
     std::vector<Token> Tokenizer::tokenize() {
         std::vector<Token> tokens;
         while(positionIsInText()) {
-            const char &currentChar = _input[position];
+            const char &currentChar = _input.at(position);
             if(std::isalpha(currentChar)) [[likely]] {
                 tokens.emplace_back(handleAlpha());
             } else if(std::isdigit(currentChar)) [[likely]] {
@@ -49,7 +49,7 @@ namespace vnd {
     Token Tokenizer::handleAlpha() {
         const auto start = position;
         TokenType type = TokenType::IDENTIFIER;
-        while(positionIsInText() && (TokenizerUtility::isalnumUnderscore(_input[position]))) { incPosAndColumn(); }
+        while(positionIsInText() && (TokenizerUtility::isalnumUnderscore(_input.at(position)))) { incPosAndColumn(); }
         const auto value = _input.substr(start, position - start);
         kewordType(value, type);
         return {type, value, {_filename, line, column - value.size()}};
@@ -58,7 +58,7 @@ namespace vnd {
     Token Tokenizer::handleUnderscoreAlpha() {
         const auto start = position;
         incPosAndColumn();
-        while(positionIsInText() && (TokenizerUtility::isalnumUnderscore(_input[position]))) { incPosAndColumn(); }
+        while(positionIsInText() && (TokenizerUtility::isalnumUnderscore(_input.at(position)))) { incPosAndColumn(); }
         const auto value = _input.substr(start, position - start);
         return {TokenType::IDENTIFIER, value, {_filename, line, column - value.size()}};
     }
@@ -153,7 +153,7 @@ namespace vnd {
     }
 
     void Tokenizer::extractDigits() noexcept {
-        while(positionIsInText() && isdigit(_input[position])) { incPosAndColumn(); }
+        while(positionIsInText() && isdigit(_input.at(position))) { incPosAndColumn(); }
     }
 
     void Tokenizer::incPosAndColumn() noexcept {
@@ -222,7 +222,7 @@ namespace vnd {
         incPosAndColumn();
         const auto start = position;
         std::string_view value{};
-        while(!vnd::TokenizerUtility::isQuotation(_input[position])) {
+        while(!vnd::TokenizerUtility::isQuotation(_input.at(position))) {
             if(position + 1 == _inputSize) {
                 incPosAndColumn();
                 value = _input.substr(start, position - start);
@@ -236,7 +236,7 @@ namespace vnd {
     }
 
     void Tokenizer::extractVarLenOperator() {
-        while(positionIsInText() && vnd::TokenizerUtility::isOperator(_input[position])) { incPosAndColumn(); }
+        while(positionIsInText() && vnd::TokenizerUtility::isOperator(_input.at(position))) { incPosAndColumn(); }
     }
 
     TokenType Tokenizer::singoleCharOp(const char view) noexcept {
