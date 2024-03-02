@@ -27,11 +27,11 @@ namespace vnd {
                                                 std::optional<size_t> variadic) noexcept {
         std::string params;
         size_t pos = 0;
-        for(const auto &expression : expressions) {
+        std::ranges::for_each(expressions, [&](const Expression &expression) {
             if(variadic.has_value() && pos == variadic.value()) { params += "{"; }
             params += expression.getText() + ",";
             pos++;
-        }
+        });
         if(!params.empty()) {
             if(params.at(0) == ' ') { params.erase(0, 1); }
             params.pop_back();
@@ -79,11 +79,11 @@ namespace vnd {
         using enum vnd::TokenType;
         resetVariables();
         exprtk::parser<double> parser;
-        auto type = std::make_tuple(false, false, std::string{});
+        std::tuple<bool, bool, std::string> type;
         while(_iterator != _end && std::ranges::find(endToken, _iterator->getType()) == endToken.end()) {
             auto iterType = _iterator->getType();
             if(iterType == UNARY_OPERATOR) {
-                _iterator++;
+                ++_iterator;
                 continue;
             }
             if(auto nextIter = std::ranges::next(_iterator);
@@ -178,7 +178,7 @@ namespace vnd {
         using enum TokenType;
         clearData();
         if(_iterator->getType() == TokenType::DOT_OPERATOR) {
-            _iterator++;
+            ++_iterator;
             return;
         }
         if(checkNextToken(std::string{type}, writeToken())) { return; }
@@ -187,7 +187,7 @@ namespace vnd {
         if(_iterator->getType() == CHAR) {
             _text.emplace_back(FORMAT("'{}'", std::string{value}));
             _expressionText += FORMAT("'{}'", std::string{value});
-            _iterator++;
+            ++_iterator;
             return;
         }
         _text.emplace_back(" ");
@@ -201,13 +201,13 @@ namespace vnd {
             }
             _text.emplace_back(",");
             _expressionText += "**";
-            _iterator++;
+            ++_iterator;
             return;
         }
-        std::string text = _scope->getTmp(_temp + writeToken());
+        auto text = _scope->getTmp(_temp + writeToken());
         if(_const) {
             if(_iterator->getType() == TokenType::IDENTIFIER) {
-                std::string constValue = _scope->getConstValue(_type, _iterator->getValue());
+                auto constValue = _scope->getConstValue(_type, _iterator->getValue());
                 if(constValue.empty()) {
                     _const = false;
                 } else {
@@ -220,7 +220,7 @@ namespace vnd {
         checkOperators(text);
         _text.emplace_back(text);
         if(value == "/" && !_sq) { _divide = true; }
-        _iterator++;
+        ++_iterator;
     }
 
     std::string ExpressionFactory::writeToken() noexcept {
@@ -258,9 +258,9 @@ namespace vnd {
         std::vector<Expression> expressions;
         std::string params;
         if(_const && !_temp.empty()) { return "Cannot call methods on const value"; }
-        _iterator++;
+        ++_iterator;
         while(_iterator->getType() != TokenType::CLOSE_PARENTESIS) {
-            _iterator++;
+            ++_iterator;
             if(_iterator->getType() != CLOSE_PARENTESIS) {
                 if(std::string error = factory.parse({COMMA, CLOSE_PARENTESIS}); !error.empty()) { return error; }
             }
@@ -298,7 +298,7 @@ namespace vnd {
     std::string ExpressionFactory::handleSquareExpression(TupType &type) noexcept {
         if(!Scope::checkVector(_type)) { return FORMAT("Indexing not allowed for {} type", _type); }
         auto factory = ExpressionFactory::create(_iterator, _end, _scope, _const, true);
-        _iterator++;
+        ++_iterator;
         if(auto error = factory.parse({TokenType::CLOSE_SQ_PARENTESIS}); !error.empty()) { return error; }
         auto expression = factory.getExpression();
         if(auto newType = expression.getType(); newType != "int") { return FORMAT("{} index not allowed", newType); }
@@ -317,7 +317,7 @@ namespace vnd {
         auto factory = ExpressionFactory::create(_iterator, _end, _scope, _const);
         while(_iterator->getType() != TokenType::CLOSE_CUR_PARENTESIS) {
             using enum vnd::TokenType;
-            _iterator++;
+            ++_iterator;
             if(_iterator->getType() != CLOSE_CUR_PARENTESIS) {
                 if(auto error = factory.parse({COMMA, CLOSE_CUR_PARENTESIS}); !error.empty()) { return error; }
             }
@@ -360,7 +360,7 @@ namespace vnd {
 
     std::string ExpressionFactory::handleInnerExpression(TupType &type) noexcept {  // NOLINT(*-no-recursion)
         auto factory = ExpressionFactory::create(_iterator, _end, _scope, _const);
-        _iterator++;
+        ++_iterator;
         if(auto error = factory.parse({TokenType::CLOSE_PARENTESIS}); !error.empty()) { return error; }
         auto expression = factory.getExpression();
         auto newType = expression.getType();
@@ -427,20 +427,8 @@ namespace vnd {
             std::get<0>(oldType) = true;
             return {};
         }
-        if(newType == "boolean") {
-            if(!Scope::isPrimitive(std::get<2>(oldType))) { return FORMAT("Cannot compare {} type", std::get<2>(oldType)); }
-            std::get<0>(oldType) = true;
-            return {};
-        }
-        if(newType == "logical") {
-            if(std::get<2>(oldType) == bols || std::get<0>(oldType) == true) {
-                std::get<0>(oldType) = false;
-                std::get<1>(oldType) = true;
-                std::get<2>(oldType) = "";
-                return {};
-            }
-            return FORMAT("Cannot apply operator for {} type", std::get<2>(oldType));
-        }
+        if(newType == "boolean") { return handleBooleanType(oldType); }
+        if(newType == "logical") { return handleLogicalType(oldType); }
         return FORMAT("Incompatible types: {}, {}", std::get<2>(oldType), newType);
     }
 
@@ -489,7 +477,7 @@ namespace vnd {
         std::string text = _scope->getTmp(_temp + value);
         checkOperators(text);
         _text.emplace_back(text);
-        _iterator++;
+        ++_iterator;
         _dot = false;
     }
 
@@ -498,6 +486,20 @@ namespace vnd {
             _type.clear();
             _temp.clear();
         }
+    }
+    std::string ExpressionFactory::handleLogicalType(ExpressionFactory::TupType &oldType) const noexcept {
+        if(std::get<2>(oldType) == "bool" || std::get<0>(oldType) == true) {
+            std::get<0>(oldType) = false;
+            std::get<1>(oldType) = true;
+            std::get<2>(oldType) = "";
+            return {};
+        }
+        return FORMAT("Cannot apply operator for {} type", std::get<2>(oldType));
+    }
+    std::string ExpressionFactory::handleBooleanType(ExpressionFactory::TupType &oldType) const noexcept {
+        if(!Scope::isPrimitive(std::get<2>(oldType))) { return FORMAT("Cannot compare {} type", std::get<2>(oldType)); }
+        std::get<0>(oldType) = true;
+        return {};
     }
 }  // namespace vnd
 // NOLINTEND(*-include-cleaner, *-env33-c)

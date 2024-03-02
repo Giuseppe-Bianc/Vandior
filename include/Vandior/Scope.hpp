@@ -169,7 +169,7 @@ namespace vnd {
          * @brief Specializes the generic types of a funtion.
          * @param fun FunType to specialize.
          * @param typeSpecialized Vector of class specialized types.
-         * @return the specialized FunType.
+         * @return Pair of the specialized FunType and flag that indicates if the specialization succeeds.
          */
         [[nodiscard]] std::pair<FunType, bool> specializeFun(const FunType &fun,
                                                              const std::vector<std::string> &typeSpecialized) const noexcept;

@@ -106,7 +106,7 @@ namespace vnd {
                 } else if(std::isdigit(*iterator)) {
                     size += *iterator;
                 }
-                iterator++;
+                ++iterator;
             }
         }
         return typeValue;
@@ -281,8 +281,8 @@ namespace vnd {
         while(genericIterator != typeGeneric.end()) {
             if(!canAssign(genericIterator->second, *specializedIterator)) { return {FunType::createEmpty(), false}; }
             genericIterator->second = *specializedIterator;
-            genericIterator++;
-            specializedIterator++;
+            ++genericIterator;
+            ++specializedIterator;
         }
         return {FunType::create(fun.getReturnType(), fun.getParams(), typeGeneric, fun.getFuncGeneric(), fun.isConstructor()),
                 true};
