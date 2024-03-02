@@ -264,9 +264,9 @@ namespace vnd {
         for(auto &[first, second] : variables) {
             auto expression = factory.getExpression();
 #ifdef __llvm__
-            bool exprContainsSpace = expression.getType().find(' ') != std::string::npos;
+            const bool exprContainsSpace = expression.getType().find(' ') != std::string::npos;
 #else
-            bool exprContainsSpace = expression.getType().contains(' ');
+            const bool exprContainsSpace = expression.getType().contains(' ');
 #endif
             if(exprContainsSpace) {
                 throw TranspilerException("Multiple return value functions must be used alone", instruction);
