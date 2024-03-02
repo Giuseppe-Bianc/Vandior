@@ -145,12 +145,12 @@ namespace vnd {
         }
         // Handle initialization
         if(iterator != endToken && iterator->getType() == TokenType::EQUAL_OPERATOR) {
-            iterator++;
+            ++iterator;
             while(iterator != endToken) {
                 if(auto error = factory.parse({TokenType::COMMA}); !error.empty()) {
                     throw TranspilerException(error, instruction);
                 }
-                if(iterator != endToken) { iterator++; }
+                if(iterator != endToken) { ++iterator; }
             }
         }
         if((isConst || isVal) && variables.size() > factory.size()) {
@@ -211,7 +211,7 @@ namespace vnd {
         auto factory = ExpressionFactory::create(iterator, endToken, _scope, false);
         while(iterator != endToken) {
             if(auto error = factory.parse({TokenType::COMMA}); !error.empty()) { throw TranspilerException(error, instruction); }
-            if(iterator != endToken) { iterator++; }
+            if(iterator != endToken) { ++iterator; }
         }
         for(const auto &expression : factory.getExpressions()) {
             std::string text = expression.getText();
@@ -234,7 +234,7 @@ namespace vnd {
         auto factory = ExpressionFactory::create(iterator, endToken, _scope, false);
         auto variables = extractVariables(iterator, endToken, instruction);
         equalToken = *iterator;
-        iterator++;
+        ++iterator;
         for(auto &[first, second] : variables) {
             if(first != "_") {
                 auto typeValue = Scope::getTypeValue(second);
@@ -244,7 +244,7 @@ namespace vnd {
         }
         while(iterator != endToken) {
             if(auto error = factory.parse({TokenType::COMMA}); !error.empty()) { throw TranspilerException(error, instruction); }
-            if(iterator != endToken) { iterator++; }
+            if(iterator != endToken) { ++iterator; }
         }
         if(factory.isMultiplefun()) {
             if(equalToken.getType() == TokenType::OPERATION_EQUAL) {
@@ -360,9 +360,9 @@ namespace vnd {
         auto factory = ExpressionFactory::create(iterator, endToken, _scope, false);
         _text += "FOR_LOOP(";
         openScope(ScopeType::LOOP_SCOPE);
-        iterator++;
+        ++iterator;
         auto [identifier, type] = transpileForInitialization(iterator, endToken, instruction);
-        iterator++;
+        ++iterator;
         if(std::string error = factory.parse({TokenType::COMMA}); !error.empty()) {
             throw TranspilerException(error, instruction);
         }
@@ -379,7 +379,7 @@ namespace vnd {
             }
             return;
         }
-        iterator++;
+        ++iterator;
         if(std::string error = factory.parse({}); !error.empty()) { throw TranspilerException(error, instruction); }
         auto step = factory.getExpression();
         if(!Scope::isNumber(step.getType())) { throw TranspilerException("For step value must be of numeric type", instruction); }
@@ -414,7 +414,7 @@ namespace vnd {
                 }
                 result.emplace_back(iterator->getValue());
             }
-            iterator++;
+            ++iterator;
         }
         return result;
     }
@@ -443,20 +443,14 @@ namespace vnd {
                 throw TRANSPILER_EXCEPTIONF(instruction, "Cannot use {} at the left side of an assignation",
                                             iterator->getValue());
             } else if(iterator->getType() == COMMA) {
-                if(currentVariable.ends_with("->")) {
-                    currentVariable.pop_back();
-                    currentVariable.pop_back();
-                }
+                if(currentVariable.ends_with("->")) { currentVariable.erase(currentVariable.end() - 2, currentVariable.end()); }
                 result.emplace_back(currentVariable, type);
                 currentVariable.clear();
                 type.clear();
             }
-            iterator++;
+            ++iterator;
         }
-        if(currentVariable.ends_with("->")) {
-            currentVariable.pop_back();
-            currentVariable.pop_back();
-        }
+        if(currentVariable.ends_with("->")) { currentVariable.erase(currentVariable.end() - 2, currentVariable.end()); }
         result.emplace_back(currentVariable, type);
         return result;
     }
@@ -505,9 +499,9 @@ namespace vnd {
         auto factory = ExpressionFactory::create(iterator, end, _scope, false);
         std::vector<Expression> expressions;
         std::string params;
-        iterator++;
+        ++iterator;
         while(iterator->getType() != TokenType::CLOSE_PARENTESIS) {
-            iterator++;
+            ++iterator;
             if(iterator->getType() != CLOSE_PARENTESIS) {
                 if(auto error = factory.parse({COMMA, CLOSE_PARENTESIS}); !error.empty()) { return error; }
             }
@@ -544,13 +538,10 @@ namespace vnd {
     std::string Transpiler::extractSquareExpression(TokenVecIter &iterator, const TokenVecIter &end, std::string &currentVariable,
                                                     std::string &type) const noexcept {
         std::string newType;
-        if(currentVariable.ends_with("->")) {
-            currentVariable.pop_back();
-            currentVariable.pop_back();
-        }
+        if(currentVariable.ends_with("->")) { currentVariable.erase(currentVariable.end() - 2, currentVariable.end()); }
         if(!Scope::checkVector(type)) { return FORMAT("Indexing not allowed for {} type", type); }
         auto factory = ExpressionFactory::create(iterator, end, _scope, false, true);
-        iterator++;
+        ++iterator;
         if(auto error = factory.parse({TokenType::CLOSE_SQ_PARENTESIS}); !error.empty()) { return error; }
         auto expression = factory.getExpression();
         newType = expression.getType();
@@ -572,8 +563,7 @@ namespace vnd {
             values += FORMAT("vnd::tmp[\"{}\"], ", i);
             tmp.emplace_back(FORMAT("vnd::tmp.at(\"{}\")", i));
         }
-        values.pop_back();
-        values.pop_back();
+        values.erase(values.end() - 2, values.end());
         _text += FORMAT("std::tie({}) = {};\n{:\t^{}}", values, expression.getText(), "", _tabs);
         for(const auto &[first, second] : variables) {
             if(first != "_") {
@@ -616,12 +606,12 @@ namespace vnd {
                     type += "[]";
                 } else {
                     std::string size;
-                    iterator++;
-                    ExpressionFactory factory = ExpressionFactory::create(iterator, end, _scope, true, true);
+                    ++iterator;
+                    auto factory = ExpressionFactory::create(iterator, end, _scope, true, true);
                     if(auto error = factory.parse({TokenType::CLOSE_SQ_PARENTESIS, TokenType::EQUAL_OPERATOR}); !error.empty()) {
                         throw TranspilerException(error, instruction);
                     }
-                    Expression expression = factory.getExpression();
+                    auto expression = factory.getExpression();
                     if(!expression.isConst()) {
                         throw TranspilerException("Cannot evaluate array dimension at compile time", instruction);
                     }
@@ -632,7 +622,7 @@ namespace vnd {
                     type += FORMAT("[{}]", size);
                 }
             }
-            iterator++;
+            ++iterator;
         }
         return {type, FORMAT("{}{}{}", prefix, typeValue, suffix)};
     }
@@ -640,8 +630,8 @@ namespace vnd {
     std::string Transpiler::transpileCondition(TokenVecIter &iterator, const TokenVecIter &end) noexcept {
         auto factory = ExpressionFactory::create(iterator, end, _scope, false);
         std::string value;
-        if(std::string error = factory.parse({TokenType::CLOSE_PARENTESIS}); !error.empty()) { return error; }
-        Expression expression = factory.getExpression();
+        if(auto error = factory.parse({TokenType::CLOSE_PARENTESIS}); !error.empty()) { return error; }
+        auto expression = factory.getExpression();
         if(expression.getType() != "bool") { return "Invalid condition type"; }
         value = expression.getText();
         while(value.starts_with(' ')) { value.erase(0, 1); }

@@ -104,7 +104,7 @@ namespace vnd {
                 } else if(std::isdigit(*iterator)) {
                     size += *iterator;
                 }
-                iterator++;
+                ++iterator;
             }
         }
         return typeValue;
@@ -194,9 +194,7 @@ namespace vnd {
                     if(expressions.size() == params.size() - 1) {
                         params.pop_back();
                     } else if(expressions.size() >= params.size()) {
-                        params.back().pop_back();
-                        params.back().pop_back();
-                        params.back().pop_back();
+                        params.back().erase(params.back().end() - 3, params.back().end());
                         std::string lastPar = params.back();
                         while(params.size() < expressions.size()) { params.push_back(lastPar); }
                     }

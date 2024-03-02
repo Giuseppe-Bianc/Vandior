@@ -242,18 +242,19 @@ TEST_CASE("default constructed token format", "[token]") {
 }
 
 TEST_CASE("default constructed token set propriety", "[token]") {
+    using enum vnd::TokenType;
     vnd::Token token{};
-    REQUIRE(token.getType() == vnd::TokenType::UNKNOWN);
+    REQUIRE(token.getType() == UNKNOWN);
     REQUIRE(token.getValue().empty() == true);
     REQUIRE(token.getFileName() == filename4);
     REQUIRE(token.getLine() == 0);
     REQUIRE(token.getColumn() == 0);
-    token.setType(vnd::TokenType::INTEGER);
+    token.setType(INTEGER);
     token.setValue("assss");
     token.setFileName(filename);
     token.setLine(1);
     token.setColumn(1);
-    REQUIRE(token.getType() == vnd::TokenType::INTEGER);
+    REQUIRE(token.getType() == INTEGER);
     REQUIRE(token.getValue().empty() == false);
     REQUIRE(token.getFileName() == filename);
     REQUIRE(token.getLine() == 1);
@@ -261,18 +262,19 @@ TEST_CASE("default constructed token set propriety", "[token]") {
 }
 
 TEST_CASE("default constructed token set propriety tostring", "[token]") {
+    using enum vnd::TokenType;
     vnd::Token token{};
-    REQUIRE(token.getType() == vnd::TokenType::UNKNOWN);
+    REQUIRE(token.getType() == UNKNOWN);
     REQUIRE(token.getValue().empty() == true);
     REQUIRE(token.getLine() == 0);
     REQUIRE(token.getColumn() == 0);
     REQUIRE(token.to_string() == "(type: UNKNOWN, value: '', source location:(file:unknown, line:0, column:0))");
-    token.setType(vnd::TokenType::INTEGER);
+    token.setType(INTEGER);
     token.setValue("assss");
     token.setFileName(filename);
     token.setLine(1);
     token.setColumn(1);
-    REQUIRE(token.getType() == vnd::TokenType::INTEGER);
+    REQUIRE(token.getType() == INTEGER);
     REQUIRE(token.getValue().empty() == false);
     REQUIRE(token.getFileName() == filename);
     REQUIRE(token.getLine() == 1);
@@ -281,18 +283,19 @@ TEST_CASE("default constructed token set propriety tostring", "[token]") {
 }
 
 TEST_CASE("default constructed token set propriety format", "[token]") {
+    using enum vnd::TokenType;
     vnd::Token token{};
-    REQUIRE(token.getType() == vnd::TokenType::UNKNOWN);
+    REQUIRE(token.getType() == UNKNOWN);
     REQUIRE(token.getValue().empty() == true);
     REQUIRE(token.getLine() == 0);
     REQUIRE(token.getColumn() == 0);
     REQUIRE(FORMAT("{}", token) == "(type: UNKNOWN, value: '', source location:(file:unknown, line:0, column:0))");
-    token.setType(vnd::TokenType::INTEGER);
+    token.setType(INTEGER);
     token.setValue("assss");
     token.setFileName(filename);
     token.setLine(1);
     token.setColumn(1);
-    REQUIRE(token.getType() == vnd::TokenType::INTEGER);
+    REQUIRE(token.getType() == INTEGER);
     REQUIRE(token.getValue().empty() == false);
     REQUIRE(token.getFileName() == filename);
     REQUIRE(token.getLine() == 1);
