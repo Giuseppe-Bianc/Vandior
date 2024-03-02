@@ -50,6 +50,9 @@ main {
 		println("A\t{}", intarray[i])
 	}
 	intarray.add(-1)
+	intarray.addVector({1, 2})
+	intarray.addAll(1, -2)
+	intarray[0] = 1454
 	size = intarray.size()
 	println("Size:\t{}", size)
 	for var i: int = 0, intarray.size() {

@@ -56,6 +56,8 @@ namespace vnd {
         mainScope->addFun("Derived", FunType::create("Derived", {"Object", "bool"}, {}, {}, true));
         mainScope->addFun("createDerived", FunType::create("Derived", {}, {}, {}));
         mainScope->addFun("vnd::vector.add", FunType::create("void", {"T"}, {{"T", "any"}}, {}));
+        mainScope->addFun("vnd::vector.addVector", FunType::create("void", {"T[]"}, {{"T", "any"}}, {}));
+        mainScope->addFun("vnd::vector.addAll", FunType::create("void", {"T..."}, {{"T", "any"}}, {}));
         mainScope->addFun("vnd::vector.size", FunType::create("int", {}, {{"T", "any"}}, {}));
         mainScope->addFun("vnd::array.size", FunType::create("int", {}, {{"T", "any"}}, {}));
         mainScope->addFun("string.size", FunType::create("int", {}, {}, {}));
@@ -123,6 +125,18 @@ namespace vnd {
         return type;
     }
 
+    std::string Scope::getParamType(const std::string& param,
+                                    const std::vector<std::pair<std::string, std::string>> typeGeneric) noexcept {
+        size_t pos = param.find('[');
+        auto it = std::find_if(typeGeneric.begin(), typeGeneric.end(), [&param, pos](std::pair<std::string, std::string> element) {
+            if(pos == std::string::npos) { return param == element.first; }
+            return param.substr(0, pos) == element.first;
+        });
+        if(it == typeGeneric.end()) { return param; }
+        if(pos == std::string::npos) { return it->second; }
+        return it->second + param.substr(pos, param.size() - pos);
+    }
+
     std::shared_ptr<Scope> Scope::getParent() const noexcept { return _parent; }
 
     ScopeType Scope::getType() const noexcept { return _type; }
@@ -188,7 +202,6 @@ namespace vnd {
         bool found = false;
         for(const auto &i : getFuns(Scope::getType(type), identifier)) {
             auto params = i.getParams();
-            auto typeGeneric = i.getTypeGeneric();
             std::optional<size_t> variadic;
             found = true;
             if(!params.empty() && params.back().ends_with("...")) {
@@ -196,9 +209,7 @@ namespace vnd {
                 if(expressions.size() == params.size() - 1) {
                     params.pop_back();
                 } else if(expressions.size() >= params.size()) {
-                    params.back().pop_back();
-                    params.back().pop_back();
-                    params.back().pop_back();
+                    params.back().erase(params.back().end() - 3, params.back().end());
                     std::string lastPar = params.back();
                     while(params.size() < expressions.size()) { params.push_back(lastPar); }
                 }
@@ -207,10 +218,7 @@ namespace vnd {
                 found = false;
             } else [[unlikely]] {
                 for(size_t par = 0; par != expressions.size(); par++) {
-                    std::string paramType = params.at(par);
-                    auto it = std::find_if(typeGeneric.begin(), typeGeneric.end(),
-                        [&paramType](std::pair<std::string, std::string> element) { return paramType == element.first; });
-                    if(it != typeGeneric.end()) { paramType = it->second; }
+                    std::string paramType = Scope::getParamType(params.at(par), i.getTypeGeneric());
                     if(!canAssign(paramType, expressions.at(par).getType())) { found = false; }
                 }
             }
@@ -238,55 +246,6 @@ namespace vnd {
         if(_parent) { return _parent->getConstValue(type, identifier); }
         return "";
     }
-
-     std::vector<FunType> Scope::getFuns(const std::string &type, const std::string_view &identifier) const noexcept {
-        std::vector<FunType> result;
-        std::vector<std::string> typeSpecialized;
-        std::string typePrefix = type;
-        if(type.contains('<')) {
-            size_t pos = type.find('<');
-            int brackets = 0;
-            std::string currentParam;
-            for(const char c : type.substr(pos + 1, type.find_last_of('>') - 1)) {
-                if(c == '<') {
-                    brackets++;
-                } else if(c == '>') {
-                    brackets--;
-                } else if(c == ',') {
-                    typeSpecialized.emplace_back(currentParam);
-                    currentParam.clear();
-                } else {
-                    currentParam += c;
-                }
-            }
-            typeSpecialized.emplace_back(currentParam);
-            typePrefix = type.substr(0, pos);
-        }
-        std::string key = getKey(typePrefix, identifier);
-        if(!_funs.contains(key)) { return {}; }
-        for(const auto fun : _funs.at(key)) {
-            auto [resultFun, ok] = specializeFun(fun, typeSpecialized);
-            if(ok) { result.emplace_back(resultFun); }
-        }
-        return result;
-     }
-
-     std::pair<FunType, bool> Scope::specializeFun(const FunType &fun,
-                                              const std::vector<std::string> &typeSpecialized) const noexcept {
-        std::vector<std::pair<std::string, std::string>> typeGeneric = fun.getTypeGeneric();
-        std::vector<std::pair<std::string, std::string>> resultGeneric;
-        if(typeGeneric.size() != typeGeneric.size()) { return {FunType::createEmpty(), false}; }
-        auto genericIterator = typeGeneric.begin();
-        auto specializedIterator = typeSpecialized.begin();
-        while(genericIterator != typeGeneric.end()) {
-            if(!canAssign(genericIterator->second, *specializedIterator)) { return {FunType::createEmpty(), false}; }
-            genericIterator->second = *specializedIterator;
-            ++genericIterator;
-            ++specializedIterator;
-        }
-        return {FunType::create(fun.getReturnType(), fun.getParams(), typeGeneric, fun.getFuncGeneric(), fun.isConstructor()),
-                true};
-     }
 
     // NOLINTNEXTLINE(*-no-recursion)
     bool Scope::isConstant(const std::string &type, const std::string_view &identifier) const noexcept {
@@ -343,6 +302,55 @@ namespace vnd {
     }
 
     void Scope::clearTmp() noexcept { _tmp.clear(); }
+
+    std::vector<FunType> Scope::getFuns(const std::string &type, const std::string_view &identifier) const noexcept {
+        std::vector<FunType> result;
+        std::vector<std::string> typeSpecialized;
+        std::string typePrefix = type;
+        if(type.contains('<')) {
+            size_t pos = type.find('<');
+            int brackets = 0;
+            std::string currentParam;
+            for(const char c : type.substr(pos + 1, type.find_last_of('>') - 1)) {
+                if(c == '<') {
+                    brackets++;
+                } else if(c == '>') {
+                    brackets--;
+                } else if(c == ',') {
+                    typeSpecialized.emplace_back(currentParam);
+                    currentParam.clear();
+                } else {
+                    currentParam += c;
+                }
+            }
+            typeSpecialized.emplace_back(currentParam);
+            typePrefix = type.substr(0, pos);
+        }
+        std::string key = getKey(typePrefix, identifier);
+        if(!_funs.contains(key)) { return {}; }
+        for(const auto fun : _funs.at(key)) {
+            auto [resultFun, ok] = specializeFun(fun, typeSpecialized);
+            if(ok) { result.emplace_back(resultFun); }
+        }
+        return result;
+    }
+
+    std::pair<FunType, bool> Scope::specializeFun(const FunType &fun,
+                                                  const std::vector<std::string> &typeSpecialized) const noexcept {
+        std::vector<std::pair<std::string, std::string>> typeGeneric = fun.getTypeGeneric();
+        std::vector<std::pair<std::string, std::string>> resultGeneric;
+        if(typeGeneric.size() != typeGeneric.size()) { return {FunType::createEmpty(), false}; }
+        auto genericIterator = typeGeneric.begin();
+        auto specializedIterator = typeSpecialized.begin();
+        while(genericIterator != typeGeneric.end()) {
+            if(!canAssign(genericIterator->second, *specializedIterator)) { return {FunType::createEmpty(), false}; }
+            genericIterator->second = *specializedIterator;
+            ++genericIterator;
+            ++specializedIterator;
+        }
+        return {FunType::create(fun.getReturnType(), fun.getParams(), typeGeneric, fun.getFuncGeneric(), fun.isConstructor()),
+                true};
+    }
 
 }  // namespace vnd
 
