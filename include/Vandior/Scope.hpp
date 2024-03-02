@@ -166,6 +166,15 @@ namespace vnd {
         [[nodiscard]] std::vector<FunType> getFuns(const std::string &type, const std::string_view &identifier) const noexcept;
 
         /**
+         * @brief Specializes the generic types of a funtion.
+         * @param fun FunType to specialize.
+         * @param typeSpecialized Vector of class specialized types.
+         * @return the specialized FunType.
+         */
+        [[nodiscard]] std::pair<FunType, bool> specializeFun(const FunType &fun,
+                                                             const std::vector<std::string> &typeSpecialized) const noexcept;
+
+        /**
          * @brief Checks if a variable is a constant.
          * @param type String representing the type containing the property. Is the variable is not a property, the parameter is
          * empty.
