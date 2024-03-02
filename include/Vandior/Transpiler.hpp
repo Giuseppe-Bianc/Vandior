@@ -30,14 +30,14 @@ namespace vnd {
          * @brief Constructs a Transpiler with a vector of instructions.
          * @param instructions The vector of instructions.
          */
-        Transpiler(const std::vector<Instruction> &instructions) noexcept;
+        explicit Transpiler(const std::vector<Instruction> &instructions) noexcept;
 
-        int _tabs;                               ///< Number of tabs for indentation.
-        std::string _text;                       ///< The transpiled text.
-        std::ofstream _output;                   ///< Output file stream.
-        std::vector<Instruction> _instructions;  ///< Vector of instructions.
-        std::shared_ptr<Scope> _scope;           ///< Shared pointer to the current scope.
-        bool _main;                              ///< Flag used to check main transpiling.
+        std::size_t _tabs = 0;                                ///< Number of tabs for indentation.
+        std::string _text;                                    ///< The transpiled text.
+        std::ofstream _output;                                ///< Output file stream.
+        std::vector<Instruction> _instructions;               ///< Vector of instructions.
+        std::shared_ptr<Scope> _scope = Scope::createMain();  ///< Shared pointer to the current scope.
+        bool _main = false;                                   ///< Flag used to check main transpiling.
 
         /**
          * @brief Tokenize a string.
@@ -197,8 +197,9 @@ namespace vnd {
          * @param instruction The instruction to containing the for loop.
          * @return Pair representing the declared index identifier and type.
          */
-        [[nodiscard]] std::pair<std::string, std::string> transpileForInitialization(TokenVecIter &iterator, const TokenVecIter &end,
-                                               const Instruction &instruction);
+        [[nodiscard]] std::pair<std::string, std::string> transpileForInitialization(TokenVecIter &iterator,
+                                                                                     const TokenVecIter &end,
+                                                                                     const Instruction &instruction);
 
         /**
          * @brief Opens a new scope.
