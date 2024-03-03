@@ -25,6 +25,9 @@ class string: public std::string {
 			if(index < 0 || index >= size()) { throw std::runtime_error("Index " + std::to_string(index) +  " out of bounds for size " + std::to_string(size())); }
 			return std::string::at(index);
 		}
+		const int toInt() {
+			return std::stoi(*this);
+		}
 };
 
 namespace vnd {

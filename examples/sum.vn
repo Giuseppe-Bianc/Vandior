@@ -1,0 +1,9 @@
+main {
+	var num1, num2: int
+	print("Insert the first number:\t")
+	num1 = readLine().toInt()
+	print("Insert the second number:\t")
+	num2 = readLine().toInt()
+	val sum: int = num1 + num2
+	println("Sum:\t{}", sum)
+}

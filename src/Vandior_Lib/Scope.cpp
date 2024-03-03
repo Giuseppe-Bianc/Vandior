@@ -61,6 +61,7 @@ namespace vnd {
         mainScope->addFun("vnd::vector.size", FunType::create("int", {}, {{"T", "any"}}, {}));
         mainScope->addFun("vnd::array.size", FunType::create("int", {}, {{"T", "any"}}, {}));
         mainScope->addFun("string.size", FunType::create("int", {}, {}, {}));
+        mainScope->addFun("string.toInt", FunType::create("int", {}, {}, {}));
         mainScope->addFun("Object.f", FunType::create("float", {"float"}, {}, {}));
         mainScope->addFun("Object.fs", FunType::create("string", {}, {}, {}));
         mainScope->addFun("Derived.derivedFun", FunType::create("bool", {"Object"}, {}, {}));
