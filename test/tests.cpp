@@ -811,6 +811,26 @@ TEST_CASE("Transpiler transpile initialization instruction", "[transpiler]") {
 #endif
 }
 
+TEST_CASE("Transpiler transpile const instruction", "[transpiler]") {
+    using enum vnd::TokenType;
+    vnd::Tokenizer tokenizer{"const num : int = 1 + 333", filename};
+    auto tokens = tokenizer.tokenize();
+    vnd::Instruction instruction = vnd::Instruction::create(filename);
+    for(const auto &token : tokens) { instruction.checkToken(token); }
+    vnd::Transpiler transpiler = vnd::Transpiler::create({instruction});
+    transpiler.transpile();
+    REQUIRE(std::filesystem::exists(outFilename));
+    std::ifstream stream(outFilename.data());
+    std::string code(std::istreambuf_iterator<char>{stream}, {});
+#ifdef __clang__
+    REQUIRE(code == "#include \"../../../../base.hpp\"\n\n"
+                    "const int _num = 334;\n\n");
+#else
+    REQUIRE(code == "#include \"../../../base.hpp\"\n\n"
+                    "const int _num = 334;\n\n");
+#endif
+}
+
 TEST_CASE("Transpiler transpile operation instruction", "[transpiler]") {
     using enum vnd::TokenType;
     vnd::Tokenizer tokenizer{"main {\nprint(\"Test {}\", args[0])\n}", filename};
