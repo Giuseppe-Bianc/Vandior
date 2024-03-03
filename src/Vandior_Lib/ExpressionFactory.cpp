@@ -211,7 +211,7 @@ namespace vnd {
             ++_iterator;
             return;
         }
-        auto text = _scope->getTmp(_temp + writeToken());
+        auto text = _temp + writeToken();
         if(_const) {
             if(_iterator->getType() == TokenType::IDENTIFIER) {
                 auto constValue = _scope->getConstValue(_type, _iterator->getValue());
@@ -480,7 +480,7 @@ namespace vnd {
     void ExpressionFactory::write(const std::string &value, const std::string_view &type) noexcept {
         clearData();
         if(checkNextToken(std::string{type}, value)) { return; }
-        std::string text = _scope->getTmp(_temp + value);
+        std::string text = _temp + value;
         checkOperators(text);
         _text.emplace_back(text);
         ++_iterator;

@@ -181,24 +181,6 @@ namespace vnd {
          */
         [[nodiscard]] std::string addTmp(std::string key, std::string &type) noexcept;
 
-        /**
-         * @brief Gets a temporary variable from the tmp map.
-         * @param tmp String representing the identifier of the variable.
-         * @return String containing the value used in the C++ code to retrieve the value.
-         */
-        [[nodiscard]] std::string getTmp(const std::string &tmp) const noexcept;
-
-        /**
-         * @brief Exprecutes a function for each temporary variable.
-         * @param fun Function the execute.
-         */
-        void eachTmp(const std::function<void(const std::string &key)> &fun) const noexcept;
-
-        /**
-         * @brief Clears the tmp map.
-         */
-        void clearTmp() noexcept;
-
     private:
         /**
          * @brief Constructor of a Scope.
@@ -241,7 +223,6 @@ namespace vnd {
             _consts;  ///< Map of compile time constants identifiers and types.
         std::unordered_map<std::string, std::vector<std::string>> _types;  ///< Map of types and assignabled types.
         std::unordered_map<std::string, std::vector<FunType>> _funs;       ///< Map of function identifiers and informations.
-        std::unordered_map<std::string, std::string> _tmp;                 ///< Map of temporary variables and types.
         std::shared_ptr<Scope> _parent;                                    ///< Shared pointer to the parent scope.
         ScopeType _type;
 

@@ -870,9 +870,7 @@ TEST_CASE("Transpiler transpile assignation instruction", "[transpiler]") {
 int main(int argc, char **argv) {
 	const vnd::vector<string> _args(argv, argv + argc);
 	int _num{};
-	vnd::tmp["_num"] = _num;
-	_num =  1;
-	vnd::tmp.clear();
+	_num = 1;
 	return 0;
 }
 )");
@@ -882,9 +880,7 @@ int main(int argc, char **argv) {
 int main(int argc, char **argv) {
 	const vnd::vector<string> _args(argv, argv + argc);
 	int _num{};
-	vnd::tmp["_num"] = _num;
-	_num =  1;
-	vnd::tmp.clear();
+	_num = 1;
 	return 0;
 }
 )");

@@ -281,29 +281,6 @@ namespace vnd {
         return false;
     }
 
-    std::string Scope::addTmp(std::string key, std::string &type) noexcept {
-        if(key.ends_with("(")) {
-            key.replace(key.find_last_of('>') + 1, 1, "g");
-            key = FORMAT("{})", key);
-        }
-        std::erase(key, ' ');
-        _tmp.try_emplace(key, type);
-        return key;
-    }
-
-    std::string Scope::getTmp(const std::string &tmp) const noexcept {
-        auto key = tmp;
-        std::erase(key, ' ');
-        if(_tmp.contains(key)) { return FORMAT("std::any_cast<{}>(vnd::tmp.at(\"{}\"))", _tmp.at(key), key); }
-        return tmp;
-    }
-
-    void Scope::eachTmp(const std::function<void(const std::string &key)> &fun) const noexcept {
-        for(const auto &[key, value] : _tmp) { fun(key); }
-    }
-
-    void Scope::clearTmp() noexcept { _tmp.clear(); }
-
     std::vector<FunType> Scope::getFuns(const std::string &type, const std::string_view &identifier) const noexcept {
         std::vector<FunType> result;
         std::vector<std::string> typeSpecialized;
