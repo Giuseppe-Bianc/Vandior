@@ -1,12 +1,11 @@
 const nume : int = 334
 const dmnum : float = 1.222222222222
+const boolc: bool = 1 == 1 || !false && 67 < 77.85
 main {
-	var array1, array2: Object[2] = {Object(), Object()}, {Derived(), Object()} 
-	var array3, array4: Derived[] = {Derived(), Derived(), Derived()} 
-	var num: int = 45
-	println("{}", num)
+	var array1, array2: Object[] = {Object(), Object()}, {Derived(), Object()} 
+	var array3, array4: Derived[2] = {Derived(), Derived()} 
+	var num: int = 5
 	var num1: float = 45
-	print("{}", num1)
 	if(true) {
 		if(num == 2) {
 			println("2")
@@ -45,19 +44,6 @@ main {
 		}
 		println(s)
 	}
-	var intarray: int[] = {1, 2, 3}
-	var size: int = intarray.size()
-	println("Size:\t{}", size)
-	for var i: int = 0, size {
-		println("A\t{}", intarray[i])
-	}
-	intarray.add(-1)
-	intarray.addVector({1, 2})
-	intarray.addAll(1, -2)
-	intarray[0] = 1454
-	size = intarray.size()
-	println("Size:\t{}", size)
-	for var i: int = 0, intarray.size() {
-		println("A\t{}", intarray[i])
-	}
+	array1[0 ^ 1] = Object()
+	println("{}", array1[0 ^ 1].a)
 }

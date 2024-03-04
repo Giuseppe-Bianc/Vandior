@@ -178,17 +178,12 @@ namespace vnd {
                 }
                 if(isConst) {
                     if(expression.isConst()) [[likely]] {
-                        value = expression.getValue();
-                        value = FORMAT("{}", value.substr(0, value.size() - 1));
-                        if(type == "int") { value = FORMAT("{}", value.substr(0, value.find('.'))); }
-                        _text += FORMAT(" = {}", value);
+                        _text += FORMAT(" = {}", expression.getValue());
                     } else [[unlikely]] {
                         throw TRANSPILER_EXCEPTIONF(instruction, "Cannot evaluate {} at compile time", jvar);
                     }
                 } else {
-                    value = expression.getText();
-                    while(value.starts_with(' ')) { value.erase(0, 1); }
-                    _text += FORMAT(" = {}", value);
+                    _text += FORMAT(" = {}", expression.getText());
                 }
             } else {
                 _text += "{}";
@@ -227,7 +222,6 @@ namespace vnd {
             if(expression.getType() != "void" && !(text.ends_with("++") || text.ends_with("--"))) {
                 throw TRANSPILER_EXCEPTIONF(instruction, "Invalid operation {}", text);
             }
-            if(text.starts_with(' ')) { text.erase(0, 1); }
             _text += FORMAT("{};\n{:\t^{}}", text, "", _tabs);
         }
         _text.erase(_text.size() - _tabs - 1, _tabs + 1);
@@ -344,7 +338,7 @@ namespace vnd {
         if(std::string error = factory.parse({}); !error.empty()) { throw TranspilerException(error, instruction); }
         auto step = factory.getExpression();
         if(!Scope::isNumber(step.getType())) { throw TranspilerException("For step value must be of numeric type", instruction); }
-        _text += FORMAT("{},{}) {{", condition.getText(), step.getText());
+        _text += FORMAT("{}, {}) {{", condition.getText(), step.getText());
         if(!identifier.empty()) { _scope->addVariable(identifier, type, false); }
         if(tmp.begin()->getType() == TokenType::CLOSE_CUR_PARENTESIS) {
             _text += "}";
@@ -507,7 +501,7 @@ namespace vnd {
         auto expression = factory.getExpression();
         newType = expression.getType();
         if(newType != "int") { return FORMAT("{} index not allowed", newType); }
-        currentVariable += FORMAT(".at({})->", expression.getText().substr(1));
+        currentVariable += FORMAT(".at({})->", expression.getText());
         return {};
     }
 
@@ -614,7 +608,6 @@ namespace vnd {
         }
         std::string text = variable;
         std::string getter = variable;
-        std::string value = expression.getText();
         if(!variable.ends_with('(')) {
             text += " = ";
         }
@@ -626,14 +619,10 @@ namespace vnd {
             if(equalToken.getValue() == "^=") {
                 text += FORMAT("std::pow({},", getter);
             } else {
-                text += FORMAT("{} {}", getter, equalToken.getValue().at(0));
+                text += FORMAT("{} {} ", getter, equalToken.getValue().at(0));
             }
         }
-        if(text.ends_with("= ")) {
-            while(value.starts_with(' ')) { value.erase(0, 1); }
-        }
-        text += value;
-        while(text.starts_with(' ')) { text.erase(0, 1); }
+        text += expression.getText();
         if(equalToken.getValue() == "^=") { text += ")"; }
         if(variable.ends_with('(')) { text += ")"; }
         _text += FORMAT("{};\n{:\t^{}}", text, "", _tabs);
@@ -646,9 +635,7 @@ namespace vnd {
         if(auto error = factory.parse({TokenType::CLOSE_PARENTESIS}); !error.empty()) { return error; }
         auto expression = factory.getExpression();
         if(expression.getType() != "bool") { return "Invalid condition type"; }
-        value = expression.getText();
-        while(value.starts_with(' ')) { value.erase(0, 1); }
-        _text += FORMAT("({}) {{", value);
+        _text += FORMAT("({}) {{", expression.getText());
         return {};
     }
 
@@ -683,14 +670,14 @@ namespace vnd {
         } else {
             identifier = FORMAT("_{}", identifier);
         }
-        _text += FORMAT("{}, {},", typeValue, identifier);
+        _text += FORMAT("{}, {}, ", typeValue, identifier);
         ++iterator;
         if(auto error = factory.parse({TokenType::COMMA}); !error.empty()) { throw TranspilerException(error, instruction); }
         auto expression = factory.getExpression();
         if(!Scope::isNumber(expression.getType())) {
             throw TranspilerException("For variables must be of numeric type", instruction);
         }
-        _text += FORMAT("{},", expression.getText());
+        _text += FORMAT("{}, ", expression.getText());
         return {declaration, type};
     }
 

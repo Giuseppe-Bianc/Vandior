@@ -853,14 +853,14 @@ TEST_CASE("Transpiler transpile operation instruction", "[transpiler]") {
     REQUIRE(code == "#include \"../../../../base.hpp\"\n\n"
                     "int main(int argc, char **argv) {\n"
                     "\tconst vnd::vector<string> _args(argv, argv + argc);\n"
-                    "\t_print(string(\"Test {}\"),{ _args.at(0)});\n"
+                    "\t_print(string(\"Test {}\"), {_args.at(0)});\n"
                     "\treturn 0;\n"
                     "}\n");
 #else
     REQUIRE(code == "#include \"../../../base.hpp\"\n\n"
                     "int main(int argc, char **argv) {\n"
                     "\tconst vnd::vector<string> _args(argv, argv + argc);\n"
-                    "\t_print(string(\"Test {}\"),{ _args.at(0)});\n"
+                    "\t_print(string(\"Test {}\"), {_args.at(0)});\n"
                     "\treturn 0;\n"
                     "}\n");
 #endif
