@@ -40,9 +40,7 @@ namespace vnd {
             params += expression.getText() + ", ";
             pos++;
         });
-        if(!params.empty()) {
-            params.erase(params.size() - 2, 2);
-        }
+        if(!params.empty()) { params.erase(params.size() - 2, 2); }
         if(variadic.has_value()) {
             if(pos <= variadic.value()) { params += ", {"; }
             params += "}";
@@ -198,7 +196,7 @@ namespace vnd {
         }
         if(value == "^") {
             if(!_power.has_value()) { _power = _text.size() - 1; }
-            auto textIndex = _text.begin() + C_LL(_power.value());
+            const auto textIndex = _text.begin() + C_LL(_power.value());
             if(_sq) {
                 _text.emplace(textIndex, "int(std::pow(");
             } else {
@@ -348,9 +346,7 @@ namespace vnd {
             }
             value += FORMAT("{}, ", expression.getText());
         }
-        if(!value.empty()) {
-            value.erase(value.size() - 2, 2);
-        }
+        if(!value.empty()) { value.erase(value.size() - 2, 2); }
         vectorType += "[]";
         if(auto error = checkType(type, vectorType); !error.empty()) { return error; }
         if(_const) {

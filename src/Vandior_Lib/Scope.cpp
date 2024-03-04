@@ -126,13 +126,14 @@ namespace vnd {
         return type;
     }
 
-    std::string Scope::getParamType(const std::string& param,
-                                    const std::vector<std::pair<std::string, std::string>> typeGeneric) noexcept {
+    std::string Scope::getParamType(const std::string &param,
+                                    const std::vector<std::pair<std::string, std::string>> &typeGeneric) noexcept {
         size_t pos = param.find('[');
-        auto it = std::find_if(typeGeneric.begin(), typeGeneric.end(), [&param, pos](std::pair<std::string, std::string> element) {
-            if(pos == std::string::npos) { return param == element.first; }
-            return param.substr(0, pos) == element.first;
-        });
+        auto it = std::find_if(typeGeneric.begin(), typeGeneric.end(),
+                               [&param, pos](const std::pair<std::string, std::string> &element) {
+                                   if(pos == std::string::npos) { return param == element.first; }
+                                   return param.substr(0, pos) == element.first;
+                               });
         if(it == typeGeneric.end()) { return param; }
         if(pos == std::string::npos) { return it->second; }
         return it->second + param.substr(pos, param.size() - pos);
@@ -287,18 +288,20 @@ namespace vnd {
         std::string typePrefix = type;
         if(type.contains('<')) {
             size_t pos = type.find('<');
-            int brackets = 0;
             std::string currentParam;
             for(const char c : type.substr(pos + 1, type.find_last_of('>') - 1)) {
-                if(c == '<') {
-                    brackets++;
-                } else if(c == '>') {
-                    brackets--;
-                } else if(c == ',') {
+                switch(c) {
+                case '<':
+                    [[fallthrough]];
+                case '>':
+                    continue;
+                case ',':
                     typeSpecialized.emplace_back(currentParam);
                     currentParam.clear();
-                } else {
+                    continue;
+                default:
                     currentParam += c;
+                    continue;
                 }
             }
             typeSpecialized.emplace_back(currentParam);
@@ -306,7 +309,7 @@ namespace vnd {
         }
         std::string key = getKey(typePrefix, identifier);
         if(!_funs.contains(key)) { return {}; }
-        for(const auto fun : _funs.at(key)) {
+        for(const auto &fun : _funs.at(key)) {
             auto [resultFun, ok] = specializeFun(fun, typeSpecialized);
             if(ok) { result.emplace_back(resultFun); }
         }
