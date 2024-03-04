@@ -1,8 +1,9 @@
 const nume : int = 334
 const dmnum : float = 1.222222222222
+const boolc: bool = 1 == 1 || !false && 67 < 77.85
 main {
 	var array1, array2: Object[] = {Object(), Object()}, {Derived(), Object()} 
-	var array3, array4: Derived[] = {Derived(), Derived()} 
+	var array3, array4: Derived[2] = {Derived(), Derived()} 
 	var num: int = 5
 	var num1: float = 45
 	if(true) {
@@ -23,16 +24,16 @@ main {
 		while(false) {}
 	}
 	for num = num + 3 ^ 4, 100, 1 + 1 {
-		println("for 1:\t {}", num)
+		println("for 1:\t{}", num)
 	}
 	for var i: int = 45.43 ^ (num / num1), -100, -1 {
 		if(i < 0 && i > -50) {
 			continue
 		}
-		println("for 2:\t {}", i)
+		println("for 2:\t{}", i)
 	}
 	for var i: float = 0.4, 5.6 {
-		println("for 3:\t {}", i)
+		println("for 3:\t{}", i)
 	}
 	for num = 1, 10, 10 {}
 	for var j: float = 1, 10 {}
@@ -43,5 +44,6 @@ main {
 		}
 		println(s)
 	}
-	
+	array1[0 ^ 1] = Object()
+	println("{}", array1[0 ^ 1].a)
 }

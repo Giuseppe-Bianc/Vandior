@@ -1,6 +1,5 @@
 // NOLINTBEGIN(*-include-cleaner, *-env33-c)
 #include "Vandior/ExpressionFactory.hpp"
-#include "Vandior/Log.hpp"
 #include "Vandior/disableWarn.hpp"
 #include <algorithm>
 
@@ -38,12 +37,11 @@ namespace vnd {
         size_t pos = 0;
         std::ranges::for_each(expressions, [&](const Expression &expression) {
             if(variadic.has_value() && pos == variadic.value()) { params += "{"; }
-            params += expression.getText() + ",";
+            params += expression.getText() + ", ";
             pos++;
         });
         if(!params.empty()) {
-            if(params.at(0) == ' ') { params.erase(0, 1); }
-            params.pop_back();
+            params.erase(params.size() - 2, 2);
         }
         if(variadic.has_value()) {
             if(pos <= variadic.value()) { params += ", {"; }
@@ -67,7 +65,9 @@ namespace vnd {
         std::stringstream sss;
         std::array<char, buffer_size> buffer{};
         while(fgets(buffer.data(), buffer_size, pipe.get()) != nullptr) { sss << buffer.data(); }
-        return sss.str();
+        std::string result = sss.str();
+        if(result.ends_with('\n')) { result.pop_back(); }
+        return result;
     }
 
     void ExpressionFactory::resetVariables() noexcept {
@@ -196,9 +196,8 @@ namespace vnd {
             ++_iterator;
             return;
         }
-        _text.emplace_back(" ");
         if(value == "^") {
-            if(!_power.has_value()) { _power = _text.size() - 2; }
+            if(!_power.has_value()) { _power = _text.size() - 1; }
             auto textIndex = _text.begin() + C_LL(_power.value());
             if(_sq) {
                 _text.emplace(textIndex, "int(std::pow(");
@@ -210,7 +209,7 @@ namespace vnd {
             ++_iterator;
             return;
         }
-        auto text = _scope->getTmp(_temp + writeToken());
+        auto text = _temp + writeToken();
         if(_const) {
             if(_iterator->getType() == TokenType::IDENTIFIER) {
                 auto constValue = _scope->getConstValue(_type, _iterator->getValue());
@@ -224,6 +223,7 @@ namespace vnd {
             }
         }
         checkOperators(text);
+        if(!_text.empty()) { text = FORMAT(" {}", text); }
         _text.emplace_back(text);
         if(value == "/" && !_sq) { _divide = true; }
         ++_iterator;
@@ -237,7 +237,7 @@ namespace vnd {
                 if(!value.empty() && value.at(0) == '_') {
                     value = FORMAT("v{}", value);
                 } else {
-                    value = FORMAT(" _{}", value);
+                    value = FORMAT("_{}", value);
                 }
             } else {
                 value = FORMAT("get{}{}()", char(std::toupper(value.at(0))), value.substr(1));
@@ -285,15 +285,14 @@ namespace vnd {
         }
         if(std::string error = ExpressionFactory::checkType(type, newType); !error.empty()) { return error; }
         params = ExpressionFactory::transpileFun(expressions, variadic);
-        std::string value = FORMAT(" {}({})", std::string{identifier}, params);
+        std::string value = FORMAT("{}({})", std::string{identifier}, params);
         if(_temp.empty()) {
-            value.erase(0, 1);
             if(constructor) {
                 value = FORMAT("std::make_shared<{}>({})", newType, params);
             } else if(!value.empty() && value.at(0) == '_') {
                 value = FORMAT("v{}", value);
             } else {
-                value = FORMAT(" _{}", value);
+                value = FORMAT("_{}", value);
             }
         }
         write(value, newType);
@@ -310,7 +309,7 @@ namespace vnd {
         if(auto newType = expression.getType(); newType != "int") { return FORMAT("{} index not allowed", newType); }
         if(auto error = ExpressionFactory::checkType(type, _type); !error.empty()) { return error; }
         _const = false;
-        write(FORMAT("at({})", expression.getText().substr(1)), _type);
+        write(FORMAT("at({})", expression.getText()), _type);
         return {};
     }
 
@@ -343,15 +342,14 @@ namespace vnd {
             // NOLINTEND(*-branch-clone)
             if(!assignable) { return FORMAT("Incompatible types in vector {}, {}", vectorType, expression.getType()); }
             if(expression.isConst()) {
-                constValue += FORMAT("{},", expression.getValue());
+                constValue += FORMAT("{}, ", expression.getValue());
             } else {
                 _const = false;
             }
-            value += FORMAT("{},", expression.getText());
+            value += FORMAT("{}, ", expression.getText());
         }
         if(!value.empty()) {
-            value.pop_back();
-            if(value.at(0) == ' ') { value.erase(0, 1); }
+            value.erase(value.size() - 2, 2);
         }
         vectorType += "[]";
         if(auto error = checkType(type, vectorType); !error.empty()) { return error; }
@@ -364,6 +362,7 @@ namespace vnd {
     }
 
     std::string ExpressionFactory::handleInnerExpression(TupType &type) noexcept {  // NOLINT(*-no-recursion)
+        std::string value;
         auto factory = ExpressionFactory::create(_iterator, _end, _scope, _const);
         ++_iterator;
         if(auto error = factory.parse({TokenType::CLOSE_PARENTESIS}); !error.empty()) { return error; }
@@ -376,7 +375,7 @@ namespace vnd {
         } else {
             _const = false;
         }
-        write(FORMAT(" ({})", expression.getText().substr(1)), newType);
+        write(FORMAT("({})", expression.getText()), newType);
         return {};
     }
 
@@ -472,15 +471,19 @@ namespace vnd {
         if(_power.has_value()) {
             value = FORMAT("{})", value);
             if(_sq) { value = FORMAT("{})", value); }
+            if((_iterator + 1) == _end || (_iterator + 1)->getValue() != "^") {
+                _text.emplace(_text.begin() + C_LL(_power.value()), " ");
+                _power.reset();
+            }
         }
-        if((_iterator + 1) == _end || (_iterator + 1)->getValue() != "^") { _power.reset(); }
     }
 
     void ExpressionFactory::write(const std::string &value, const std::string_view &type) noexcept {
         clearData();
         if(checkNextToken(std::string{type}, value)) { return; }
-        std::string text = _scope->getTmp(_temp + value);
+        std::string text = _temp + value;
         checkOperators(text);
+        if(!_text.empty()) { text = FORMAT(" {}", text); }
         _text.emplace_back(text);
         ++_iterator;
         _dot = false;

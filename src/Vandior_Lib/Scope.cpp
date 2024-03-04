@@ -43,24 +43,29 @@ namespace vnd {
         mainScope->addVariable("Derived.obj", "Object", false);
         mainScope->addConstant("Object.c", "int", "2");
         mainScope->addConstant("Derived._derivedConst", "bool", "true");
-        mainScope->addFun("print", FunType::create("void", {"string", "any..."}));
-        mainScope->addFun("println", FunType::create("void", {"string", "any..."}));
-        mainScope->addFun("readLine", FunType::create("string", {}));
-        mainScope->addFun("_test", FunType::create("int", {}));
-        mainScope->addFun("testPar", FunType::create("int", {"int", "int"}));
-        mainScope->addFun("testPar", FunType::create("int", {"string"}));
-        mainScope->addFun("max", FunType::create("int float", {"float[]"}));
-        mainScope->addFun("createObject", FunType::create("Object", {}));
-        mainScope->addFun("Object", FunType::create("Object", {}, true));
-        mainScope->addFun("Derived", FunType::create("Derived", {}, true));
-        mainScope->addFun("Derived", FunType::create("Derived", {"Object", "bool"}, true));
-        mainScope->addFun("createDerived", FunType::create("Derived", {}));
-        mainScope->addFun("[].size", FunType::create("int", {}));
-        mainScope->addFun("string.size", FunType::create("int", {}));
-        mainScope->addFun("Object.f", FunType::create("float", {"float"}));
-        mainScope->addFun("Object.fs", FunType::create("string", {}));
-        mainScope->addFun("Derived.derivedFun", FunType::create("bool", {"Object"}));
-        mainScope->addFun("Derived.object", FunType::create("Object", {}));
+        mainScope->addFun("print", FunType::create("void", {"string", "any..."}, {}, {}));
+        mainScope->addFun("println", FunType::create("void", {"string", "any..."}, {}, {}));
+        mainScope->addFun("readLine", FunType::create("string", {}, {}, {}));
+        mainScope->addFun("_test", FunType::create("int", {}, {}, {}));
+        mainScope->addFun("testPar", FunType::create("int", {"int", "int"}, {}, {}));
+        mainScope->addFun("testPar", FunType::create("int", {"string"}, {}, {}));
+        mainScope->addFun("max", FunType::create("int float", {"float[]"}, {}, {}));
+        mainScope->addFun("createObject", FunType::create("Object", {}, {}, {}));
+        mainScope->addFun("Object", FunType::create("Object", {}, {}, {}, true));
+        mainScope->addFun("Derived", FunType::create("Derived", {}, {}, {}, true));
+        mainScope->addFun("Derived", FunType::create("Derived", {"Object", "bool"}, {}, {}, true));
+        mainScope->addFun("createDerived", FunType::create("Derived", {}, {}, {}));
+        mainScope->addFun("vnd::vector.add", FunType::create("void", {"T"}, {{"T", "any"}}, {}));
+        mainScope->addFun("vnd::vector.addVector", FunType::create("void", {"T[]"}, {{"T", "any"}}, {}));
+        mainScope->addFun("vnd::vector.addAll", FunType::create("void", {"T..."}, {{"T", "any"}}, {}));
+        mainScope->addFun("vnd::vector.size", FunType::create("int", {}, {{"T", "any"}}, {}));
+        mainScope->addFun("vnd::array.size", FunType::create("int", {}, {{"T", "any"}}, {}));
+        mainScope->addFun("string.size", FunType::create("int", {}, {}, {}));
+        mainScope->addFun("string.toInt", FunType::create("int", {}, {}, {}));
+        mainScope->addFun("Object.f", FunType::create("float", {"float"}, {}, {}));
+        mainScope->addFun("Object.fs", FunType::create("string", {}, {}, {}));
+        mainScope->addFun("Derived.derivedFun", FunType::create("bool", {"Object"}, {}, {}));
+        mainScope->addFun("Derived.object", FunType::create("Object", {}, {}, {}));
         return mainScope;
     }
 
@@ -116,8 +121,21 @@ namespace vnd {
     }
 
     std::string Scope::getType(const std::string &type) noexcept {
-        if(type.ends_with("]")) [[unlikely]] { return "[]"; }
+        if(type.ends_with("[]")) [[unlikely]] { return FORMAT("vnd::vector<{}>", type.substr(0, type.size() - 2)); }
+        if(type.ends_with("]")) [[unlikely]] { return FORMAT("vnd::array<{}>", type.substr(0, type.find_last_of('['))); }
         return type;
+    }
+
+    std::string Scope::getParamType(const std::string& param,
+                                    const std::vector<std::pair<std::string, std::string>> typeGeneric) noexcept {
+        size_t pos = param.find('[');
+        auto it = std::find_if(typeGeneric.begin(), typeGeneric.end(), [&param, pos](std::pair<std::string, std::string> element) {
+            if(pos == std::string::npos) { return param == element.first; }
+            return param.substr(0, pos) == element.first;
+        });
+        if(it == typeGeneric.end()) { return param; }
+        if(pos == std::string::npos) { return it->second; }
+        return it->second + param.substr(pos, param.size() - pos);
     }
 
     std::shared_ptr<Scope> Scope::getParent() const noexcept { return _parent; }
@@ -182,32 +200,30 @@ namespace vnd {
     // NOLINTNEXTLINE(*-no-recursion,readability-function-cognitive-complexity)
     std::tuple<std::string, bool, std::optional<size_t>> Scope::getFunType(
         const std::string &type, const std::string_view &identifier, const std::vector<Expression> &expressions) const noexcept {
-        auto key = Scope::getKey(Scope::getType(type), identifier);
         bool found = false;
-        if(_funs.contains(key)) {
-            for(const auto &i : _funs.at(key)) {
-                auto params = i.getParams();
-                std::optional<size_t> variadic;
-                found = true;
-                if(!params.empty() && params.back().ends_with("...")) {
-                    variadic = params.size() - 1;
-                    if(expressions.size() == params.size() - 1) {
-                        params.pop_back();
-                    } else if(expressions.size() >= params.size()) {
-                        params.back().erase(params.back().end() - 3, params.back().end());
-                        std::string lastPar = params.back();
-                        while(params.size() < expressions.size()) { params.push_back(lastPar); }
-                    }
+        for(const auto &i : getFuns(Scope::getType(type), identifier)) {
+            auto params = i.getParams();
+            std::optional<size_t> variadic;
+            found = true;
+            if(!params.empty() && params.back().ends_with("...")) {
+                variadic = params.size() - 1;
+                if(expressions.size() == params.size() - 1) {
+                    params.pop_back();
+                } else if(expressions.size() >= params.size()) {
+                    params.back().erase(params.back().end() - 3, params.back().end());
+                    std::string lastPar = params.back();
+                    while(params.size() < expressions.size()) { params.push_back(lastPar); }
                 }
-                if(params.size() != expressions.size()) [[likely]] {
-                    found = false;
-                } else [[unlikely]] {
-                    for(size_t par = 0; par != expressions.size(); par++) {
-                        if(!canAssign(params.at(par), expressions.at(par).getType())) { found = false; }
-                    }
-                }
-                if(found) { return {i.getReturnType(), i.isConstructor(), variadic}; }
             }
+            if(params.size() != expressions.size()) [[likely]] {
+                found = false;
+            } else [[unlikely]] {
+                for(size_t par = 0; par != expressions.size(); par++) {
+                    std::string paramType = Scope::getParamType(params.at(par), i.getTypeGeneric());
+                    if(!canAssign(paramType, expressions.at(par).getType())) { found = false; }
+                }
+            }
+            if(found) { return {i.getReturnType(), i.isConstructor(), variadic}; }
         }
         if(_types.contains(type)) {
             for(const std::string &i : _types.at(type)) {
@@ -265,28 +281,54 @@ namespace vnd {
         return false;
     }
 
-    std::string Scope::addTmp(std::string key, std::string &type) noexcept {
-        if(key.ends_with("(")) {
-            key.replace(key.find_last_of('>') + 1, 1, "g");
-            key = FORMAT("{})", key);
+    std::vector<FunType> Scope::getFuns(const std::string &type, const std::string_view &identifier) const noexcept {
+        std::vector<FunType> result;
+        std::vector<std::string> typeSpecialized;
+        std::string typePrefix = type;
+        if(type.contains('<')) {
+            size_t pos = type.find('<');
+            int brackets = 0;
+            std::string currentParam;
+            for(const char c : type.substr(pos + 1, type.find_last_of('>') - 1)) {
+                if(c == '<') {
+                    brackets++;
+                } else if(c == '>') {
+                    brackets--;
+                } else if(c == ',') {
+                    typeSpecialized.emplace_back(currentParam);
+                    currentParam.clear();
+                } else {
+                    currentParam += c;
+                }
+            }
+            typeSpecialized.emplace_back(currentParam);
+            typePrefix = type.substr(0, pos);
         }
-        std::erase(key, ' ');
-        _tmp.try_emplace(key, type);
-        return key;
+        std::string key = getKey(typePrefix, identifier);
+        if(!_funs.contains(key)) { return {}; }
+        for(const auto fun : _funs.at(key)) {
+            auto [resultFun, ok] = specializeFun(fun, typeSpecialized);
+            if(ok) { result.emplace_back(resultFun); }
+        }
+        return result;
     }
 
-    std::string Scope::getTmp(const std::string &tmp) const noexcept {
-        auto key = tmp;
-        std::erase(key, ' ');
-        if(_tmp.contains(key)) { return FORMAT("std::any_cast<{}>(vnd::tmp.at(\"{}\"))", _tmp.at(key), key); }
-        return tmp;
+    std::pair<FunType, bool> Scope::specializeFun(const FunType &fun,
+                                                  const std::vector<std::string> &typeSpecialized) const noexcept {
+        std::vector<std::pair<std::string, std::string>> typeGeneric = fun.getTypeGeneric();
+        std::vector<std::pair<std::string, std::string>> resultGeneric;
+        if(typeGeneric.size() != typeGeneric.size()) { return {FunType::createEmpty(), false}; }
+        auto genericIterator = typeGeneric.begin();
+        auto specializedIterator = typeSpecialized.begin();
+        while(genericIterator != typeGeneric.end()) {
+            if(!canAssign(genericIterator->second, *specializedIterator)) { return {FunType::createEmpty(), false}; }
+            genericIterator->second = *specializedIterator;
+            ++genericIterator;
+            ++specializedIterator;
+        }
+        return {FunType::create(fun.getReturnType(), fun.getParams(), typeGeneric, fun.getFuncGeneric(), fun.isConstructor()),
+                true};
     }
-
-    void Scope::eachTmp(const std::function<void(const std::string &key)> &fun) const noexcept {
-        for(const auto &[key, value] : _tmp) { fun(key); }
-    }
-
-    void Scope::clearTmp() noexcept { _tmp.clear(); }
 
 }  // namespace vnd
 

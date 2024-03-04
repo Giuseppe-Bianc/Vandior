@@ -181,24 +181,6 @@ namespace vnd {
          */
         [[nodiscard]] std::string addTmp(std::string key, std::string &type) noexcept;
 
-        /**
-         * @brief Gets a temporary variable from the tmp map.
-         * @param tmp String representing the identifier of the variable.
-         * @return String containing the value used in the C++ code to retrieve the value.
-         */
-        [[nodiscard]] std::string getTmp(const std::string &tmp) const noexcept;
-
-        /**
-         * @brief Exprecutes a function for each temporary variable.
-         * @param fun Function the execute.
-         */
-        void eachTmp(const std::function<void(const std::string &key)> &fun) const noexcept;
-
-        /**
-         * @brief Clears the tmp map.
-         */
-        void clearTmp() noexcept;
-
     private:
         /**
          * @brief Constructor of a Scope.
@@ -226,15 +208,41 @@ namespace vnd {
          */
         [[nodiscard]] static std::string getType(const std::string &type) noexcept;
 
+        /**
+         * @brief gets the type of a generic parameter.
+         * @param param String containing the parameter type.
+         * @param typeGeneric Vector of generic parameters of the type.
+         * @return String containing the parameter type. If the parameter is not generic, the result is the same of param.
+         */
+        [[nodiscard]] static std::string getParamType(const std::string &param,
+                                                      const std::vector<std::pair<std::string, std::string>> typeGeneric) noexcept;
+
         std::unordered_map<std::string, std::string> _vars;  ///< Map of variables identifiers and types.
         std::unordered_map<std::string, std::string> _vals;  ///< Map of constants identifiers and types.
         std::unordered_map<std::string, std::pair<std::string, std::string>>
             _consts;  ///< Map of compile time constants identifiers and types.
         std::unordered_map<std::string, std::vector<std::string>> _types;  ///< Map of types and assignabled types.
         std::unordered_map<std::string, std::vector<FunType>> _funs;       ///< Map of function identifiers and informations.
-        std::unordered_map<std::string, std::string> _tmp;                 ///< Map of temporary variables and types.
         std::shared_ptr<Scope> _parent;                                    ///< Shared pointer to the parent scope.
         ScopeType _type;
+
+        /**
+         * @brief gets the function corresponding to an identifier.
+         * @param type String representing the type containing the method. Is the function is not a method, the parameter is
+         * empty.
+         * @param identifier String_view representing the identifier of the function.
+         * @return Vector containing the found functions.
+         */
+        [[nodiscard]] std::vector<FunType> getFuns(const std::string &type, const std::string_view &identifier) const noexcept;
+
+        /**
+         * @brief Specializes the generic types of a funtion.
+         * @param fun FunType to specialize.
+         * @param typeSpecialized Vector of type specialized parameters.
+         * @return Pair of the specialized FunType and flag that indicates if the specialization succeeds.
+         */
+        [[nodiscard]] std::pair<FunType, bool> specializeFun(const FunType &fun,
+                                                             const std::vector<std::string> &typeSpecialized) const noexcept;
     };
 
 }  // namespace vnd

@@ -25,6 +25,9 @@ class string: public std::string {
 			if(index < 0 || index >= size()) { throw std::runtime_error("Index " + std::to_string(index) +  " out of bounds for size " + std::to_string(size())); }
 			return std::string::at(index);
 		}
+		const int toInt() {
+			return std::stoi(*this);
+		}
 };
 
 namespace vnd {
@@ -74,12 +77,25 @@ namespace vnd {
 				if(index < 0 || index >= static_cast<int64_t>(this->size())) { throw std::runtime_error("Index " + std::to_string(index) +  " out of bounds for size " + std::to_string(static_cast<int64_t>(this->size()))); }
 				return std::vector<T>::at(index);
 			}
-			const T& at(int64_t index) const {
+			const T at(int64_t index) const {
 				if(index < 0) {
 					index += static_cast<int64_t>(this->size());
 				}
 				if(index < 0 || index >= static_cast<int64_t>(this->size())) { throw std::runtime_error("Index " + std::to_string(index) +  " out of bounds for size " + std::to_string(static_cast<int64_t>(this->size()))); }
 				return std::vector<T>::at(index);
+			}
+			void addVector(const vnd::vector<T> elems) {
+				for(const T &i: elems) {
+					std::vector<T>::emplace_back(i);
+				}
+			}
+			void addAll(const vnd::vector<T> elems) {
+				for(const T &i: elems) {
+					std::vector<T>::emplace_back(i);
+				}
+			}
+			void add(const T elem) {
+				std::vector<T>::emplace_back(elem);
 			}
 	};
 	std::unordered_map<std::string, std::any> tmp;

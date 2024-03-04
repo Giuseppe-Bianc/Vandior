@@ -178,17 +178,12 @@ namespace vnd {
                 }
                 if(isConst) {
                     if(expression.isConst()) [[likely]] {
-                        value = expression.getValue();
-                        value = FORMAT("{}", value.substr(0, value.size() - 1));
-                        if(type == "int") { value = FORMAT("{}", value.substr(0, value.find('.'))); }
-                        _text += FORMAT(" = {}", value);
+                        _text += FORMAT(" = {}", expression.getValue());
                     } else [[unlikely]] {
                         throw TRANSPILER_EXCEPTIONF(instruction, "Cannot evaluate {} at compile time", jvar);
                     }
                 } else {
-                    value = expression.getText();
-                    while(value.starts_with(' ')) { value.erase(0, 1); }
-                    _text += FORMAT(" = {}", value);
+                    _text += FORMAT(" = {}", expression.getText());
                 }
             } else {
                 _text += "{}";
@@ -227,7 +222,6 @@ namespace vnd {
             if(expression.getType() != "void" && !(text.ends_with("++") || text.ends_with("--"))) {
                 throw TRANSPILER_EXCEPTIONF(instruction, "Invalid operation {}", text);
             }
-            if(text.starts_with(' ')) { text.erase(0, 1); }
             _text += FORMAT("{};\n{:\t^{}}", text, "", _tabs);
         }
         _text.erase(_text.size() - _tabs - 1, _tabs + 1);
@@ -238,19 +232,11 @@ namespace vnd {
         auto tokens = instruction.getTokens();
         auto iterator = tokens.begin();
         const auto endToken = tokens.end();
-        std::vector<std::string> tmp;
         Token equalToken;
         auto factory = ExpressionFactory::create(iterator, endToken, _scope, false);
         auto variables = extractVariables(iterator, endToken, instruction);
         equalToken = *iterator;
         ++iterator;
-        for(auto &[first, second] : variables) {
-            if(first != "_") {
-                auto typeValue = Scope::getTypeValue(second);
-                auto key = _scope->addTmp(first, second);
-                tmp.push_back(FORMAT("std::any_cast<{}>(vnd::tmp[\"{}\"])", typeValue, key));
-            }
-        }
         while(iterator != endToken) {
             if(auto error = factory.parse({TokenType::COMMA}); !error.empty()) { throw TranspilerException(error, instruction); }
             if(iterator != endToken) { ++iterator; }
@@ -264,57 +250,17 @@ namespace vnd {
             }
             return;
         }
-        _scope->eachTmp(
-            [this](const std::string &key) { _text += FORMAT("vnd::tmp[\"{}\"] = {};\n{:\t^{}}", key, key, "", _tabs); });
         if(variables.size() != factory.size()) {
             throw TRANSPILER_EXCEPTIONF(instruction, "inconsistent assignation: {} values for {} variables", factory.size(),
                                         variables.size());
         }
-        for(auto &[first, second] : variables) {
-            auto expression = factory.getExpression();
-#ifdef __llvm__
-            const bool exprContainsSpace = expression.getType().find(' ') != std::string::npos;
-#else
-            const bool exprContainsSpace = expression.getType().contains(' ');
-#endif
-            if(exprContainsSpace) {
-                throw TranspilerException("Multiple return value functions must be used alone", instruction);
+        for(auto &variable : variables) {
+            if(auto error = transpileAssigment(variable.first, variable.second, equalToken, factory.getExpression());
+               !error.empty()) {
+                throw TranspilerException(error, instruction);
             }
-            if(equalToken.getType() == TokenType::OPERATION_EQUAL && !Scope::isNumber(second)) {
-                if(first == "_") {
-                    throw TRANSPILER_EXCEPTIONF(instruction, "incompatible operator {} for blank identifier",
-                                                equalToken.getValue(), second);
-                }
-                throw TRANSPILER_EXCEPTIONF(instruction, "incompatible operator {} for {} type", equalToken.getValue(), second);
-            }
-            if(first == "_") {
-                if(expression.getType() == "void") {
-                    throw TranspilerException("Cannot assign void expression", instruction);
-                } else {
-                    _text += FORMAT("{};\n{:\t^{}}", expression.getText(), "", _tabs);
-                    continue;
-                }
-            }
-            if(!_scope->canAssign(second, expression.getType())) {
-                throw TRANSPILER_EXCEPTIONF(instruction, "Cannot assign {} to {}", expression.getType(), second);
-            }
-            std::string text = first;
-            if(!first.ends_with('(')) { text += " = "; }
-            if(equalToken.getType() == TokenType::OPERATION_EQUAL) {
-                if(equalToken.getValue() == "^=") {
-                    text += FORMAT("std::pow({},", tmp.front());
-                } else {
-                    text += FORMAT("{} {}", tmp.front(), equalToken.getValue().at(0));
-                }
-            }
-            text += expression.getText();
-            if(equalToken.getValue() == "^=") { text += ")"; }
-            if(first.ends_with('(')) { text += ")"; }
-            tmp.erase(tmp.begin());
-            _text += FORMAT("{};\n{:\t^{}}", text, "", _tabs);
         }
-        _text += "vnd::tmp.clear();";
-        _scope->clearTmp();
+        _text.erase(_text.size() - _tabs - 1, _tabs + 1);
     }
 
     void Transpiler::transpileStructure(const Instruction &instruction) {
@@ -392,7 +338,7 @@ namespace vnd {
         if(std::string error = factory.parse({}); !error.empty()) { throw TranspilerException(error, instruction); }
         auto step = factory.getExpression();
         if(!Scope::isNumber(step.getType())) { throw TranspilerException("For step value must be of numeric type", instruction); }
-        _text += FORMAT("{},{}) {{", condition.getText(), step.getText());
+        _text += FORMAT("{}, {}) {{", condition.getText(), step.getText());
         if(!identifier.empty()) { _scope->addVariable(identifier, type, false); }
         if(tmp.begin()->getType() == TokenType::CLOSE_CUR_PARENTESIS) {
             _text += "}";
@@ -555,7 +501,7 @@ namespace vnd {
         auto expression = factory.getExpression();
         newType = expression.getType();
         if(newType != "int") { return FORMAT("{} index not allowed", newType); }
-        currentVariable += FORMAT(".at({})->", expression.getText().substr(1));
+        currentVariable += FORMAT(".at({})->", expression.getText());
         return {};
     }
 
@@ -589,7 +535,6 @@ namespace vnd {
             tmp.erase(tmp.begin());
         }
         _text += "vnd::tmp.clear();";
-        _scope->clearTmp();
         return {};
     }
 
@@ -624,7 +569,7 @@ namespace vnd {
                     if(!expression.isConst()) {
                         throw TranspilerException("Cannot evaluate array dimension at compile time", instruction);
                     }
-                    size = expression.getValue().substr(0, expression.getValue().find('.'));
+                    size = expression.getValue();
                     if(std::stoi(size) < 0) { throw TranspilerException("Array cannot have negative size", instruction); }
                     prefix += "vnd::array<";
                     suffix = FORMAT(", {}>{}", size, suffix);
@@ -636,15 +581,61 @@ namespace vnd {
         return {type, FORMAT("{}{}{}", prefix, typeValue, suffix)};
     }
 
+    std::string Transpiler::transpileAssigment(const std::string &variable, const std::string &type,
+                                               const Token &equalToken, const Expression &expression) noexcept {
+#ifdef __llvm__
+        const bool exprContainsSpace = expression.getType().find(' ') != std::string::npos;
+#else
+        const bool exprContainsSpace = expression.getType().contains(' ');
+#endif
+        if(exprContainsSpace) { return "Multiple return value functions must be used alone"; }
+        if(equalToken.getType() == TokenType::OPERATION_EQUAL && !Scope::isNumber(type)) {
+            if(variable == "_") {
+                 return FORMAT("incompatible operator {} for blank identifier", equalToken.getValue());
+            }
+            return FORMAT("incompatible operator {} for {} type", equalToken.getValue(), type);
+        }
+        if(variable == "_") {
+            if(expression.getType() == "void") {
+                return "Cannot assign void expression";
+            } else {
+                _text += FORMAT("{};\n{:\t^{}}", expression.getText(), "", _tabs);
+                return {};
+            }
+        }
+        if(!_scope->canAssign(type, expression.getType())) {
+            return FORMAT("Cannot assign {} to {}", expression.getType(), type);
+        }
+        std::string text = variable;
+        std::string getter = variable;
+        if(!variable.ends_with('(')) {
+            text += " = ";
+        }
+        if(equalToken.getType() == TokenType::OPERATION_EQUAL) {
+            if(variable.ends_with('(')) {
+                getter.replace(getter.find_last_of("->") + 1, 1, "g");
+                getter = FORMAT("{})", getter);
+            }
+            if(equalToken.getValue() == "^=") {
+                text += FORMAT("std::pow({},", getter);
+            } else {
+                text += FORMAT("{} {} ", getter, equalToken.getValue().at(0));
+            }
+        }
+        text += expression.getText();
+        if(equalToken.getValue() == "^=") { text += ")"; }
+        if(variable.ends_with('(')) { text += ")"; }
+        _text += FORMAT("{};\n{:\t^{}}", text, "", _tabs);
+        return {};
+    }
+
     std::string Transpiler::transpileCondition(TokenVecIter &iterator, const TokenVecIter &end) noexcept {
         auto factory = ExpressionFactory::create(iterator, end, _scope, false);
         std::string value;
         if(auto error = factory.parse({TokenType::CLOSE_PARENTESIS}); !error.empty()) { return error; }
         auto expression = factory.getExpression();
         if(expression.getType() != "bool") { return "Invalid condition type"; }
-        value = expression.getText();
-        while(value.starts_with(' ')) { value.erase(0, 1); }
-        _text += FORMAT("({}) {{", value);
+        _text += FORMAT("({}) {{", expression.getText());
         return {};
     }
 
@@ -679,14 +670,14 @@ namespace vnd {
         } else {
             identifier = FORMAT("_{}", identifier);
         }
-        _text += FORMAT("{}, {},", typeValue, identifier);
+        _text += FORMAT("{}, {}, ", typeValue, identifier);
         ++iterator;
         if(auto error = factory.parse({TokenType::COMMA}); !error.empty()) { throw TranspilerException(error, instruction); }
         auto expression = factory.getExpression();
         if(!Scope::isNumber(expression.getType())) {
             throw TranspilerException("For variables must be of numeric type", instruction);
         }
-        _text += FORMAT("{},", expression.getText());
+        _text += FORMAT("{}, ", expression.getText());
         return {declaration, type};
     }
 

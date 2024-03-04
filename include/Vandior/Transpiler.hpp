@@ -182,6 +182,9 @@ namespace vnd {
                                                                         const std::vector<TokenType> &endTokens,
                                                                         const Instruction &instruction);
 
+        [[nodiscard]] std::string transpileAssigment(const std::string &variable, const std::string &type,
+                                                     const Token &equalToken, const Expression &expression) noexcept;
+
         /**
          * @brief Transpile an if or while condition.
          * @param iterator The iterator pointing to the condition token sequence.
