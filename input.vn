@@ -1,3 +1,5 @@
+const nume : int = 334
+const dmnum : float = 1.222222222222
 main {
 	var array1, array2: Object[2] = {Object(), Object()}, {Derived(), Object()} 
 	var array3, array4: Derived[] = {Derived(), Derived(), Derived()} 

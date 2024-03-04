@@ -34,7 +34,7 @@ namespace vnd {
         _text += "\n\n";
         try {
             for(const auto &instruction : _instructions) {
-                const InstructionType type = instruction.getLastType();
+                const auto type = instruction.getLastType();
                 if(_scope->isGlobalScope() && !Transpiler::checkGlobalScope(type)) {
                     throw TranspilerException("Cannot place this instruction in the global scope", instruction);
                 }
@@ -137,7 +137,14 @@ namespace vnd {
         auto variables = extractIdentifiers(iterator, instruction);
         const auto endToken = tokens.end();
         auto factory = ExpressionFactory::create(iterator, tokens.end(), _scope, isConst);
-        if(isConst || isVal) { _text += "const "; }
+        if(isConst || isVal) {
+            if(_text.ends_with(R"(;
+
+)")) {
+                _text = FORMAT("{}", _text.substr(0, _text.size() - 1));
+            }
+            _text += "const ";
+        }
         auto [type, typeValue] = transpileType(iterator, tokens.end(), {TokenType::EQUAL_OPERATOR}, instruction);
         _text += FORMAT("{} ", typeValue);
         if(isConst && !Scope::isPrimitive(type)) {
@@ -172,6 +179,7 @@ namespace vnd {
                 if(isConst) {
                     if(expression.isConst()) [[likely]] {
                         value = expression.getValue();
+                        value = FORMAT("{}", value.substr(0, value.size() - 1));
                         if(type == "int") { value = FORMAT("{}", value.substr(0, value.find('.'))); }
                         _text += FORMAT(" = {}", value);
                     } else [[unlikely]] {
@@ -196,6 +204,7 @@ namespace vnd {
                 _scope->addVariable(jvar, type, isVal);
             }
             emplaceCommaColon(jvar == variables.back());
+            if(isConst) { _text += "\n"; }
         }
     }
 
