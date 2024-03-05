@@ -759,13 +759,13 @@ TEST_CASE("Transpiler transpile main instruction", "[transpiler]") {
 #ifdef __clang__
     REQUIRE(code == "#include \"../../../../base.hpp\"\n\n"
                     "int main(int argc, char **argv) {\n"
-                    "\tconst vnd::vector<string> _args(argv, argv + argc);\n"
+                    "\tconst vnd::vector<string> _args = vnd::createArgs(argc, argv);\n"
                     "\treturn 0;\n"
                     "}\n");
 #else
     REQUIRE(code == "#include \"../../../base.hpp\"\n\n"
                     "int main(int argc, char **argv) {\n"
-                    "\tconst vnd::vector<string> _args(argv, argv + argc);\n"
+                    "\tconst vnd::vector<string> _args = vnd::createArgs(argc, argv);\n"
                     "\treturn 0;\n"
                     "}\n");
 #endif
@@ -852,14 +852,14 @@ TEST_CASE("Transpiler transpile operation instruction", "[transpiler]") {
 #ifdef __clang__
     REQUIRE(code == "#include \"../../../../base.hpp\"\n\n"
                     "int main(int argc, char **argv) {\n"
-                    "\tconst vnd::vector<string> _args(argv, argv + argc);\n"
+                    "\tconst vnd::vector<string> _args = vnd::createArgs(argc, argv);\n"
                     "\t_print(string(\"Test {}\"), {_args.at(0)});\n"
                     "\treturn 0;\n"
                     "}\n");
 #else
     REQUIRE(code == "#include \"../../../base.hpp\"\n\n"
                     "int main(int argc, char **argv) {\n"
-                    "\tconst vnd::vector<string> _args(argv, argv + argc);\n"
+                    "\tconst vnd::vector<string> _args = vnd::createArgs(argc, argv);\n"
                     "\t_print(string(\"Test {}\"), {_args.at(0)});\n"
                     "\treturn 0;\n"
                     "}\n");
@@ -888,7 +888,7 @@ TEST_CASE("Transpiler transpile assignation instruction", "[transpiler]") {
     REQUIRE(code == R"(#include "../../../../base.hpp"
 
 int main(int argc, char **argv) {
-	const vnd::vector<string> _args(argv, argv + argc);
+	const vnd::vector<string> _args = vnd::createArgs(argc, argv);
 	int _num{};
 	_num = 1;
 	return 0;
@@ -898,7 +898,7 @@ int main(int argc, char **argv) {
     REQUIRE(code == R"(#include "../../../base.hpp"
 
 int main(int argc, char **argv) {
-	const vnd::vector<string> _args(argv, argv + argc);
+	const vnd::vector<string> _args = vnd::createArgs(argc, argv);
 	int _num{};
 	_num = 1;
 	return 0;
@@ -928,7 +928,7 @@ TEST_CASE("Transpiler transpile if instruction", "[transpiler]") {
 #ifdef __clang__
     REQUIRE(code == "#include \"../../../../base.hpp\"\n\n"
                     "int main(int argc, char **argv) {\n"
-                    "\tconst vnd::vector<string> _args(argv, argv + argc);\n"
+                    "\tconst vnd::vector<string> _args = vnd::createArgs(argc, argv);\n"
                     "\tif(true) {\n"
                     "\t} else if(false) {\n"
                     "\t} else {}\n"
@@ -937,7 +937,7 @@ TEST_CASE("Transpiler transpile if instruction", "[transpiler]") {
 #else
     REQUIRE(code == "#include \"../../../base.hpp\"\n\n"
                     "int main(int argc, char **argv) {\n"
-                    "\tconst vnd::vector<string> _args(argv, argv + argc);\n"
+                    "\tconst vnd::vector<string> _args = vnd::createArgs(argc, argv);\n"
                     "\tif(true) {\n"
                     "\t} else if(false) {\n"
                     "\t} else {}\n"
@@ -967,7 +967,7 @@ TEST_CASE("Transpiler transpile while and break instructions", "[transpiler]") {
 #ifdef __clang__
     REQUIRE(code == "#include \"../../../../base.hpp\"\n\n"
                     "int main(int argc, char **argv) {\n"
-                    "\tconst vnd::vector<string> _args(argv, argv + argc);\n"
+                    "\tconst vnd::vector<string> _args = vnd::createArgs(argc, argv);\n"
                     "\twhile(true) {\n"
                     "\t\tbreak;\n"
                     "\t}\n"
@@ -976,7 +976,7 @@ TEST_CASE("Transpiler transpile while and break instructions", "[transpiler]") {
 #else
     REQUIRE(code == "#include \"../../../base.hpp\"\n\n"
                     "int main(int argc, char **argv) {\n"
-                    "\tconst vnd::vector<string> _args(argv, argv + argc);\n"
+                    "\tconst vnd::vector<string> _args = vnd::createArgs(argc, argv);\n"
                     "\twhile(true) {\n"
                     "\t\tbreak;\n"
                     "\t}\n"
@@ -1006,14 +1006,14 @@ TEST_CASE("Transpiler transpile for instruction", "[transpiler]") {
 #ifdef __clang__
     REQUIRE(code == "#include \"../../../../base.hpp\"\n\n"
                     "int main(int argc, char **argv) {\n"
-                    "\tconst vnd::vector<string> _args(argv, argv + argc);\n"
+                    "\tconst vnd::vector<string> _args = vnd::createArgs(argc, argv);\n"
                     "\tFOR_LOOP(int, _i, 0, 10, 1) {}\n"
                     "\treturn 0;\n"
                     "}\n");
 #else
     REQUIRE(code == "#include \"../../../base.hpp\"\n\n"
                     "int main(int argc, char **argv) {\n"
-                    "\tconst vnd::vector<string> _args(argv, argv + argc);\n"
+                    "\tconst vnd::vector<string> _args = vnd::createArgs(argc, argv);\n"
                     "\tFOR_LOOP(int, _i, 0, 10, 1) {}\n"
                     "\treturn 0;\n"
                     "}\n");
@@ -1041,7 +1041,7 @@ TEST_CASE("Transpiler transpile open and close scope instructions", "[transpiler
 #ifdef __clang__
     REQUIRE(code == "#include \"../../../../base.hpp\"\n\n"
                     "int main(int argc, char **argv) {\n"
-                    "\tconst vnd::vector<string> _args(argv, argv + argc);\n"
+                    "\tconst vnd::vector<string> _args = vnd::createArgs(argc, argv);\n"
                     "\t{\n"
                     "\t}\n"
                     "\treturn 0;\n"
@@ -1049,7 +1049,7 @@ TEST_CASE("Transpiler transpile open and close scope instructions", "[transpiler
 #else
     REQUIRE(code == "#include \"../../../base.hpp\"\n\n"
                     "int main(int argc, char **argv) {\n"
-                    "\tconst vnd::vector<string> _args(argv, argv + argc);\n"
+                    "\tconst vnd::vector<string> _args = vnd::createArgs(argc, argv);\n"
                     "\t{\n"
                     "\t}\n"
                     "\treturn 0;\n"

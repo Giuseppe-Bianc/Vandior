@@ -17,19 +17,9 @@ for (type var = initial; (step > 0 ? var < final : var > final); var += step)
 class string {
 	public:
 		string(const std::string &s = ""): str(string::create(s)) {}
+		string(const string &s): str(string::create(*(s.str))) {}
 		~string() {
-			//std::cout << "Delete\t" << *str << "\t" << pool.size() << std::endl;
-			auto iterator = string::pool.begin();
-			while(iterator != string::pool.end()) {
-				if(str == iterator->first) {
-					iterator->second--;
-					if(iterator->second == 0) {
-						string::pool.erase(iterator);
-					}
-					return;
-				}
-				++iterator;
-			}
+			string::deleteString(str);
 		}
 		const int size() const {
 			return str->size();
@@ -47,15 +37,17 @@ class string {
 		const int toInt() {
 			return std::stoi(*str);
 		}
-		std::string::iterator begin() const noexcept {
+		std::string::const_iterator begin() const noexcept {
 			return str->begin();
 		}
-		std::string::iterator end() const noexcept {
+		std::string::const_iterator end() const noexcept {
 			return str->end();
 		}
-		string operator=(string &s) {
+		string operator=(const string &s) {
 			if (this != &s) {
+				std::shared_ptr<const std::string> old = str;
 				str = string::create(*(s.str));
+				string::deleteString(old);
 			}
 			return *this;
 		}
@@ -70,9 +62,8 @@ class string {
 			return *str;
 		}
 	private:
-		static std::vector<std::pair<std::shared_ptr<std::string>, int64_t>> pool;
-		static std::shared_ptr<std::string> create(const std::string &str) {
-			//std::cout << "Create\t" << str << "\t" << pool.size() << std::endl;
+		static std::vector<std::pair<std::shared_ptr<const std::string>, int64_t>> pool;
+		static std::shared_ptr<const std::string> create(const std::string &str) {
 			for(auto &i: string::pool) {
 				if(str == *i.first) {
 					i.second++;
@@ -82,9 +73,22 @@ class string {
 			string::pool.emplace_back(std::make_pair(std::make_shared<std::string>(str), 1));
 			return string::pool.back().first;
 		}
-		std::shared_ptr<std::string> str;
+		static void deleteString(const std::shared_ptr<const std::string> str) {
+			auto iterator = string::pool.begin();
+			while(iterator != string::pool.end()) {
+				if(str == iterator->first) {
+					iterator->second--;
+					if(iterator->second == 0) {
+						string::pool.erase(iterator);
+					}
+					return;
+				}
+				++iterator;
+			}
+		}
+		std::shared_ptr<const std::string> str;
 };
-std::vector<std::pair<std::shared_ptr<std::string>, int64_t>> string::pool{};
+std::vector<std::pair<std::shared_ptr<const std::string>, int64_t>> string::pool{};
 
 namespace vnd {
 	template <typename T, int64_t N>

@@ -501,6 +501,7 @@ namespace vnd {
         auto expression = factory.getExpression();
         newType = expression.getType();
         if(newType != "int") { return FORMAT("{} index not allowed", newType); }
+        if(type == "char") { return "Strings are immutable"; }
         currentVariable += FORMAT(".at({})->", expression.getText());
         return {};
     }
