@@ -173,14 +173,6 @@ namespace vnd {
          */
         [[nodiscard]] bool canAssign(const std::string &left, const std::string &right) const noexcept;
 
-        /**
-         * @brief Adds a temporary variable to the tmp map.
-         * @param key String representing the identifier of the variable.
-         * @param type String representing the type of the variable.
-         * @return String containing the modified key used by the map.
-         */
-        [[nodiscard]] std::string addTmp(std::string key, std::string &type) noexcept;
-
     private:
         /**
          * @brief Constructor of a Scope.
@@ -214,8 +206,8 @@ namespace vnd {
          * @param typeGeneric Vector of generic parameters of the type.
          * @return String containing the parameter type. If the parameter is not generic, the result is the same of param.
          */
-        [[nodiscard]] static std::string getParamType(const std::string &param,
-                                                      const std::vector<std::pair<std::string, std::string>> typeGeneric) noexcept;
+        [[nodiscard]] static std::string getParamType(
+            const std::string &param, const std::vector<std::pair<std::string, std::string>> &typeGeneric) noexcept;
 
         std::unordered_map<std::string, std::string> _vars;  ///< Map of variables identifiers and types.
         std::unordered_map<std::string, std::string> _vals;  ///< Map of constants identifiers and types.

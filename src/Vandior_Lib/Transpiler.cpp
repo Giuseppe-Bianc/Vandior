@@ -311,7 +311,7 @@ namespace vnd {
         tokens.pop_back();
         if(tokens.back().getType() == TokenType::OPEN_CUR_PARENTESIS) { tokens.pop_back(); }
         auto iterator = tokens.begin();
-        auto endToken = tokens.end();
+        const auto endToken = tokens.end();
         auto factory = ExpressionFactory::create(iterator, endToken, _scope, false);
         _text += "FOR_LOOP(";
         openScope(ScopeType::LOOP_SCOPE);
@@ -581,8 +581,8 @@ namespace vnd {
         return {type, FORMAT("{}{}{}", prefix, typeValue, suffix)};
     }
 
-    std::string Transpiler::transpileAssigment(const std::string &variable, const std::string &type,
-                                               const Token &equalToken, const Expression &expression) noexcept {
+    std::string Transpiler::transpileAssigment(const std::string &variable, const std::string &type, const Token &equalToken,
+                                               const Expression &expression) noexcept {
 #ifdef __llvm__
         const bool exprContainsSpace = expression.getType().find(' ') != std::string::npos;
 #else
@@ -590,9 +590,7 @@ namespace vnd {
 #endif
         if(exprContainsSpace) { return "Multiple return value functions must be used alone"; }
         if(equalToken.getType() == TokenType::OPERATION_EQUAL && !Scope::isNumber(type)) {
-            if(variable == "_") {
-                 return FORMAT("incompatible operator {} for blank identifier", equalToken.getValue());
-            }
+            if(variable == "_") { return FORMAT("incompatible operator {} for blank identifier", equalToken.getValue()); }
             return FORMAT("incompatible operator {} for {} type", equalToken.getValue(), type);
         }
         if(variable == "_") {
@@ -608,9 +606,7 @@ namespace vnd {
         }
         std::string text = variable;
         std::string getter = variable;
-        if(!variable.ends_with('(')) {
-            text += " = ";
-        }
+        if(!variable.ends_with('(')) { text += " = "; }
         if(equalToken.getType() == TokenType::OPERATION_EQUAL) {
             if(variable.ends_with('(')) {
                 getter.replace(getter.find_last_of("->") + 1, 1, "g");
