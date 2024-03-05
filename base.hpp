@@ -14,21 +14,79 @@
 #define FOR_LOOP(type, var, initial, final, step) \
 for (type var = initial; (step > 0 ? var < final : var > final); var += step)
 
-class string: public std::string {
+class string {
 	public:
-		using std::string::string;
-		string(const std::string &s): std::string(s) {}
+		string(std::string s = ""): str(string::create(s)) {}
+		~string() {
+			//std::cout << "Delete\t" << *this << "\t" << pool.size() << std::endl;
+			auto iterator = string::pool.begin();
+			while(iterator != string::pool.end()) {
+				//std::cout << "(" << *this << "\t" << iterator->first << ")" << std::endl;
+				if(str == iterator->first) {
+					iterator->second--;
+					if(iterator->second == 0) {
+						string::pool.erase(iterator);
+					}
+					return;
+				}
+				++iterator;
+			}
+		}
+		const int size() const {
+			return str.size();
+		}
 		const char at(int64_t index) const {
 			if(index < 0) {
 				index += static_cast<int64_t>(size());
 			}
 			if(index < 0 || index >= size()) { throw std::runtime_error("Index " + std::to_string(index) +  " out of bounds for size " + std::to_string(size())); }
-			return std::string::at(index);
+			return str.at(index);
+		}
+		const bool empty() {
+			return str.empty();
 		}
 		const int toInt() {
-			return std::stoi(*this);
+			return std::stoi(str.data());
 		}
+		std::string_view::iterator begin() const noexcept {
+			return str.begin();
+		}
+		std::string_view::iterator end() const noexcept {
+			return str.end();
+		}
+		string operator=(string &s) {
+			if (this != &s) {
+				std::string str = std::string(s.str);
+				str = string::create(str);
+			}
+			return *this;
+		}
+		friend bool operator==(const string &s1, const string &s2) {
+			return s1.str == s2.str;
+		}
+		friend std::ostream& operator<<(std::ostream& os, const string &s) {
+			os << s.str.data();
+			return os;
+		}
+		operator std::string() {
+			return str.data();
+		}
+	private:
+		static std::vector<std::pair<std::string, int64_t>> pool;
+		static std::string_view create(std::string &str) {
+			//std::cout << "Create\t" << str << "\t" << pool.size() << std::endl;
+			for(auto &i: string::pool) {
+				if(str == i.first) {
+					i.second++;
+					return i.first;
+				}
+			}
+			string::pool.emplace_back(std::make_pair(str, 1));
+			return string::pool.back().first;
+		}
+		std::string_view str;
 };
+std::vector<std::pair<std::string, int64_t>> string::pool{};
 
 namespace vnd {
 	template <typename T, int64_t N>
@@ -143,10 +201,10 @@ class Derived: public Object {
 		bool _derivedProperty;
 		std::shared_ptr<Object> obj;
 };
-void _print(const std::string_view text, const vnd::vector<std::variant<int, float, char, bool, string, std::shared_ptr<Object>>>& args) {
+void _print(const string text, const vnd::vector<std::variant<int, float, char, bool, string, std::shared_ptr<Object>>>& args) {
 	
 	size_t par = 0;
-	std::string_view::iterator iterator = text.begin();
+	auto iterator = text.begin();
 	std::string result;
 	std::function<std::string(std::variant<int, float, char, bool, string, std::shared_ptr<Object>>)> format = [](std::variant<int, float, char, bool, string, std::shared_ptr<Object>> param) -> std::string {
 		if(std::holds_alternative<int>(param)) {
@@ -186,7 +244,7 @@ void _print(const std::string_view text, const vnd::vector<std::variant<int, flo
 	std::cout << result;
 	
 }
-void _println(std::string_view text, const vnd::vector<std::variant<int, float, char, bool, string, std::shared_ptr<Object>>>& args) {
+void _println(const string text, const vnd::vector<std::variant<int, float, char, bool, string, std::shared_ptr<Object>>>& args) {
 	
 	_print(text, args);
 	std::cout << std::endl;

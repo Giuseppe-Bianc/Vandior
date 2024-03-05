@@ -2,6 +2,12 @@ const nume : int = 334
 const dmnum : float = 1.222222222222
 const boolc: bool = 1 == 1 || !false && 67 < 77.85
 main {
+	for var i: int = 0, args.size() {
+		println(args[0])
+	}
+	var s1: string = "Ciao"
+	var s2: string = "Ciao"
+	println("{} {}", s1, s2)
 	var array1, array2: Object[] = {Object(), Object()}, {Derived(), Object()} 
 	var array3, array4: Derived[2] = {Derived(), Derived()} 
 	var num: int = 5
