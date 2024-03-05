@@ -122,7 +122,7 @@ namespace vnd {
         _text += "int main(int argc, char **argv) {\n";
         _main = true;
         openScope(ScopeType::MAIN_SCOPE);
-        auto value = FORMAT("{:\t^{}}const vnd::vector<string> _args(argv, argv + argc);", "", _tabs);
+        auto value = FORMAT("{:\t^{}}const vnd::vector<string> _args = vnd::createArgs(argc, argv);", "", _tabs);
         _text += value;
         _scope->addConstant("args", "string[]", value);
         checkTrailingBracket(instruction);
