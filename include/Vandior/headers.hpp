@@ -27,6 +27,7 @@ DISABLE_WARNINGS_PUSH(
     26485 26490 26491 26493 26494 26495 26496
     26497 26498 26800 26814 26818 26826)
 
+#include <any>
 #include <algorithm>
 #include <array>
 #include <atomic>
@@ -70,7 +71,6 @@ DISABLE_WARNINGS_PUSH(
 #include <utility>
 #include <variant>
 #include <vector>
-
 // clang-format on
 #include "casts.hpp"
 #include "glm_matld.hpp"
@@ -103,7 +103,6 @@ static inline constexpr const char *NEWL = &CNL;  // FreeBSD
 #else
 static inline constexpr const char *NEWL = &CNL;  // Default case
 #endif
-
 /**
  * @def SYSPAUSE
  * @brief A macro to pause the system and wait for user input.

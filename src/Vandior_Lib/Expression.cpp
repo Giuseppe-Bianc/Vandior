@@ -1,11 +1,9 @@
 #include "Vandior/Expression.hpp"
-
 namespace vnd {
     // NOLINTBEGIN(*-include-cleaner, *-easily-swappable-parameters , *-pass-by-value)
     Expression::Expression(const std::string &text, const std::string &type, const bool isConst,
                            const std::string &value) noexcept
-      : _text(text), _type(type), _const(isConst), _value(value) {
-    }
+      : _text(text), _type(type), _const(isConst), _value(value) {}
 
     Expression Expression::create(const std::vector<std::string> &text, const std::string &type, const bool isConst,
                                   const std::string &value) noexcept {

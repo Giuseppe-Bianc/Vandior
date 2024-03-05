@@ -166,7 +166,7 @@ namespace vnd {
         }
         for(const auto &jvar : variables) {
             std::string value;
-            if(!jvar.empty() && jvar.at(0) == '_') {
+            if(!jvar.empty() && jvar.starts_with('_')) {
                 _text += FORMAT("v{}", jvar);
             } else {
                 _text += FORMAT("_{}", jvar);
@@ -254,9 +254,8 @@ namespace vnd {
             throw TRANSPILER_EXCEPTIONF(instruction, "inconsistent assignation: {} values for {} variables", factory.size(),
                                         variables.size());
         }
-        for(auto &variable : variables) {
-            if(auto error = transpileAssigment(variable.first, variable.second, equalToken, factory.getExpression());
-               !error.empty()) {
+        for(const auto &[first, second] : variables) {
+            if(auto error = transpileAssigment(first, second, equalToken, factory.getExpression()); !error.empty()) {
                 throw TranspilerException(error, instruction);
             }
         }
@@ -285,7 +284,7 @@ namespace vnd {
         const auto endToken = tokens.end();
         auto factory = ExpressionFactory::create(iterator, endToken, _scope, false);
         if(_scope->getType() != ScopeType::IF_SCOPE) { throw TranspilerException("Unexpected instruction", instruction); }
-        if(_text.back() == '\t') { _text.pop_back(); }
+        if(_text.ends_with('\t')) { _text.pop_back(); }
         closeScope();
         _text += "} else ";
         iterator += 2;
@@ -414,9 +413,10 @@ namespace vnd {
                                          std::string &currentVariable, std::string &type) const noexcept {
         using enum TokenType;
         auto value = iterator->getValue();
+        auto nxtType = next->getType();
         if(value == "_") {
-            if(currentVariable.empty() && (next == end || next->getType() == COMMA || next->getType() == EQUAL_OPERATOR ||
-                                           next->getType() == OPERATION_EQUAL)) {
+            if(currentVariable.empty() &&
+               (next == end || nxtType == COMMA || nxtType == EQUAL_OPERATOR || nxtType == OPERATION_EQUAL)) {
                 currentVariable = "_";
                 type = "";
                 return {};
@@ -426,7 +426,7 @@ namespace vnd {
         }
         auto [newType, assignable] = std::make_pair(_scope->getVariableType(type, value),
                                                     _scope->getConstValue(type, value).empty());
-        if(next != end && (next->getType() == COMMA || next->getType() == EQUAL_OPERATOR || next->getType() == OPERATION_EQUAL)) {
+        if(next != end && (nxtType == COMMA || nxtType == EQUAL_OPERATOR || nxtType == OPERATION_EQUAL)) {
             assignable = !_scope->isConstant(type, value);
         }
         if(newType.empty()) { return FORMAT("Cannot find identifier {}.{}", type, value); }
@@ -434,12 +434,12 @@ namespace vnd {
         type = newType;
         if(currentVariable.empty()) {
             currentVariable += FORMAT("{}->", value);
-            if(currentVariable.at(0) == '_') {
+            if(currentVariable.starts_with('_')) {
                 currentVariable = FORMAT("v{}", currentVariable);
             } else {
                 currentVariable = FORMAT("_{}", currentVariable);
             }
-        } else if(next != end && next->getType() == DOT_OPERATOR) {
+        } else if(next != end && nxtType == DOT_OPERATOR) {
             currentVariable += FORMAT("get{}{}()->", char(std::toupper(C_UC(value[0]))), value.substr(1));
         } else {
             currentVariable += FORMAT("set{}{}(", char(std::toupper(C_UC(value[0]))), value.substr(1));
@@ -480,7 +480,7 @@ namespace vnd {
             const bool empty = currentVariable.empty();
             currentVariable += FORMAT("{}({})->", identifier, params);
             if(empty) {
-                if(currentVariable.at(0) == '_') {
+                if(currentVariable.starts_with('_')) {
                     currentVariable = FORMAT("v{} ", currentVariable);
                 } else {
                     currentVariable = FORMAT("_{}", currentVariable);
@@ -541,12 +541,10 @@ namespace vnd {
     std::pair<std::string, std::string> Transpiler::transpileType(TokenVecIter &iterator, const TokenVecIter &end,
                                                                   const std::vector<TokenType> &endTokens,
                                                                   const Instruction &instruction) {
-        std::string type;
-        std::string typeValue;
+        std::string type = std::string{(++iterator)->getValue()};
+        std::string typeValue = type;
         std::string prefix;
         std::string suffix;
-        type = (++iterator)->getValue();
-        typeValue = type;
         if(typeValue == "void" || typeValue == "any") {
             throw TranspilerException(FORMAT("Cannot declare {} variables", typeValue), instruction);
         }

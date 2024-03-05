@@ -10,8 +10,10 @@ namespace vnd {
     public:
         /**
          * @brief Creates a FunType instance.
-         * @param returnType String containing return type. If the function has multiple return types, the are separated by a whitespace.
-         * @param params Vector containing the types of the parameters. If it's a variadic function, the last type ends with "...".
+         * @param returnType String containing return type. If the function has multiple return types, the are separated by a
+         * whitespace.
+         * @param params Vector containing the types of the parameters. If it's a variadic function, the last type ends with
+         * "...".
          * @param typeGeneric Vector of generic parameters of the class.
          * @param funcGeneric Vector of generic parameters of the function.
          * @param constructor Bool flag that indicates if it's a constructor.
@@ -30,7 +32,8 @@ namespace vnd {
 
         /**
          * @brief Gets the return type of the function.
-         * @return String containing the return type. If the function has multiple return types, the are separated by a whitespace.
+         * @return String containing the return type. If the function has multiple return types, the are separated by a
+         * whitespace.
          */
         [[nodiscard]] std::string getReturnType() const noexcept;
 
@@ -60,17 +63,24 @@ namespace vnd {
 
     private:
         /**
+         * @brief Default constructor of a FunType.
+         */
+        FunType() = default;
+        /**
          * @brief Constructor of a FunType.
-         * @param returnType String containing return type. If the function has multiple return types, the are separated by a whitespace.
-         * @param params Vector containing the types of the parameters. If it's a variadic function, the last type ends with "...".
+         * @param returnType String containing return type. If the function has multiple return types, the are separated by a
+         * whitespace.
+         * @param params Vector containing the types of the parameters. If it's a variadic function, the last type ends with
+         * "...".
          * @param typeGeneric Vector of generic parameters of the class.
          * @param funcGeneric Vector of generic parameters of the function.
          * @param constructor Bool flag that indicates if it's a constructor.
          */
-        FunType(const std::string &returnType,
-                const std::vector<std::string> &params, const std::vector<std::pair<std::string, std::string>> &typeGeneric,
+        FunType(const std::string &returnType, const std::vector<std::string> &params,
+                const std::vector<std::pair<std::string, std::string>> &typeGeneric,
                 const std::vector<std::pair<std::string, std::string>> &funcGeneric, const bool constructor) noexcept
-          : _returnType(returnType), _params(params), _typeGeneric(typeGeneric), _funcGeneric(funcGeneric), _constructor(constructor) {}
+          : _returnType(returnType), _params(params), _typeGeneric(typeGeneric), _funcGeneric(funcGeneric),
+            _constructor(constructor) {}
 
         std::string _returnType;                                        ///< String of the return types separate by a whitespace.
         std::vector<std::string> _params;                               ///< Vector of type parameters.

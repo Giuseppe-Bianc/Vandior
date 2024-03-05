@@ -9,7 +9,7 @@ namespace vnd {
         return {returnType, params, typeGeneric, funcGeneric, constructor};
     }
 
-    FunType FunType::createEmpty() noexcept { return {"", {}, {}, {}, false}; }
+    FunType FunType::createEmpty() noexcept { return {}; }
 
     std::string FunType::getReturnType() const noexcept { return _returnType; }
 

@@ -232,7 +232,7 @@ namespace vnd {
         if(_iterator->getType() == TokenType::STRING) { value = FORMAT(R"(string("{}"))", value); }
         if(_iterator->getType() == TokenType::IDENTIFIER) {
             if(_temp.empty()) {
-                if(!value.empty() && value.at(0) == '_') {
+                if(!value.empty() && value.starts_with('_')) {
                     value = FORMAT("v{}", value);
                 } else {
                     value = FORMAT("_{}", value);
@@ -244,9 +244,9 @@ namespace vnd {
                 value += (_iterator + 1)->getValue();
             }
         }
-        if(_iterator->getType() == TokenType::INTEGER && value.at(0) == '#') {
+        if(_iterator->getType() == TokenType::INTEGER && value.starts_with('#')) {
             value.erase(0, 1);
-            if(!value.empty() && value.at(0) == 'o') {
+            if(!value.empty() && value.starts_with('o')) {
                 value.erase(0, 1);
                 return FORMAT("0{}", value);
             }
@@ -257,7 +257,7 @@ namespace vnd {
 
     std::string ExpressionFactory::handleFun(TupType &type) noexcept {  // NOLINT(*-no-recursion)
         using enum vnd::TokenType;
-        std::string_view identifier = _iterator->getValue();
+        auto identifier = _iterator->getValue();
         ExpressionFactory factory = ExpressionFactory::create(_iterator, _end, _scope, false);
         std::vector<Expression> expressions;
         std::string params;
@@ -273,21 +273,20 @@ namespace vnd {
         expressions = factory.getExpressions();
         auto [newType, constructor, variadic] = _scope->getFunType(_type, identifier, expressions);
         if(newType.empty()) {
-            std::string value;
             std::string paramTypes;
             for(const auto &expression : expressions) { paramTypes += expression.getType() + ","; }
             if(!paramTypes.empty()) { paramTypes.pop_back(); }
-            value = FORMAT("{}.{}({})", _type, identifier, paramTypes);
+            auto value = FORMAT("{}.{}({})", _type, identifier, paramTypes);
             if(value.starts_with(".")) { value.erase(0, 1); }
             return FORMAT("Function {} not found", value);
         }
         if(std::string error = ExpressionFactory::checkType(type, newType); !error.empty()) { return error; }
         params = ExpressionFactory::transpileFun(expressions, variadic);
-        std::string value = FORMAT("{}({})", std::string{identifier}, params);
+        auto value = FORMAT("{}({})", std::string{identifier}, params);
         if(_temp.empty()) {
             if(constructor) {
                 value = FORMAT("std::make_shared<{}>({})", newType, params);
-            } else if(!value.empty() && value.at(0) == '_') {
+            } else if(!value.empty() && value.starts_with('_')) {
                 value = FORMAT("v{}", value);
             } else {
                 value = FORMAT("_{}", value);
@@ -326,19 +325,20 @@ namespace vnd {
             }
         }
         for(const auto &expression : factory.getExpressions()) {
+            const auto &exprType = expression.getType();
             bool assignable = false;
             // NOLINTBEGIN(*-branch-clone)
             if(vectorType.empty()) {
-                vectorType = expression.getType();
+                vectorType = exprType;
                 assignable = true;
-            } else if(_scope->canAssign(vectorType, expression.getType())) {
+            } else if(_scope->canAssign(vectorType, exprType)) {
                 assignable = true;
-            } else if(_scope->canAssign(expression.getType(), vectorType)) {
-                vectorType = expression.getType();
+            } else if(_scope->canAssign(exprType, vectorType)) {
+                vectorType = exprType;
                 assignable = true;
             }
             // NOLINTEND(*-branch-clone)
-            if(!assignable) { return FORMAT("Incompatible types in vector {}, {}", vectorType, expression.getType()); }
+            if(!assignable) { return FORMAT("Incompatible types in vector {}, {}", vectorType, exprType); }
             if(expression.isConst()) {
                 constValue += FORMAT("{}, ", expression.getValue());
             } else {
@@ -437,7 +437,7 @@ namespace vnd {
         if(std::ranges::next(_iterator) != _end && (isType(std::ranges::next(_iterator), TokenType::DOT_OPERATOR) ||
                                                     isType(std::ranges::next(_iterator), TokenType::OPEN_SQ_PARENTESIS))) {
             _type = type;
-            if(type == "string" || type.back() == ']') {
+            if(type == "string" || type.ends_with(']')) {
                 _temp += value + ".";
             } else {
                 _temp += value + "->";
