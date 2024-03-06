@@ -13,6 +13,8 @@ main {
 	var array3, array4: Derived[2] = {Derived(), Derived()} 
 	var num: int = 5
 	var num1: float = 45
+	var octNum: int = #o2222
+	var hexNum: int = #2323
 	if(true) {
 		if(num == 2) {
 			println("2")
