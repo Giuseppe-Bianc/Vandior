@@ -16,7 +16,7 @@ namespace vnd {
                         TokenType::K_FUN, TokenType::K_RETURN, TokenType::K_BREAK, TokenType::IDENTIFIER,
                         TokenType::OPEN_CUR_PARENTESIS, TokenType::CLOSE_CUR_PARENTESIS, eofTokenType}),
         _types({InstructionType::BLANK}), _booleanOperators({false}), _filename(filename) {
-        _tokens.reserve({});
+        _tokens.reserve(10);  // NOLINT(*-avoid-magic-numbers, *-magic-numbers)
     }
 
     Instruction Instruction::create(const std::string_view filename) noexcept { return Instruction{filename}; }
@@ -43,7 +43,7 @@ namespace vnd {
         std::string result;
         if(_tokens.empty()) { return ""; }
         result += FORMAT("{}\t", _tokens.front().getLine());
-        for(const Token &iter : _tokens) {
+        for(const auto &iter : _tokens) {
             switch(iter.getType()) {
             case TokenType::CHAR:
                 result += FORMAT("'{}'", iter.getValue());
@@ -61,12 +61,13 @@ namespace vnd {
 
     void Instruction::checkToken(const Token &token) {
         if(std::ranges::find(_allowedTokens, token.getType()) == _allowedTokens.end()) { throw InstructionException(token); }
-        switch(token.getType()) {
+        auto tokType = token.getType();
+        switch(tokType) {
             using enum TokenType;
         case IDENTIFIER:
             [[fallthrough]];
         case UNARY_OPERATOR:
-            checkIdentifier(token.getType());
+            checkIdentifier(tokType);
             break;
         case INTEGER:
         case DOUBLE:
@@ -75,12 +76,12 @@ namespace vnd {
         case BOOLEAN:
             [[fallthrough]];
         case K_NULLPTR:
-            checkValue(token.getType());
+            checkValue(tokType);
             break;
         case OPERATOR:
             [[fallthrough]];
         case MINUS_OPERATOR:
-            checkOperator(token.getType());
+            checkOperator(tokType);
             break;
         case EQUAL_OPERATOR:
             [[fallthrough]];
@@ -91,7 +92,7 @@ namespace vnd {
         case NOT_OPERATOR:
             [[fallthrough]];
         case LOGICAL_OPERATOR:
-            checkBooleanLogicalOperator(token.getType());
+            checkBooleanLogicalOperator(tokType);
             break;
         case DOT_OPERATOR:
             [[fallthrough]];
@@ -104,12 +105,12 @@ namespace vnd {
         case OPEN_PARENTESIS:
             [[fallthrough]];
         case OPEN_SQ_PARENTESIS:
-            checkOpenParentesis(token.getType());
+            checkOpenParentesis(tokType);
             break;
         case CLOSE_PARENTESIS:
             [[fallthrough]];
         case CLOSE_SQ_PARENTESIS:
-            checkClosedParentesis(token.getType());
+            checkClosedParentesis(tokType);
             break;
         case OPEN_CUR_PARENTESIS:
             checkOpenCurParentesis();
@@ -148,7 +149,7 @@ namespace vnd {
             _allowedTokens = {};
             break;
         }
-        if(token.getType() != eofTokenType) { _tokens.emplace_back(token); }
+        if(tokType != eofTokenType) { _tokens.emplace_back(token); }
     }
 
     bool Instruction::canTerminate() const noexcept {
@@ -425,8 +426,7 @@ namespace vnd {
 
     void Instruction::setLastType(const InstructionType &type) noexcept {
         if(_types.empty()) [[unlikely]] { return; }
-        _types.pop_back();
-        _types.emplace_back(type);
+        _types.back() = type;
     }
 
     void Instruction::addType(const InstructionType &type) noexcept { _types.emplace_back(type); }
@@ -512,7 +512,7 @@ namespace vnd {
     inline bool Instruction::emplaceForTokens() noexcept {
         if(isForExpression()) [[likely]] {
             _allowedTokens.emplace_back(TokenType::OPEN_CUR_PARENTESIS);
-            if(!lastTypeIs(InstructionType::FOR_STEP)) { _allowedTokens.emplace_back(TokenType::COMMA); };
+            if(!lastTypeIs(InstructionType::FOR_STEP)) { _allowedTokens.emplace_back(TokenType::COMMA); }
             return true;
         }
         return false;

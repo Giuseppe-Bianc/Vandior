@@ -89,27 +89,24 @@ namespace vnd {
     }
 
     std::string Scope::getTypeValue(std::string &type) noexcept {
-        std::string typeValue;
-        size_t pos = type.find('[');
+        auto pos = type.find('[');
         if(pos == std::string::npos) { pos = type.size(); }
-        typeValue = type.substr(0, pos);
+        std::string typeValue = type.substr(0, pos);
         if(!Scope::isPrimitive(typeValue)) { typeValue = FORMAT("std::shared_ptr<{}>", typeValue); }
         if(pos != type.size()) {
-            auto iterator = type.begin();
             std::string size;
-            while(iterator != type.end()) {
-                if(*iterator == '[') {
+            for(auto c : type) {
+                if(c == '[') {
                     size.clear();
-                } else if(*iterator == ']') {
+                } else if(c == ']') {
                     if(size.empty()) {
                         typeValue = FORMAT("vnd::vector<{}>", typeValue);
                     } else {
                         typeValue = FORMAT("vnd::array<{}, {}>", typeValue, std::stoi(size));
                     }
-                } else if(std::isdigit(*iterator)) {
-                    size += *iterator;
+                } else if(std::isdigit(c)) {
+                    size += c;
                 }
-                ++iterator;
             }
         }
         return typeValue;
@@ -129,11 +126,10 @@ namespace vnd {
     std::string Scope::getParamType(const std::string &param,
                                     const std::vector<std::pair<std::string, std::string>> &typeGeneric) noexcept {
         size_t pos = param.find('[');
-        auto it = std::find_if(typeGeneric.begin(), typeGeneric.end(),
-                               [&param, pos](const std::pair<std::string, std::string> &element) {
-                                   if(pos == std::string::npos) { return param == element.first; }
-                                   return param.substr(0, pos) == element.first;
-                               });
+        auto it = std::ranges::find_if(typeGeneric, [&param, pos](const std::pair<std::string, std::string> &element) {
+            if(pos == std::string::npos) { return param == element.first; }
+            return param.substr(0, pos) == element.first;
+        });
         if(it == typeGeneric.end()) { return param; }
         if(pos == std::string::npos) { return it->second; }
         return it->second + param.substr(pos, param.size() - pos);
@@ -167,15 +163,19 @@ namespace vnd {
     bool Scope::isGlobalScope() const noexcept { return _parent == nullptr && _type == ScopeType::GLOBAL_SCOPE; }
 
     bool Scope::checkType(const std::string_view type) const noexcept {  // NOLINT(*-no-recursion)
-        if(_types.contains(std::string{type})) { return true; }
+        if(contains_key(_types, type)) { return true; }
         if(_parent) { return _parent->checkType(type); }
         return false;
     }
 
+    template <typename KeyType, typename ValueType>
+    bool Scope::contains_key(const std::unordered_map<KeyType, ValueType> &map, std::string_view key) const noexcept {
+        return map.contains(std::string(key));
+    }
+
     // NOLINTNEXTLINE
     std::pair<bool, bool> Scope::checkVariable(const std::string_view identifier, const bool shadowing) const noexcept {
-        if(_vars.contains(std::string{identifier}) || _vals.contains(std::string{identifier}) ||
-           _consts.contains(std::string{identifier})) {
+        if(contains_key(_vars, identifier) || contains_key(_vals, identifier) || contains_key(_consts, identifier)) {
             return {true, shadowing};
         }
         if(_parent) { return _parent->checkVariable(identifier, true); }
@@ -320,15 +320,18 @@ namespace vnd {
                                                   const std::vector<std::string> &typeSpecialized) const noexcept {
         std::vector<std::pair<std::string, std::string>> typeGeneric = fun.getTypeGeneric();
         std::vector<std::pair<std::string, std::string>> resultGeneric;
+        // TODO: fix this if statement
         if(typeGeneric.size() != typeGeneric.size()) { return {FunType::createEmpty(), false}; }
-        auto genericIterator = typeGeneric.begin();
-        auto specializedIterator = typeSpecialized.begin();
-        while(genericIterator != typeGeneric.end()) {
-            if(!canAssign(genericIterator->second, *specializedIterator)) { return {FunType::createEmpty(), false}; }
-            genericIterator->second = *specializedIterator;
-            ++genericIterator;
-            ++specializedIterator;
+        auto it_specialized = typeSpecialized.begin();
+        for(auto &[key, value] : typeGeneric) {
+            if(it_specialized == typeSpecialized.end()) { return {FunType::createEmpty(), false}; }
+            if(!canAssign(value, *it_specialized)) { return {FunType::createEmpty(), false}; }
+            value = *it_specialized;
+            ++it_specialized;
         }
+
+        // Check if typeSpecialized still has remaining elements
+        if(it_specialized != typeSpecialized.end()) { return {FunType::createEmpty(), false}; }
         return {FunType::create(fun.getReturnType(), fun.getParams(), typeGeneric, fun.getFuncGeneric(), fun.isConstructor()),
                 true};
     }
