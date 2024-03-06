@@ -138,7 +138,10 @@ auto main(int argc, const char *const argv[]) -> int {
         // for(const auto &item : tokens) { LINFO("{}", item); }
         std::vector<vnd::Instruction> instructions = extractInstructions(tokens);
         vnd::Timer tim("transpiling time");
-        if(vnd::Transpiler transpiler = vnd::Transpiler::create(instructions); !transpiler.transpile()) { return EXIT_FAILURE; }
+        if(vnd::Transpiler transpiler = vnd::Transpiler::create(instructions);
+           !transpiler.transpile(path.value_or(filename.data()))) {
+            return EXIT_FAILURE;
+        }
         LINFO("{}", tim);
         if(run) {
 #ifdef HIDE_SYSTEM_OUTPUT

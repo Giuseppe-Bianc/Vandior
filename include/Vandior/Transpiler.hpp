@@ -21,9 +21,10 @@ namespace vnd {
 
         /**
          * @brief Transpile the instructions.
+         * @param filename String containing the file name.
          * @return Bool indicating if the transpiling is successful.
          */
-        bool transpile();
+        bool transpile(std::string filename);
 
     private:
         /**

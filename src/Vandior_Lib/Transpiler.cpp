@@ -21,17 +21,15 @@ namespace vnd {
                type != OPEN_SCOPE;
     }
 
-    bool Transpiler::transpile() {
+    bool Transpiler::transpile(std::string filename) {
         using enum TokenType;
         using enum InstructionType;
         _output.open("output.cpp");
-
-#ifdef __clang__
-        _text += R"(#include "../../../../base.hpp")";
-#else
-        _text += R"(#include "../../../base.hpp")";
-#endif
-        _text += "\n\n";
+        for(char &i : filename) {
+            if(i == '\\') { i = '/'; }
+        }
+        filename = filename.substr(0, filename.find_last_of('/'));
+        _text += FORMAT("#include \"{}/include/base.hpp\"\n\n", filename);
         try {
             for(const auto &instruction : _instructions) {
                 const auto type = instruction.getLastType();
