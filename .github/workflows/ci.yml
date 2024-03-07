@@ -198,13 +198,11 @@ jobs:
             build/*-*${{ matrix.build_type }}*-*.*
 
 
-      - name: Publish to codecov
-        uses: codecov/codecov-action@v3
-        env:
-            CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v4.0.1
         with:
-          flags: ${{ runner.os }}
-          name: ${{ runner.os }}-coverage
-          files: ./build/coverage.xml
-          ignore: "**/exprtk.hpp"
+            token: ${{ secrets.CODECOV_TOKEN }}
+            flags: ${{ runner.os }}
+            name: ${{ runner.os }}-coverage
+            files: ./build/coverage.xml
 

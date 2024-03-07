@@ -773,7 +773,7 @@ TEST_CASE("Transpiler transpile main instruction", "[transpiler]") {
 
 TEST_CASE("Transpiler transpile declaration instruction", "[transpiler]") {
     using enum vnd::TokenType;
-    vnd::Tokenizer tokenizer{"var num, num1 : int ", filename};
+    vnd::Tokenizer tokenizer{"var num, num1 : int", filename};
     auto tokens = tokenizer.tokenize();
     vnd::Instruction instruction = vnd::Instruction::create(filename);
     for(const auto &token : tokens) { instruction.checkToken(token); }
@@ -788,6 +788,26 @@ TEST_CASE("Transpiler transpile declaration instruction", "[transpiler]") {
 #else
     REQUIRE(code == "#include \"../../../base.hpp\"\n\n"
                     "int _num{}, _num1{};\n");
+#endif
+}
+
+TEST_CASE("Transpiler transpile declaration underscore instruction", "[transpiler]") {
+    using enum vnd::TokenType;
+    vnd::Tokenizer tokenizer{"var _num, _num1 : int", filename};
+    auto tokens = tokenizer.tokenize();
+    vnd::Instruction instruction = vnd::Instruction::create(filename);
+    for(const auto &token : tokens) { instruction.checkToken(token); }
+    vnd::Transpiler transpiler = vnd::Transpiler::create({instruction});
+    transpiler.transpile();
+    REQUIRE(std::filesystem::exists(outFilename));
+    std::ifstream stream(outFilename.data());
+    std::string code(std::istreambuf_iterator<char>{stream}, {});
+#ifdef __clang__
+    REQUIRE(code == "#include \"../../../../base.hpp\"\n\n"
+                    "int v_num{}, v_num1{};\n");
+#else
+    REQUIRE(code == "#include \"../../../base.hpp\"\n\n"
+                    "int v_num{}, v_num1{};\n");
 #endif
 }
 
@@ -808,6 +828,26 @@ TEST_CASE("Transpiler transpile initialization instruction", "[transpiler]") {
 #else
     REQUIRE(code == "#include \"../../../base.hpp\"\n\n"
                     "int _num = 1, _num1{};\n");
+#endif
+}
+
+TEST_CASE("Transpiler transpile initialization underscore instruction", "[transpiler]") {
+    using enum vnd::TokenType;
+    vnd::Tokenizer tokenizer{"var _num, _num1 : int = 1", filename};
+    auto tokens = tokenizer.tokenize();
+    vnd::Instruction instruction = vnd::Instruction::create(filename);
+    for(const auto &token : tokens) { instruction.checkToken(token); }
+    vnd::Transpiler transpiler = vnd::Transpiler::create({instruction});
+    transpiler.transpile();
+    REQUIRE(std::filesystem::exists(outFilename));
+    std::ifstream stream(outFilename.data());
+    std::string code(std::istreambuf_iterator<char>{stream}, {});
+#ifdef __clang__
+    REQUIRE(code == "#include \"../../../../base.hpp\"\n\n"
+                    "int v_num = 1, v_num1{};\n");
+#else
+    REQUIRE(code == "#include \"../../../base.hpp\"\n\n"
+                    "int v_num = 1, v_num1{};\n");
 #endif
 }
 

@@ -503,15 +503,13 @@ namespace vnd {
 
     std::string Transpiler::extractSquareExpression(TokenVecIter &iterator, const TokenVecIter &end, std::string &currentVariable,
                                                     std::string &type) const noexcept {
-        std::string newType;
         if(currentVariable.ends_with("->")) { currentVariable.erase(currentVariable.end() - 2, currentVariable.end()); }
         if(!Scope::checkVector(type)) { return FORMAT("Indexing not allowed for {} type", type); }
         auto factory = ExpressionFactory::create(iterator, end, _scope, false, true);
         ++iterator;
         if(auto error = factory.parse({TokenType::CLOSE_SQ_PARENTESIS}); !error.empty()) { return error; }
         auto expression = factory.getExpression();
-        newType = expression.getType();
-        if(newType != "int") { return FORMAT("{} index not allowed", newType); }
+        if(auto newType = expression.getType(); newType != "int") { return FORMAT("{} index not allowed", newType); }
         if(type == "char") { return "Strings are immutable"; }
         currentVariable += FORMAT(".at({})->", expression.getText());
         return {};
@@ -553,7 +551,7 @@ namespace vnd {
     std::pair<std::string, std::string> Transpiler::transpileType(TokenVecIter &iterator, const TokenVecIter &end,
                                                                   const std::vector<TokenType> &endTokens,
                                                                   const Instruction &instruction) {
-        std::string type = std::string{(++iterator)->getValue()};
+        auto type = std::string{(++iterator)->getValue()};
         std::string typeValue = type;
         std::string prefix;
         std::string suffix;
@@ -637,7 +635,6 @@ namespace vnd {
 
     std::string Transpiler::transpileCondition(TokenVecIter &iterator, const TokenVecIter &end) noexcept {
         auto factory = ExpressionFactory::create(iterator, end, _scope, false);
-        std::string value;
         if(auto error = factory.parse({TokenType::CLOSE_PARENTESIS}); !error.empty()) { return error; }
         auto expression = factory.getExpression();
         if(expression.getType() != "bool") { return "Invalid condition type"; }

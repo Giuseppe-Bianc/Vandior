@@ -235,6 +235,9 @@ namespace vnd {
          */
         [[nodiscard]] std::pair<FunType, bool> specializeFun(const FunType &fun,
                                                              const std::vector<std::string> &typeSpecialized) const noexcept;
+
+        template <typename KeyType, typename ValueType>
+        [[nodiscard]] bool contains_key(const std::unordered_map<KeyType, ValueType> &map, std::string_view key) const noexcept;
     };
 
 }  // namespace vnd
