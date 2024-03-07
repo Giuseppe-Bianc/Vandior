@@ -752,18 +752,18 @@ TEST_CASE("Transpiler transpile main instruction", "[transpiler]") {
     vnd::Instruction instruction = vnd::Instruction::create(filename);
     for(const auto &token : tokens) { instruction.checkToken(token); }
     vnd::Transpiler transpiler = vnd::Transpiler::create({instruction});
-    transpiler.transpile();
+    transpiler.transpile(std::string{filename});
     REQUIRE(std::filesystem::exists(outFilename));
     std::ifstream stream(outFilename.data());
     std::string code(std::istreambuf_iterator<char>{stream}, {});
 #ifdef __clang__
-    REQUIRE(code == "#include \"../../../../base.hpp\"\n\n"
+    REQUIRE(code == "#include \"./include/base.hpp\"\n\n"
                     "int main(int argc, char **argv) {\n"
                     "\tconst vnd::vector<string> _args = vnd::createArgs(argc, argv);\n"
                     "\treturn 0;\n"
                     "}\n");
 #else
-    REQUIRE(code == "#include \"../../../base.hpp\"\n\n"
+    REQUIRE(code == "#include \"./include/base.hpp\"\n\n"
                     "int main(int argc, char **argv) {\n"
                     "\tconst vnd::vector<string> _args = vnd::createArgs(argc, argv);\n"
                     "\treturn 0;\n"
@@ -778,15 +778,15 @@ TEST_CASE("Transpiler transpile declaration instruction", "[transpiler]") {
     vnd::Instruction instruction = vnd::Instruction::create(filename);
     for(const auto &token : tokens) { instruction.checkToken(token); }
     vnd::Transpiler transpiler = vnd::Transpiler::create({instruction});
-    transpiler.transpile();
+    transpiler.transpile(std::string{filename});
     REQUIRE(std::filesystem::exists(outFilename));
     std::ifstream stream(outFilename.data());
     std::string code(std::istreambuf_iterator<char>{stream}, {});
 #ifdef __clang__
-    REQUIRE(code == "#include \"../../../../base.hpp\"\n\n"
+    REQUIRE(code == "#include \"./include/base.hpp\"\n\n"
                     "int _num{}, _num1{};\n");
 #else
-    REQUIRE(code == "#include \"../../../base.hpp\"\n\n"
+    REQUIRE(code == "#include \"./include/base.hpp\"\n\n"
                     "int _num{}, _num1{};\n");
 #endif
 }
@@ -798,15 +798,15 @@ TEST_CASE("Transpiler transpile declaration underscore instruction", "[transpile
     vnd::Instruction instruction = vnd::Instruction::create(filename);
     for(const auto &token : tokens) { instruction.checkToken(token); }
     vnd::Transpiler transpiler = vnd::Transpiler::create({instruction});
-    transpiler.transpile();
+    transpiler.transpile(std::string{filename});
     REQUIRE(std::filesystem::exists(outFilename));
     std::ifstream stream(outFilename.data());
     std::string code(std::istreambuf_iterator<char>{stream}, {});
 #ifdef __clang__
-    REQUIRE(code == "#include \"../../../../base.hpp\"\n\n"
+    REQUIRE(code == "#include \"./include/base.hpp\"\n\n"
                     "int v_num{}, v_num1{};\n");
 #else
-    REQUIRE(code == "#include \"../../../base.hpp\"\n\n"
+    REQUIRE(code == "#include \"./include/base.hpp\"\n\n"
                     "int v_num{}, v_num1{};\n");
 #endif
 }
@@ -818,15 +818,15 @@ TEST_CASE("Transpiler transpile initialization instruction", "[transpiler]") {
     vnd::Instruction instruction = vnd::Instruction::create(filename);
     for(const auto &token : tokens) { instruction.checkToken(token); }
     vnd::Transpiler transpiler = vnd::Transpiler::create({instruction});
-    transpiler.transpile();
+    transpiler.transpile(std::string{filename});
     REQUIRE(std::filesystem::exists(outFilename));
     std::ifstream stream(outFilename.data());
     std::string code(std::istreambuf_iterator<char>{stream}, {});
 #ifdef __clang__
-    REQUIRE(code == "#include \"../../../../base.hpp\"\n\n"
+    REQUIRE(code == "#include \"./include/base.hpp\"\n\n"
                     "int _num = 1, _num1{};\n");
 #else
-    REQUIRE(code == "#include \"../../../base.hpp\"\n\n"
+    REQUIRE(code == "#include \"./include/base.hpp\"\n\n"
                     "int _num = 1, _num1{};\n");
 #endif
 }
@@ -838,15 +838,15 @@ TEST_CASE("Transpiler transpile initialization underscore instruction", "[transp
     vnd::Instruction instruction = vnd::Instruction::create(filename);
     for(const auto &token : tokens) { instruction.checkToken(token); }
     vnd::Transpiler transpiler = vnd::Transpiler::create({instruction});
-    transpiler.transpile();
+    transpiler.transpile(std::string{filename});
     REQUIRE(std::filesystem::exists(outFilename));
     std::ifstream stream(outFilename.data());
     std::string code(std::istreambuf_iterator<char>{stream}, {});
 #ifdef __clang__
-    REQUIRE(code == "#include \"../../../../base.hpp\"\n\n"
+    REQUIRE(code == "#include \"./include/base.hpp\"\n\n"
                     "int v_num = 1, v_num1{};\n");
 #else
-    REQUIRE(code == "#include \"../../../base.hpp\"\n\n"
+    REQUIRE(code == "#include \"./include/base.hpp\"\n\n"
                     "int v_num = 1, v_num1{};\n");
 #endif
 }
@@ -858,15 +858,15 @@ TEST_CASE("Transpiler transpile const instruction", "[transpiler]") {
     vnd::Instruction instruction = vnd::Instruction::create(filename);
     for(const auto &token : tokens) { instruction.checkToken(token); }
     vnd::Transpiler transpiler = vnd::Transpiler::create({instruction});
-    transpiler.transpile();
+    transpiler.transpile(std::string{filename});
     REQUIRE(std::filesystem::exists(outFilename));
     std::ifstream stream(outFilename.data());
     std::string code(std::istreambuf_iterator<char>{stream}, {});
 #ifdef __clang__
-    REQUIRE(code == "#include \"../../../../base.hpp\"\n\n"
+    REQUIRE(code == "#include \"./include/base.hpp\"\n\n"
                     "const int _num = 334;\n\n");
 #else
-    REQUIRE(code == "#include \"../../../base.hpp\"\n\n"
+    REQUIRE(code == "#include \"./include/base.hpp\"\n\n"
                     "const int _num = 334;\n\n");
 #endif
 }
@@ -885,19 +885,19 @@ TEST_CASE("Transpiler transpile operation instruction", "[transpiler]") {
         instructions.back().checkToken(token);
     }
     vnd::Transpiler transpiler = vnd::Transpiler::create(instructions);
-    transpiler.transpile();
+    transpiler.transpile(std::string{filename});
     REQUIRE(std::filesystem::exists(outFilename));
     std::ifstream stream(outFilename.data());
     std::string code(std::istreambuf_iterator<char>{stream}, {});
 #ifdef __clang__
-    REQUIRE(code == "#include \"../../../../base.hpp\"\n\n"
+    REQUIRE(code == "#include \"./include/base.hpp\"\n\n"
                     "int main(int argc, char **argv) {\n"
                     "\tconst vnd::vector<string> _args = vnd::createArgs(argc, argv);\n"
                     "\t_print(string(\"Test {}\"), {_args.at(0)});\n"
                     "\treturn 0;\n"
                     "}\n");
 #else
-    REQUIRE(code == "#include \"../../../base.hpp\"\n\n"
+    REQUIRE(code == "#include \"./include/base.hpp\"\n\n"
                     "int main(int argc, char **argv) {\n"
                     "\tconst vnd::vector<string> _args = vnd::createArgs(argc, argv);\n"
                     "\t_print(string(\"Test {}\"), {_args.at(0)});\n"
@@ -920,12 +920,12 @@ TEST_CASE("Transpiler transpile assignation instruction", "[transpiler]") {
         instructions.back().checkToken(token);
     }
     vnd::Transpiler transpiler = vnd::Transpiler::create(instructions);
-    transpiler.transpile();
+    transpiler.transpile(std::string{filename});
     REQUIRE(std::filesystem::exists(outFilename));
     std::ifstream stream(outFilename.data());
     std::string code(std::istreambuf_iterator<char>{stream}, {});
 #ifdef __clang__
-    REQUIRE(code == R"(#include "../../../../base.hpp"
+    REQUIRE(code == R"(#include "./include/base.hpp"
 
 int main(int argc, char **argv) {
 	const vnd::vector<string> _args = vnd::createArgs(argc, argv);
@@ -935,7 +935,7 @@ int main(int argc, char **argv) {
 }
 )");
 #else
-    REQUIRE(code == R"(#include "../../../base.hpp"
+    REQUIRE(code == R"(#include "./include/base.hpp"
 
 int main(int argc, char **argv) {
 	const vnd::vector<string> _args = vnd::createArgs(argc, argv);
@@ -961,12 +961,12 @@ TEST_CASE("Transpiler transpile if instruction", "[transpiler]") {
         instructions.back().checkToken(token);
     }
     vnd::Transpiler transpiler = vnd::Transpiler::create(instructions);
-    transpiler.transpile();
+    transpiler.transpile(std::string{filename});
     REQUIRE(std::filesystem::exists(outFilename));
     std::ifstream stream(outFilename.data());
     std::string code(std::istreambuf_iterator<char>{stream}, {});
 #ifdef __clang__
-    REQUIRE(code == "#include \"../../../../base.hpp\"\n\n"
+    REQUIRE(code == "#include \"./include/base.hpp\"\n\n"
                     "int main(int argc, char **argv) {\n"
                     "\tconst vnd::vector<string> _args = vnd::createArgs(argc, argv);\n"
                     "\tif(true) {\n"
@@ -975,7 +975,7 @@ TEST_CASE("Transpiler transpile if instruction", "[transpiler]") {
                     "\treturn 0;\n"
                     "}\n");
 #else
-    REQUIRE(code == "#include \"../../../base.hpp\"\n\n"
+    REQUIRE(code == "#include \"./include/base.hpp\"\n\n"
                     "int main(int argc, char **argv) {\n"
                     "\tconst vnd::vector<string> _args = vnd::createArgs(argc, argv);\n"
                     "\tif(true) {\n"
@@ -1000,12 +1000,12 @@ TEST_CASE("Transpiler transpile while and break instructions", "[transpiler]") {
         instructions.back().checkToken(token);
     }
     vnd::Transpiler transpiler = vnd::Transpiler::create(instructions);
-    transpiler.transpile();
+    transpiler.transpile(std::string{filename});
     REQUIRE(std::filesystem::exists(outFilename));
     std::ifstream stream(outFilename.data());
     std::string code(std::istreambuf_iterator<char>{stream}, {});
 #ifdef __clang__
-    REQUIRE(code == "#include \"../../../../base.hpp\"\n\n"
+    REQUIRE(code == "#include \"./include/base.hpp\"\n\n"
                     "int main(int argc, char **argv) {\n"
                     "\tconst vnd::vector<string> _args = vnd::createArgs(argc, argv);\n"
                     "\twhile(true) {\n"
@@ -1014,7 +1014,7 @@ TEST_CASE("Transpiler transpile while and break instructions", "[transpiler]") {
                     "\treturn 0;\n"
                     "}\n");
 #else
-    REQUIRE(code == "#include \"../../../base.hpp\"\n\n"
+    REQUIRE(code == "#include \"./include/base.hpp\"\n\n"
                     "int main(int argc, char **argv) {\n"
                     "\tconst vnd::vector<string> _args = vnd::createArgs(argc, argv);\n"
                     "\twhile(true) {\n"
@@ -1039,19 +1039,19 @@ TEST_CASE("Transpiler transpile for instruction", "[transpiler]") {
         instructions.back().checkToken(token);
     }
     vnd::Transpiler transpiler = vnd::Transpiler::create(instructions);
-    transpiler.transpile();
+    transpiler.transpile(std::string{filename});
     REQUIRE(std::filesystem::exists(outFilename));
     std::ifstream stream(outFilename.data());
     std::string code(std::istreambuf_iterator<char>{stream}, {});
 #ifdef __clang__
-    REQUIRE(code == "#include \"../../../../base.hpp\"\n\n"
+    REQUIRE(code == "#include \"./include/base.hpp\"\n\n"
                     "int main(int argc, char **argv) {\n"
                     "\tconst vnd::vector<string> _args = vnd::createArgs(argc, argv);\n"
                     "\tFOR_LOOP(int, _i, 0, 10, 1) {}\n"
                     "\treturn 0;\n"
                     "}\n");
 #else
-    REQUIRE(code == "#include \"../../../base.hpp\"\n\n"
+    REQUIRE(code == "#include \"./include/base.hpp\"\n\n"
                     "int main(int argc, char **argv) {\n"
                     "\tconst vnd::vector<string> _args = vnd::createArgs(argc, argv);\n"
                     "\tFOR_LOOP(int, _i, 0, 10, 1) {}\n"
@@ -1074,12 +1074,12 @@ TEST_CASE("Transpiler transpile open and close scope instructions", "[transpiler
         instructions.back().checkToken(token);
     }
     vnd::Transpiler transpiler = vnd::Transpiler::create(instructions);
-    transpiler.transpile();
+    transpiler.transpile(std::string{filename});
     REQUIRE(std::filesystem::exists(outFilename));
     std::ifstream stream(outFilename.data());
     std::string code(std::istreambuf_iterator<char>{stream}, {});
 #ifdef __clang__
-    REQUIRE(code == "#include \"../../../../base.hpp\"\n\n"
+    REQUIRE(code == "#include \"./include/base.hpp\"\n\n"
                     "int main(int argc, char **argv) {\n"
                     "\tconst vnd::vector<string> _args = vnd::createArgs(argc, argv);\n"
                     "\t{\n"
@@ -1087,7 +1087,7 @@ TEST_CASE("Transpiler transpile open and close scope instructions", "[transpiler
                     "\treturn 0;\n"
                     "}\n");
 #else
-    REQUIRE(code == "#include \"../../../base.hpp\"\n\n"
+    REQUIRE(code == "#include \"./include/base.hpp\"\n\n"
                     "int main(int argc, char **argv) {\n"
                     "\tconst vnd::vector<string> _args = vnd::createArgs(argc, argv);\n"
                     "\t{\n"
