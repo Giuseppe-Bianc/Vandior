@@ -286,7 +286,12 @@ namespace vnd {
         std::vector<FunType> result;
         std::vector<std::string> typeSpecialized;
         std::string typePrefix = type;
-        if(type.contains('<')) {
+#ifdef __llvm__
+        const bool typContainsMin = type.find('<') != std::string::npos;
+#else
+        const bool typContainsMin = type.contains('<');
+#endif
+        if(typContainsMin) {
             size_t pos = type.find('<');
             std::string currentParam;
             for(const char c : type.substr(pos + 1, type.find_last_of('>') - 1)) {
