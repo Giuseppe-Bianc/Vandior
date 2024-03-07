@@ -24,11 +24,24 @@ namespace vnd {
     bool Transpiler::transpile(std::string filename) {
         using enum TokenType;
         using enum InstructionType;
+        const std::string examples = "examples";
         _output.open("output.cpp");
+#ifdef _WIN32
         for(char &i : filename) {
             if(i == '\\') { i = '/'; }
         }
-        filename = filename.substr(0, filename.find_last_of('/'));
+#endif
+        size_t pos = filename.find_last_of('/');
+        if(pos != std::string::npos) {
+            filename = filename.substr(0, pos);
+            if(filename == examples) {
+                filename = ".";
+            } else if(filename.ends_with(FORMAT("/{}", examples))) {
+                filename = filename.substr(0, filename.size() - examples.size() - 1);
+            }
+        } else {
+            filename = ".";
+        }
         _text += FORMAT("#include \"{}/include/base.hpp\"\n\n", filename);
         try {
             for(const auto &instruction : _instructions) {
