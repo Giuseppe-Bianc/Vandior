@@ -191,7 +191,7 @@ namespace vnd {
         if(_iterator->getType() == CHAR) {
             auto frtVal = FORMAT("'{}'", std::string{value});
             _text.emplace_back(frtVal);
-            _expressionText += frtVal);
+            _expressionText += frtVal;
             ++_iterator;
             return;
         }
