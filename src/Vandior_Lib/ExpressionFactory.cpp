@@ -71,7 +71,7 @@ namespace vnd {
     void ExpressionFactory::resetVariables() noexcept {
         _text = {};
         _expressionText = "";
-        _power.reset();
+        _operators.reset();
         _divide = false;
         _dot = false;
         _type = "";
@@ -189,14 +189,14 @@ namespace vnd {
         _dot = false;
         const auto value = _iterator->getValue();
         if(_iterator->getType() == CHAR) {
-            _text.emplace_back(FORMAT("'{}'", std::string{value}));
-            _expressionText += FORMAT("'{}'", std::string{value});
+            _text.emplace_back(FORMAT("'{}'", value));
+            _expressionText += FORMAT("'{}'", value);
             ++_iterator;
             return;
         }
         if(value == "^") {
-            if(!_power.has_value()) { _power = _text.size() - 1; }
-            const auto textIndex = _text.begin() + C_LL(_power.value());
+            if(!_operators.has_value()) { _operators = _text.size() - 1; }
+            const auto textIndex = _text.begin() + C_LL(_operators.value());
             if(_sq) {
                 _text.emplace(textIndex, "vnd::pow(");
             } else {
@@ -204,6 +204,19 @@ namespace vnd {
             }
             _text.emplace_back(",");
             _expressionText += "**";
+            ++_iterator;
+            return;
+        }
+        if(value == "%") {
+            if(!_operators.has_value()) { _operators = _text.size() - 1; }
+            const auto textIndex = _text.begin() + C_LL(_operators.value());
+            if(_sq) {
+                _text.emplace(textIndex, "vnd::mod(");
+            } else {
+                _text.emplace(textIndex, "vnd::mod(");
+            }
+            _text.emplace_back(",");
+            _expressionText += value;
             ++_iterator;
             return;
         }
@@ -464,11 +477,11 @@ namespace vnd {
             value = FORMAT("double({})", value);
             _divide = false;
         }
-        if(_power.has_value()) {
+        if(_operators.has_value()) {
             value = FORMAT("{})", value);
-            if((_iterator + 1) == _end || (_iterator + 1)->getValue() != "^") {
-                _text.emplace(_text.begin() + C_LL(_power.value()), " ");
-                _power.reset();
+            if((_iterator + 1) == _end || ((_iterator + 1)->getValue() != "^" && (_iterator + 1)->getValue() != "%")) {
+                _text.emplace(_text.begin() + C_LL(_operators.value()), " ");
+                _operators.reset();
             }
         }
     }

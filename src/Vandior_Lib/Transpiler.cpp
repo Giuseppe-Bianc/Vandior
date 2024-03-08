@@ -591,6 +591,7 @@ namespace vnd {
 
     std::string Transpiler::transpileAssigment(const std::string &variable, const std::string &type, const Token &equalToken,
                                                const Expression &expression) noexcept {
+        std::string_view equalValue = equalToken.getValue();
 #ifdef __llvm__
         const bool exprContainsSpace = expression.getType().find(' ') != std::string::npos;
 #else
@@ -620,14 +621,16 @@ namespace vnd {
                 getter.replace(getter.find_last_of("->") + 1, 1, "g");
                 getter = FORMAT("{})", getter);
             }
-            if(equalToken.getValue() == "^=") {
-                text += FORMAT("vnd::pow({},", getter);
+            if(equalValue == "^=") {
+                text += FORMAT("vnd::pow({}, ", getter);
+            } else if(equalValue == "%=") {
+                text += FORMAT("vnd::mod({}, ", getter);
             } else {
                 text += FORMAT("{} {} ", getter, equalToken.getValue().at(0));
             }
         }
         text += expression.getText();
-        if(equalToken.getValue() == "^=") { text += ")"; }
+        if(equalValue == "^=" || equalValue == "%=") { text += ")"; }
         if(variable.ends_with('(')) { text += ")"; }
         _text += FORMAT("{};\n{:\t^{}}", text, "", _tabs);
         return {};
