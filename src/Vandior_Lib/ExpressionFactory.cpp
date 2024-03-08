@@ -189,8 +189,9 @@ namespace vnd {
         _dot = false;
         const auto value = _iterator->getValue();
         if(_iterator->getType() == CHAR) {
-            _text.emplace_back(FORMAT("'{}'", std::string{value}));
-            _expressionText += FORMAT("'{}'", std::string{value});
+            auto frtVal = FORMAT("'{}'", std::string{value});
+            _text.emplace_back(frtVal);
+            _expressionText += frtVal);
             ++_iterator;
             return;
         }
@@ -358,7 +359,6 @@ namespace vnd {
     }
 
     std::string ExpressionFactory::handleInnerExpression(TupType &type) noexcept {  // NOLINT(*-no-recursion)
-        std::string value;
         auto factory = ExpressionFactory::create(_iterator, _end, _scope, _const);
         ++_iterator;
         if(auto error = factory.parse({TokenType::CLOSE_PARENTESIS}); !error.empty()) { return error; }
@@ -477,7 +477,7 @@ namespace vnd {
     void ExpressionFactory::write(const std::string &value, const std::string_view &type) noexcept {
         clearData();
         if(checkNextToken(std::string{type}, value)) { return; }
-        std::string text = _temp + value;
+        auto text = _temp + value;
         checkOperators(text);
         if(!_text.empty()) { text = FORMAT(" {}", text); }
         _text.emplace_back(text);
