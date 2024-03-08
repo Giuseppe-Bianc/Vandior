@@ -12,7 +12,7 @@ main {
 	var array1, array2: Object[] = {Object(), Object()}, {Derived(), Object()} 
 	var array3, array4: Derived[2] = {Derived(), Derived()} 
 	var num: int = 5
-	var num1: float = 45
+	var num1: float = 90.56 % 3.45
 	var octNum: int = #o2222
 	var hexNum: int = #2323
 	if(true) {

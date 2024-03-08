@@ -227,6 +227,7 @@ namespace vnd {
         [[nodiscard]] bool isTokenOfType(const TokenVecIter &iterator, TokenType type) const noexcept;
         [[nodiscard]] std::string handleLogicalType(TupType &oldType) const noexcept;
         [[nodiscard]] std::string handleBooleanType(TupType &oldType) const noexcept;
+        [[nodiscard]] bool isEnd(const TokenVecIter &nxtIter) const noexcept;
     };
 
 }  // namespace vnd
