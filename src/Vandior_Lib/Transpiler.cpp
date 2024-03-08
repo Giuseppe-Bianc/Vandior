@@ -621,7 +621,7 @@ namespace vnd {
                 getter = FORMAT("{})", getter);
             }
             if(equalToken.getValue() == "^=") {
-                text += FORMAT("std::pow({},", getter);
+                text += FORMAT("vnd::pow({},", getter);
             } else {
                 text += FORMAT("{} {} ", getter, equalToken.getValue().at(0));
             }

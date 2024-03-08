@@ -198,9 +198,9 @@ namespace vnd {
             if(!_power.has_value()) { _power = _text.size() - 1; }
             const auto textIndex = _text.begin() + C_LL(_power.value());
             if(_sq) {
-                _text.emplace(textIndex, "int(std::pow(");
+                _text.emplace(textIndex, "vnd::pow(");
             } else {
-                _text.emplace(textIndex, "std::pow(");
+                _text.emplace(textIndex, "vnd::pow(");
             }
             _text.emplace_back(",");
             _expressionText += "**";
@@ -466,7 +466,6 @@ namespace vnd {
         }
         if(_power.has_value()) {
             value = FORMAT("{})", value);
-            if(_sq) { value = FORMAT("{})", value); }
             if((_iterator + 1) == _end || (_iterator + 1)->getValue() != "^") {
                 _text.emplace(_text.begin() + C_LL(_power.value()), " ");
                 _power.reset();

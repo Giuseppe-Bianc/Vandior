@@ -55,4 +55,7 @@ main {
 	}
 	array1[0 ^ 1] = Object()
 	println("{}", array1[0 ^ 1].a)
+	var fnum: float = 20213412.32
+	fnum ^= 10 / 2 ^ 2 ^ 3.4
+	println("{}", fnum)
 }
