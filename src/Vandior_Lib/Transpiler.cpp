@@ -550,7 +550,7 @@ namespace vnd {
         if(!vnd::Scope::isPrimitive(type)) { typeValue = FORMAT("std::shared_ptr<{}>", type); }
         while(iterator != end && std::ranges::find(endTokens, iterator->getType()) == endTokens.end()) {
             if(iterator->getType() == TokenType::OPEN_SQ_PARENTESIS) {
-                if((iterator + 1)->getType() == TokenType::CLOSE_SQ_PARENTESIS) {
+                if(std::ranges::next(iterator)->getType() == TokenType::CLOSE_SQ_PARENTESIS) {
                     prefix += "vnd::vector<";
                     suffix = FORMAT(">{}", suffix);
                     type += "[]";
