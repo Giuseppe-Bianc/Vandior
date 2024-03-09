@@ -82,7 +82,6 @@ namespace vnd {
     std::string ExpressionFactory::parse(const std::vector<TokenType> &endToken) noexcept {  // NOLINT(*-no-recursion)
         using enum vnd::TokenType;
         resetVariables();
-        exprtk::parser<double> parser;
         std::tuple<bool, bool, std::string> type;
         while(!isEnd(_iterator) && std::ranges::find(endToken, _iterator->getType()) == endToken.end()) {
             const auto iterType = _iterator->getType();

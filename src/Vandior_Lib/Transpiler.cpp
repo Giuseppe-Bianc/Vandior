@@ -390,6 +390,7 @@ namespace vnd {
         std::vector<std::pair<std::string, std::string>> result;
         std::string currentVariable;
         std::string type;
+        bool assignable = true;
         while(iterator != end && iterator->getType() != EQUAL_OPERATOR && iterator->getType() != OPERATION_EQUAL) {
             const auto next = std::ranges::next(iterator);
             if(iterator->getType() == IDENTIFIER) {
@@ -397,11 +398,11 @@ namespace vnd {
                     if(auto error = extractFun(iterator, end, currentVariable, type); !error.empty()) {
                         throw TranspilerException(error, instruction);
                     }
-                } else if(auto error = extractToken(iterator, end, next, currentVariable, type); !error.empty()) {
+                } else if(auto error = extractToken(iterator, end, next, currentVariable, type, assignable); !error.empty()) {
                     throw TranspilerException(error, instruction);
                 }
             } else if(iterator->getType() == OPEN_SQ_PARENTESIS) {
-                if(auto error = extractSquareExpression(iterator, end, currentVariable, type); !error.empty()) {
+                if(auto error = extractSquareExpression(iterator, end, currentVariable, type, assignable); !error.empty()) {
                     throw TranspilerException(error, instruction);
                 }
             } else if(iterator->getType() == UNARY_OPERATOR) {
@@ -421,10 +422,11 @@ namespace vnd {
     }
 
     std::string Transpiler::extractToken(TokenVecIter &iterator, const TokenVecIter &end, const TokenVecIter &next,
-                                         std::string &currentVariable, std::string &type) const noexcept {
+                                         std::string &currentVariable, std::string &type, bool &assignable) const noexcept {
         using enum TokenType;
         auto value = iterator->getValue();
         auto nxtType = next->getType();
+        std::string_view newType;
         if(value == "_") {
             if(currentVariable.empty() &&
                (next == end || nxtType == COMMA || nxtType == EQUAL_OPERATOR || nxtType == OPERATION_EQUAL)) {
@@ -435,13 +437,14 @@ namespace vnd {
                 return "Cannot use blank identifier here";
             }
         }
-        auto [newType, assignable] = std::make_pair(_scope->getVariableType(type, value),
+        std::tie(newType, assignable) = std::make_pair(_scope->getVariableType(type, value),
                                                     _scope->getConstValue(type, value).empty());
-        if(next != end && (nxtType == COMMA || nxtType == EQUAL_OPERATOR || nxtType == OPERATION_EQUAL)) {
+        if(next != end &&
+           (nxtType == COMMA || nxtType == EQUAL_OPERATOR || nxtType == OPERATION_EQUAL || nxtType == OPEN_SQ_PARENTESIS)) {
             assignable = !_scope->isConstant(type, value);
         }
         if(newType.empty()) { return FORMAT("Cannot find identifier {}.{}", type, value); }
-        if(!assignable) { return FORMAT("Cannot assign {}.{}", type, value); }
+        if(!assignable && nxtType != OPEN_SQ_PARENTESIS) { return FORMAT("Cannot assign {}.{}", type, value); }
         type = newType;
         if(currentVariable.empty()) {
             currentVariable += FORMAT("{}->", value);
@@ -502,15 +505,20 @@ namespace vnd {
     }
 
     std::string Transpiler::extractSquareExpression(TokenVecIter &iterator, const TokenVecIter &end, std::string &currentVariable,
-                                                    std::string &type) const noexcept {
+                                                    std::string &type, const bool assignable) const noexcept {
+        using enum TokenType;
         if(currentVariable.ends_with("->")) { currentVariable.erase(currentVariable.end() - 2, currentVariable.end()); }
         if(!Scope::checkVector(type)) { return FORMAT("Indexing not allowed for {} type", type); }
         auto factory = ExpressionFactory::create(iterator, end, _scope, false, true);
         ++iterator;
         if(auto error = factory.parse({TokenType::CLOSE_SQ_PARENTESIS}); !error.empty()) { return error; }
         auto expression = factory.getExpression();
+        auto nxtType = std::ranges::next(iterator)->getType();
         if(auto newType = expression.getType(); newType != "int") { return FORMAT("{} index not allowed", newType); }
         if(type == "char") { return "Strings are immutable"; }
+        if(!assignable && (nxtType == COMMA || nxtType == EQUAL_OPERATOR || nxtType == OPERATION_EQUAL)) {
+            return "Cannot assign constant vectors";
+        }
         currentVariable += FORMAT(".at({})->", expression.getText());
         return {};
     }

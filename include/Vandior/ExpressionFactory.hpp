@@ -6,7 +6,6 @@
 #include "Expression.hpp"
 #include "Scope.hpp"
 #include "Token.hpp"
-#include "exprtk.hpp"
 
 namespace vnd {
     using TokenVecIter = std::vector<Token>::iterator;

@@ -203,8 +203,8 @@ class Object {
 	private:
 		const int c = 2;
 		const float test = 0;
-		int a;
-		string s;
+		int a{};
+		string s{};
 };
 class Derived: public Object {
 	public:
@@ -219,8 +219,8 @@ class Derived: public Object {
 		virtual std::shared_ptr<Object> object() { return std::make_shared<Object>(); }
 	private:
 		const bool _derivedConst = true;
-		bool _derivedProperty;
-		std::shared_ptr<Object> obj;
+		bool _derivedProperty{};
+		std::shared_ptr<Object> obj{};
 };
 void _print(const string text, const vnd::vector<std::variant<int, float, char, bool, string, std::shared_ptr<Object>>>& args) {
 	
@@ -280,6 +280,9 @@ std::tuple<int, float> _max(vnd::vector<float>) {
 	
 	return {0, 0};
 	
+}
+vnd::vector<int> _arrayTest() {
+	return {1, 2, 3};
 }
 std::shared_ptr<Object> _createObject() { return std::make_shared<Object>(); }
 std::shared_ptr<Derived> _createDerived() { return std::make_shared<Derived>(); }

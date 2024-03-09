@@ -135,10 +135,11 @@ namespace vnd {
          * @param next Iterator pointing to the next token.
          * @param currentvariable String containing the current extracted variable.
          * @param type String containing the type of the extracted variable.
+         * @param assignable Flag to indicate the token assignability.
          * @return Parsed string if there is an error. If no error occurs, an empty string is returned.
          */
         [[nodiscard]] std::string extractToken(TokenVecIter &iterator, const TokenVecIter &end, const TokenVecIter &next,
-                                               std::string &currentVariable, std::string &type) const noexcept;
+                                               std::string &currentVariable, std::string &type, bool &assignable) const noexcept;
 
         /**
          * @brief Extracts a function from an assignation instruction.
@@ -157,10 +158,12 @@ namespace vnd {
          * @param end Iterator pointing to the end of the token sequence.
          * @param currentvariable String containing the current extracted variable.
          * @param type String containing the type of the extracted variable.
+         * @param assignable Flag to indicate the variable assignability.
          * @return Parsed string if there is an error. If no error occurs, an empty string is returned.
          */
         [[nodiscard]] std::string extractSquareExpression(TokenVecIter &iterator, const TokenVecIter &end,
-                                                          std::string &currentVariable, std::string &type) const noexcept;
+                                                          std::string &currentVariable, std::string &type,
+                                                          const bool assignable) const noexcept;
 
         /**
          * @brief transpile a multi return value function instruction.
