@@ -34,7 +34,7 @@ BraceWrapping:
   BeforeWhile: false
 BreakAfterJavaFieldAnnotations: true
 
-ColumnLimit: 130
+ColumnLimit: 140
 CommentPragmas: '^ IWYU pragma:'
 CompactNamespaces: true
 ConstructorInitializerAllOnOneLineOrOnePerLine: false

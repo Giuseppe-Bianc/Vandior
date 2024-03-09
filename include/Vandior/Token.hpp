@@ -69,6 +69,8 @@ namespace vnd {
          */
         [[nodiscard]] inline TokenType getType() const noexcept { return _type; }
 
+        [[nodiscard]] inline bool isType(TokenType type) const noexcept { return _type == type; }
+
         /**
          * @brief Get the value associated with the token.
          * @return The value associated with the token.

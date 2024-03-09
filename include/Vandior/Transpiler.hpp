@@ -113,8 +113,7 @@ namespace vnd {
          * @param instruction The instruction to extract variables from.
          * @return Vector of extracted identifiers.
          */
-        [[nodiscard]] std::vector<std::string_view> extractIdentifiers(TokenVecIter &iterator,
-                                                                       const Instruction &instruction) const;
+        [[nodiscard]] std::vector<std::string_view> extractIdentifiers(TokenVecIter &iterator, const Instruction &instruction) const;
 
         /**
          * @brief Extracts variables from an assignation instruction.
@@ -123,8 +122,7 @@ namespace vnd {
          * @param instruction The instruction to extract variables from.
          * @return Vector of extracted variables and their types.
          */
-        [[nodiscard]] std::vector<std::pair<std::string, std::string>> extractVariables(TokenVecIter &iterator,
-                                                                                        const TokenVecIter &end,
+        [[nodiscard]] std::vector<std::pair<std::string, std::string>> extractVariables(TokenVecIter &iterator, const TokenVecIter &end,
                                                                                         const Instruction &instruction) const;
 
         /**
@@ -136,7 +134,7 @@ namespace vnd {
          * @param type String containing the type of the extracted variable.
          * @return Parsed string if there is an error. If no error occurs, an empty string is returned.
          */
-        [[nodiscard]] std::string extractToken(TokenVecIter &iterator, const TokenVecIter &end, const TokenVecIter &next,
+        [[nodiscard]] std::string extractToken(const TokenVecIter &iterator, const TokenVecIter &end, const TokenVecIter &next,
                                                std::string &currentVariable, std::string &type) const noexcept;
 
         /**
@@ -158,8 +156,8 @@ namespace vnd {
          * @param type String containing the type of the extracted variable.
          * @return Parsed string if there is an error. If no error occurs, an empty string is returned.
          */
-        [[nodiscard]] std::string extractSquareExpression(TokenVecIter &iterator, const TokenVecIter &end,
-                                                          std::string &currentVariable, std::string &type) const noexcept;
+        [[nodiscard]] std::string extractSquareExpression(TokenVecIter &iterator, const TokenVecIter &end, std::string &currentVariable,
+                                                          std::string &type) const noexcept;
 
         /**
          * @brief transpile a multi return value function instruction.
@@ -182,8 +180,8 @@ namespace vnd {
                                                                         const std::vector<TokenType> &endTokens,
                                                                         const Instruction &instruction);
 
-        [[nodiscard]] std::string transpileAssigment(const std::string &variable, const std::string &type,
-                                                     const Token &equalToken, const Expression &expression) noexcept;
+        [[nodiscard]] std::string transpileAssigment(const std::string &variable, const std::string &type, const Token &equalToken,
+                                                     const Expression &expression) noexcept;
 
         /**
          * @brief Transpile an if or while condition.
@@ -200,8 +198,7 @@ namespace vnd {
          * @param instruction The instruction to containing the for loop.
          * @return Pair representing the declared index identifier and type.
          */
-        [[nodiscard]] std::pair<std::string, std::string> transpileForInitialization(TokenVecIter &iterator,
-                                                                                     const TokenVecIter &end,
+        [[nodiscard]] std::pair<std::string, std::string> transpileForInitialization(TokenVecIter &iterator, const TokenVecIter &end,
                                                                                      const Instruction &instruction);
 
         /**

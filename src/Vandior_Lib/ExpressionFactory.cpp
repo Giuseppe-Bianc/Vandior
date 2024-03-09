@@ -21,8 +21,8 @@ DISABLE_WARNINGS_PUSH(26447)
 namespace vnd {
     static inline constexpr std::size_t buffer_size = 128;
     // NOLINTBEGIN(*-pass-by-value, *-identifier-length)
-    ExpressionFactory::ExpressionFactory(TokenVecIter &iterator, const TokenVecIter &end, std::shared_ptr<Scope> scope,
-                                         const bool isConst, const bool sq) noexcept
+    ExpressionFactory::ExpressionFactory(TokenVecIter &iterator, const TokenVecIter &end, std::shared_ptr<Scope> scope, const bool isConst,
+                                         const bool sq) noexcept
       : _iterator(iterator), _end(end), _scope(std::move(scope)), _const(isConst), _sq(sq) {}
 
     ExpressionFactory ExpressionFactory::create(TokenVecIter &iterator, const TokenVecIter &end, std::shared_ptr<Scope> scope,
@@ -31,8 +31,7 @@ namespace vnd {
     }
     // NOLINTEND(*-pass-by-value, *-identifier-length)
 
-    std::string ExpressionFactory::transpileFun(const std::vector<Expression> &expressions,
-                                                std::optional<size_t> variadic) noexcept {
+    std::string ExpressionFactory::transpileFun(const std::vector<Expression> &expressions, std::optional<size_t> variadic) noexcept {
         std::string params;
         size_t pos = 0;
         std::ranges::for_each(expressions, [&](const Expression &expression) {
@@ -91,7 +90,7 @@ namespace vnd {
                 continue;
             }
             if(auto nextIter = std::ranges::next(_iterator);
-               iterType == IDENTIFIER && nextIter != _end && nextIter->getType() == OPEN_PARENTESIS) {
+               iterType == IDENTIFIER && nextIter != _end && nextIter->isType(OPEN_PARENTESIS)) {
                 if(auto error = handleFun(type); !error.empty()) { return error; }
             } else if(iterType == OPEN_PARENTESIS) {
                 if(auto error = handleInnerExpression(type); !error.empty()) { return error; }
@@ -422,9 +421,7 @@ namespace vnd {
         }
         if(std::get<2>(oldType) == bols && newType == nots) { return ""; }
         if(std::get<2>(oldType) == newType) { return ""; }
-        if(Scope::isNumber(std::get<2>(oldType)) && (Scope::isNumber(std::string{newType}) || newType == "operator")) {
-            return {};
-        }
+        if(Scope::isNumber(std::get<2>(oldType)) && (Scope::isNumber(std::string{newType}) || newType == "operator")) { return {}; }
         if(newType == "equal") {
             std::get<0>(oldType) = true;
             return {};
@@ -450,9 +447,7 @@ namespace vnd {
         }
         return false;
     }
-    bool ExpressionFactory::isType(const TokenVecIter &nextToken, TokenType type) const noexcept {
-        return nextToken->getType() == type;
-    }
+    bool ExpressionFactory::isType(const TokenVecIter &nextToken, TokenType type) const noexcept { return nextToken->isType(type); }
 
     bool ExpressionFactory::checkUnaryOperator(const std::string_view &type) const noexcept {
         auto nxtIter = std::ranges::next(_iterator);

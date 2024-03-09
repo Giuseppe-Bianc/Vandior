@@ -37,9 +37,7 @@ namespace {
 
             try {
                 buffer << fileStream.rdbuf();
-            } catch(const std::ios_base::failure &e) {
-                throw FILEREADEREERRORF("Unable to read file: {}. Reason: {}", filePath, e.what());
-            }
+            } catch(const std::ios_base::failure &e) { throw FILEREADEREERRORF("Unable to read file: {}. Reason: {}", filePath, e.what()); }
         } else {
             // Handle the case when the file cannot be opened,
             // You might throw an exception or return an error indicator
@@ -72,13 +70,12 @@ auto extractInstructions(const std::vector<vnd::Token> &tokens) -> std::vector<v
     auto line = tokens.at(0).getLine();
     vnd::AutoTimer ictim("Instructions creation time");
     for(const vnd::Token &token : tokens) {
-        if(token.getType() == vnd::TokenType::COMMENT) [[unlikely]] { continue; }
+        if(token.isType(vnd::TokenType::COMMENT)) [[unlikely]] { continue; }
         if(token.getLine() >= line) [[likely]] {
             if(instructions.empty() || instructions.back().canTerminate()) [[likely]] {
                 // if(!instructions.empty()) { LINFO("{}", instructions.back().getLastType()); }
                 instructions.emplace_back(vnd::Instruction::create(filename));
-            } else if(instructions.back().typeToString().back() != "EXPRESSION" && token.getType() != vnd::TokenType::STRING)
-                [[unlikely]] {
+            } else if(instructions.back().typeToString().back() != "EXPRESSION" && token.getType() != vnd::TokenType::STRING) [[unlikely]] {
                 throw vnd::InstructionException(token);
             }
             line = token.getLine() + 1;
@@ -112,8 +109,7 @@ auto main(int argc, const char *const argv[]) -> int {
     // LINFO("{}", code);
     // LINFO("code length {}", code.length());
     try {
-        CLI::App app{
-            FORMAT("{} version {}", Vandior::cmake::project_name, Vandior::cmake::project_version)};  // NOLINT(*-include-cleaner)
+        CLI::App app{FORMAT("{} version {}", Vandior::cmake::project_name, Vandior::cmake::project_version)};  // NOLINT(*-include-cleaner)
 
         // std::optional<std::string> message;  // NOLINT(*-include-cleaner)
         std::optional<std::string> path;
