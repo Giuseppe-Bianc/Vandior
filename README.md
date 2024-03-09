@@ -8,7 +8,7 @@
 
 A modern c++20 transpiler.
 
-## Requiresements
+## Requirements
 
 - Any c++ compiler;
 - Python (used to compile time evaluations).
