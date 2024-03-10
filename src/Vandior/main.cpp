@@ -75,7 +75,7 @@ auto extractInstructions(const std::vector<vnd::Token> &tokens) -> std::vector<v
             if(instructions.empty() || instructions.back().canTerminate()) [[likely]] {
                 // if(!instructions.empty()) { LINFO("{}", instructions.back().getLastType()); }
                 instructions.emplace_back(vnd::Instruction::create(filename));
-            } else if(instructions.back().typeToString().back() != "EXPRESSION" && token.getType() != vnd::TokenType::STRING) [[unlikely]] {
+            } else if(instructions.back().typeToString().back() != "EXPRESSION" && token.isType(vnd::TokenType::STRING)) [[unlikely]] {
                 throw vnd::InstructionException(token);
             }
             line = token.getLine() + 1;
@@ -136,8 +136,7 @@ auto main(int argc, const char *const argv[]) -> int {
         // for(const auto &item : tokens) { LINFO("{}", item); }
         std::vector<vnd::Instruction> instructions = extractInstructions(tokens);
         vnd::Timer tim("transpiling time");
-        if(vnd::Transpiler transpiler = vnd::Transpiler::create(instructions);
-           !transpiler.transpile(path.value_or(filename.data()))) {
+        if(vnd::Transpiler transpiler = vnd::Transpiler::create(instructions); !transpiler.transpile(path.value_or(filename.data()))) {
             return EXIT_FAILURE;
         }
         LINFO("{}", tim);
@@ -162,7 +161,7 @@ auto main(int argc, const char *const argv[]) -> int {
                     LERROR("Compilation failed");
                     return EXIT_FAILURE;
                 }
-                if (run) {
+                if(run) {
 #ifdef _WIN32
                     std::system("a.exe");
 #else
