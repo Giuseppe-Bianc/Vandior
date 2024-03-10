@@ -2,10 +2,18 @@ const nume : int = 334
 const dmnum : float = 1.222222222222
 const boolc: bool = 1 == 1 || !false && 67 < 77.85
 main {
+	for var i: int = 0, args.size() {
+		println(args[i])
+	}
+	var s1: string = "Ciao"
+	var s2, s3: string = "Ciao", s1
+	s2, s3 = s3, s2
+	s1, s2 = "AA", "VV"
+	println("{} {}", s3, s2)
 	var array1, array2: Object[] = {Object(), Object()}, {Derived(), Object()} 
 	var array3, array4: Derived[2] = {Derived(), Derived()} 
 	var num: int = 5
-	var num1: float = 45
+	var num1: float = 90.56 % 3.45
 	var octNum: int = #o2222
 	var hexNum: int = #2323
 	if(true) {
@@ -48,4 +56,7 @@ main {
 	}
 	array1[0 ^ 1] = Object()
 	println("{}", array1[0 ^ 1].a)
+	var fnum: float = 20213412.32
+	fnum ^= 10 / 2 ^ 2 ^ 3.4
+	println("{}", fnum)
 }

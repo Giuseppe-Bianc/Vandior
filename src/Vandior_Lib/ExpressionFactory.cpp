@@ -70,7 +70,7 @@ namespace vnd {
     void ExpressionFactory::resetVariables() noexcept {
         _text = {};
         _expressionText = "";
-        _power.reset();
+        _operators.reset();
         _divide = false;
         _dot = false;
         _type = "";
@@ -81,7 +81,6 @@ namespace vnd {
     std::string ExpressionFactory::parse(const std::vector<TokenType> &endToken) noexcept {  // NOLINT(*-no-recursion)
         using enum vnd::TokenType;
         resetVariables();
-        exprtk::parser<double> parser;
         std::tuple<bool, bool, std::string> type;
         while(!isEnd(_iterator) && std::ranges::find(endToken, _iterator->getType()) == endToken.end()) {
             const auto iterType = _iterator->getType();
@@ -195,15 +194,20 @@ namespace vnd {
             return;
         }
         if(value == "^") {
-            if(!_power.has_value()) { _power = _text.size() - 1; }
-            const auto textIndex = _text.begin() + C_LL(_power.value());
-            if(_sq) {
-                _text.emplace(textIndex, "int(std::pow(");
-            } else {
-                _text.emplace(textIndex, "std::pow(");
-            }
+            if(!_operators.has_value()) { _operators = _text.size() - 1; }
+            const auto textIndex = _text.begin() + C_LL(_operators.value());
+            _text.emplace(textIndex, "vnd::pow(");
             _text.emplace_back(",");
             _expressionText += "**";
+            ++_iterator;
+            return;
+        }
+        if(value == "%") {
+            if(!_operators.has_value()) { _operators = _text.size() - 1; }
+            const auto textIndex = _text.begin() + C_LL(_operators.value());
+            _text.emplace(textIndex, "vnd::mod(");
+            _text.emplace_back(",");
+            _expressionText += value;
             ++_iterator;
             return;
         }
@@ -461,13 +465,12 @@ namespace vnd {
             value = FORMAT("double({})", value);
             _divide = false;
         }
-        if(_power.has_value()) {
+        if(_operators.has_value()) {
             value = FORMAT("{})", value);
-            if(_sq) { value = FORMAT("{})", value); }
             auto nxtIter = std::ranges::next(_iterator);
-            if(isEnd(nxtIter) || nxtIter->getValue() != "^") {
-                _text.emplace(_text.begin() + C_LL(_power.value()), " ");
-                _power.reset();
+            if(isEnd(nxtIter) || (nxtIter->getValue() != "^" && nxtIter->getValue() != "%")) {
+                _text.emplace(_text.begin() + C_LL(_operators.value()), " ");
+                _operators.reset();
             }
         }
     }

@@ -6,7 +6,6 @@
 #include "Expression.hpp"
 #include "Scope.hpp"
 #include "Token.hpp"
-#include "exprtk.hpp"
 
 namespace vnd {
     using TokenVecIter = std::vector<Token>::iterator;
@@ -96,7 +95,7 @@ namespace vnd {
         std::shared_ptr<Scope> _scope;           ///< Shared pointer to the current scope.
         std::vector<std::string> _text{};        ///< Vector storing the parsed text.
         std::vector<Expression> _expressions{};  ///< Vector storing the parsed expressions.
-        std::optional<size_t> _power;            ///< Power value used to parse ^ operator.
+        std::optional<size_t> _operators;        ///< Optional value used to parse ^ and % operators.
         bool _divide = false;                    ///< Flag indicating division operation during parsing.
         bool _dot = false;                       ///< Flag used for indicate the presence of . token.
         bool _const;                             ///< Flag used to indicate if it's a const expression.

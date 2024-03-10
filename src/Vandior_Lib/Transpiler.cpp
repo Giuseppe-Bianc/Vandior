@@ -21,17 +21,28 @@ namespace vnd {
                type != OPEN_SCOPE;
     }
 
-    bool Transpiler::transpile() {
+    bool Transpiler::transpile(std::string filename) {
         using enum TokenType;
         using enum InstructionType;
+        const std::string examples = "examples";
         _output.open("output.cpp");
-
-#ifdef __clang__
-        _text += R"(#include "../../../../base.hpp")";
-#else
-        _text += R"(#include "../../../base.hpp")";
+#ifdef _WIN32
+        for(char &i : filename) {
+            if(i == '\\') { i = '/'; }
+        }
 #endif
-        _text += "\n\n";
+        size_t pos = filename.find_last_of('/');
+        if(pos != std::string::npos) {
+            filename = filename.substr(0, pos);
+            if(filename == examples) {
+                filename = ".";
+            } else if(filename.ends_with(FORMAT("/{}", examples))) {
+                filename = filename.substr(0, filename.size() - examples.size() - 1);
+            }
+        } else {
+            filename = ".";
+        }
+        _text += FORMAT("#include \"{}/include/base.hpp\"\n\n", filename);
         try {
             for(const auto &instruction : _instructions) {
                 const auto type = instruction.getLastType();
@@ -122,7 +133,7 @@ namespace vnd {
         _text += "int main(int argc, char **argv) {\n";
         _main = true;
         openScope(ScopeType::MAIN_SCOPE);
-        auto value = FORMAT("{:\t^{}}const vnd::vector<string> _args(argv, argv + argc);", "", _tabs);
+        auto value = FORMAT("{:\t^{}}const vnd::vector<string> _args = vnd::createArgs(argc, argv);", "", _tabs);
         _text += value;
         _scope->addConstant("args", "string[]", value);
         checkTrailingBracket(instruction);
@@ -248,14 +259,18 @@ namespace vnd {
             }
             return;
         }
-        if(variables.size() != factory.size()) {
-            throw TRANSPILER_EXCEPTIONF(instruction, "inconsistent assignation: {} values for {} variables", factory.size(),
+        auto expressions = factory.getExpressions();
+        if(variables.size() != expressions.size()) {
+            throw TRANSPILER_EXCEPTIONF(instruction, "inconsistent assignation: {} values for {} variables", expressions.size(),
                                         variables.size());
         }
+        if(equalToken.getValue() == "=" && transpileSwap(variables, expressions)) { return; }
+        auto exprIterator = expressions.begin();
         for(const auto &[first, second] : variables) {
-            if(auto error = transpileAssigment(first, second, equalToken, factory.getExpression()); !error.empty()) {
+            if(auto error = transpileAssigment(first, second, equalToken, *exprIterator); !error.empty()) {
                 throw TranspilerException(error, instruction);
             }
+            exprIterator = std::ranges::next(exprIterator);
         }
         _text.erase(_text.size() - _tabs - 1, _tabs + 1);
     }
@@ -371,6 +386,7 @@ namespace vnd {
         std::vector<std::pair<std::string, std::string>> result;
         std::string currentVariable;
         std::string type;
+        bool assignable = true;
         while(iterator != end && iterator->getType() != EQUAL_OPERATOR && iterator->getType() != OPERATION_EQUAL) {
             const auto next = std::ranges::next(iterator);
             if(iterator->isType(IDENTIFIER)) {
@@ -378,11 +394,11 @@ namespace vnd {
                     if(auto error = extractFun(iterator, end, currentVariable, type); !error.empty()) {
                         throw TranspilerException(error, instruction);
                     }
-                } else if(auto error = extractToken(iterator, end, next, currentVariable, type); !error.empty()) {
+                } else if(auto error = extractToken(iterator, end, next, currentVariable, type, assignable); !error.empty()) {
                     throw TranspilerException(error, instruction);
                 }
             } else if(iterator->isType(OPEN_SQ_PARENTESIS)) {
-                if(auto error = extractSquareExpression(iterator, end, currentVariable, type); !error.empty()) {
+                if(auto error = extractSquareExpression(iterator, end, currentVariable, type, assignable); !error.empty()) {
                     throw TranspilerException(error, instruction);
                 }
             } else if(iterator->isType(UNARY_OPERATOR)) {
@@ -401,9 +417,10 @@ namespace vnd {
     }
 
     std::string Transpiler::extractToken(const TokenVecIter &iterator, const TokenVecIter &end, const TokenVecIter &next,
-                                         std::string &currentVariable, std::string &type) const noexcept {
+                                         std::string &currentVariable, std::string &type, bool &assignable) const noexcept {
         using enum TokenType;
         auto value = iterator->getValue();
+        std::string_view newType;
         if(value == "_") {
             if(currentVariable.empty() &&
                (next == end || next->isType(COLON) || next->isType(EQUAL_OPERATOR) || next->isType(OPERATION_EQUAL))) {
@@ -414,12 +431,13 @@ namespace vnd {
                 return "Cannot use blank identifier here";
             }
         }
-        auto [newType, assignable] = std::make_pair(_scope->getVariableType(type, value), _scope->getConstValue(type, value).empty());
-        if(next != end && (next->isType(COMMA) || next->isType(EQUAL_OPERATOR) || next->isType(OPERATION_EQUAL))) {
+        std::tie(newType, assignable) = std::make_pair(_scope->getVariableType(type, value),
+                                                    _scope->getConstValue(type, value).empty());
+        if(next != end && (next->isType(COMMA) || next->isType(EQUAL_OPERATOR) || next->isType(OPERATION_EQUAL) ||next->isType(OPEN_SQ_PARENTESIS))) {
             assignable = !_scope->isConstant(type, value);
         }
         if(newType.empty()) { return FORMAT("Cannot find identifier {}.{}", type, value); }
-        if(!assignable) { return FORMAT("Cannot assign {}.{}", type, value); }
+        if(!assignable && !next->isType(OPEN_SQ_PARENTESIS)) { return FORMAT("Cannot assign {}.{}", type, value); }
         type = newType;
         if(currentVariable.empty()) {
             currentVariable += FORMAT("{}->", value);
@@ -479,14 +497,20 @@ namespace vnd {
     }
 
     std::string Transpiler::extractSquareExpression(TokenVecIter &iterator, const TokenVecIter &end, std::string &currentVariable,
-                                                    std::string &type) const noexcept {
+                                                    std::string &type, const bool assignable) const noexcept {
+        using enum TokenType;
         if(currentVariable.ends_with("->")) { currentVariable.erase(currentVariable.end() - 2, currentVariable.end()); }
         if(!Scope::checkVector(type)) { return FORMAT("Indexing not allowed for {} type", type); }
         auto factory = ExpressionFactory::create(iterator, end, _scope, false, true);
         ++iterator;
         if(auto error = factory.parse({TokenType::CLOSE_SQ_PARENTESIS}); !error.empty()) { return error; }
         auto expression = factory.getExpression();
+        auto next = std::ranges::next(iterator);
         if(auto newType = expression.getType(); newType != "int") { return FORMAT("{} index not allowed", newType); }
+        if(type == "char") { return "Strings are immutable"; }
+        if(!assignable && (next->isType(COMMA) || next->isType(EQUAL_OPERATOR) || next->isType(OPERATION_EQUAL))) {
+            return "Cannot assign constant vectors";
+        }
         currentVariable += FORMAT(".at({})->", expression.getText());
         return {};
     }
@@ -562,8 +586,28 @@ namespace vnd {
         return {type, FORMAT("{}{}{}", prefix, typeValue, suffix)};
     }
 
+    bool Transpiler::transpileSwap(const std::vector<std::pair<std::string, std::string>>& variables,
+        const std::vector<Expression>& expressions) noexcept {
+        if(variables.size() != 2 || expressions.size() != 2) { return false; }
+        std::vector<std::string> swapVariables = {variables.at(0).first, variables.at(1).first};
+        std::vector<std::string> swapExpressions = {expressions.at(0).getText(), expressions.at(1).getText()};
+        if(!_scope->canAssign(expressions.at(0).getType(), expressions.at(1).getType()) ||
+           !_scope->canAssign(expressions.at(1).getType(), expressions.at(0).getType())) {
+            return false;
+        }
+        for(auto &i : swapVariables) {
+            if(i.ends_with('(')) { return false; }
+            i.erase(remove_if(i.begin(), i.end(), isspace), i.end());
+        }
+        for(auto &i : swapExpressions) { i.erase(remove_if(i.begin(), i.end(), isspace), i.end()); }
+        if(swapVariables.at(0) != swapExpressions.at(1) || swapVariables.at(1) != swapExpressions.at(0)) { return false; }
+        _text += FORMAT("std::swap({}, {});", swapVariables.at(0), swapVariables.at(1));
+        return true;
+    }
+
     std::string Transpiler::transpileAssigment(const std::string &variable, const std::string &type, const Token &equalToken,
                                                const Expression &expression) noexcept {
+        std::string_view equalValue = equalToken.getValue();
 #ifdef __llvm__
         const bool exprContainsSpace = expression.getType().find(' ') != std::string::npos;
 #else
@@ -591,14 +635,16 @@ namespace vnd {
                 getter.replace(getter.find_last_of("->") + 1, 1, "g");
                 getter = FORMAT("{})", getter);
             }
-            if(equalToken.getValue() == "^=") {
-                text += FORMAT("std::pow({},", getter);
+            if(equalValue == "^=") {
+                text += FORMAT("vnd::pow({}, ", getter);
+            } else if(equalValue == "%=") {
+                text += FORMAT("vnd::mod({}, ", getter);
             } else {
                 text += FORMAT("{} {} ", getter, equalToken.getValue().at(0));
             }
         }
         text += expression.getText();
-        if(equalToken.getValue() == "^=") { text += ")"; }
+        if(equalValue == "^=" || equalValue == "%=") { text += ")"; }
         if(variable.ends_with('(')) { text += ")"; }
         _text += FORMAT("{};\n{:\t^{}}", text, "", _tabs);
         return {};

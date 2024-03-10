@@ -14,21 +14,81 @@
 #define FOR_LOOP(type, var, initial, final, step) \
 for (type var = initial; (step > 0 ? var < final : var > final); var += step)
 
-class string: public std::string {
+class string {
 	public:
-		using std::string::string;
-		string(const std::string &s): std::string(s) {}
+		string(const std::string &s = ""): str(string::create(s)) {}
+		string(const string &s): str(string::create(*(s.str))) {}
+		~string() {
+			string::deleteString(str);
+		}
+		const int size() const {
+			return str->size();
+		}
 		const char at(int64_t index) const {
 			if(index < 0) {
 				index += static_cast<int64_t>(size());
 			}
 			if(index < 0 || index >= size()) { throw std::runtime_error("Index " + std::to_string(index) +  " out of bounds for size " + std::to_string(size())); }
-			return std::string::at(index);
+			return str->at(index);
+		}
+		const bool empty() {
+			return str->empty();
 		}
 		const int toInt() {
-			return std::stoi(*this);
+			return std::stoi(*str);
 		}
+		std::string::const_iterator begin() const noexcept {
+			return str->begin();
+		}
+		std::string::const_iterator end() const noexcept {
+			return str->end();
+		}
+		string operator=(const string &s) {
+			if (this != &s) {
+				std::shared_ptr<const std::string> old = str;
+				str = string::create(*(s.str));
+				string::deleteString(old);
+			}
+			return *this;
+		}
+		friend bool operator==(const string &s1, const string &s2) {
+			return *s1.str == *s2.str;
+		}
+		friend std::ostream& operator<<(std::ostream& os, const string &s) {
+			os << *(s.str);
+			return os;
+		}
+		operator std::string() {
+			return *str;
+		}
+	private:
+		static std::vector<std::pair<std::shared_ptr<const std::string>, int64_t>> pool;
+		static std::shared_ptr<const std::string> create(const std::string &str) {
+			for(auto &i: string::pool) {
+				if(str == *i.first) {
+					i.second++;
+					return i.first;
+				}
+			}
+			string::pool.emplace_back(std::make_pair(std::make_shared<std::string>(str), 1));
+			return string::pool.back().first;
+		}
+		static void deleteString(const std::shared_ptr<const std::string> str) {
+			auto iterator = string::pool.begin();
+			while(iterator != string::pool.end()) {
+				if(str == iterator->first) {
+					iterator->second--;
+					if(iterator->second == 0) {
+						string::pool.erase(iterator);
+					}
+					return;
+				}
+				++iterator;
+			}
+		}
+		std::shared_ptr<const std::string> str;
 };
+std::vector<std::pair<std::shared_ptr<const std::string>, int64_t>> string::pool{};
 
 namespace vnd {
 	template <typename T, int64_t N>
@@ -99,6 +159,25 @@ namespace vnd {
 			}
 	};
 	std::unordered_map<std::string, std::any> tmp;
+	vnd::vector<string> createArgs(int argc, char **argv) {
+		vnd::vector<string> args;
+		FOR_LOOP(size_t, i, 0, argc, 1) {
+			args.add(std::string(argv[i]));
+		}
+		return args;
+	}
+	template<typename T1, typename T2>
+	std::common_type_t<T1, T2> mod(T1 a, T2 b) {
+		using result_type = std::common_type_t<T1, T2>;
+		if constexpr (std::is_same_v<result_type, int>) {
+			return a % b;
+		}
+		return std::fmod(static_cast<result_type>(a), static_cast<result_type>(b));	
+	}
+	template<typename T1, typename T2>
+	std::common_type_t<T1, T2> pow(T1 a, T2 b)  {
+		return static_cast<std::common_type_t<T1, T2>>(std::pow(a, b));
+	}
 }
 
 int v_test() { return 0; }
@@ -124,8 +203,8 @@ class Object {
 	private:
 		const int c = 2;
 		const float test = 0;
-		int a;
-		string s;
+		int a{};
+		string s{};
 };
 class Derived: public Object {
 	public:
@@ -140,13 +219,13 @@ class Derived: public Object {
 		virtual std::shared_ptr<Object> object() { return std::make_shared<Object>(); }
 	private:
 		const bool _derivedConst = true;
-		bool _derivedProperty;
-		std::shared_ptr<Object> obj;
+		bool _derivedProperty{};
+		std::shared_ptr<Object> obj{};
 };
-void _print(const std::string_view text, const vnd::vector<std::variant<int, float, char, bool, string, std::shared_ptr<Object>>>& args) {
+void _print(const string text, const vnd::vector<std::variant<int, float, char, bool, string, std::shared_ptr<Object>>>& args) {
 	
 	size_t par = 0;
-	std::string_view::iterator iterator = text.begin();
+	auto iterator = text.begin();
 	std::string result;
 	std::function<std::string(std::variant<int, float, char, bool, string, std::shared_ptr<Object>>)> format = [](std::variant<int, float, char, bool, string, std::shared_ptr<Object>> param) -> std::string {
 		if(std::holds_alternative<int>(param)) {
@@ -186,7 +265,7 @@ void _print(const std::string_view text, const vnd::vector<std::variant<int, flo
 	std::cout << result;
 	
 }
-void _println(std::string_view text, const vnd::vector<std::variant<int, float, char, bool, string, std::shared_ptr<Object>>>& args) {
+void _println(const string text, const vnd::vector<std::variant<int, float, char, bool, string, std::shared_ptr<Object>>>& args) {
 	
 	_print(text, args);
 	std::cout << std::endl;
@@ -201,6 +280,9 @@ std::tuple<int, float> _max(vnd::vector<float>) {
 	
 	return {0, 0};
 	
+}
+vnd::vector<int> _arrayTest() {
+	return {1, 2, 3};
 }
 std::shared_ptr<Object> _createObject() { return std::make_shared<Object>(); }
 std::shared_ptr<Derived> _createDerived() { return std::make_shared<Derived>(); }

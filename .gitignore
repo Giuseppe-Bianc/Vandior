@@ -36,3 +36,5 @@ Thumbs.db
 /clBuild
 /ingnoref
 /.cache
+output.cpp
+*.exe

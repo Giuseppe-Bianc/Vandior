@@ -50,6 +50,7 @@ namespace vnd {
         mainScope->addFun("testPar", FunType::create("int", {"int", "int"}, {}, {}));
         mainScope->addFun("testPar", FunType::create("int", {"string"}, {}, {}));
         mainScope->addFun("max", FunType::create("int float", {"float[]"}, {}, {}));
+        mainScope->addFun("arrayTest", FunType::create("int[]", {}, {}, {}));
         mainScope->addFun("createObject", FunType::create("Object", {}, {}, {}));
         mainScope->addFun("Object", FunType::create("Object", {}, {}, {}, true));
         mainScope->addFun("Derived", FunType::create("Derived", {}, {}, {}, true));

@@ -116,9 +116,11 @@ auto main(int argc, const char *const argv[]) -> int {
         // app.add_option("-m,--message", message, "A message to print back out");
         app.add_option("-i,--input", path, "The input file");
         bool show_version = false;
+        bool compile = false;
         bool run = false;
         app.add_flag("--version, -v", show_version, "Show version information");
-        app.add_flag("--run, -r", run, "Run the compilation on resulting code");
+        app.add_flag("--compile, -c", compile, "Compile the resulting code");
+        app.add_flag("--run, -r", run, "Compile the resulting code and execute it");
         CLI11_PARSE(app, argc, argv)
 
         if(show_version) {
@@ -134,9 +136,12 @@ auto main(int argc, const char *const argv[]) -> int {
         // for(const auto &item : tokens) { LINFO("{}", item); }
         std::vector<vnd::Instruction> instructions = extractInstructions(tokens);
         vnd::Timer tim("transpiling time");
-        if(vnd::Transpiler transpiler = vnd::Transpiler::create(instructions); !transpiler.transpile()) { return EXIT_FAILURE; }
+        if(vnd::Transpiler transpiler = vnd::Transpiler::create(instructions);
+           !transpiler.transpile(path.value_or(filename.data()))) {
+            return EXIT_FAILURE;
+        }
         LINFO("{}", tim);
-        if(run) {
+        if(compile || run) {
 #ifdef HIDE_SYSTEM_OUTPUT
 #ifdef _WIN32
             command = "g++ --version > NUL";
@@ -156,6 +161,13 @@ auto main(int argc, const char *const argv[]) -> int {
                 if(compileResult != 0) {
                     LERROR("Compilation failed");
                     return EXIT_FAILURE;
+                }
+                if (run) {
+#ifdef _WIN32
+                    std::system("a.exe");
+#else
+                    std::system("./a.out");
+#endif
                 }
             } else {
                 LERROR("Failed to execute command: {}", command);
