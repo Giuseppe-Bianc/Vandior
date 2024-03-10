@@ -761,14 +761,32 @@ TEST_CASE("ExpressionFactory emit function type", "[factory]") {
     REQUIRE(factory.size() == 1);
     REQUIRE(factory.getExpression().getType() == "int");
 }
+namespace {
+    vnd::Transpiler createSimpleTranspiler(const std::vector<vnd::Token> &tokens) {
+        vnd::Instruction instruction = vnd::Instruction::create(filename);
+        for(const auto &token : tokens) { instruction.checkToken(token); }
+        return vnd::Transpiler::create({instruction});
+    }
+
+    vnd::Transpiler createComplexTranspiler(const std::vector<vnd::Token> &tokens) {
+        std::vector<vnd::Instruction> instructions = {vnd::Instruction::create(filename)};
+        auto line = tokens.at(0).getLine();
+        for(const auto &token : tokens) {
+            if(token.getLine() > line) {
+                instructions.emplace_back(vnd::Instruction::create(filename));
+                line = token.getLine();
+            }
+            instructions.back().checkToken(token);
+        }
+        return vnd::Transpiler::create(instructions);
+    }
+}  // namespace
 
 TEST_CASE("Transpiler transpile main instruction", "[transpiler]") {
     using enum vnd::TokenType;
     vnd::Tokenizer tokenizer{"main{}", filename};
     auto tokens = tokenizer.tokenize();
-    vnd::Instruction instruction = vnd::Instruction::create(filename);
-    for(const auto &token : tokens) { instruction.checkToken(token); }
-    vnd::Transpiler transpiler = vnd::Transpiler::create({instruction});
+    auto transpiler = createSimpleTranspiler(tokens);
     transpiler.transpile(std::string{filename});
     REQUIRE(std::filesystem::exists(outFilename));
     std::ifstream stream(outFilename.data());
@@ -784,9 +802,7 @@ TEST_CASE("Transpiler transpile declaration instruction", "[transpiler]") {
     using enum vnd::TokenType;
     vnd::Tokenizer tokenizer{"var num, num1 : int", filename};
     auto tokens = tokenizer.tokenize();
-    vnd::Instruction instruction = vnd::Instruction::create(filename);
-    for(const auto &token : tokens) { instruction.checkToken(token); }
-    vnd::Transpiler transpiler = vnd::Transpiler::create({instruction});
+    auto transpiler = createSimpleTranspiler(tokens);
     transpiler.transpile(std::string{filename});
     REQUIRE(std::filesystem::exists(outFilename));
     std::ifstream stream(outFilename.data());
@@ -799,9 +815,7 @@ TEST_CASE("Transpiler transpile declaration underscore instruction", "[transpile
     using enum vnd::TokenType;
     vnd::Tokenizer tokenizer{"var _num, _num1 : int", filename};
     auto tokens = tokenizer.tokenize();
-    vnd::Instruction instruction = vnd::Instruction::create(filename);
-    for(const auto &token : tokens) { instruction.checkToken(token); }
-    vnd::Transpiler transpiler = vnd::Transpiler::create({instruction});
+    auto transpiler = createSimpleTranspiler(tokens);
     transpiler.transpile(std::string{filename});
     REQUIRE(std::filesystem::exists(outFilename));
     std::ifstream stream(outFilename.data());
@@ -814,9 +828,7 @@ TEST_CASE("Transpiler transpile initialization instruction", "[transpiler]") {
     using enum vnd::TokenType;
     vnd::Tokenizer tokenizer{"var num, num1 : int = 1", filename};
     auto tokens = tokenizer.tokenize();
-    vnd::Instruction instruction = vnd::Instruction::create(filename);
-    for(const auto &token : tokens) { instruction.checkToken(token); }
-    vnd::Transpiler transpiler = vnd::Transpiler::create({instruction});
+    auto transpiler = createSimpleTranspiler(tokens);
     transpiler.transpile(std::string{filename});
     REQUIRE(std::filesystem::exists(outFilename));
     std::ifstream stream(outFilename.data());
@@ -829,9 +841,7 @@ TEST_CASE("Transpiler transpile initialization underscore instruction", "[transp
     using enum vnd::TokenType;
     vnd::Tokenizer tokenizer{"var _num, _num1 : int = 1", filename};
     auto tokens = tokenizer.tokenize();
-    vnd::Instruction instruction = vnd::Instruction::create(filename);
-    for(const auto &token : tokens) { instruction.checkToken(token); }
-    vnd::Transpiler transpiler = vnd::Transpiler::create({instruction});
+    auto transpiler = createSimpleTranspiler(tokens);
     transpiler.transpile(std::string{filename});
     REQUIRE(std::filesystem::exists(outFilename));
     std::ifstream stream(outFilename.data());
@@ -844,9 +854,7 @@ TEST_CASE("Transpiler transpile const instruction", "[transpiler]") {
     using enum vnd::TokenType;
     vnd::Tokenizer tokenizer{"const num : int = 1 + 333", filename};
     auto tokens = tokenizer.tokenize();
-    vnd::Instruction instruction = vnd::Instruction::create(filename);
-    for(const auto &token : tokens) { instruction.checkToken(token); }
-    vnd::Transpiler transpiler = vnd::Transpiler::create({instruction});
+    auto transpiler = createSimpleTranspiler(tokens);
     transpiler.transpile(std::string{filename});
     REQUIRE(std::filesystem::exists(outFilename));
     std::ifstream stream(outFilename.data());
@@ -859,16 +867,7 @@ TEST_CASE("Transpiler transpile operation instruction", "[transpiler]") {
     using enum vnd::TokenType;
     vnd::Tokenizer tokenizer{"main {\nprint(\"Test {}\", args[0])\n}", filename};
     auto tokens = tokenizer.tokenize();
-    std::vector<vnd::Instruction> instructions = {vnd::Instruction::create(filename)};
-    std::size_t line = 0;
-    for(const auto &token : tokens) {
-        if(token.getLine() > line) {
-            instructions.emplace_back(vnd::Instruction::create(filename));
-            line = token.getLine();
-        }
-        instructions.back().checkToken(token);
-    }
-    vnd::Transpiler transpiler = vnd::Transpiler::create(instructions);
+    auto transpiler = createComplexTranspiler(tokens);
     transpiler.transpile(std::string{filename});
     REQUIRE(std::filesystem::exists(outFilename));
     std::ifstream stream(outFilename.data());
@@ -885,16 +884,7 @@ TEST_CASE("Transpiler transpile assignation instruction", "[transpiler]") {
     using enum vnd::TokenType;
     vnd::Tokenizer tokenizer{"main{\nvar num : int\nnum = 1\n}", filename};
     auto tokens = tokenizer.tokenize();
-    std::vector<vnd::Instruction> instructions = {vnd::Instruction::create(filename)};
-    std::size_t line = 0;
-    for(const auto &token : tokens) {
-        if(token.getLine() > line) {
-            instructions.emplace_back(vnd::Instruction::create(filename));
-            line = token.getLine();
-        }
-        instructions.back().checkToken(token);
-    }
-    vnd::Transpiler transpiler = vnd::Transpiler::create(instructions);
+    auto transpiler = createComplexTranspiler(tokens);
     transpiler.transpile(std::string{filename});
     REQUIRE(std::filesystem::exists(outFilename));
     std::ifstream stream(outFilename.data());
@@ -914,16 +904,7 @@ TEST_CASE("Transpiler transpile if instruction", "[transpiler]") {
     using enum vnd::TokenType;
     vnd::Tokenizer tokenizer{"main{\nif(true){\n} else if(false){\n} else{}\n\n}", filename};
     auto tokens = tokenizer.tokenize();
-    std::vector<vnd::Instruction> instructions = {vnd::Instruction::create(filename)};
-    std::size_t line = 0;
-    for(const auto &token : tokens) {
-        if(token.getLine() > line) {
-            instructions.emplace_back(vnd::Instruction::create(filename));
-            line = token.getLine();
-        }
-        instructions.back().checkToken(token);
-    }
-    vnd::Transpiler transpiler = vnd::Transpiler::create(instructions);
+    auto transpiler = createComplexTranspiler(tokens);
     transpiler.transpile(std::string{filename});
     REQUIRE(std::filesystem::exists(outFilename));
     std::ifstream stream(outFilename.data());
@@ -942,16 +923,7 @@ TEST_CASE("Transpiler transpile while and break instructions", "[transpiler]") {
     using enum vnd::TokenType;
     vnd::Tokenizer tokenizer{"main{\nwhile(true){\nbreak\n}\n}", filename};
     auto tokens = tokenizer.tokenize();
-    std::vector<vnd::Instruction> instructions = {vnd::Instruction::create(filename)};
-    std::size_t line = 0;
-    for(const auto &token : tokens) {
-        if(token.getLine() > line) {
-            instructions.emplace_back(vnd::Instruction::create(filename));
-            line = token.getLine();
-        }
-        instructions.back().checkToken(token);
-    }
-    vnd::Transpiler transpiler = vnd::Transpiler::create(instructions);
+    auto transpiler = createComplexTranspiler(tokens);
     transpiler.transpile(std::string{filename});
     REQUIRE(std::filesystem::exists(outFilename));
     std::ifstream stream(outFilename.data());
@@ -970,16 +942,7 @@ TEST_CASE("Transpiler transpile for instruction", "[transpiler]") {
     using enum vnd::TokenType;
     vnd::Tokenizer tokenizer{"main{\nfor var i : int = 0, 10, 1{}\n}", filename};
     auto tokens = tokenizer.tokenize();
-    std::vector<vnd::Instruction> instructions = {vnd::Instruction::create(filename)};
-    std::size_t line = 0;
-    for(const auto &token : tokens) {
-        if(token.getLine() > line) {
-            instructions.emplace_back(vnd::Instruction::create(filename));
-            line = token.getLine();
-        }
-        instructions.back().checkToken(token);
-    }
-    vnd::Transpiler transpiler = vnd::Transpiler::create(instructions);
+    auto transpiler = createComplexTranspiler(tokens);
     transpiler.transpile(std::string{filename});
     REQUIRE(std::filesystem::exists(outFilename));
     std::ifstream stream(outFilename.data());
@@ -996,16 +959,7 @@ TEST_CASE("Transpiler transpile open and close scope instructions", "[transpiler
     using enum vnd::TokenType;
     vnd::Tokenizer tokenizer{"main{\n{\n}\n\n}", filename};
     auto tokens = tokenizer.tokenize();
-    std::vector<vnd::Instruction> instructions = {vnd::Instruction::create(filename)};
-    std::size_t line = 0;
-    for(const vnd::Token &token : tokens) {
-        if(token.getLine() > line) {
-            instructions.emplace_back(vnd::Instruction::create(filename));
-            line = token.getLine();
-        }
-        instructions.back().checkToken(token);
-    }
-    vnd::Transpiler transpiler = vnd::Transpiler::create(instructions);
+    auto transpiler = createComplexTranspiler(tokens);
     transpiler.transpile(std::string{filename});
     REQUIRE(std::filesystem::exists(outFilename));
     std::ifstream stream(outFilename.data());

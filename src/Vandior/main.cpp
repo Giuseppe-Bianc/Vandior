@@ -162,6 +162,7 @@ auto main(int argc, const char *const argv[]) -> int {
                     return EXIT_FAILURE;
                 }
                 if(run) {
+                    vnd::AutoTimer rctim("run code time");
 #ifdef _WIN32
                     std::system("a.exe");
 #else
