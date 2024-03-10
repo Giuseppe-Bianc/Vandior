@@ -183,6 +183,23 @@ namespace vnd {
                                                                         const std::vector<TokenType> &endTokens,
                                                                         const Instruction &instruction);
 
+        /**
+         * @brief Transpile a swap assignation.
+         * @param variables Vector or variables identifiers and type.
+         * @param expressions Vector of expressions to assign.
+         * @return Bool flag indicating if the instruction is a swap.
+         */
+        [[nodiscard]] bool transpileSwap(const std::vector<std::pair<std::string, std::string>> &variables,
+                                         const std::vector<Expression> &expressions) noexcept;
+
+        /**
+         * @brief Transpile a single assigment of an assignation instruction.
+         * @param variable String containing the variable to assign.
+         * @param type Type of the variable.
+         * @param equalToken Token containing the equal operator informations.
+         * @param expression Expression to assign.
+         * @return Parsed string if there is an error. If no error occurs, an empty string is returned.
+         */
         [[nodiscard]] std::string transpileAssigment(const std::string &variable, const std::string &type, const Token &equalToken,
                                                      const Expression &expression) noexcept;
 

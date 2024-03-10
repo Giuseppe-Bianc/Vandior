@@ -7,6 +7,7 @@ main {
 	}
 	var s1: string = "Ciao"
 	var s2, s3: string = "Ciao", s1
+	s2, s3 = s3, s2
 	s1, s2 = "AA", "VV"
 	println("{} {}", s3, s2)
 	var array1, array2: Object[] = {Object(), Object()}, {Derived(), Object()} 

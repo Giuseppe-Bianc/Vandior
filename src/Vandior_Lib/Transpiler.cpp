@@ -259,14 +259,18 @@ namespace vnd {
             }
             return;
         }
-        if(variables.size() != factory.size()) {
-            throw TRANSPILER_EXCEPTIONF(instruction, "inconsistent assignation: {} values for {} variables", factory.size(),
+        auto expressions = factory.getExpressions();
+        if(variables.size() != expressions.size()) {
+            throw TRANSPILER_EXCEPTIONF(instruction, "inconsistent assignation: {} values for {} variables", expressions.size(),
                                         variables.size());
         }
+        if(equalToken.getValue() == "=" && transpileSwap(variables, expressions)) { return; }
+        auto exprIterator = expressions.begin();
         for(const auto &[first, second] : variables) {
-            if(auto error = transpileAssigment(first, second, equalToken, factory.getExpression()); !error.empty()) {
+            if(auto error = transpileAssigment(first, second, equalToken, *exprIterator); !error.empty()) {
                 throw TranspilerException(error, instruction);
             }
+            exprIterator = std::ranges::next(exprIterator);
         }
         _text.erase(_text.size() - _tabs - 1, _tabs + 1);
     }
@@ -580,6 +584,25 @@ namespace vnd {
             ++iterator;
         }
         return {type, FORMAT("{}{}{}", prefix, typeValue, suffix)};
+    }
+
+    bool Transpiler::transpileSwap(const std::vector<std::pair<std::string, std::string>>& variables,
+        const std::vector<Expression>& expressions) noexcept {
+        if(variables.size() != 2 || expressions.size() != 2) { return false; }
+        std::vector<std::string> swapVariables = {variables.at(0).first, variables.at(1).first};
+        std::vector<std::string> swapExpressions = {expressions.at(0).getText(), expressions.at(1).getText()};
+        if(!_scope->canAssign(expressions.at(0).getType(), expressions.at(1).getType()) ||
+           !_scope->canAssign(expressions.at(1).getType(), expressions.at(0).getType())) {
+            return false;
+        }
+        for(auto &i : swapVariables) {
+            if(i.ends_with('(')) { return false; }
+            i.erase(remove_if(i.begin(), i.end(), isspace), i.end());
+        }
+        for(auto &i : swapExpressions) { i.erase(remove_if(i.begin(), i.end(), isspace), i.end()); }
+        if(swapVariables.at(0) != swapExpressions.at(1) || swapVariables.at(1) != swapExpressions.at(0)) { return false; }
+        _text += FORMAT("std::swap({}, {});", swapVariables.at(0), swapVariables.at(1));
+        return true;
     }
 
     std::string Transpiler::transpileAssigment(const std::string &variable, const std::string &type, const Token &equalToken,
