@@ -283,7 +283,7 @@ namespace vnd {
         while(!value.empty()) {
             Token token;
             if(value.size() > 1) { token = {multyCharOp(value.substr(0, 2)), value.substr(0, 2), {_filename, line, column - 2}}; }
-            if(token.getType() == TokenType::UNKNOWN || value.size() == 1) {
+            if(token.isType(TokenType::UNKNOWN) || value.size() == 1) {
                 token = Token{singoleCharOp(value[0]), value.substr(0, 1), {_filename, line, column - 1}};
             }
             tokens.emplace_back(token);
@@ -323,8 +323,8 @@ namespace vnd {
         return FORMAT("{: ^{}}{:^{}}{}", "", position - start, "^", length, CNL);
     }
 
-    std::string Tokenizer::getErrorMessage(const std::string &value, const std::string_view &errMsg,
-                                           const std::string &contextLine, const std::string &highlighting) {
+    std::string Tokenizer::getErrorMessage(const std::string &value, const std::string_view &errMsg, const std::string &contextLine,
+                                           const std::string &highlighting) {
         std::ostringstream errorMessageStream;
         errorMessageStream << FORMAT("{} '{}' (line {}, column {}):{}", errMsg, value, line, column, NEWL);
         errorMessageStream << FORMAT("Context: {}", NEWL);

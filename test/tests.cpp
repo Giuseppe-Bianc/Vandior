@@ -53,13 +53,11 @@ TEST_CASE("glm::mat formater", "[FMT]") {
     REQUIRE(FORMAT("{}", glm::mat2{0.0F, 0.0F, 0.0F, 0.0F}) == "mat2x2((0,0), (0,0))");
     REQUIRE(FORMAT("{}", glm::dmat2{0.0, 0.0, 0.0, 0.0}) == "dmat2x2((0,0), (0,0))");
     REQUIRE(FORMAT("{}", glm::ldmat2{0.0, 0.0, 0.0, 0.0}) == "ldmat2x2((0,0), (0,0))");
-    REQUIRE(FORMAT("{}", glm::mat3{0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F}) ==
-            "mat3x3((0, 0, 0), (0, 0, 0), (0, 0, 0))");
+    REQUIRE(FORMAT("{}", glm::mat3{0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F}) == "mat3x3((0, 0, 0), (0, 0, 0), (0, 0, 0))");
     REQUIRE(FORMAT("{}", glm::dmat3{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}) == "dmat3x3((0, 0, 0), (0, 0, 0), (0, 0, 0))");
-    REQUIRE(FORMAT("{}", glm::ldmat3{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}) ==
-            "ldmat3x3((0, 0, 0), (0, 0, 0), (0, 0, 0))");
-    REQUIRE(FORMAT("{}", glm::mat4{0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F,
-                                   0.0F}) == "mat4x4((0, 0, 0, 0), (0, 0, 0, 0), (0, 0, 0, 0), (0, 0, 0, 0))");
+    REQUIRE(FORMAT("{}", glm::ldmat3{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}) == "ldmat3x3((0, 0, 0), (0, 0, 0), (0, 0, 0))");
+    REQUIRE(FORMAT("{}", glm::mat4{0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F}) ==
+            "mat4x4((0, 0, 0, 0), (0, 0, 0, 0), (0, 0, 0, 0), (0, 0, 0, 0))");
     REQUIRE(FORMAT("{}", glm::dmat4{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}) ==
             "dmat4x4((0, 0, 0, 0), (0, 0, 0, 0), (0, 0, 0, 0), (0, 0, 0, 0))");
     REQUIRE(FORMAT("{}", glm::ldmat4{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}) ==
@@ -121,8 +119,7 @@ TEST_CASE("Timer: PrintTimer FMT", "[timer]") {
 
 TEST_CASE("Timer: TimeItTimer", "[timer]") {
     vnd::Timer timer;
-    std::string output = timer.time_it([]() { std::this_thread::sleep_for(std::chrono::milliseconds(timerSleap2)); },
-                                       timerResolution);
+    std::string output = timer.time_it([]() { std::this_thread::sleep_for(std::chrono::milliseconds(timerSleap2)); }, timerResolution);
     REQUIRE(output.find(timerTime1) != std::string::npos);
 }
 
@@ -261,6 +258,27 @@ TEST_CASE("default constructed token set propriety", "[token]") {
     REQUIRE(token.getColumn() == 1);
 }
 
+TEST_CASE("default constructed token isType", "[token]") {
+    using enum vnd::TokenType;
+    vnd::Token token{};
+    REQUIRE(token.getType() == UNKNOWN);
+    REQUIRE(token.getValue().empty() == true);
+    REQUIRE(token.getFileName() == filename4);
+    REQUIRE(token.getLine() == 0);
+    REQUIRE(token.getColumn() == 0);
+    REQUIRE(token.isType(CHAR) == false);
+    token.setType(INTEGER);
+    token.setValue("assss");
+    token.setFileName(filename);
+    token.setLine(1);
+    token.setColumn(1);
+    REQUIRE(token.getType() == INTEGER);
+    REQUIRE(token.isType(INTEGER) == true);
+    REQUIRE(token.getValue().empty() == false);
+    REQUIRE(token.getFileName() == filename);
+    REQUIRE(token.getLine() == 1);
+    REQUIRE(token.getColumn() == 1);
+}
 TEST_CASE("default constructed token set propriety tostring", "[token]") {
     using enum vnd::TokenType;
     vnd::Token token{};
@@ -522,8 +540,7 @@ TEST_CASE("tokenizer emit multiline comment token", "[tokenizer]") {
     vnd::Tokenizer tokenizer{code2, filename};
     std::vector<vnd::Token> tokens = tokenizer.tokenize();
     REQUIRE(tokens.size() == 2);
-    REQUIRE(tokens[0] ==
-            vnd::Token(vnd::TokenType::COMMENT, R"(/*multi\nline\ncomment*/)", vnd::CodeSourceLocation(filename, 1, 1)));
+    REQUIRE(tokens[0] == vnd::Token(vnd::TokenType::COMMENT, R"(/*multi\nline\ncomment*/)", vnd::CodeSourceLocation(filename, 1, 1)));
 }
 
 /*
