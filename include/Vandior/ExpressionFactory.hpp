@@ -24,9 +24,8 @@ namespace vnd {
          * @param sq Bool indicating if it's a square expression.
          * @return ExpressionFactory instance.
          */
-        [[nodiscard]] static ExpressionFactory create(TokenVecIter &iterator, const TokenVecIter &end,
-                                                      std::shared_ptr<Scope> scope, const bool isConst,
-                                                      const bool sq = false) noexcept;
+        [[nodiscard]] static ExpressionFactory create(TokenVecIter &iterator, const TokenVecIter &end, std::shared_ptr<Scope> scope,
+                                                      const bool isConst, const bool sq = false) noexcept;
 
         /**
          * @brief Creates the text for the arguments of a function.
@@ -34,8 +33,7 @@ namespace vnd {
          * @param variadic Optional indicating the position of the first variadic argument, if present.
          * @return the transpiled text for the arguments.
          */
-        [[nodiscard]] static std::string transpileFun(const std::vector<Expression> &expressions,
-                                                      std::optional<size_t> variadic) noexcept;
+        [[nodiscard]] static std::string transpileFun(const std::vector<Expression> &expressions, std::optional<size_t> variadic) noexcept;
 
         /**
          * @brief Parses the token sequence until reaching the specified end tokens.
@@ -222,7 +220,6 @@ namespace vnd {
          * @brief Clears the _type and _temp properties.
          */
         void clearData() noexcept;
-        [[nodiscard]] bool isType(const TokenVecIter &nextToken, TokenType type) const noexcept;
         [[nodiscard]] bool isTokenOfType(const TokenVecIter &iterator, TokenType type) const noexcept;
         [[nodiscard]] std::string handleLogicalType(TupType &oldType) const noexcept;
         [[nodiscard]] std::string handleBooleanType(TupType &oldType) const noexcept;
