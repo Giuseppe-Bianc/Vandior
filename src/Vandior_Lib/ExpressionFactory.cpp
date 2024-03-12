@@ -19,6 +19,11 @@ DISABLE_WARNINGS_PUSH(26447)
 #endif
 
 namespace vnd {
+    static inline constexpr std::string_view sps = " ";      // space
+    static inline constexpr std::string_view nots = "not";   // not string
+    static inline constexpr std::string_view bols = "bool";  // bool string
+    static inline constexpr std::string_view oprt = "operator";
+    static inline constexpr std::string_view ints = "int";
     static inline constexpr std::size_t buffer_size = 128;
     // NOLINTBEGIN(*-pass-by-value, *-identifier-length)
     ExpressionFactory::ExpressionFactory(TokenVecIter &iterator, const TokenVecIter &end, std::shared_ptr<Scope> scope, const bool isConst,
@@ -47,7 +52,7 @@ namespace vnd {
         return params;
     }
 
-    bool ExpressionFactory::isSquareType(const std::string_view &type) noexcept { return type == "int" || type == "operator"; }
+    bool ExpressionFactory::isSquareType(const std::string_view &type) noexcept { return type == ints || type == oprt; }
 
     std::string ExpressionFactory::evaluate(const std::string &expression) const noexcept {
 #ifdef _WIN32
@@ -101,7 +106,7 @@ namespace vnd {
                 return error;
             }
         }
-        if(std::get<0>(type)) { std::get<2>(type) = "bool"; }
+        if(std::get<0>(type)) { std::get<2>(type) = bols; }
         handleFinalExpression(type);
         return {};
     }
@@ -142,11 +147,11 @@ namespace vnd {
         auto iterValue = _iterator->getValue();
         switch(_iterator->getType()) {
         case INTEGER:
-            return "int";
+            return ints;
         case DOUBLE:
             return "float";
         case BOOLEAN:
-            return "bool";
+            return bols;
         case CHAR:
             return "char";
         case STRING:
@@ -157,14 +162,14 @@ namespace vnd {
         case MINUS_OPERATOR:
             [[fallthrough]];
         case UNARY_OPERATOR:
-            return "operator";
+            return oprt;
         case DOT_OPERATOR:
             return "dot";
         case BOOLEAN_OPERATOR:
             if(iterValue == "==" || iterValue == "!=") { return "equal"; }
             return "boolean";
         case NOT_OPERATOR:
-            return "not";
+            return nots;
         case LOGICAL_OPERATOR:
             return "logical";
         case K_NULLPTR:
@@ -307,7 +312,7 @@ namespace vnd {
         ++_iterator;
         if(auto error = factory.parse({TokenType::CLOSE_SQ_PARENTESIS}); !error.empty()) { return error; }
         auto expression = factory.getExpression();
-        if(auto newType = expression.getType(); newType != "int") { return FORMAT("{} index not allowed", newType); }
+        if(auto newType = expression.getType(); newType != ints) { return FORMAT("{} index not allowed", newType); }
         if(auto error = ExpressionFactory::checkType(type, _type); !error.empty()) { return error; }
         _const = false;
         write(FORMAT("at({})", expression.getText()), _type);
@@ -380,8 +385,9 @@ namespace vnd {
 
     std::string ExpressionFactory::handleToken(TupType &type) noexcept {
         const auto newType = ExpressionFactory::getTokenType();
-        if(!checkUnaryOperator(newType)) { return FORMAT("Cannot apply unary operator for {}", _iterator->getValue()); }
-        if(newType.empty()) { return FORMAT("Identifier {}.{} not found", _type, _iterator->getValue()); }
+        auto iterValue = _iterator->getValue();
+        if(!checkUnaryOperator(newType)) { return FORMAT("Cannot apply unary operator for {}", iterValue); }
+        if(newType.empty()) { return FORMAT("Identifier {}.{} not found", _type, iterValue); }
         if(auto error = ExpressionFactory::checkType(type, newType); !error.empty()) { return error; }
         emplaceToken(newType);
         return {};
@@ -393,9 +399,6 @@ namespace vnd {
 
     // NOLINTNEXTLINE(*-function-cognitive-complexity)
     std::string ExpressionFactory::checkType(TupType &oldType, const std::string_view newType) noexcept {
-        static const std::string sps = " ";      // space
-        static const std::string nots = "not";   // not string
-        static const std::string bols = "bool";  // bool string
         auto nxtIter = std::ranges::next(_iterator);
         if(newType == "dot" || isTokenOfType(nxtIter, TokenType::DOT_OPERATOR)) { return {}; }
         if(std::get<2>(oldType).find(sps) != std::string::npos) { return "Multiple return value functions must be used alone"; }
@@ -411,8 +414,8 @@ namespace vnd {
         }
         if(_sq && !isSquareType(newType)) { return FORMAT("Type not allowed {}", newType); }
         if(std::get<2>(oldType).empty()) {
-            if(newType == "operator") {
-                std::get<2>(oldType) = "int";
+            if(newType == oprt) {
+                std::get<2>(oldType) = ints;
                 return {};
             }
             std::get<2>(oldType) = newType;
@@ -424,7 +427,7 @@ namespace vnd {
         }
         if(std::get<2>(oldType) == bols && newType == nots) { return ""; }
         if(std::get<2>(oldType) == newType) { return ""; }
-        if(Scope::isNumber(std::get<2>(oldType)) && (Scope::isNumber(std::string{newType}) || newType == "operator")) { return {}; }
+        if(Scope::isNumber(std::get<2>(oldType)) && (Scope::isNumber(std::string{newType}) || newType == oprt)) { return {}; }
         if(newType == "equal") {
             std::get<0>(oldType) = true;
             return {};
@@ -453,7 +456,7 @@ namespace vnd {
     bool ExpressionFactory::checkUnaryOperator(const std::string_view &type) const noexcept {
         auto nxtIter = std::ranges::next(_iterator);
         return !_iterator->isType(TokenType::IDENTIFIER) || isEnd(nxtIter) || !nxtIter->isType(TokenType::UNARY_OPERATOR) ||
-               (_temp.empty() && type == "int" && !_scope->isConstant(_type, _iterator->getValue()));
+               (_temp.empty() && type == ints && !_scope->isConstant(_type, _iterator->getValue()));
     }
 
     void ExpressionFactory::checkOperators(std::string &value) noexcept {
@@ -491,10 +494,10 @@ namespace vnd {
         }
     }
     std::string ExpressionFactory::handleLogicalType(ExpressionFactory::TupType &oldType) const noexcept {
-        if(std::get<2>(oldType) == "bool" || std::get<0>(oldType) == true) {
+        if(std::get<2>(oldType) == bols || std::get<0>(oldType) == true) {
             std::get<0>(oldType) = false;
             std::get<1>(oldType) = true;
-            std::get<2>(oldType) = "";
+            std::get<2>(oldType).clear();
             return {};
         }
         return FORMAT("Cannot apply operator for {} type", std::get<2>(oldType));
