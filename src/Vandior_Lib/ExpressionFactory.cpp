@@ -187,7 +187,7 @@ namespace vnd {
             ++_iterator;
             return;
         }
-        if(checkNextToken(std::string{type}, writeToken())) { return; }
+        if(checkNextToken(type, writeToken())) { return; }
         _dot = false;
         const auto value = _iterator->getValue();
         if(_iterator->isType(CHAR)) {
