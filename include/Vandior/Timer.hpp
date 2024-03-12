@@ -43,8 +43,7 @@ namespace vnd {
     protected:
         /// This is a typedef to make clocks easier to use
         using clock = std::chrono::high_resolution_clock;  // NOLINT(*-include-cleaner)
-        using times =
-            std::tuple<long double, long double, long double, long double, std::string, std::string, std::string, std::string>;
+        using times = std::tuple<long double, long double, long double, long double, std::string, std::string, std::string, std::string>;
 
         /// This typedef is for points in time
         using time_point = std::chrono::time_point<clock>;  // NOLINT(*-include-cleaner)
@@ -70,9 +69,7 @@ namespace vnd {
         /**
          * @brief Default print function for Timer class.
          */
-        static const std::string Simple(const std::string &title, const std::string &time) {
-            return FORMAT("{}: {}", title, time);
-        }
+        static const std::string Simple(const std::string &title, const std::string &time) { return FORMAT("{}: {}", title, time); }
 
         /**
          * @brief A more elaborate print function for Timer class.
@@ -209,18 +206,7 @@ namespace vnd {
      */
     class AutoTimer : public Timer {
     public:
-        /**
-         * @brief Explicit constructor for AutoTimer class.
-         * Reimplementing the constructor is required in GCC 4.7
-         */
-        explicit AutoTimer(const std::string &title = "Timer", const time_print_t &time_print = Simple)
-          : Timer(title, time_print) {}
-
-        // GCC 4.7 does not support using inheriting constructors.
-        AutoTimer(const AutoTimer &other) = delete;              /// Delete copy constructor
-        AutoTimer &operator=(const AutoTimer &other) = delete;   /// Delete copy assignment operator
-        AutoTimer(const AutoTimer &&other) = delete;             /// Delete move constructor
-        AutoTimer &operator=(const AutoTimer &&other) = delete;  /// Delete move assignment operator
+        using Timer::Timer;
 
         /**
          * @brief Destructor for AutoTimer class that prints the time string.
