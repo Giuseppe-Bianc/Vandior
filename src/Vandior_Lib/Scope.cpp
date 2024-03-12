@@ -11,8 +11,11 @@ DISABLE_WARNINGS_PUSH(
 
 namespace vnd {
     // NOLINTBEGIN
-    std::vector<std::string> Scope::_numberTypes = {"int", "float"};
-    std::vector<std::string> Scope::_primitiveTypes = {"int", "float", "double", "char", "bool", "string"};
+    std::vector<std::string> Scope::_signedTypes = {"i8", "i16", "i32", "i64"};
+    std::vector<std::string> Scope::_unsignedTypes = {"u8", "u16", "u32", "u64"};
+    std::vector<std::string> Scope::_floatingTypes = {"f32", "f64"};
+    std::vector<std::string> Scope::_primitiveTypes = {"i8",  "i16", "i32", "i64",  "u8",   "u16",   "u32",
+                                                       "u64", "f32", "f64", "char", "bool", "string"};
     // NOLINTEND
 
     Scope::Scope(std::shared_ptr<Scope> parent, const ScopeType &type) noexcept : _parent(std::move(parent)), _type(type) {
@@ -28,29 +31,24 @@ namespace vnd {
     std::shared_ptr<Scope> Scope::createMain() noexcept {
         auto mainScope = std::make_shared<Scope>(Scope{nullptr, ScopeType::GLOBAL_SCOPE});
         mainScope->addType("void");
-        mainScope->addType("int");
-        mainScope->addType("float");
-        mainScope->addType("double");
-        mainScope->addType("char");
-        mainScope->addType("bool");
-        mainScope->addType("string");
+        for(auto &type : Scope::_primitiveTypes) { mainScope->addType(type); }
         mainScope->addType("Object");
         mainScope->addType("Derived", {"Object"});
-        mainScope->addVariable("Object.a", "int", false);
-        mainScope->addVariable("Object.test", "float", true);
+        mainScope->addVariable("Object.a", "i32", false);
+        mainScope->addVariable("Object.test", "f32", true);
         mainScope->addVariable("Object.s", "string", false);
         mainScope->addVariable("Derived._derivedProperty", "bool", false);
         mainScope->addVariable("Derived.obj", "Object", false);
-        mainScope->addConstant("Object.c", "int", "2");
+        mainScope->addConstant("Object.c", "i32", "2");
         mainScope->addConstant("Derived._derivedConst", "bool", "true");
         mainScope->addFun("print", FunType::create("void", {"string", "any..."}, {}, {}));
         mainScope->addFun("println", FunType::create("void", {"string", "any..."}, {}, {}));
         mainScope->addFun("readLine", FunType::create("string", {}, {}, {}));
-        mainScope->addFun("_test", FunType::create("int", {}, {}, {}));
-        mainScope->addFun("testPar", FunType::create("int", {"int", "int"}, {}, {}));
-        mainScope->addFun("testPar", FunType::create("int", {"string"}, {}, {}));
-        mainScope->addFun("max", FunType::create("int float", {"float[]"}, {}, {}));
-        mainScope->addFun("arrayTest", FunType::create("int[]", {}, {}, {}));
+        mainScope->addFun("_test", FunType::create("i32", {}, {}, {}));
+        mainScope->addFun("testPar", FunType::create("i32", {"i32", "i32"}, {}, {}));
+        mainScope->addFun("testPar", FunType::create("i32", {"string"}, {}, {}));
+        mainScope->addFun("max", FunType::create("i32 f32", {"f32[]"}, {}, {}));
+        mainScope->addFun("arrayTest", FunType::create("i32[]", {}, {}, {}));
         mainScope->addFun("createObject", FunType::create("Object", {}, {}, {}));
         mainScope->addFun("Object", FunType::create("Object", {}, {}, {}, true));
         mainScope->addFun("Derived", FunType::create("Derived", {}, {}, {}, true));
@@ -59,19 +57,24 @@ namespace vnd {
         mainScope->addFun("vnd::vector.add", FunType::create("void", {"T"}, {{"T", "any"}}, {}));
         mainScope->addFun("vnd::vector.addVector", FunType::create("void", {"T[]"}, {{"T", "any"}}, {}));
         mainScope->addFun("vnd::vector.addAll", FunType::create("void", {"T..."}, {{"T", "any"}}, {}));
-        mainScope->addFun("vnd::vector.size", FunType::create("int", {}, {{"T", "any"}}, {}));
-        mainScope->addFun("vnd::array.size", FunType::create("int", {}, {{"T", "any"}}, {}));
-        mainScope->addFun("string.size", FunType::create("int", {}, {}, {}));
-        mainScope->addFun("string.toInt", FunType::create("int", {}, {}, {}));
-        mainScope->addFun("Object.f", FunType::create("float", {"float"}, {}, {}));
+        mainScope->addFun("vnd::vector.size", FunType::create("i32", {}, {{"T", "any"}}, {}));
+        mainScope->addFun("vnd::array.size", FunType::create("i32", {}, {{"T", "any"}}, {}));
+        mainScope->addFun("string.size", FunType::create("i32", {}, {}, {}));
+        mainScope->addFun("string.toInt", FunType::create("i32", {}, {}, {}));
+        mainScope->addFun("Object.f", FunType::create("f32", {"f32"}, {}, {}));
         mainScope->addFun("Object.fs", FunType::create("string", {}, {}, {}));
         mainScope->addFun("Derived.derivedFun", FunType::create("bool", {"Object"}, {}, {}));
         mainScope->addFun("Derived.object", FunType::create("Object", {}, {}, {}));
         return mainScope;
     }
 
+    bool Scope::isInteger(const std::string &type) noexcept {
+        return std::ranges::find(Scope::_signedTypes, type) != Scope::_signedTypes.end() ||
+               std::ranges::find(Scope::_unsignedTypes, type) != Scope::_unsignedTypes.end();
+    }
+
     bool Scope::isNumber(const std::string &type) noexcept {
-        return std::ranges::find(Scope::_numberTypes, type) != Scope::_numberTypes.end();
+        return Scope::isInteger(type) || std::ranges::find(Scope::_floatingTypes, type) != Scope::_floatingTypes.end();
     }
 
     bool Scope::isPrimitive(const std::string &type) noexcept {

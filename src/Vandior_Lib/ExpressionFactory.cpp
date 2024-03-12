@@ -23,7 +23,7 @@ namespace vnd {
     static inline constexpr std::string_view nots = "not";   // not string
     static inline constexpr std::string_view bols = "bool";  // bool string
     static inline constexpr std::string_view oprt = "operator";
-    static inline constexpr std::string_view ints = "int";
+    static inline constexpr std::string_view ints = "i64";
     static inline constexpr std::size_t buffer_size = 128;
     // NOLINTBEGIN(*-pass-by-value, *-identifier-length)
     ExpressionFactory::ExpressionFactory(TokenVecIter &iterator, const TokenVecIter &end, std::shared_ptr<Scope> scope, const bool isConst,
@@ -52,7 +52,9 @@ namespace vnd {
         return params;
     }
 
-    bool ExpressionFactory::isSquareType(const std::string_view &type) noexcept { return type == ints || type == oprt; }
+    bool ExpressionFactory::isSquareType(const std::string_view &type) noexcept {
+        return Scope::isInteger(std::string{type}) || type == oprt;
+    }
 
     std::string ExpressionFactory::evaluate(const std::string &expression) const noexcept {
 #ifdef _WIN32
@@ -149,7 +151,7 @@ namespace vnd {
         case INTEGER:
             return ints;
         case DOUBLE:
-            return "float";
+            return "f64";
         case BOOLEAN:
             return bols;
         case CHAR:
@@ -312,7 +314,7 @@ namespace vnd {
         ++_iterator;
         if(auto error = factory.parse({TokenType::CLOSE_SQ_PARENTESIS}); !error.empty()) { return error; }
         auto expression = factory.getExpression();
-        if(auto newType = expression.getType(); newType != ints) { return FORMAT("{} index not allowed", newType); }
+        if(auto newType = expression.getType(); !Scope::isInteger(newType)) { return FORMAT("{} index not allowed", newType); }
         if(auto error = ExpressionFactory::checkType(type, _type); !error.empty()) { return error; }
         _const = false;
         write(FORMAT("at({})", expression.getText()), _type);
@@ -456,7 +458,7 @@ namespace vnd {
     bool ExpressionFactory::checkUnaryOperator(const std::string_view &type) const noexcept {
         auto nxtIter = std::ranges::next(_iterator);
         return !_iterator->isType(TokenType::IDENTIFIER) || isEnd(nxtIter) || !nxtIter->isType(TokenType::UNARY_OPERATOR) ||
-               (_temp.empty() && type == ints && !_scope->isConstant(_type, _iterator->getValue()));
+               (_temp.empty() && Scope::isInteger(std::string{type}) && !_scope->isConstant(_type, _iterator->getValue()));
     }
 
     void ExpressionFactory::checkOperators(std::string &value) noexcept {

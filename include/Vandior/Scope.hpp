@@ -26,6 +26,13 @@ namespace vnd {
         [[nodiscard]] static std::shared_ptr<Scope> createMain() noexcept;
 
         /**
+         * @brief Checks if a type is an integer type.
+         * @param type String representing the type to check.
+         * @return Bool indicating the result of the check.
+         */
+        [[nodiscard]] static bool isInteger(const std::string &type) noexcept;
+
+        /**
          * @brief Checks if a type is a numeric type.
          * @param type String representing the type to check.
          * @return Bool indicating the result of the check.
@@ -181,7 +188,9 @@ namespace vnd {
          */
         explicit Scope(std::shared_ptr<Scope> parent, const ScopeType &type) noexcept;
 
-        static std::vector<std::string> _numberTypes;     ///< Vector of numeric types
+        static std::vector<std::string> _signedTypes;     ///< Vector of signed integer types
+        static std::vector<std::string> _unsignedTypes;   ///< Vector of unsigned integer types
+        static std::vector<std::string> _floatingTypes;   ///< Vector of floating point types
         static std::vector<std::string> _primitiveTypes;  ///< Vector of primitive types
 
         /**

@@ -1,11 +1,12 @@
-const nume : int = 334
-const dmnum : float = 1.222222222222
+const nume : i32 = 334
+const dmnum : f32 = 1.222222222222
 const boolc: bool = 1 == 1 || !false && 67 < 77.85
 main {
-	for var i: int = 0, args.size() {
+	for var i: i32 = 0, args.size() {
 		println(args[i])
 	}
-	var integer: int = 2
+	var integer: i8 = 2
+	print("{}", integer)
 	var obj1, obj2: Object = Object(), Derived()
 	println("Before first swap:\t{} {}", obj1, obj2)
 	obj1, obj2 = obj2, obj1
@@ -25,10 +26,10 @@ main {
 	println("{} {}", s3, s2)
 	var array1, array2: Object[] = {Object(), Object()}, {Derived(), Object()} 
 	var array3, array4: Derived[2] = {Derived(), Derived()} 
-	var num: int = 5
-	var num1: float = 90.56 % 3.45
-	var octNum: int = #o2222
-	var hexNum: int = #2323
+	var num: u8 = 5
+	var num1: f64 = 90.56 % 3.45
+	var octNum: i64 = #o2222
+	var hexNum: i64 = #2323
 	if(true) {
 		if(num == 2) {
 			println("2")
@@ -49,17 +50,17 @@ main {
 	for num = num + 3 ^ 4, 100, 1 + 1 {
 		println("for 1:\t{}", num)
 	}
-	for var i: int = 45.43 ^ (num / num1), -100, -1 {
+	for var i: i8 = 45.43 ^ (num / num1), -100, -1 {
 		if(i < 0 && i > -50) {
 			continue
 		}
 		println("for 2:\t{}", i)
 	}
-	for var i: float = 0.4, 5.6 {
+	for var i: f32 = 0.4, 5.6 {
 		println("for 3:\t{}", i)
 	}
 	for num = 1, 10, 10 {}
-	for var j: float = 1, 10 {}
+	for var j: f32 = 1, 10 {}
 	while(true) {
 		var s: string = readLine()
 		if(s == "Exit") {
@@ -68,8 +69,9 @@ main {
 		println(s)
 	}
 	array1[0 ^ 1] = Object()
-	println("{}", array1[0 ^ 1].a)
-	var fnum: float = 20213412.32
+	array1[-1].a = 45
+	println("{}", array1[-1 ^ 1].a)
+	var fnum: f64 = 20213412.32
 	fnum ^= 10 / 2 ^ 2 ^ 3.4
 	println("{}", fnum)
 }
