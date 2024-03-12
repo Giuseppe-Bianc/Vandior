@@ -27,8 +27,8 @@ namespace vnd {
         const std::string examples = "examples";
         _output.open("output.cpp");
 #ifdef _WIN32
-        for(char &i : filename) {
-            if(i == '\\') { i = '/'; }
+        for(char &iter : filename) {
+            if(iter == '\\') { iter = '/'; }
         }
 #endif
         size_t pos = filename.find_last_of('/');
@@ -431,9 +431,9 @@ namespace vnd {
                 return "Cannot use blank identifier here";
             }
         }
-        std::tie(newType, assignable) = std::make_pair(_scope->getVariableType(type, value),
-                                                    _scope->getConstValue(type, value).empty());
-        if(next != end && (next->isType(COMMA) || next->isType(EQUAL_OPERATOR) || next->isType(OPERATION_EQUAL) ||next->isType(OPEN_SQ_PARENTESIS))) {
+        std::tie(newType, assignable) = std::make_pair(_scope->getVariableType(type, value), _scope->getConstValue(type, value).empty());
+        if(next != end &&
+           (next->isType(COMMA) || next->isType(EQUAL_OPERATOR) || next->isType(OPERATION_EQUAL) || next->isType(OPEN_SQ_PARENTESIS))) {
             assignable = !_scope->isConstant(type, value);
         }
         if(newType.empty()) { return FORMAT("Cannot find identifier {}.{}", type, value); }
@@ -586,8 +586,8 @@ namespace vnd {
         return {type, FORMAT("{}{}{}", prefix, typeValue, suffix)};
     }
 
-    bool Transpiler::transpileSwap(const std::vector<std::pair<std::string, std::string>>& variables,
-        const std::vector<Expression>& expressions) noexcept {
+    bool Transpiler::transpileSwap(const std::vector<std::pair<std::string, std::string>> &variables,
+                                   const std::vector<Expression> &expressions) noexcept {
         if(variables.size() != 2 || expressions.size() != 2) { return false; }
         std::vector<std::string> swapVariables = {variables.at(0).first, variables.at(1).first};
         std::vector<std::string> swapExpressions = {expressions.at(0).getText(), expressions.at(1).getText()};

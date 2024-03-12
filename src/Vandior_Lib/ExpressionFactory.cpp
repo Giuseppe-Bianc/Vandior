@@ -36,7 +36,7 @@ namespace vnd {
         size_t pos = 0;
         std::ranges::for_each(expressions, [&](const Expression &expression) {
             if(variadic.has_value() && pos == variadic.value()) { params += "{"; }
-            params += expression.getText() + ", ";
+            params += FORMAT("{}, ", expression.getText());
             pos++;
         });
         if(!params.empty()) { params.erase(params.size() - 2, 2); }
@@ -139,7 +139,7 @@ namespace vnd {
 
     std::string_view ExpressionFactory::getTokenType() const noexcept {
         using enum TokenType;
-        // NOLINTBEGIN
+        auto iterValue = _iterator->getValue();
         switch(_iterator->getType()) {
         case INTEGER:
             return "int";
@@ -152,7 +152,7 @@ namespace vnd {
         case STRING:
             return "string";
         case IDENTIFIER:
-            return _scope->getVariableType(_type, _iterator->getValue());
+            return _scope->getVariableType(_type, iterValue);
         case OPERATOR:
         case MINUS_OPERATOR:
             [[fallthrough]];
@@ -161,7 +161,7 @@ namespace vnd {
         case DOT_OPERATOR:
             return "dot";
         case BOOLEAN_OPERATOR:
-            if(_iterator->getValue() == "==" || _iterator->getValue() == "!=") { return "equal"; }
+            if(iterValue == "==" || iterValue == "!=") { return "equal"; }
             return "boolean";
         case NOT_OPERATOR:
             return "not";
@@ -172,21 +172,20 @@ namespace vnd {
         default:
             break;
         }
-        // NOLINTEND
         return {};
     }
 
     void ExpressionFactory::emplaceToken(const std::string_view &type) noexcept {
         using enum TokenType;
         clearData();
-        if(isType(_iterator, TokenType::DOT_OPERATOR)) {
+        if(_iterator->isType(TokenType::DOT_OPERATOR)) {
             ++_iterator;
             return;
         }
         if(checkNextToken(std::string{type}, writeToken())) { return; }
         _dot = false;
         const auto value = _iterator->getValue();
-        if(isType(_iterator, CHAR)) {
+        if(_iterator->isType(CHAR)) {
             auto frtVal = FORMAT("'{}'", std::string{value});
             _text.emplace_back(frtVal);
             _expressionText += frtVal;
@@ -213,7 +212,7 @@ namespace vnd {
         }
         auto text = _temp + writeToken();
         if(_const) {
-            if(isType(_iterator, TokenType::IDENTIFIER)) {
+            if(_iterator->isType(TokenType::IDENTIFIER)) {
                 auto constValue = _scope->getConstValue(_type, _iterator->getValue());
                 if(constValue.empty()) {
                     _const = false;
@@ -233,8 +232,8 @@ namespace vnd {
 
     std::string ExpressionFactory::writeToken() noexcept {
         auto value = std::string{_iterator->getValue()};
-        if(isType(_iterator, TokenType::STRING)) { value = FORMAT(R"(string("{}"))", value); }
-        if(isType(_iterator, TokenType::IDENTIFIER)) {
+        if(_iterator->isType(TokenType::STRING)) { value = FORMAT(R"(string("{}"))", value); }
+        if(_iterator->isType(TokenType::IDENTIFIER)) {
             if(_temp.empty()) {
                 if(!value.empty() && value.starts_with('_')) {
                     value = FORMAT("v{}", value);
@@ -245,9 +244,9 @@ namespace vnd {
                 value = FORMAT("get{}{}()", char(std::toupper(value.at(0))), value.substr(1));
             }
             auto nxtIter = std::ranges::next(_iterator);
-            if(!isEnd(nxtIter) && isType(nxtIter, TokenType::UNARY_OPERATOR)) { value += nxtIter->getValue(); }
+            if(!isEnd(nxtIter) && nxtIter->isType(TokenType::UNARY_OPERATOR)) { value += nxtIter->getValue(); }
         }
-        if(isType(_iterator, TokenType::INTEGER) && value.starts_with('#')) {
+        if(_iterator->isType(TokenType::INTEGER) && value.starts_with('#')) {
             value.erase(0, 1);
             if(!value.empty() && value.starts_with('o')) {
                 value.erase(0, 1);
@@ -266,15 +265,15 @@ namespace vnd {
         std::string params;
         if(_const && !_temp.empty()) { return "Cannot call methods on const value"; }
         ++_iterator;
-        while(!isType(_iterator, TokenType::CLOSE_PARENTESIS)) {
+        while(!_iterator->isType(TokenType::CLOSE_PARENTESIS)) {
             ++_iterator;
-            if(!isType(_iterator, CLOSE_PARENTESIS)) {
+            if(!_iterator->isType(CLOSE_PARENTESIS)) {
                 if(std::string error = factory.parse({COMMA, CLOSE_PARENTESIS}); !error.empty()) { return error; }
             }
         }
 
         auto nxtIter = std::ranges::next(_iterator);
-        if(isEnd(nxtIter) || !isType(nxtIter, DOT_OPERATOR)) { _const = false; }
+        if(isEnd(nxtIter) || !nxtIter->isType(DOT_OPERATOR)) { _const = false; }
         expressions = factory.getExpressions();
         auto [newType, constructor, variadic] = _scope->getFunType(_type, identifier, expressions);
         if(newType.empty()) {
@@ -322,10 +321,10 @@ namespace vnd {
         std::string constValue;
         std::vector<Expression> expressions;
         auto factory = ExpressionFactory::create(_iterator, _end, _scope, _const);
-        while(!isType(_iterator, TokenType::CLOSE_CUR_PARENTESIS)) {
+        while(!_iterator->isType(TokenType::CLOSE_CUR_PARENTESIS)) {
             using enum vnd::TokenType;
             ++_iterator;
-            if(!isType(_iterator, CLOSE_CUR_PARENTESIS)) {
+            if(!_iterator->isType(CLOSE_CUR_PARENTESIS)) {
                 if(auto error = factory.parse({COMMA, CLOSE_CUR_PARENTESIS}); !error.empty()) { return error; }
             }
         }
@@ -389,7 +388,7 @@ namespace vnd {
     }
 
     bool ExpressionFactory::isTokenOfType(const TokenVecIter &iterator, TokenType type) const noexcept {
-        return !isEnd(iterator) && isType(iterator, type);
+        return !isEnd(iterator) && iterator->isType(type);
     }
 
     // NOLINTNEXTLINE(*-function-cognitive-complexity)
@@ -438,7 +437,7 @@ namespace vnd {
     // NOLINTNEXTLINE(*-easily-swappable-parameters)
     bool ExpressionFactory::checkNextToken(const std::string &type, const std::string &value) noexcept {
         auto nxtIter = std::ranges::next(_iterator);
-        if(!isEnd(nxtIter) && (isType(nxtIter, TokenType::DOT_OPERATOR) || isType(nxtIter, TokenType::OPEN_SQ_PARENTESIS))) {
+        if(!isEnd(nxtIter) && (nxtIter->isType(TokenType::DOT_OPERATOR) || nxtIter->isType(TokenType::OPEN_SQ_PARENTESIS))) {
             _type = type;
             if(type == "string" || type.ends_with(']')) {
                 _temp += value + ".";
@@ -451,16 +450,14 @@ namespace vnd {
         }
         return false;
     }
-    bool ExpressionFactory::isType(const TokenVecIter &nextToken, TokenType type) const noexcept { return nextToken->isType(type); }
-
     bool ExpressionFactory::checkUnaryOperator(const std::string_view &type) const noexcept {
         auto nxtIter = std::ranges::next(_iterator);
-        return !isType(_iterator, TokenType::IDENTIFIER) || isEnd(nxtIter) || !isType(nxtIter, TokenType::UNARY_OPERATOR) ||
+        return !_iterator->isType(TokenType::IDENTIFIER) || isEnd(nxtIter) || !nxtIter->isType(TokenType::UNARY_OPERATOR) ||
                (_temp.empty() && type == "int" && !_scope->isConstant(_type, _iterator->getValue()));
     }
 
     void ExpressionFactory::checkOperators(std::string &value) noexcept {
-        if(isType(_iterator, TokenType::MINUS_OPERATOR)) { return; }
+        if(_iterator->isType(TokenType::MINUS_OPERATOR)) { return; }
         if(_divide) {
             value = FORMAT("double({})", value);
             _divide = false;
@@ -479,7 +476,7 @@ namespace vnd {
     void ExpressionFactory::write(const std::string &value, const std::string_view &type) noexcept {
         clearData();
         if(checkNextToken(std::string{type}, value)) { return; }
-        auto text = _temp + value;
+        auto text = FORMAT("{}{}", _temp, value);
         checkOperators(text);
         if(!_text.empty()) { text = FORMAT(" {}", text); }
         _text.emplace_back(text);
