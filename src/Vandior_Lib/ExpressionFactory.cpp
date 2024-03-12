@@ -438,7 +438,7 @@ namespace vnd {
     }
 
     // NOLINTNEXTLINE(*-easily-swappable-parameters)
-    bool ExpressionFactory::checkNextToken(const std::string &type, const std::string &value) noexcept {
+    bool ExpressionFactory::checkNextToken(const std::string_view &type, const std::string &value) noexcept {
         auto nxtIter = std::ranges::next(_iterator);
         if(!isEnd(nxtIter) && (nxtIter->isType(TokenType::DOT_OPERATOR) || nxtIter->isType(TokenType::OPEN_SQ_PARENTESIS))) {
             _type = type;

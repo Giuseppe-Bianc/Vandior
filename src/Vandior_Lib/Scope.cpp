@@ -89,10 +89,10 @@ namespace vnd {
         return true;
     }
 
-    std::string Scope::getTypeValue(std::string &type) noexcept {
+    std::string Scope::getTypeValue(const std::string &type) noexcept {
         auto pos = type.find('[');
         if(pos == std::string::npos) { pos = type.size(); }
-        std::string typeValue = type.substr(0, pos);
+        auto typeValue = type.substr(0, pos);
         if(!Scope::isPrimitive(typeValue)) { typeValue = FORMAT("std::shared_ptr<{}>", typeValue); }
         if(pos != type.size()) {
             std::string size;
@@ -200,8 +200,8 @@ namespace vnd {
     }
 
     // NOLINTNEXTLINE(*-no-recursion,readability-function-cognitive-complexity)
-    std::tuple<std::string, bool, std::optional<size_t>> Scope::getFunType(
-        const std::string &type, const std::string_view &identifier, const std::vector<Expression> &expressions) const noexcept {
+    std::tuple<std::string, bool, std::optional<size_t>> Scope::getFunType(const std::string &type, const std::string_view &identifier,
+                                                                           const std::vector<Expression> &expressions) const noexcept {
         bool found = false;
         for(const auto &i : getFuns(Scope::getType(type), identifier)) {
             auto params = i.getParams();
@@ -269,9 +269,8 @@ namespace vnd {
         if((Scope::isNumber(left) && Scope::isNumber(right)) || left == right) { return true; }
         if(right == "nullptr") { return !Scope::isPrimitive(left); }
         if(right == "[]" && left.ends_with(']')) { return true; }
-        if(std::pair<std::string, std::string> types = {left, right};
-           (types.first.ends_with("[]") || types.second.ends_with("[]")) && Scope::checkVector(types.first) &&
-           Scope::checkVector(types.second)) {
+        if(std::pair<std::string, std::string> types = {left, right}; (types.first.ends_with("[]") || types.second.ends_with("[]")) &&
+                                                                      Scope::checkVector(types.first) && Scope::checkVector(types.second)) {
             return canAssign(types.first, types.second);
         }
         if(_types.contains(right)) {
@@ -322,8 +321,7 @@ namespace vnd {
         return result;
     }
 
-    std::pair<FunType, bool> Scope::specializeFun(const FunType &fun,
-                                                  const std::vector<std::string> &typeSpecialized) const noexcept {
+    std::pair<FunType, bool> Scope::specializeFun(const FunType &fun, const std::vector<std::string> &typeSpecialized) const noexcept {
         std::vector<std::pair<std::string, std::string>> typeGeneric = fun.getTypeGeneric();
         std::vector<std::pair<std::string, std::string>> resultGeneric;
         // TODO: fix this if statement
@@ -338,8 +336,7 @@ namespace vnd {
 
         // Check if typeSpecialized still has remaining elements
         if(it_specialized != typeSpecialized.end()) { return {FunType::createEmpty(), false}; }
-        return {FunType::create(fun.getReturnType(), fun.getParams(), typeGeneric, fun.getFuncGeneric(), fun.isConstructor()),
-                true};
+        return {FunType::create(fun.getReturnType(), fun.getParams(), typeGeneric, fun.getFuncGeneric(), fun.isConstructor()), true};
     }
 
 }  // namespace vnd
