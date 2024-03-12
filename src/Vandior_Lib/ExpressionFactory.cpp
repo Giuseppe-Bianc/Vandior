@@ -478,7 +478,7 @@ namespace vnd {
 
     void ExpressionFactory::write(const std::string &value, const std::string_view &type) noexcept {
         clearData();
-        if(checkNextToken(std::string{type}, value)) { return; }
+        if(checkNextToken(type, value)) { return; }
         auto text = FORMAT("{}{}", _temp, value);
         checkOperators(text);
         if(!_text.empty()) { text = FORMAT(" {}", text); }
