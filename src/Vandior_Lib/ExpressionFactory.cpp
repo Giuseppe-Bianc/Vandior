@@ -23,7 +23,6 @@ namespace vnd {
     static inline constexpr std::string_view nots = "not";   // not string
     static inline constexpr std::string_view bols = "bool";  // bool string
     static inline constexpr std::string_view oprt = "operator";
-    static inline constexpr std::string_view ints = "i64";
     static inline constexpr std::size_t buffer_size = 128;
     // NOLINTBEGIN(*-pass-by-value, *-identifier-length)
     ExpressionFactory::ExpressionFactory(TokenVecIter &iterator, const TokenVecIter &end, std::shared_ptr<Scope> scope, const bool isConst,
@@ -54,6 +53,25 @@ namespace vnd {
 
     bool ExpressionFactory::isSquareType(const std::string_view &type) noexcept {
         return Scope::isInteger(std::string{type}) || type == oprt;
+    }
+
+    std::string_view ExpressionFactory::getIntType(const std::string_view& value) noexcept {
+
+        uint64_t number;
+        if(value.starts_with('#')) {
+            if(value.starts_with('o')) {
+                number = std::stoull(FORMAT("0{}", value.substr(2)));
+            } else {
+                number = std::stoull(FORMAT("0x{}", value.substr(1)));
+            }
+        } else {
+            number = std::stoull(std::string{value});
+        }
+        if(number <= std::numeric_limits<uint8_t>::max()) { return "u8"; }
+        if(number <= std::numeric_limits<uint16_t>::max()) { return "u16"; }
+        if(number <= std::numeric_limits<uint32_t>::max()) { return "u32"; }
+        return "u64";
+
     }
 
     std::string ExpressionFactory::evaluate(const std::string &expression) const noexcept {
@@ -149,8 +167,11 @@ namespace vnd {
         auto iterValue = _iterator->getValue();
         switch(_iterator->getType()) {
         case INTEGER:
-            return ints;
+            return ExpressionFactory::getIntType(iterValue);
         case DOUBLE:
+            if(iterValue.ends_with("if")) { return "c32"; }
+            if(iterValue.ends_with('i')) { return "c64"; }
+            if(iterValue.ends_with('f')) { return "f32"; }
             return "f64";
         case BOOLEAN:
             return bols;
@@ -255,7 +276,7 @@ namespace vnd {
         }
         if(_iterator->isType(TokenType::INTEGER) && value.starts_with('#')) {
             value.erase(0, 1);
-            if(!value.empty() && value.starts_with('o')) {
+            if(value.starts_with('o')) {
                 value.erase(0, 1);
                 return FORMAT("0{}", value);
             }
@@ -417,7 +438,7 @@ namespace vnd {
         if(_sq && !isSquareType(newType)) { return FORMAT("Type not allowed {}", newType); }
         if(std::get<2>(oldType).empty()) {
             if(newType == oprt) {
-                std::get<2>(oldType) = ints;
+                std::get<2>(oldType) = "i8";
                 return {};
             }
             std::get<2>(oldType) = newType;
@@ -427,9 +448,26 @@ namespace vnd {
             std::get<2>(oldType) = newType;
             return {};
         }
-        if(std::get<2>(oldType) == bols && newType == nots) { return ""; }
-        if(std::get<2>(oldType) == newType) { return ""; }
-        if(Scope::isNumber(std::get<2>(oldType)) && (Scope::isNumber(std::string{newType}) || newType == oprt)) { return {}; }
+        if(std::get<2>(oldType) == bols && newType == nots) { return {}; }
+        if(std::get<2>(oldType) == newType) { return {}; }
+        if(Scope::isNumber(std::get<2>(oldType))) {
+            if(newType == oprt) { return {}; }
+            if(Scope::isNumber(std::string{newType})) {
+                std::function<std::string(const std::pair<char, std::string> &,
+                                          const std::pair<char, std::string_view> &)>
+                    getType = [](auto &oldParts, auto &newParts) -> std::string {
+                    short size = static_cast<short>(std::max(std::stoi(oldParts.second), std::stoi(std::string{newParts.second})));
+                    if(oldParts.first == 'c' || newParts.first == 'c') { return FORMAT("c{}", size); }
+                    if(oldParts.first == 'f' || newParts.first == 'f') { return FORMAT("f{}", size); }
+                    if(oldParts.first == 'i' || newParts.first == 'i') { return FORMAT("i{}", size); }
+                    return FORMAT("u{}", size);
+                };
+                std::pair<char, std::string> oldParts = {std::get<2>(oldType).at(0), std::get<2>(oldType).substr(1)};
+                std::pair<char, std::string_view> newParts = {newType.at(0), newType.substr(1)};
+                std::get<2>(oldType) = getType(oldParts, newParts);
+                return {};
+            }
+        }
         if(newType == "equal") {
             std::get<0>(oldType) = true;
             return {};

@@ -5,7 +5,9 @@ main {
 	for var i: i32 = 0, args.size() {
 		println(args[i])
 	}
-	var integer: i8 = 2
+	var complexValue1: c32 = 4if
+	var complexValue2: c64 = 4i
+	var integer: i8 = 3
 	print("{}", integer)
 	var obj1, obj2: Object = Object(), Derived()
 	println("Before first swap:\t{} {}", obj1, obj2)

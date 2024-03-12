@@ -1,5 +1,6 @@
 #pragma once
 #include <cstdint>
+#include <complex>
 #include "string.hpp"
 
 // Signed integer types
@@ -17,3 +18,8 @@ using u64 = uint64_t;
 // Floating points types
 using f32 = float;
 using f64 = double;
+
+// Complex data types
+using c32 = std::complex<f32>;
+using c64 = std::complex<f64>;
+using namespace std::complex_literals;

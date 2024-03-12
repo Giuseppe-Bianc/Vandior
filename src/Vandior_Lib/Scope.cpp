@@ -14,8 +14,9 @@ namespace vnd {
     std::vector<std::string> Scope::_signedTypes = {"i8", "i16", "i32", "i64"};
     std::vector<std::string> Scope::_unsignedTypes = {"u8", "u16", "u32", "u64"};
     std::vector<std::string> Scope::_floatingTypes = {"f32", "f64"};
+    std::vector<std::string> Scope::_complexTypes = {"c32", "c64"};
     std::vector<std::string> Scope::_primitiveTypes = {"i8",  "i16", "i32", "i64",  "u8",   "u16",   "u32",
-                                                       "u64", "f32", "f64", "char", "bool", "string"};
+                                                       "u64", "f32", "f64", "c32", "c64", "char", "bool", "string"};
     // NOLINTEND
 
     Scope::Scope(std::shared_ptr<Scope> parent, const ScopeType &type) noexcept : _parent(std::move(parent)), _type(type) {
@@ -73,8 +74,13 @@ namespace vnd {
                std::ranges::find(Scope::_unsignedTypes, type) != Scope::_unsignedTypes.end();
     }
 
+    bool Scope::isComplex(const std::string &type) noexcept {
+        return std::ranges::find(Scope::_complexTypes, type) != Scope::_complexTypes.end();
+    }
+
     bool Scope::isNumber(const std::string &type) noexcept {
-        return Scope::isInteger(type) || std::ranges::find(Scope::_floatingTypes, type) != Scope::_floatingTypes.end();
+        return Scope::isInteger(type) || Scope::isComplex(type) ||
+               std::ranges::find(Scope::_floatingTypes, type) != Scope::_floatingTypes.end();
     }
 
     bool Scope::isPrimitive(const std::string &type) noexcept {
@@ -269,7 +275,10 @@ namespace vnd {
     // NOLINTNEXTLINE(*-no-recursion)
     bool Scope::canAssign(const std::string &left, const std::string &right) const noexcept {
         if(left == "any") { return true; }
-        if((Scope::isNumber(left) && Scope::isNumber(right)) || left == right) { return true; }
+        if((Scope::isNumber(left) && Scope::isNumber(right)) || left == right) {
+            if(Scope::isComplex(right)) { return Scope::isComplex(left); }
+            return true;
+        }
         if(right == "nullptr") { return !Scope::isPrimitive(left); }
         if(right == "[]" && left.ends_with(']')) { return true; }
         if(std::pair<std::string, std::string> types = {left, right};
