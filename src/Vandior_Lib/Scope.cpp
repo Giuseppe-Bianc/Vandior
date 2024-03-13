@@ -62,6 +62,8 @@ namespace vnd {
         mainScope->addFun("vnd::array.size", FunType::create("i64", {}, {{"T", "any"}}, {}));
         mainScope->addFun("string.size", FunType::create("i64", {}, {}, {}));
         mainScope->addFun("string.toI32", FunType::create("i32", {}, {}, {}));
+        mainScope->addFun("string.toF32", FunType::create("f32", {}, {}, {}));
+        mainScope->addFun("string.toC32", FunType::create("c32", {}, {}, {}));
         mainScope->addFun("Object.f", FunType::create("f64", {"f64"}, {}, {}));
         mainScope->addFun("Object.fs", FunType::create("string", {}, {}, {}));
         mainScope->addFun("Derived.derivedFun", FunType::create("bool", {"Object"}, {}, {}));

@@ -24,6 +24,17 @@ class string {
 		const i32 toI32() {
 			return static_cast<i32>(std::stoi(*str));
 		}
+		const f32 toF32() {
+			return static_cast<f32>(std::stof(*str));
+		}
+		/*const c32 toC32() {
+			std::istringstream iss(*str);
+			float realPart, imaginaryPart;
+			if (iss >> realPart >> std::ws && iss.peek() == '+' && iss >> std::ws && iss >> imaginaryPart >> std::ws && iss.peek() == 'i') {
+				return c32(realPart, imaginaryPart);
+			}
+			return c32(0, 0);
+		}*/
 		std::string::const_iterator begin() const noexcept {
 			return str->begin();
 		}

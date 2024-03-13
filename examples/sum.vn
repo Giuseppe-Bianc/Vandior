@@ -1,9 +1,9 @@
 main {
-	var num1, num2: int
+	var num1, num2: i32
 	print("Insert the first number:\t")
-	num1 = readLine().toInt()
+	num1 = readLine().toI32()
 	print("Insert the second number:\t")
-	num2 = readLine().toInt()
-	val sum: int = num1 + num2
+	num2 = readLine().toI32()
+	val sum: i32 = num1 + num2
 	println("Sum:\t{}", sum)
 }
