@@ -150,6 +150,12 @@ namespace vnd {
                 incPosAndColumn();
                 extractExponent();
             }
+            if(positionIsInText() && _input[position] == 'i') {
+                incPosAndColumn();
+            }
+            if(positionIsInText() && _input[position] == 'f') {
+                incPosAndColumn();
+            }
         }
         const auto value = _input.substr(start, position - start);
         return {type, value, {_filename, line, column - value.size()}};

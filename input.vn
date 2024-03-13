@@ -16,7 +16,7 @@ main {
 	obj1, obj2 = obj2, obj1
 	println("After first swap:\t{} {}", obj1, obj2)
 	var s1: string = "Ciao"
-	var s2, s3: string = "Hello", s1
+	var s2, s3: string = obj1.fs(), s1
 	println("Before second swap:\t{} {}", s2, s3)
 	s2, s3 = s3, s2
 	println("After second swap:\t{} {}", s2, s3)

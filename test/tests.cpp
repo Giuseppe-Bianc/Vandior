@@ -398,9 +398,9 @@ TEST_CASE("tokenizer emit integer token new line", "[tokenizer]") {
 }
 
 TEST_CASE("tokenizer emit double token", "[tokenizer]") {
-    vnd::Tokenizer tokenizer{"1. 1.0 1e+1 1E+1 1.1e+1 1.1E+1 1e-1 1E-1 1.1e-1 1.1E-1 .4e12", filename};
+    vnd::Tokenizer tokenizer{"1. 1.0 1e+1 1E+1 1.1e+1 1.1E+1 1e-1 1E-1 1.1e-1 1.1E-1 .4e12 4i 5.4if .7f", filename};
     std::vector<vnd::Token> tokens = tokenizer.tokenize();
-    REQUIRE(tokens.size() == 12);
+    REQUIRE(tokens.size() == 15);
     REQUIRE(tokens[0] == vnd::Token(doub, "1.", vnd::CodeSourceLocation(filename, 1, 1)));
     REQUIRE(tokens[1] == vnd::Token(doub, "1.0", vnd::CodeSourceLocation(filename, 1, 4)));
     REQUIRE(tokens[2] == vnd::Token(doub, "1e+1", vnd::CodeSourceLocation(filename, 1, t_colum4)));
@@ -412,6 +412,9 @@ TEST_CASE("tokenizer emit double token", "[tokenizer]") {
     REQUIRE(tokens[8] == vnd::Token(doub, "1.1e-1", vnd::CodeSourceLocation(filename, 1, 42)));
     REQUIRE(tokens[9] == vnd::Token(doub, "1.1E-1", vnd::CodeSourceLocation(filename, 1, 49)));
     REQUIRE(tokens[10] == vnd::Token(doub, ".4e12", vnd::CodeSourceLocation(filename, 1, 56)));
+    REQUIRE(tokens[11] == vnd::Token(doub, "4i", vnd::CodeSourceLocation(filename, 1, 62)));
+    REQUIRE(tokens[12] == vnd::Token(doub, "5.4if", vnd::CodeSourceLocation(filename, 1, 65)));
+    REQUIRE(tokens[13] == vnd::Token(doub, ".7f", vnd::CodeSourceLocation(filename, 1, 71)));
 }
 
 TEST_CASE("tokenizer emit operator token", "[tokenizer]") {
@@ -718,7 +721,7 @@ TEST_CASE("ExpressionFactory emit int type", "[factory]") {
     vnd::ExpressionFactory factory = vnd::ExpressionFactory::create(iterator, tokens.end(), scope, false, false);
     auto fpr = factory.parse({});
     REQUIRE(factory.size() == 1);
-    REQUIRE(factory.getExpression().getType() == "int");
+    REQUIRE(factory.getExpression().getType() == "u8");
 }
 
 TEST_CASE("ExpressionFactory emit float type", "[factory]") {
@@ -730,7 +733,7 @@ TEST_CASE("ExpressionFactory emit float type", "[factory]") {
     vnd::ExpressionFactory factory = vnd::ExpressionFactory::create(iterator, tokens.end(), scope, false, false);
     auto fpr = factory.parse({});
     REQUIRE(factory.size() == 1);
-    REQUIRE(factory.getExpression().getType() == "float");
+    REQUIRE(factory.getExpression().getType() == "f64");
 }
 
 TEST_CASE("ExpressionFactory emit bool type", "[factory]") {
@@ -759,7 +762,7 @@ TEST_CASE("ExpressionFactory emit function type", "[factory]") {
     vnd::ExpressionFactory factory = vnd::ExpressionFactory::create(iterator, tokens.end(), scope, false, false);
     auto fpr = factory.parse({CLOSE_PARENTESIS});
     REQUIRE(factory.size() == 1);
-    REQUIRE(factory.getExpression().getType() == "int");
+    REQUIRE(factory.getExpression().getType() == "i64");
 }
 namespace {
     vnd::Transpiler createSimpleTranspiler(const std::vector<vnd::Token> &tokens) {
@@ -800,7 +803,7 @@ TEST_CASE("Transpiler transpile main instruction", "[transpiler]") {
 
 TEST_CASE("Transpiler transpile declaration instruction", "[transpiler]") {
     using enum vnd::TokenType;
-    vnd::Tokenizer tokenizer{"var num, num1 : int", filename};
+    vnd::Tokenizer tokenizer{"var num, num1 : i32", filename};
     auto tokens = tokenizer.tokenize();
     auto transpiler = createSimpleTranspiler(tokens);
     transpiler.transpile(std::string{filename});
@@ -808,12 +811,12 @@ TEST_CASE("Transpiler transpile declaration instruction", "[transpiler]") {
     std::ifstream stream(outFilename.data());
     std::string code(std::istreambuf_iterator<char>{stream}, {});
     REQUIRE(code == "#include \"./include/base.hpp\"\n\n"
-                    "int _num{}, _num1{};\n");
+                    "i32 _num{}, _num1{};\n");
 }
 
 TEST_CASE("Transpiler transpile declaration underscore instruction", "[transpiler]") {
     using enum vnd::TokenType;
-    vnd::Tokenizer tokenizer{"var _num, _num1 : int", filename};
+    vnd::Tokenizer tokenizer{"var _num, _num1 : u32", filename};
     auto tokens = tokenizer.tokenize();
     auto transpiler = createSimpleTranspiler(tokens);
     transpiler.transpile(std::string{filename});
@@ -821,12 +824,12 @@ TEST_CASE("Transpiler transpile declaration underscore instruction", "[transpile
     std::ifstream stream(outFilename.data());
     std::string code(std::istreambuf_iterator<char>{stream}, {});
     REQUIRE(code == "#include \"./include/base.hpp\"\n\n"
-                    "int v_num{}, v_num1{};\n");
+                    "u32 v_num{}, v_num1{};\n");
 }
 
 TEST_CASE("Transpiler transpile initialization instruction", "[transpiler]") {
     using enum vnd::TokenType;
-    vnd::Tokenizer tokenizer{"var num, num1 : int = 1", filename};
+    vnd::Tokenizer tokenizer{"var num, num1 : i8 = 1", filename};
     auto tokens = tokenizer.tokenize();
     auto transpiler = createSimpleTranspiler(tokens);
     transpiler.transpile(std::string{filename});
@@ -834,12 +837,12 @@ TEST_CASE("Transpiler transpile initialization instruction", "[transpiler]") {
     std::ifstream stream(outFilename.data());
     std::string code(std::istreambuf_iterator<char>{stream}, {});
     REQUIRE(code == "#include \"./include/base.hpp\"\n\n"
-                    "int _num = 1, _num1{};\n");
+                    "i8 _num = 1, _num1{};\n");
 }
 
 TEST_CASE("Transpiler transpile initialization underscore instruction", "[transpiler]") {
     using enum vnd::TokenType;
-    vnd::Tokenizer tokenizer{"var _num, _num1 : int = 1", filename};
+    vnd::Tokenizer tokenizer{"var _num, _num1 : u64 = 1", filename};
     auto tokens = tokenizer.tokenize();
     auto transpiler = createSimpleTranspiler(tokens);
     transpiler.transpile(std::string{filename});
@@ -847,12 +850,12 @@ TEST_CASE("Transpiler transpile initialization underscore instruction", "[transp
     std::ifstream stream(outFilename.data());
     std::string code(std::istreambuf_iterator<char>{stream}, {});
     REQUIRE(code == "#include \"./include/base.hpp\"\n\n"
-                    "int v_num = 1, v_num1{};\n");
+                    "u64 v_num = 1, v_num1{};\n");
 }
 
 TEST_CASE("Transpiler transpile const instruction", "[transpiler]") {
     using enum vnd::TokenType;
-    vnd::Tokenizer tokenizer{"const num : int = 1 + 333", filename};
+    vnd::Tokenizer tokenizer{"const num : u16 = 1 + 333", filename};
     auto tokens = tokenizer.tokenize();
     auto transpiler = createSimpleTranspiler(tokens);
     transpiler.transpile(std::string{filename});
@@ -860,7 +863,7 @@ TEST_CASE("Transpiler transpile const instruction", "[transpiler]") {
     std::ifstream stream(outFilename.data());
     std::string code(std::istreambuf_iterator<char>{stream}, {});
     REQUIRE(code == "#include \"./include/base.hpp\"\n\n"
-                    "const int _num = 334;\n\n");
+                    "const u16 _num = 334;\n\n");
 }
 
 TEST_CASE("Transpiler transpile operation instruction", "[transpiler]") {
@@ -882,7 +885,7 @@ TEST_CASE("Transpiler transpile operation instruction", "[transpiler]") {
 
 TEST_CASE("Transpiler transpile assignation instruction", "[transpiler]") {
     using enum vnd::TokenType;
-    vnd::Tokenizer tokenizer{"main{\nvar num : int\nnum = 1\n}", filename};
+    vnd::Tokenizer tokenizer{"main{\nvar num : i8\nnum = 1\n}", filename};
     auto tokens = tokenizer.tokenize();
     auto transpiler = createComplexTranspiler(tokens);
     transpiler.transpile(std::string{filename});
@@ -893,7 +896,7 @@ TEST_CASE("Transpiler transpile assignation instruction", "[transpiler]") {
 
 int main(int argc, char **argv) {
 	const vnd::vector<string> _args = vnd::createArgs(argc, argv);
-	int _num{};
+	i8 _num{};
 	_num = 1;
 	return 0;
 }
@@ -940,7 +943,7 @@ TEST_CASE("Transpiler transpile while and break instructions", "[transpiler]") {
 
 TEST_CASE("Transpiler transpile for instruction", "[transpiler]") {
     using enum vnd::TokenType;
-    vnd::Tokenizer tokenizer{"main{\nfor var i : int = 0, 10, 1{}\n}", filename};
+    vnd::Tokenizer tokenizer{"main{\nfor var i : i8 = 0, 10, 1 {}\n}", filename};
     auto tokens = tokenizer.tokenize();
     auto transpiler = createComplexTranspiler(tokens);
     transpiler.transpile(std::string{filename});
@@ -950,7 +953,7 @@ TEST_CASE("Transpiler transpile for instruction", "[transpiler]") {
     REQUIRE(code == "#include \"./include/base.hpp\"\n\n"
                     "int main(int argc, char **argv) {\n"
                     "\tconst vnd::vector<string> _args = vnd::createArgs(argc, argv);\n"
-                    "\tFOR_LOOP(int, _i, 0, 10, 1) {}\n"
+                    "\tFOR_LOOP(i8, _i, 0, 10, 1) {}\n"
                     "\treturn 0;\n"
                     "}\n");
 }
