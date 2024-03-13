@@ -592,42 +592,17 @@ namespace vnd {
         if(variables.size() != 2 || expressions.size() != 2) { return false; }
         std::vector<std::string> swapVariables = {variables.at(0).first, variables.at(1).first};
         std::vector<std::string> swapExpressions = {expressions.at(0).getText(), expressions.at(1).getText()};
-        std::vector<std::string> getters;
-        bool properties = false;
         if(!_scope->canAssign(expressions.at(0).getType(), expressions.at(1).getType()) ||
            !_scope->canAssign(expressions.at(1).getType(), expressions.at(0).getType())) {
             return false;
         }
-        for(auto iter : swapVariables) {
-            if(iter.ends_with('(')) {
-                iter.replace(iter.find_last_of("->") + 1, 1, "g");
-                iter = FORMAT("{})", iter);
-                properties = true;
-            }
+        for(auto &iter : swapVariables) {
+            if(iter.ends_with('(')) { return false; }
             std::erase_if(iter, isspace);
-            getters.emplace_back(iter);
         }
         for(auto &iter : swapExpressions) { std::erase_if(iter, isspace); }
-        if(getters.at(0) != swapExpressions.at(1) || getters.at(1) != swapExpressions.at(0)) { return false; }
-        if(!properties) {
-            _text += FORMAT("std::swap({}, {});", swapVariables.at(0), swapVariables.at(1));
-            return true;
-        }
-        _text += FORMAT("vnd::tmp[\"swap\"] = {};\n{}", getters.at(0), std::string(_tabs, '\t'));
-        if(swapVariables.at(0).ends_with('(')) {
-            _text += FORMAT("{}{});", swapVariables.at(0), getters.at(1));
-        } else {
-            _text += FORMAT("{} = {};", swapVariables.at(0), getters.at(1));
-        }
-        _text += FORMAT("\n{}", std::string(_tabs, '\t'));
-        std::string typeValue = variables.at(0).second;
-        if(swapVariables.at(1).ends_with('(')) {
-            _text += FORMAT("{}std::any_cast<{}>(vnd::tmp.at(\"swap\")));", swapVariables.at(1), Scope::getTypeValue(typeValue));
-        } else {
-            _text += FORMAT("{} = std::any_cast<{}>(vnd::tmp.at(\"swap\"));", swapVariables.at(1), Scope::getTypeValue(typeValue));
-        }
-        _text += FORMAT("\n{}", std::string(_tabs, '\t'));
-        _text += "vnd::tmp.clear();";
+        if(swapVariables.at(0) != swapExpressions.at(1) || swapVariables.at(1) != swapExpressions.at(0)) { return false; }
+        _text += FORMAT("std::swap({}, {});", swapVariables.at(0), swapVariables.at(1));
         return true;
     }
 

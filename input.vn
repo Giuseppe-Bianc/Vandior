@@ -15,21 +15,11 @@ main {
 	println("Before first swap:\t{} {}", obj1, obj2)
 	obj1, obj2 = obj2, obj1
 	println("After first swap:\t{} {}", obj1, obj2)
-	println("Before second swap:\t{} {}", obj1.a, integer)
-	obj1.a, integer = integer, obj1.a
-	println("After second swap:\t{} {}", obj1.a, integer)
-	println("Before third swap:\t{} {}", integer, obj1.a)
-	integer, obj1.a = obj1.a, integer
-	println("After third swap:\t{} {}", integer, obj1.a)
 	var s1: string = "Ciao"
 	var s2, s3: string = "Hello", s1
-	println("Before fourth swap:\t{} {}", s2, s3)
+	println("Before second swap:\t{} {}", s2, s3)
 	s2, s3 = s3, s2
-	println("After fourth swap:\t{} {}", s2, s3)
-	obj2.a, _ = -65, 2
-	println("Before fifth swap:\t{} {}", obj1.a, obj2.a)
-	obj1.a, obj2.a = obj2.a, obj1.a
-	println("After fifth swap:\t{} {}", obj1.a, obj2.a)
+	println("After second swap:\t{} {}", s2, s3)
 	s1, s2 = "AA", "VV"
 	println("{} {}", s3, s2)
 	var array1, array2: Object[] = {Object(), Object()}, {Derived(), Object()} 
