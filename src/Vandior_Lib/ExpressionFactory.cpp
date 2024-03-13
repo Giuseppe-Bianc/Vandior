@@ -210,7 +210,7 @@ namespace vnd {
             ++_iterator;
             return;
         }
-        if(checkNextToken(std::string{type}, writeToken())) { return; }
+        if(checkNextToken(type, writeToken())) { return; }
         _dot = false;
         const auto value = _iterator->getValue();
         if(_iterator->isType(CHAR)) {
@@ -478,7 +478,7 @@ namespace vnd {
     }
 
     // NOLINTNEXTLINE(*-easily-swappable-parameters)
-    bool ExpressionFactory::checkNextToken(const std::string &type, const std::string &value) noexcept {
+    bool ExpressionFactory::checkNextToken(const std::string_view &type, const std::string &value) noexcept {
         auto nxtIter = std::ranges::next(_iterator);
         if(!isEnd(nxtIter) && (nxtIter->isType(TokenType::DOT_OPERATOR) || nxtIter->isType(TokenType::OPEN_SQ_PARENTESIS))) {
             _type = type;
@@ -518,7 +518,7 @@ namespace vnd {
 
     void ExpressionFactory::write(const std::string &value, const std::string_view &type) noexcept {
         clearData();
-        if(checkNextToken(std::string{type}, value)) { return; }
+        if(checkNextToken(type, value)) { return; }
         auto text = FORMAT("{}{}", _temp, value);
         checkOperators(text);
         if(!_text.empty()) { text = FORMAT(" {}", text); }

@@ -190,7 +190,7 @@ namespace vnd {
          * @param value String representing the value of the current token.
          * @param value Bool if the next token is . or [.
          */
-        [[nodiscard]] bool checkNextToken(const std::string &type, const std::string &value) noexcept;
+        [[nodiscard]] bool checkNextToken(const std::string_view &type, const std::string &value) noexcept;
 
         /**
          * @brief Checks if the current token can be followed by a ++ or --.

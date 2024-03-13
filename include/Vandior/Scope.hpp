@@ -66,7 +66,7 @@ namespace vnd {
          * @param type representing the type to transpile.
          * @return String representing the C++ transpiled type.
          */
-        [[nodiscard]] static std::string getTypeValue(std::string &type) noexcept;
+        [[nodiscard]] static std::string getTypeValue(const std::string &type) noexcept;
 
         /**
          * @brief Gets the parent scope.
@@ -134,8 +134,7 @@ namespace vnd {
          * @param shadowing Bool flag indicates if the variable can be shadowed.
          * @return Pair containing the result of the check and if the variable is shadowed.
          */
-        [[nodiscard]] std::pair<bool, bool> checkVariable(const std::string_view identifier,
-                                                          const bool shadowing = false) const noexcept;
+        [[nodiscard]] std::pair<bool, bool> checkVariable(const std::string_view identifier, const bool shadowing = false) const noexcept;
 
         /**
          * @brief Gets the type of a variable.
@@ -144,8 +143,7 @@ namespace vnd {
          * @param identifier String_view representing the identifier of the variable.
          * @return String containing the type. Is the variable does not exist, the result is empty.
          */
-        [[nodiscard]] std::string_view getVariableType(const std::string &type,
-                                                       const std::string_view &identifier) const noexcept;
+        [[nodiscard]] std::string_view getVariableType(const std::string &type, const std::string_view &identifier) const noexcept;
 
         /**
          * @brief Gets the type of a function.
@@ -157,8 +155,7 @@ namespace vnd {
          * the flag indicating if the function is a constructor and the optional position of the first variadic parameter.
          */
         [[nodiscard]] std::tuple<std::string, bool, std::optional<size_t>> getFunType(
-            const std::string &type, const std::string_view &identifier,
-            const std::vector<Expression> &expressions) const noexcept;
+            const std::string &type, const std::string_view &identifier, const std::vector<Expression> &expressions) const noexcept;
 
         /**
          * @brief Gets the value of a compile time evaluated constant.
@@ -223,13 +220,13 @@ namespace vnd {
          * @param typeGeneric Vector of generic parameters of the type.
          * @return String containing the parameter type. If the parameter is not generic, the result is the same of param.
          */
-        [[nodiscard]] static std::string getParamType(
-            const std::string &param, const std::vector<std::pair<std::string, std::string>> &typeGeneric) noexcept;
+        [[nodiscard]] static std::string getParamType(const std::string &param,
+                                                      const std::vector<std::pair<std::string, std::string>> &typeGeneric) noexcept;
 
         std::unordered_map<std::string, std::string> _vars;  ///< Map of variables identifiers and types.
         std::unordered_map<std::string, std::string> _vals;  ///< Map of constants identifiers and types.
         std::unordered_map<std::string, std::pair<std::string, std::string>>
-            _consts;  ///< Map of compile time constants identifiers and types.
+            _consts;                                                       ///< Map of compile time constants identifiers and types.
         std::unordered_map<std::string, std::vector<std::string>> _types;  ///< Map of types and assignabled types.
         std::unordered_map<std::string, std::vector<FunType>> _funs;       ///< Map of function identifiers and informations.
         std::shared_ptr<Scope> _parent;                                    ///< Shared pointer to the parent scope.

@@ -550,6 +550,7 @@ namespace vnd {
 
     std::pair<std::string, std::string> Transpiler::transpileType(TokenVecIter &iterator, const TokenVecIter &end,
                                                                   const std::vector<TokenType> &endTokens, const Instruction &instruction) {
+        using enum TokenType;
         auto type = std::string{(++iterator)->getValue()};
         auto typeValue = type;
         std::string prefix;
@@ -560,8 +561,8 @@ namespace vnd {
         if(!_scope->checkType(type)) { throw TranspilerException(FORMAT("Type {} not valid", type), instruction); }
         if(!vnd::Scope::isPrimitive(type)) { typeValue = FORMAT("std::shared_ptr<{}>", type); }
         while(iterator != end && std::ranges::find(endTokens, iterator->getType()) == endTokens.end()) {
-            if(iterator->isType(TokenType::OPEN_SQ_PARENTESIS)) {
-                if(std::ranges::next(iterator)->isType(TokenType::CLOSE_SQ_PARENTESIS)) {
+            if(iterator->isType(OPEN_SQ_PARENTESIS)) {
+                if(std::ranges::next(iterator)->isType(CLOSE_SQ_PARENTESIS)) {
                     prefix += "vnd::vector<";
                     suffix = FORMAT(">{}", suffix);
                     type += "[]";
@@ -569,7 +570,7 @@ namespace vnd {
                     std::string size;
                     ++iterator;
                     auto factory = ExpressionFactory::create(iterator, end, _scope, true, true);
-                    if(auto error = factory.parse({TokenType::CLOSE_SQ_PARENTESIS, TokenType::EQUAL_OPERATOR}); !error.empty()) {
+                    if(auto error = factory.parse({CLOSE_SQ_PARENTESIS, EQUAL_OPERATOR}); !error.empty()) {
                         throw TranspilerException(error, instruction);
                     }
                     auto expression = factory.getExpression();
@@ -597,17 +598,16 @@ namespace vnd {
            !_scope->canAssign(expressions.at(1).getType(), expressions.at(0).getType())) {
             return false;
         }
-        for(auto &i : swapVariables) {
-            getters.emplace_back(i);
-            std::string &getter = getters.back();
-            if(getter.ends_with('(')) {
-                getter.replace(getter.find_last_of("->") + 1, 1, "g");
-                getter = FORMAT("{})", getter);
+        for(auto iter : swapVariables) {
+            if(iter.ends_with('(')) {
+                iter.replace(iter.find_last_of("->") + 1, 1, "g");
+                iter = FORMAT("{})", iter);
                 properties = true;
             }
-            getter.erase(remove_if(getter.begin(), getter.end(), isspace), getter.end());
+            std::erase_if(iter, isspace);
+            getters.emplace_back(iter);
         }
-        for(auto &i : swapExpressions) { i.erase(remove_if(i.begin(), i.end(), isspace), i.end()); }
+        for(auto &iter : swapExpressions) { std::erase_if(iter, isspace); }
         if(getters.at(0) != swapExpressions.at(1) || getters.at(1) != swapExpressions.at(0)) { return false; }
         if(!properties) {
             _text += FORMAT("std::swap({}, {});", swapVariables.at(0), swapVariables.at(1));
