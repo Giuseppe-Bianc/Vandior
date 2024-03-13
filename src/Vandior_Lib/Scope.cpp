@@ -47,7 +47,7 @@ namespace vnd {
         mainScope->addFun("readLine", FunType::create("string", {}, {}, {}));
         mainScope->addFun("_test", FunType::create("i32", {}, {}, {}));
         mainScope->addFun("testPar", FunType::create("i32", {"i32", "i32"}, {}, {}));
-        mainScope->addFun("testPar", FunType::create("i32", {"string"}, {}, {}));
+        mainScope->addFun("testPar", FunType::create("i64", {"string"}, {}, {}));
         mainScope->addFun("max", FunType::create("i32 f32", {"f32[]"}, {}, {}));
         mainScope->addFun("arrayTest", FunType::create("i32[]", {}, {}, {}));
         mainScope->addFun("createObject", FunType::create("Object", {}, {}, {}));
@@ -58,11 +58,11 @@ namespace vnd {
         mainScope->addFun("vnd::vector.add", FunType::create("void", {"T"}, {{"T", "any"}}, {}));
         mainScope->addFun("vnd::vector.addVector", FunType::create("void", {"T[]"}, {{"T", "any"}}, {}));
         mainScope->addFun("vnd::vector.addAll", FunType::create("void", {"T..."}, {{"T", "any"}}, {}));
-        mainScope->addFun("vnd::vector.size", FunType::create("i32", {}, {{"T", "any"}}, {}));
-        mainScope->addFun("vnd::array.size", FunType::create("i32", {}, {{"T", "any"}}, {}));
-        mainScope->addFun("string.size", FunType::create("i32", {}, {}, {}));
-        mainScope->addFun("string.toInt", FunType::create("i32", {}, {}, {}));
-        mainScope->addFun("Object.f", FunType::create("f32", {"f32"}, {}, {}));
+        mainScope->addFun("vnd::vector.size", FunType::create("i64", {}, {{"T", "any"}}, {}));
+        mainScope->addFun("vnd::array.size", FunType::create("i64", {}, {{"T", "any"}}, {}));
+        mainScope->addFun("string.size", FunType::create("i64", {}, {}, {}));
+        mainScope->addFun("string.toI32", FunType::create("i32", {}, {}, {}));
+        mainScope->addFun("Object.f", FunType::create("f64", {"f64"}, {}, {}));
         mainScope->addFun("Object.fs", FunType::create("string", {}, {}, {}));
         mainScope->addFun("Derived.derivedFun", FunType::create("bool", {"Object"}, {}, {}));
         mainScope->addFun("Derived.object", FunType::create("Object", {}, {}, {}));

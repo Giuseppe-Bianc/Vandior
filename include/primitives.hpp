@@ -1,7 +1,6 @@
 #pragma once
 #include <cstdint>
 #include <complex>
-#include "string.hpp"
 
 // Signed integer types
 using i8 = int8_t;

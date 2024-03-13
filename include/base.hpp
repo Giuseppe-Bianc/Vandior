@@ -1,14 +1,20 @@
 #pragma once
 #include "headers.hpp"
 #include "primitives.hpp"
+#include "string.hpp"
 
 #define FOR_LOOP(type, var, initial, final, step) \
 for (type var = initial; (step > 0 ? var < final : var > final); var += step)
 
-#define printTypes i8, i64, u8, u16, u32, u64, f64, char, bool, string, std::shared_ptr<Object>
+#define printTypes std::variant<i8, i64, u8, u16, u32, u64, f64, c32, c64, char, bool, string, std::shared_ptr<Object>>
+
+#define printType(type)\
+if(std::holds_alternative<type>(param)) {\
+	return std::to_string(std::get<type>(param));\
+}
 
 namespace vnd {
-	template <typename T, int64_t N>
+	template <typename T, i64 N>
 	class array: public std::array<T, N> {
 		public:
 			array(): std::array<T, N>() {};
@@ -25,14 +31,14 @@ namespace vnd {
 				}
 				std::copy(init.begin(), init.end(), this->begin());
 			}
-			T& at(int64_t index) {
+			T& at(i64 index) {
 				if(index < 0) {
 					index += N;
 				}
 				if(index < 0 || index >= N) { throw std::runtime_error("Index " + std::to_string(index) +  " out of bounds for size " + std::to_string(N)); }
 				return std::array<T, N>::at(index);
 			}
-			const T& at(int64_t index) const {
+			const T& at(i64 index) const {
 				if(index < 0) {
 					index += N;
 				}
@@ -47,18 +53,18 @@ namespace vnd {
 			vector(std::initializer_list<T> init) : std::vector<T>(init) {}
 			template <typename InputIt>
 			vector(InputIt first, InputIt last) : std::vector<T>(first, last) {}
-			T& at(int64_t index) {
+			T& at(i64 index) {
 				if(index < 0) {
-					index += static_cast<int64_t>(this->size());
+					index += static_cast<i64>(this->size());
 				}
-				if(index < 0 || index >= static_cast<int64_t>(this->size())) { throw std::runtime_error("Index " + std::to_string(index) +  " out of bounds for size " + std::to_string(static_cast<int64_t>(this->size()))); }
+				if(index < 0 || index >= static_cast<i64>(this->size())) { throw std::runtime_error("Index " + std::to_string(index) +  " out of bounds for size " + std::to_string(static_cast<int64_t>(this->size()))); }
 				return std::vector<T>::at(index);
 			}
-			const T at(int64_t index) const {
+			const T at(i64 index) const {
 				if(index < 0) {
-					index += static_cast<int64_t>(this->size());
+					index += static_cast<i64>(this->size());
 				}
-				if(index < 0 || index >= static_cast<int64_t>(this->size())) { throw std::runtime_error("Index " + std::to_string(index) +  " out of bounds for size " + std::to_string(static_cast<int64_t>(this->size()))); }
+				if(index < 0 || index >= static_cast<i64>(this->size())) { throw std::runtime_error("Index " + std::to_string(index) +  " out of bounds for size " + std::to_string(static_cast<int64_t>(this->size()))); }
 				return std::vector<T>::at(index);
 			}
 			void addVector(const vnd::vector<T> elems) {
@@ -86,7 +92,8 @@ namespace vnd {
 	template<typename T1, typename T2>
 	std::common_type_t<T1, T2> mod(T1 a, T2 b) {
 		using result_type = std::common_type_t<T1, T2>;
-		if constexpr (std::is_same_v<result_type, int>) {
+		if constexpr (std::is_same_v<result_type, i64>) {
+			std::cout << "Int" << std::endl;
 			return a % b;
 		}
 		return std::fmod(static_cast<result_type>(a), static_cast<result_type>(b));	
@@ -97,19 +104,19 @@ namespace vnd {
 	}
 }
 
-int v_test() { return 0; }
-int _testPar(int a, int b) { return a + b; }
-size_t _testPar(string s) { return s.size(); }
+i32 v_test() { return 0; }
+i32 _testPar(i32 a, i32 b) { return a + b; }
+i64 _testPar(string s) { return s.size(); }
 class Object {
 	public:
-		int getC() { return c; };
-		int getA() { return a; };
-		void setA(int _a) { a = _a; };
-		float getTest() { return test; }
+		i32 getC() { return c; };
+		i32 getA() { return a; };
+		void setA(i32 _a) { a = _a; };
+		f32 getTest() { return test; }
 		string getS() { return s; }
 		void setS(string _s) { s = _s; }
-		virtual float f(double b) { return std::pow(b, 2); }
-		virtual std::string fs() { return std::string(); }
+		virtual f64 f(f64 b) { return std::pow(b, 2); }
+		virtual string fs() { return string(); }
 		virtual string toString() {
 			std::stringstream ss;
 			ss << std::hex << std::setw(sizeof(uintptr_t) * 2) << std::setfill('0') << reinterpret_cast<std::uintptr_t>(this);
@@ -118,9 +125,9 @@ class Object {
 			return hexString;
 		}
 	private:
-		const int c = 2;
-		const float test = 0;
-		int a{};
+		const i32 c = 2;
+		const f32 test = 0;
+		i32 a{};
 		string s{};
 };
 class Derived: public Object {
@@ -139,30 +146,18 @@ class Derived: public Object {
 		bool _derivedProperty{};
 		std::shared_ptr<Object> obj{};
 };
-void _print(const string text, const vnd::vector<std::variant<printTypes>>& args) {
+void _print(const string text, const vnd::vector<printTypes>& args) {
 	
 	size_t par = 0;
 	auto iterator = text.begin();
 	std::string result;
-	std::function<std::string(std::variant<printTypes>)> format = [](auto param) -> std::string {
-		if(std::holds_alternative<i8>(param)) {
-			return std::to_string(std::get<i8>(param));
-		}
-		if(std::holds_alternative<i64>(param)) {
-			return std::to_string(std::get<i64>(param));
-		}
-		if(std::holds_alternative<u8>(param)) {
-			return std::to_string(std::get<u8>(param));
-		}
-		if(std::holds_alternative<u16>(param)) {
-			return std::to_string(std::get<u16>(param));
-		}
-		if(std::holds_alternative<u32>(param)) {
-			return std::to_string(std::get<u32>(param));
-		}
-		if(std::holds_alternative<u64>(param)) {
-			return std::to_string(std::get<u64>(param));
-		}
+	std::function<std::string(printTypes)> format = [&format](auto param) -> std::string {
+		printType(i8)
+		printType(i64)
+		printType(u8)
+		printType(u16)
+		printType(u32)
+		printType(u64)
 		if(std::holds_alternative<f64>(param)) {
 			std::string value = std::to_string(std::get<f64>(param));
 			while(value.ends_with('0')) {
@@ -172,6 +167,14 @@ void _print(const string text, const vnd::vector<std::variant<printTypes>>& args
 				value.pop_back();
 			}
 			return value;
+		}
+		if(std::holds_alternative<c32>(param)) {
+			c32 value = std::get<c32>(param);
+			return "(" + format(value.real()) + "," + format(value.imag()) + ")";
+		}
+		if(std::holds_alternative<c64>(param)) {
+			c64 value = std::get<c64>(param);
+			return "(" + format(value.real()) + "," + format(value.imag()) + ")";
 		}
 		if(std::holds_alternative<char>(param)) {
 			return std::string(1, std::get<char>( param));
@@ -208,7 +211,7 @@ void _print(const string text, const vnd::vector<std::variant<printTypes>>& args
 	std::cout << result;
 	
 }
-void _println(const string text, const vnd::vector<std::variant<printTypes>>& args) {
+void _println(const string text, const vnd::vector<printTypes>& args) {
 	
 	_print(text, args);
 	std::cout << std::endl;

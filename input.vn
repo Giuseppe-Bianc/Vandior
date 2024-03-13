@@ -5,8 +5,10 @@ main {
 	for var i: i32 = 0, args.size() {
 		println(args[i])
 	}
-	var complexValue1: c32 = 4if
+	var complexValue1: c32 = -4.5f + 4if
+	println("c32:\t{}", complexValue1)
 	var complexValue2: c64 = 4i
+	println("c64:\t{}", complexValue2)
 	var integer: i8 = 3
 	print("{}", integer)
 	var obj1, obj2: Object = Object(), Derived()

@@ -1,4 +1,5 @@
 #pragma once
+#include "primitives.hpp"
 
 class string {
 	public:
@@ -7,12 +8,12 @@ class string {
 		~string() {
 			string::deleteString(str);
 		}
-		const int size() const {
+		const i64 size() const {
 			return str->size();
 		}
-		const char at(int64_t index) const {
+		const char at(i64 index) const {
 			if(index < 0) {
-				index += static_cast<int64_t>(size());
+				index += static_cast<i64>(size());
 			}
 			if(index < 0 || index >= size()) { throw std::runtime_error("Index " + std::to_string(index) +  " out of bounds for size " + std::to_string(size())); }
 			return str->at(index);
@@ -20,8 +21,8 @@ class string {
 		const bool empty() {
 			return str->empty();
 		}
-		const int toInt() {
-			return std::stoi(*str);
+		const i32 toI32() {
+			return static_cast<i32>(std::stoi(*str));
 		}
 		std::string::const_iterator begin() const noexcept {
 			return str->begin();
@@ -48,7 +49,7 @@ class string {
 			return *str;
 		}
 	private:
-		static std::vector<std::pair<std::shared_ptr<const std::string>, int64_t>> pool;
+		static std::vector<std::pair<std::shared_ptr<const std::string>, i64>> pool;
 		static std::shared_ptr<const std::string> create(const std::string &str) {
 			for(auto &i: string::pool) {
 				if(str == *i.first) {
@@ -74,4 +75,4 @@ class string {
 		}
 		std::shared_ptr<const std::string> str;
 };
-std::vector<std::pair<std::shared_ptr<const std::string>, int64_t>> string::pool{};
+std::vector<std::pair<std::shared_ptr<const std::string>, i64>> string::pool{};
