@@ -31,8 +31,7 @@ namespace vnd {
             if(iter == '\\') { iter = '/'; }
         }
 #endif
-        size_t pos = filename.find_last_of('/');
-        if(pos != std::string::npos) {
+        if(auto pos = filename.find_last_of('/'); pos != std::string::npos) {
             filename = filename.substr(0, pos);
             if(filename == examples) {
                 filename = ".";

@@ -55,9 +55,8 @@ namespace vnd {
         return Scope::isInteger(std::string{type}) || type == oprt;
     }
 
-    std::string_view ExpressionFactory::getIntType(const std::string_view& value) noexcept {
-
-        uint64_t number;
+    std::string_view ExpressionFactory::getIntType(const std::string_view &value) noexcept {
+        uint64_t number = 0;
         if(value.starts_with('#')) {
             if(value.starts_with('o')) {
                 number = std::stoull(FORMAT("0{}", value.substr(2)));
@@ -71,7 +70,6 @@ namespace vnd {
         if(number <= std::numeric_limits<uint16_t>::max()) { return "u16"; }
         if(number <= std::numeric_limits<uint32_t>::max()) { return "u32"; }
         return "u64";
-
     }
 
     std::string ExpressionFactory::evaluate(const std::string &expression) const noexcept {
@@ -146,13 +144,13 @@ namespace vnd {
     bool ExpressionFactory::empty() const noexcept { return _expressions.empty(); }
 
     Expression ExpressionFactory::getExpression() noexcept {
-        auto result = *_expressions.begin();
+        const auto result = *_expressions.begin();
         _expressions.erase(_expressions.begin());
         return result;
     }
 
     std::vector<Expression> ExpressionFactory::getExpressions() noexcept {
-        auto result = _expressions;
+        const auto result = _expressions;
         _expressions.clear();
         return result;
     }
@@ -300,8 +298,7 @@ namespace vnd {
             }
         }
 
-        auto nxtIter = std::ranges::next(_iterator);
-        if(isEnd(nxtIter) || !nxtIter->isType(DOT_OPERATOR)) { _const = false; }
+        if(auto nxtIter = std::ranges::next(_iterator); isEnd(nxtIter) || !nxtIter->isType(DOT_OPERATOR)) { _const = false; }
         expressions = factory.getExpressions();
         auto [newType, constructor, variadic] = _scope->getFunType(_type, identifier, expressions);
         if(newType.empty()) {
@@ -453,15 +450,14 @@ namespace vnd {
         if(Scope::isNumber(std::get<2>(oldType))) {
             if(newType == oprt) { return {}; }
             if(Scope::isNumber(std::string{newType})) {
-                std::function<std::string(const std::pair<char, std::string> &,
-                                          const std::pair<char, std::string_view> &)>
-                    getType = [](auto &oldParts, auto &newParts) -> std::string {
-                    short size = static_cast<short>(std::max(std::stoi(oldParts.second), std::stoi(std::string{newParts.second})));
-                    if(oldParts.first == 'c' || newParts.first == 'c') { return FORMAT("c{}", size); }
-                    if(oldParts.first == 'f' || newParts.first == 'f') { return FORMAT("f{}", size); }
-                    if(oldParts.first == 'i' || newParts.first == 'i') { return FORMAT("i{}", size); }
-                    return FORMAT("u{}", size);
-                };
+                std::function<std::string(const std::pair<char, std::string> &, const std::pair<char, std::string_view> &)> getType =
+                    [](auto &oldParts, auto &newParts) {
+                        auto size = static_cast<short>(std::max(std::stoi(oldParts.second), std::stoi(std::string{newParts.second})));
+                        if(oldParts.first == 'c' || newParts.first == 'c') { return FORMAT("c{}", size); }
+                        if(oldParts.first == 'f' || newParts.first == 'f') { return FORMAT("f{}", size); }
+                        if(oldParts.first == 'i' || newParts.first == 'i') { return FORMAT("i{}", size); }
+                        return FORMAT("u{}", size);
+                    };
                 std::pair<char, std::string> oldParts = {std::get<2>(oldType).at(0), std::get<2>(oldType).substr(1)};
                 std::pair<char, std::string_view> newParts = {newType.at(0), newType.substr(1)};
                 std::get<2>(oldType) = getType(oldParts, newParts);
@@ -479,8 +475,8 @@ namespace vnd {
 
     // NOLINTNEXTLINE(*-easily-swappable-parameters)
     bool ExpressionFactory::checkNextToken(const std::string_view &type, const std::string &value) noexcept {
-        auto nxtIter = std::ranges::next(_iterator);
-        if(!isEnd(nxtIter) && (nxtIter->isType(TokenType::DOT_OPERATOR) || nxtIter->isType(TokenType::OPEN_SQ_PARENTESIS))) {
+        if(auto nxtIter = std::ranges::next(_iterator);
+           !isEnd(nxtIter) && (nxtIter->isType(TokenType::DOT_OPERATOR) || nxtIter->isType(TokenType::OPEN_SQ_PARENTESIS))) {
             _type = type;
             if(type == "string" || type.ends_with(']')) {
                 _temp += value + ".";

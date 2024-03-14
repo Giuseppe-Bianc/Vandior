@@ -3,18 +3,17 @@
 
 namespace vnd {
     // NOLINTBEGIN(*-include-cleaner)
-    const std::vector<TokenType> Instruction::_expressionStartTokens = {
-        TokenType::IDENTIFIER,      TokenType::INTEGER,
-        TokenType::DOUBLE,          TokenType::CHAR,
-        TokenType::STRING,          TokenType::BOOLEAN,
-        TokenType::MINUS_OPERATOR,  TokenType::NOT_OPERATOR,
-        TokenType::OPEN_PARENTESIS, TokenType::OPEN_CUR_PARENTESIS,
-        TokenType::K_NULLPTR};
+    const std::vector<TokenType> Instruction::_expressionStartTokens = {TokenType::IDENTIFIER,      TokenType::INTEGER,
+                                                                        TokenType::DOUBLE,          TokenType::CHAR,
+                                                                        TokenType::STRING,          TokenType::BOOLEAN,
+                                                                        TokenType::MINUS_OPERATOR,  TokenType::NOT_OPERATOR,
+                                                                        TokenType::OPEN_PARENTESIS, TokenType::OPEN_CUR_PARENTESIS,
+                                                                        TokenType::K_NULLPTR};
 
     Instruction::Instruction(const std::string_view filename) noexcept
-      : _allowedTokens({TokenType::K_MAIN, TokenType::K_VAR, TokenType::K_IF, TokenType::K_WHILE, TokenType::K_FOR,
-                        TokenType::K_FUN, TokenType::K_RETURN, TokenType::K_BREAK, TokenType::IDENTIFIER,
-                        TokenType::OPEN_CUR_PARENTESIS, TokenType::CLOSE_CUR_PARENTESIS, eofTokenType}),
+      : _allowedTokens({TokenType::K_MAIN, TokenType::K_VAR, TokenType::K_IF, TokenType::K_WHILE, TokenType::K_FOR, TokenType::K_FUN,
+                        TokenType::K_RETURN, TokenType::K_BREAK, TokenType::IDENTIFIER, TokenType::OPEN_CUR_PARENTESIS,
+                        TokenType::CLOSE_CUR_PARENTESIS, eofTokenType}),
         _types({InstructionType::BLANK}), _booleanOperators({false}), _filename(filename) {
         _tokens.reserve(10);  // NOLINT(*-avoid-magic-numbers, *-magic-numbers)
     }
@@ -152,9 +151,7 @@ namespace vnd {
         if(tokType != eofTokenType) { _tokens.emplace_back(token); }
     }
 
-    bool Instruction::canTerminate() const noexcept {
-        return std::ranges::find(_allowedTokens, eofTokenType) != _allowedTokens.end();
-    }
+    bool Instruction::canTerminate() const noexcept { return std::ranges::find(_allowedTokens, eofTokenType) != _allowedTokens.end(); }
 
     void Instruction::checkIdentifier(const TokenType &type) noexcept {
         using enum TokenType;
@@ -268,8 +265,7 @@ namespace vnd {
     void Instruction::checkComma() noexcept {
         using enum TokenType;
         using enum InstructionType;
-        if(lastTypeIs(OPERATION) || lastTypeIs(DECLARATION) || lastTypeIs(PARAMETER_DEFINITION) ||
-           lastTypeIs(RETURN_DEFINITION)) {
+        if(lastTypeIs(OPERATION) || lastTypeIs(DECLARATION) || lastTypeIs(PARAMETER_DEFINITION) || lastTypeIs(RETURN_DEFINITION)) {
             _allowedTokens = {IDENTIFIER};
             return;
         }
@@ -323,8 +319,7 @@ namespace vnd {
                 _allowedTokens.emplace_back(eofTokenType);
                 break;
             }
-            _allowedTokens.insert(_allowedTokens.end(),
-                                  {EQUAL_OPERATOR, OPERATION_EQUAL, UNARY_OPERATOR, COMMA, OPEN_PARENTESIS});
+            _allowedTokens.insert(_allowedTokens.end(), {EQUAL_OPERATOR, OPERATION_EQUAL, UNARY_OPERATOR, COMMA, OPEN_PARENTESIS});
             break;
         case DECLARATION:
             _allowedTokens = {EQUAL_OPERATOR, eofTokenType};
@@ -450,8 +445,7 @@ namespace vnd {
 
     void Instruction::setLastBooleanOperator(const bool present) noexcept {
         if(_booleanOperators.empty()) [[unlikely]] { return; }
-        _booleanOperators.pop_back();
-        _booleanOperators.emplace_back(present);
+        _booleanOperators.back() = present;
     }
 
     void Instruction::addBooleanOperator() noexcept { _booleanOperators.emplace_back(false); }
@@ -501,9 +495,7 @@ namespace vnd {
         emplaceCommaEoft();
     }
 
-    inline void Instruction::emplaceCommaEoft() noexcept {
-        _allowedTokens.insert(_allowedTokens.end(), {TokenType::COMMA, eofTokenType});
-    }
+    inline void Instruction::emplaceCommaEoft() noexcept { _allowedTokens.insert(_allowedTokens.end(), {TokenType::COMMA, eofTokenType}); }
 
     inline void Instruction::emplaceBooleanOperator() noexcept {
         if(!getLastBooleanOperator()) { _allowedTokens.emplace_back(TokenType::BOOLEAN_OPERATOR); }
@@ -520,9 +512,7 @@ namespace vnd {
 
     inline void Instruction::emplaceUnaryOperator(const TokenType &type) noexcept {
         using enum vnd::TokenType;
-        if(type == IDENTIFIER) {
-            _allowedTokens.insert(_allowedTokens.end(), {DOT_OPERATOR, OPEN_PARENTESIS, OPEN_SQ_PARENTESIS});
-        }
+        if(type == IDENTIFIER) { _allowedTokens.insert(_allowedTokens.end(), {DOT_OPERATOR, OPEN_PARENTESIS, OPEN_SQ_PARENTESIS}); }
         if(type != UNARY_OPERATOR) { _allowedTokens.emplace_back(UNARY_OPERATOR); }
     }
     // NOLINTEND(*-include-cleaner)
