@@ -27,14 +27,24 @@ class string {
 		const f32 toF32() {
 			return static_cast<f32>(std::stof(*str));
 		}
-		/*const c32 toC32() {
+		const c32 toC32() {
+			f32 real{}, imag{};
+			char sign = '+';
 			std::istringstream iss(*str);
-			float realPart, imaginaryPart;
-			if (iss >> realPart >> std::ws && iss.peek() == '+' && iss >> std::ws && iss >> imaginaryPart >> std::ws && iss.peek() == 'i') {
-				return c32(realPart, imaginaryPart);
+			size_t pos_i = str->find('i');
+			if (pos_i != std::string::npos) {
+				iss >> imag;
+				if (pos_i > 0) {
+					iss >> sign;
+					if (sign == '-') imag *= -1;
+					if (iss.peek() == 'i') iss.ignore();
+				}
 			}
-			return c32(0, 0);
-		}*/
+			if (iss >> real) {
+				if (sign == '-') imag *= -1;
+			}
+			return c32(real, imag);
+		}
 		std::string::const_iterator begin() const noexcept {
 			return str->begin();
 		}

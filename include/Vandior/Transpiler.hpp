@@ -166,10 +166,10 @@ namespace vnd {
          * @brief transpile a multi return value function instruction.
          * @param variables Vector of identifiers and types of assigned variables.
          * @param expressiom Expression conataining the function.
-         * @return Parsed string if there is an error. If no error occurs, an empty string is returned.
+         * @return Pair of parsed error and warning strings. If no error occurs, an empty string is returned.
          */
-        [[nodiscard]] std::string transpileMultipleFun(const std::vector<std::pair<std::string, std::string>> &variables,
-                                                       const Expression &expression) noexcept;
+        [[nodiscard]] std::pair<std::string, std::string> transpileMultipleFun(const std::vector<std::pair<std::string, std::string>> &variables,
+                                                                               const Expression &expression) noexcept;
 
         /**
          * @brief Transpile a type name.

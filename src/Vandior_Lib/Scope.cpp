@@ -233,7 +233,7 @@ namespace vnd {
             } else [[unlikely]] {
                 for(size_t par = 0; par != expressions.size(); par++) {
                     std::string paramType = Scope::getParamType(params.at(par), i.getTypeGeneric());
-                    if(!canAssign(paramType, expressions.at(par).getType())) { found = false; }
+                    if(auto result = canAssign(paramType, expressions.at(par).getType()); !result.first) { found = false; }
                 }
             }
             if(found) { return {i.getReturnType(), i.isConstructor(), variadic}; }
@@ -275,25 +275,28 @@ namespace vnd {
     }
 
     // NOLINTNEXTLINE(*-no-recursion)
-    bool Scope::canAssign(const std::string &left, const std::string &right) const noexcept {
-        if(left == "any") { return true; }
-        if((Scope::isNumber(left) && Scope::isNumber(right)) || left == right) {
-            if(Scope::isComplex(right)) { return Scope::isComplex(left); }
-            return true;
+    std::pair<bool, bool> Scope::canAssign(const std::string &left, const std::string &right) const noexcept {
+        if(left == "any" || left == right) { return {true, false}; }
+        if((Scope::isNumber(left) && Scope::isNumber(right))) {
+            if(left.at(0) == right.at(0) && std::stoi(left.substr(1)) < std::stoi(right.substr(1))) {
+                return {!Scope::isInteger(left), true};
+            }
+            if(Scope::isComplex(right)) { return {Scope::isComplex(left), false}; }
+            return {true, false};
         }
-        if(right == "nullptr") { return !Scope::isPrimitive(left); }
-        if(right == "[]" && left.ends_with(']')) { return true; }
+        if(right == "nullptr") { return {!Scope::isPrimitive(left), false}; }
+        if(right == "[]" && left.ends_with(']')) { return {true, false}; }
         if(std::pair<std::string, std::string> types = {left, right}; (types.first.ends_with("[]") || types.second.ends_with("[]")) &&
                                                                       Scope::checkVector(types.first) && Scope::checkVector(types.second)) {
             return canAssign(types.first, types.second);
         }
         if(_types.contains(right)) {
             for(const std::string &i : _types.at(right)) {  // NOLINT(*-use-anyofallof)
-                if(canAssign(left, i)) { return true; }
+                if(auto result = canAssign(left, i); result.first) { return result; }
             }
         }
         if(_parent) { return _parent->canAssign(left, right); }
-        return false;
+        return {};
     }
 
     std::vector<FunType> Scope::getFuns(const std::string &type, const std::string_view &identifier) const noexcept {
@@ -343,7 +346,7 @@ namespace vnd {
         auto it_specialized = typeSpecialized.begin();
         for(auto &[key, value] : typeGeneric) {
             if(it_specialized == typeSpecialized.end()) { return {FunType::createEmpty(), false}; }
-            if(!canAssign(value, *it_specialized)) { return {FunType::createEmpty(), false}; }
+            if(auto result = canAssign(value, *it_specialized); !result.first) { return {FunType::createEmpty(), false}; }
             value = *it_specialized;
             ++it_specialized;
         }

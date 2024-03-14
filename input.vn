@@ -1,7 +1,10 @@
-const nume : i32 = 334
+const nume : u32 = 334
 const dmnum : f32 = 1.222222222222
 const boolc: bool = 1 == 1 || !false && 67 < 77.85
 main {
+	var warn1: f64 = 2
+	var warn2: f32 = warn1
+	warn2 = warn1
 	for var i: i32 = 0, args.size() {
 		println(args[i])
 	}

@@ -359,13 +359,14 @@ namespace vnd {
         for(const auto &expression : factory.getExpressions()) {
             const auto &exprType = expression.getType();
             bool assignable = false;
+            std::pair<bool, bool> result;
             // NOLINTBEGIN(*-branch-clone)
             if(vectorType.empty()) {
                 vectorType = exprType;
                 assignable = true;
-            } else if(_scope->canAssign(vectorType, exprType)) {
+            } else if(result = _scope->canAssign(vectorType, exprType); result.first) {
                 assignable = true;
-            } else if(_scope->canAssign(exprType, vectorType)) {
+            } else if(result = _scope->canAssign(exprType, vectorType); result.first) {
                 vectorType = exprType;
                 assignable = true;
             }

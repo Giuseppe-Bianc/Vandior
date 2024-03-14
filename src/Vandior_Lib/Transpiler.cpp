@@ -182,8 +182,12 @@ namespace vnd {
             }
             if(!factory.empty()) {
                 auto expression = factory.getExpression();
-                if(!_scope->canAssign(type, expression.getType())) {
+                auto result = _scope->canAssign(type, expression.getType());
+                if(!result.first) {
                     throw TRANSPILER_EXCEPTIONF(instruction, "Cannot assign {} to {}", expression.getType(), type);
+                }
+                if(result.second) {
+                    LWARN("{}\nPossible loss of precision from {} to {}", instruction.toString(), expression.getType(), type);
                 }
                 if(isConst) {
                     if(expression.isConst()) [[likely]] {
@@ -254,9 +258,11 @@ namespace vnd {
             if(equalToken.isType(TokenType::OPERATION_EQUAL)) {
                 throw TRANSPILER_EXCEPTIONF(instruction, "incompatible operator {}", equalToken.getValue());
             }
-            if(auto error = transpileMultipleFun(variables, factory.getExpression()); !error.empty()) {
-                throw TranspilerException(error, instruction);
+            auto result = transpileMultipleFun(variables, factory.getExpression());
+            if(!result.first.empty()) {
+                throw TranspilerException(result.first, instruction);
             }
+            if(!result.second.empty()) { LWARN("{}\n{}", instruction.toString(), result.second); }
             return;
         }
         auto expressions = factory.getExpressions();
@@ -515,14 +521,15 @@ namespace vnd {
         return {};
     }
 
-    std::string Transpiler::transpileMultipleFun(const std::vector<std::pair<std::string, std::string>> &variables,
+    std::pair<std::string, std::string> Transpiler::transpileMultipleFun(const std::vector<std::pair<std::string, std::string>> &variables,
                                                  const Expression &expression) noexcept {
         auto types = Transpiler::tokenize(expression.getType());
         std::string values;
+        std::string warnings;
         std::vector<std::string> tmp;
         std::size_t typeIndex = 0;
         if(variables.size() != types.size()) {
-            return FORMAT("Inconsistent assignation: {} return values for {} variables", types.size(), variables.size());
+            return {FORMAT("Inconsistent assignation: {} return values for {} variables", types.size(), variables.size()), {}};
         }
         for(size_t i = 0; i != types.size(); i++) {
             values += FORMAT("vnd::tmp[\"{}\"], ", i);
@@ -534,7 +541,11 @@ namespace vnd {
             if(first != "_") {
                 auto type = types.at(typeIndex);
                 auto typeValue = Scope::getTypeValue(type);
-                if(!_scope->canAssign(second, type)) { return FORMAT("Cannot assign {}.{}", type, first); }
+                auto result = _scope->canAssign(second, type);
+                if(!result.first) {return {FORMAT("Cannot assign {}.{}", type, first), {}}; }
+                if(result.second) {
+                    warnings = FORMAT("Possible loss of precision from {} to {}\n", second, type);
+                }
                 typeIndex++;
                 if(first.ends_with('(')) {
                     _text += FORMAT("{}std::any_cast<{}>({}));\n{:\t^{}}", first, typeValue, tmp.front(), "", _tabs);
@@ -544,6 +555,7 @@ namespace vnd {
             }
             tmp.erase(tmp.begin());
         }
+        if(!warnings.empty()) { warnings.pop_back(); }
         _text += "vnd::tmp.clear();";
         return {};
     }
@@ -592,8 +604,9 @@ namespace vnd {
         if(variables.size() != 2 || expressions.size() != 2) { return false; }
         std::vector<std::string> swapVariables = {variables.at(0).first, variables.at(1).first};
         std::vector<std::string> swapExpressions = {expressions.at(0).getText(), expressions.at(1).getText()};
-        if(!_scope->canAssign(expressions.at(0).getType(), expressions.at(1).getType()) ||
-           !_scope->canAssign(expressions.at(1).getType(), expressions.at(0).getType())) {
+        std::vector<std::pair<bool, bool>> results = {_scope->canAssign(expressions.at(0).getType(), expressions.at(1).getType()),
+                                                      _scope->canAssign(expressions.at(1).getType(), expressions.at(0).getType())};
+        if(!results.at(0).first || !results.at(1).first) {
             return false;
         }
         for(auto &iter : swapVariables) {
@@ -627,7 +640,10 @@ namespace vnd {
                 return {};
             }
         }
-        if(!_scope->canAssign(type, expression.getType())) { return FORMAT("Cannot assign {} to {}", expression.getType(), type); }
+        auto result = _scope->canAssign(type, expression.getType());
+        if(!result.first) {
+            return FORMAT("Cannot assign {} to {}", expression.getType(), type);
+        }
         auto text = variable;
         auto getter = variable;
         if(!variable.ends_with('(')) { text += " = "; }

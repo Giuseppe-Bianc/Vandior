@@ -180,9 +180,9 @@ namespace vnd {
          * @brief Checks if a a type can be assigned.
          * @param left String representing the type of the variable to be assigned.
          * @param right String representing the type of the expression to assign.
-         * @return Bool containing the result of the check.
+         * @return Pair containing the result of the check and a possible precision loss.
          */
-        [[nodiscard]] bool canAssign(const std::string &left, const std::string &right) const noexcept;
+        [[nodiscard]] std::pair<bool, bool> canAssign(const std::string &left, const std::string &right) const noexcept;
 
     private:
         /**
