@@ -98,6 +98,14 @@ namespace vnd {
             extractExponent();
             tokenType = TokenType::DOUBLE;
         }
+        if(positionIsInText() && _input[position] == 'i') {
+            incPosAndColumn();
+            tokenType = TokenType::DOUBLE;
+        }
+        if(positionIsInText() && _input[position] == 'f') {
+            incPosAndColumn();
+            tokenType = TokenType::DOUBLE;
+        }
         const auto value = _input.substr(start, position - start);
         return {tokenType, value, {_filename, line, column - value.size()}};
     }
@@ -141,6 +149,12 @@ namespace vnd {
             if(inTextAndE()) {
                 incPosAndColumn();
                 extractExponent();
+            }
+            if(positionIsInText() && _input[position] == 'i') {
+                incPosAndColumn();
+            }
+            if(positionIsInText() && _input[position] == 'f') {
+                incPosAndColumn();
             }
         }
         const auto value = _input.substr(start, position - start);

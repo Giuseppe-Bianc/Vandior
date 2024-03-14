@@ -1,0 +1,9 @@
+main {
+	var array: f32[]
+	for var i: i32 = 0, 10 {
+		array.add(readLine().toF32())
+	}
+	for var i: i32 = 0, 10 {
+		println("{}:\t{}", i + 1, array[i])
+	}
+}

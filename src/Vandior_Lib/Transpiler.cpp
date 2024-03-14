@@ -506,7 +506,7 @@ namespace vnd {
         if(auto error = factory.parse({TokenType::CLOSE_SQ_PARENTESIS}); !error.empty()) { return error; }
         auto expression = factory.getExpression();
         auto next = std::ranges::next(iterator);
-        if(auto newType = expression.getType(); newType != "int") { return FORMAT("{} index not allowed", newType); }
+        if(auto newType = expression.getType(); !Scope::isInteger(newType)) { return FORMAT("{} index not allowed", newType); }
         if(type == "char") { return "Strings are immutable"; }
         if(!assignable && (next->isType(COMMA) || next->isType(EQUAL_OPERATOR) || next->isType(OPERATION_EQUAL))) {
             return "Cannot assign constant vectors";

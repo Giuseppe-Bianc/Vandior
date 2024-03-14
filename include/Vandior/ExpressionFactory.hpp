@@ -110,6 +110,13 @@ namespace vnd {
         [[nodiscard]] static bool isSquareType(const std::string_view &type) noexcept;
 
         /**
+         * @brief Gets the type of a literal integer value.
+         * @param type String_view representing the token value.
+         * @return String_view indicating the type.
+         */
+        [[nodiscard]] static std::string_view getIntType(const std::string_view &value) noexcept;
+
+        /**
          * @brief Gets the type of the current token.
          * @return Type of the token as a string.
          */
