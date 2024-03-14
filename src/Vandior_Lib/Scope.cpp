@@ -48,7 +48,7 @@ namespace vnd {
         mainScope->addFun("_test", FunType::create("i32", {}, {}, {}));
         mainScope->addFun("testPar", FunType::create("i32", {"i32", "i32"}, {}, {}));
         mainScope->addFun("testPar", FunType::create("i64", {"string"}, {}, {}));
-        mainScope->addFun("max", FunType::create("i32 f32", {"f32[]"}, {}, {}));
+        mainScope->addFun("max", FunType::create("i64 f64", {"f32[]"}, {}, {}));
         mainScope->addFun("arrayTest", FunType::create("i32[]", {}, {}, {}));
         mainScope->addFun("createObject", FunType::create("Object", {}, {}, {}));
         mainScope->addFun("Object", FunType::create("Object", {}, {}, {}, true));

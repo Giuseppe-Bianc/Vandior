@@ -75,4 +75,8 @@ main {
 	var fnum: f64 = 20213412.32
 	fnum ^= 10 / 2 ^ 2 ^ 3.4
 	println("{}", fnum)
+	var maxI: i64
+	var maxF: f32
+	maxI, maxF = max({})
+	println("{} {}", maxI, maxF)
 }

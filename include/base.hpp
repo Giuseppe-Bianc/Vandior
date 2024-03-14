@@ -222,12 +222,12 @@ string _readLine() {
 	std::getline (std::cin, input);
 	return string(input);
 }
-std::tuple<int, float> _max(vnd::vector<float>) {
+std::tuple<i64, f64> _max(vnd::vector<f64>) {
 	
 	return {0, 0};
 	
 }
-vnd::vector<int> _arrayTest() {
+vnd::vector<i32> _arrayTest() {
 	return {1, 2, 3};
 }
 std::shared_ptr<Object> _createObject() { return std::make_shared<Object>(); }

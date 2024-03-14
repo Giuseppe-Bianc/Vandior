@@ -21,6 +21,11 @@ namespace vnd {
                type != OPEN_SCOPE;
     }
 
+    void Transpiler::printPrecisionLossWarning(const Instruction &instruction, bool loss, const std::string &left,
+                                               const std::string &right) noexcept {
+        if(loss) { LWARN("{}\nPossible loss of precision from {} to {}", instruction.toString(), left, right); }
+    }
+
     bool Transpiler::transpile(std::string filename) {
         using enum TokenType;
         using enum InstructionType;
@@ -186,9 +191,7 @@ namespace vnd {
                 if(!result.first) {
                     throw TRANSPILER_EXCEPTIONF(instruction, "Cannot assign {} to {}", expression.getType(), type);
                 }
-                if(result.second) {
-                    LWARN("{}\nPossible loss of precision from {} to {}", instruction.toString(), expression.getType(), type);
-                }
+                printPrecisionLossWarning(instruction, result.second, expression.getType(), type);
                 if(isConst) {
                     if(expression.isConst()) [[likely]] {
                         _text += FORMAT(" = {}", expression.getValue());
@@ -273,9 +276,11 @@ namespace vnd {
         if(equalToken.getValue() == "=" && transpileSwap(variables, expressions)) { return; }
         auto exprIterator = expressions.begin();
         for(const auto &[first, second] : variables) {
-            if(auto error = transpileAssigment(first, second, equalToken, *exprIterator); !error.empty()) {
-                throw TranspilerException(error, instruction);
+            auto result = transpileAssigment(first, second, equalToken, *exprIterator);
+            if(!result.first.empty()) {
+                throw TranspilerException(result.first, instruction);
             }
+            printPrecisionLossWarning(instruction, result.second, second, exprIterator->getType());
             exprIterator = std::ranges::next(exprIterator);
         }
         _text.erase(_text.size() - _tabs - 1, _tabs + 1);
@@ -557,7 +562,7 @@ namespace vnd {
         }
         if(!warnings.empty()) { warnings.pop_back(); }
         _text += "vnd::tmp.clear();";
-        return {};
+        return {{}, warnings};
     }
 
     std::pair<std::string, std::string> Transpiler::transpileType(TokenVecIter &iterator, const TokenVecIter &end,
@@ -619,7 +624,7 @@ namespace vnd {
         return true;
     }
 
-    std::string Transpiler::transpileAssigment(const std::string &variable, const std::string &type, const Token &equalToken,
+    std::pair<std::string, bool> Transpiler::transpileAssigment(const std::string &variable, const std::string &type, const Token &equalToken,
                                                const Expression &expression) noexcept {
         std::string_view equalValue = equalToken.getValue();
 #ifdef __llvm__
@@ -627,14 +632,14 @@ namespace vnd {
 #else
         const bool exprContainsSpace = expression.getType().contains(' ');
 #endif
-        if(exprContainsSpace) { return "Multiple return value functions must be used alone"; }
+        if(exprContainsSpace) { return {"Multiple return value functions must be used alone", false}; }
         if(equalToken.isType(TokenType::OPERATION_EQUAL) && !Scope::isNumber(type)) {
-            if(variable == "_") { return FORMAT("incompatible operator {} for blank identifier", equalToken.getValue()); }
-            return FORMAT("incompatible operator {} for {} type", equalToken.getValue(), type);
+            if(variable == "_") { return {FORMAT("incompatible operator {} for blank identifier", equalToken.getValue()), false}; }
+            return {FORMAT("incompatible operator {} for {} type", equalToken.getValue(), type), false};
         }
         if(variable == "_") {
             if(expression.getType() == "void") {
-                return "Cannot assign void expression";
+                return {"Cannot assign void expression", false};
             } else {
                 _text += FORMAT("{};\n{:\t^{}}", expression.getText(), "", _tabs);
                 return {};
@@ -642,7 +647,7 @@ namespace vnd {
         }
         auto result = _scope->canAssign(type, expression.getType());
         if(!result.first) {
-            return FORMAT("Cannot assign {} to {}", expression.getType(), type);
+            return {FORMAT("Cannot assign {} to {}", expression.getType(), type), false};
         }
         auto text = variable;
         auto getter = variable;
@@ -664,7 +669,7 @@ namespace vnd {
         if(equalValue == "^=" || equalValue == "%=") { text += ")"; }
         if(variable.ends_with('(')) { text += ")"; }
         _text += FORMAT("{};\n{:\t^{}}", text, "", _tabs);
-        return {};
+        return {{}, result.second};
     }
 
     std::string Transpiler::transpileCondition(TokenVecIter &iterator, const TokenVecIter &end) noexcept {

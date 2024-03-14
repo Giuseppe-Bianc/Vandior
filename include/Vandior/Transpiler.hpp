@@ -55,6 +55,16 @@ namespace vnd {
         [[nodiscard]] static bool checkGlobalScope(const InstructionType &type) noexcept;
 
         /**
+         * @brief print a precision loss warning.
+         * @param instruction Current instrution.
+         * @param loss Bool flag indicating if there's precision loss.
+         * @param left String containing left type of assiggnation.
+         * @param right String containing right type of assiggnation.
+         */
+        void static printPrecisionLossWarning(const Instruction &instruction, bool loss, const std::string &left,
+                                              const std::string &right) noexcept;
+
+        /**
          * @brief Checks if there's a trailing bracket in the instruction.
          * @param instruction The instruction to check.
          */
@@ -198,9 +208,9 @@ namespace vnd {
          * @param type Type of the variable.
          * @param equalToken Token containing the equal operator informations.
          * @param expression Expression to assign.
-         * @return Parsed string if there is an error. If no error occurs, an empty string is returned.
+         * @return Pair of parsed error string and precision loss flag. If no error occurs, an empty string is returned.
          */
-        [[nodiscard]] std::string transpileAssigment(const std::string &variable, const std::string &type, const Token &equalToken,
+        [[nodiscard]] std::pair<std::string, bool> transpileAssigment(const std::string &variable, const std::string &type, const Token &equalToken,
                                                      const Expression &expression) noexcept;
 
         /**
