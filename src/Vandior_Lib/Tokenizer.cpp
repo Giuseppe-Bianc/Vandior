@@ -31,10 +31,10 @@ namespace vnd {
             } else if(vnd::TokenizerUtility::isQuotation(currentChar)) [[likely]] {
                 tokens.emplace_back(handleString());
             } else if(vnd::TokenizerUtility::isComma(currentChar)) {
-                tokens.emplace_back(TokenType::COMMA, ",", CodeSourceLocation{_filename, line, column - 1});
+                tokens.emplace_back(TokenType::COMMA, ","sv, CodeSourceLocation{_filename, line, column - 1});
                 incPosAndColumn();
             } else if(vnd::TokenizerUtility::isColon(currentChar)) {
-                tokens.emplace_back(TokenType::COLON, ":", CodeSourceLocation{_filename, line, column - 1});
+                tokens.emplace_back(TokenType::COLON, ":"sv, CodeSourceLocation{_filename, line, column - 1});
                 incPosAndColumn();
             } else [[unlikely]] {
                 handleError(std::string(1, currentChar), "Unknown Character");
@@ -81,7 +81,8 @@ namespace vnd {
     bool Tokenizer::inTextAndE() const noexcept { return positionIsInText() && std::toupper(_input[position]) == ECR; }
 
     Token Tokenizer::handleDigits() {
-        TokenType tokenType = TokenType::INTEGER;
+        using enum vnd::TokenType;
+        TokenType tokenType = INTEGER;
         const auto start = position;
         extractDigits();
         if(positionIsInText() && _input[position] == PNT) {
@@ -91,20 +92,20 @@ namespace vnd {
                 incPosAndColumn();
                 extractExponent();
             }
-            tokenType = TokenType::DOUBLE;
+            tokenType = DOUBLE;
         }
         if(inTextAndE()) {
             incPosAndColumn();
             extractExponent();
-            tokenType = TokenType::DOUBLE;
+            tokenType = DOUBLE;
         }
         if(positionIsInText() && _input[position] == 'i') {
             incPosAndColumn();
-            tokenType = TokenType::DOUBLE;
+            tokenType = DOUBLE;
         }
         if(positionIsInText() && _input[position] == 'f') {
             incPosAndColumn();
-            tokenType = TokenType::DOUBLE;
+            tokenType = DOUBLE;
         }
         const auto value = _input.substr(start, position - start);
         return {tokenType, value, {_filename, line, column - value.size()}};
@@ -113,7 +114,7 @@ namespace vnd {
     Token Tokenizer::handleComment() {
         if(_input[position + 1] == '/') { return handleSingleLineComment(); }
         if(_input[position + 1] == '*') { return handleMultiLineComment(); }
-        return {TokenType::UNKNOWN, "", {_filename, line, column}};
+        return {TokenType::UNKNOWN, ""sv, {_filename, line, column}};
     }
 
     Token Tokenizer::handleSingleLineComment() {
@@ -150,12 +151,8 @@ namespace vnd {
                 incPosAndColumn();
                 extractExponent();
             }
-            if(positionIsInText() && _input[position] == 'i') {
-                incPosAndColumn();
-            }
-            if(positionIsInText() && _input[position] == 'f') {
-                incPosAndColumn();
-            }
+            if(positionIsInText() && _input[position] == 'i') { incPosAndColumn(); }
+            if(positionIsInText() && _input[position] == 'f') { incPosAndColumn(); }
         }
         const auto value = _input.substr(start, position - start);
         return {type, value, {_filename, line, column - value.size()}};

@@ -1,4 +1,5 @@
 #include "Vandior/TokenizerUtility.hpp"
+using namespace std::literals::string_view_literals;
 
 namespace vnd {
     // NOLINTBEGIN(*-include-cleaner)
@@ -8,10 +9,10 @@ namespace vnd {
     }
     bool TokenizerUtility::isPlusOrMinus(const char cara) noexcept { return cara == '+' || cara == '-'; }
     bool TokenizerUtility::isOperationEqual(const std::string_view &value) noexcept {
-        return value == "+=" || value == "-=" || value == "*=" || value == "/=" || value == "^=" || value == "%=";
+        return value == "+="sv || value == "-="sv || value == "*="sv || value == "/="sv || value == "^="sv || value == "%="sv;
     }
     bool TokenizerUtility::isBooleanOperator(const std::string_view &value) noexcept {
-        return value == "==" || value == ">=" || value == "<=" || value == "!=";
+        return value == "=="sv || value == ">="sv || value == "<="sv || value == "!="sv;
     }
     bool TokenizerUtility::isLogicalOperator(const std::string_view &value) noexcept { return value == "&&" || value == "||"; }
     bool TokenizerUtility::isBrackets(const char cha) {

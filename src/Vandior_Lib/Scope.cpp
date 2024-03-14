@@ -15,8 +15,8 @@ namespace vnd {
     std::vector<std::string> Scope::_unsignedTypes = {"u8", "u16", "u32", "u64"};
     std::vector<std::string> Scope::_floatingTypes = {"f32", "f64"};
     std::vector<std::string> Scope::_complexTypes = {"c32", "c64"};
-    std::vector<std::string> Scope::_primitiveTypes = {"i8",  "i16", "i32", "i64",  "u8",   "u16",   "u32",
-                                                       "u64", "f32", "f64", "c32", "c64", "char", "bool", "string"};
+    std::vector<std::string> Scope::_primitiveTypes = {"i8",  "i16", "i32", "i64", "u8",   "u16",  "u32",   "u64",
+                                                       "f32", "f64", "c32", "c64", "char", "bool", "string"};
     // NOLINTEND
 
     Scope::Scope(std::shared_ptr<Scope> parent, const ScopeType &type) noexcept : _parent(std::move(parent)), _type(type) {
@@ -32,7 +32,7 @@ namespace vnd {
     std::shared_ptr<Scope> Scope::createMain() noexcept {
         auto mainScope = std::make_shared<Scope>(Scope{nullptr, ScopeType::GLOBAL_SCOPE});
         mainScope->addType("void");
-        for(auto &type : Scope::_primitiveTypes) { mainScope->addType(type); }
+        for(const auto &type : _primitiveTypes) { mainScope->addType(type); }
         mainScope->addType("Object");
         mainScope->addType("Derived", {"Object"});
         mainScope->addVariable("Object.a", "i32", false);
