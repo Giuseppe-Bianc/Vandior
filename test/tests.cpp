@@ -209,6 +209,38 @@ TEST_CASE("corrected format for Tokentype", "[token_type]") {
     REQ_FORMAT(UNKNOWN, "UNKNOWN")
 }
 
+namespace {
+    vnd::Transpiler createSimpleTranspiler(const std::vector<vnd::Token> &tokens) {
+        vnd::Instruction instruction = vnd::Instruction::create(filename);
+        for(const auto &token : tokens) { instruction.checkToken(token); }
+        return vnd::Transpiler::create({instruction});
+    }
+
+    vnd::Transpiler createComplexTranspiler(const std::vector<vnd::Token> &tokens) {
+        std::vector<vnd::Instruction> instructions = {vnd::Instruction::create(filename)};
+        auto line = tokens.at(0).getLine();
+        for(const auto &token : tokens) {
+            if(token.getLine() > line) {
+                instructions.emplace_back(vnd::Instruction::create(filename));
+                line = token.getLine();
+            }
+            instructions.back().checkToken(token);
+        }
+        return vnd::Transpiler::create(instructions);
+    }
+    void modifyToken(vnd::Token &token) {
+        token.setType(vnd::TokenType::INTEGER);
+        token.setValue("assss");
+        token.setFileName(filename);
+        token.setLine(1);
+        token.setColumn(1);
+    }
+    std::string fileContent() {
+        std::ifstream stream(outFilename.data());
+        return {std::istreambuf_iterator<char>{stream}, {}};
+    }
+}  // namespace
+
 TEST_CASE("default constructed token", "[token]") {
     vnd::Token token{};
     REQUIRE(token.getType() == vnd::TokenType::UNKNOWN);
@@ -246,11 +278,7 @@ TEST_CASE("default constructed token set propriety", "[token]") {
     REQUIRE(token.getFileName() == filename4);
     REQUIRE(token.getLine() == 0);
     REQUIRE(token.getColumn() == 0);
-    token.setType(INTEGER);
-    token.setValue("assss");
-    token.setFileName(filename);
-    token.setLine(1);
-    token.setColumn(1);
+    modifyToken(token);
     REQUIRE(token.getType() == INTEGER);
     REQUIRE(token.getValue().empty() == false);
     REQUIRE(token.getFileName() == filename);
@@ -267,11 +295,7 @@ TEST_CASE("default constructed token isType", "[token]") {
     REQUIRE(token.getLine() == 0);
     REQUIRE(token.getColumn() == 0);
     REQUIRE(token.isType(CHAR) == false);
-    token.setType(INTEGER);
-    token.setValue("assss");
-    token.setFileName(filename);
-    token.setLine(1);
-    token.setColumn(1);
+    modifyToken(token);
     REQUIRE(token.getType() == INTEGER);
     REQUIRE(token.isType(INTEGER) == true);
     REQUIRE(token.getValue().empty() == false);
@@ -287,11 +311,7 @@ TEST_CASE("default constructed token set propriety tostring", "[token]") {
     REQUIRE(token.getLine() == 0);
     REQUIRE(token.getColumn() == 0);
     REQUIRE(token.to_string() == "(type: UNKNOWN, value: '', source location:(file:unknown, line:0, column:0))");
-    token.setType(INTEGER);
-    token.setValue("assss");
-    token.setFileName(filename);
-    token.setLine(1);
-    token.setColumn(1);
+    modifyToken(token);
     REQUIRE(token.getType() == INTEGER);
     REQUIRE(token.getValue().empty() == false);
     REQUIRE(token.getFileName() == filename);
@@ -308,11 +328,7 @@ TEST_CASE("default constructed token set propriety format", "[token]") {
     REQUIRE(token.getLine() == 0);
     REQUIRE(token.getColumn() == 0);
     REQUIRE(FORMAT("{}", token) == "(type: UNKNOWN, value: '', source location:(file:unknown, line:0, column:0))");
-    token.setType(INTEGER);
-    token.setValue("assss");
-    token.setFileName(filename);
-    token.setLine(1);
-    token.setColumn(1);
+    modifyToken(token);
     REQUIRE(token.getType() == INTEGER);
     REQUIRE(token.getValue().empty() == false);
     REQUIRE(token.getFileName() == filename);
@@ -418,43 +434,46 @@ TEST_CASE("tokenizer emit double token", "[tokenizer]") {
 }
 
 TEST_CASE("tokenizer emit operator token", "[tokenizer]") {
+    using enum vnd::TokenType;
     vnd::Tokenizer tokenizer{"* / = , : < > ! | & + - ^ .", filename};
     std::vector<vnd::Token> tokens = tokenizer.tokenize();
     REQUIRE(tokens.size() == 15);
     REQUIRE(tokens[0] == vnd::Token(oper, "*", vnd::CodeSourceLocation(filename, 1, 1)));
     REQUIRE(tokens[1] == vnd::Token(oper, "/", vnd::CodeSourceLocation(filename, 1, 3)));
-    REQUIRE(tokens[2] == vnd::Token(vnd::TokenType::EQUAL_OPERATOR, "=", vnd::CodeSourceLocation(filename, 1, 5)));
-    REQUIRE(tokens[3] == vnd::Token(vnd::TokenType::COMMA, ",", vnd::CodeSourceLocation(filename, 1, t_colum)));
-    REQUIRE(tokens[4] == vnd::Token(vnd::TokenType::COLON, ":", vnd::CodeSourceLocation(filename, 1, t_colum4)));
-    REQUIRE(tokens[5] == vnd::Token(vnd::TokenType::BOOLEAN_OPERATOR, "<", vnd::CodeSourceLocation(filename, 1, t_colum8)));
-    REQUIRE(tokens[6] == vnd::Token(vnd::TokenType::BOOLEAN_OPERATOR, ">", vnd::CodeSourceLocation(filename, 1, t_colum11)));
-    REQUIRE(tokens[7] == vnd::Token(vnd::TokenType::NOT_OPERATOR, "!", vnd::CodeSourceLocation(filename, 1, t_colum10)));
+    REQUIRE(tokens[2] == vnd::Token(EQUAL_OPERATOR, "=", vnd::CodeSourceLocation(filename, 1, 5)));
+    REQUIRE(tokens[3] == vnd::Token(COMMA, ",", vnd::CodeSourceLocation(filename, 1, t_colum)));
+    REQUIRE(tokens[4] == vnd::Token(COLON, ":", vnd::CodeSourceLocation(filename, 1, t_colum4)));
+    REQUIRE(tokens[5] == vnd::Token(BOOLEAN_OPERATOR, "<", vnd::CodeSourceLocation(filename, 1, t_colum8)));
+    REQUIRE(tokens[6] == vnd::Token(BOOLEAN_OPERATOR, ">", vnd::CodeSourceLocation(filename, 1, t_colum11)));
+    REQUIRE(tokens[7] == vnd::Token(NOT_OPERATOR, "!", vnd::CodeSourceLocation(filename, 1, t_colum10)));
     REQUIRE(tokens[8] == vnd::Token(oper, "|", vnd::CodeSourceLocation(filename, 1, t_colum13)));
     REQUIRE(tokens[9] == vnd::Token(oper, "&", vnd::CodeSourceLocation(filename, 1, 19)));
     REQUIRE(tokens[10] == vnd::Token(oper, "+", vnd::CodeSourceLocation(filename, 1, 21)));
-    REQUIRE(tokens[11] == vnd::Token(vnd::TokenType::MINUS_OPERATOR, "-", vnd::CodeSourceLocation(filename, 1, 23)));
+    REQUIRE(tokens[11] == vnd::Token(MINUS_OPERATOR, "-", vnd::CodeSourceLocation(filename, 1, 23)));
     REQUIRE(tokens[12] == vnd::Token(oper, "^", vnd::CodeSourceLocation(filename, 1, 25)));
-    REQUIRE(tokens[13] == vnd::Token(vnd::TokenType::DOT_OPERATOR, ".", vnd::CodeSourceLocation(filename, 1, 27)));
+    REQUIRE(tokens[13] == vnd::Token(DOT_OPERATOR, ".", vnd::CodeSourceLocation(filename, 1, 27)));
 }
 
 TEST_CASE("tokenizer emit operationEqual token", "[tokenizer]") {
+    using enum vnd::TokenType;
     vnd::Tokenizer tokenizer{"+= -= *= /=", filename};
     std::vector<vnd::Token> tokens = tokenizer.tokenize();
     REQUIRE(tokens.size() == 5);
-    REQUIRE(tokens[0] == vnd::Token(vnd::TokenType::OPERATION_EQUAL, "+=", vnd::CodeSourceLocation(filename, 1, 1)));
-    REQUIRE(tokens[1] == vnd::Token(vnd::TokenType::OPERATION_EQUAL, "-=", vnd::CodeSourceLocation(filename, 1, 4)));
-    REQUIRE(tokens[2] == vnd::Token(vnd::TokenType::OPERATION_EQUAL, "*=", vnd::CodeSourceLocation(filename, 1, t_colum3)));
-    REQUIRE(tokens[3] == vnd::Token(vnd::TokenType::OPERATION_EQUAL, "/=", vnd::CodeSourceLocation(filename, 1, 10)));
+    REQUIRE(tokens[0] == vnd::Token(OPERATION_EQUAL, "+=", vnd::CodeSourceLocation(filename, 1, 1)));
+    REQUIRE(tokens[1] == vnd::Token(OPERATION_EQUAL, "-=", vnd::CodeSourceLocation(filename, 1, 4)));
+    REQUIRE(tokens[2] == vnd::Token(OPERATION_EQUAL, "*=", vnd::CodeSourceLocation(filename, 1, t_colum3)));
+    REQUIRE(tokens[3] == vnd::Token(OPERATION_EQUAL, "/=", vnd::CodeSourceLocation(filename, 1, 10)));
 }
 
 TEST_CASE("tokenizer emit boolean operator token", "[tokenizer]") {
+    using enum vnd::TokenType;
     vnd::Tokenizer tokenizer{"== >= <= !=", filename};
     std::vector<vnd::Token> tokens = tokenizer.tokenize();
     REQUIRE(tokens.size() == 5);
-    REQUIRE(tokens[0] == vnd::Token(vnd::TokenType::BOOLEAN_OPERATOR, "==", vnd::CodeSourceLocation(filename, 1, 1)));
-    REQUIRE(tokens[1] == vnd::Token(vnd::TokenType::BOOLEAN_OPERATOR, ">=", vnd::CodeSourceLocation(filename, 1, 4)));
-    REQUIRE(tokens[2] == vnd::Token(vnd::TokenType::BOOLEAN_OPERATOR, "<=", vnd::CodeSourceLocation(filename, 1, t_colum3)));
-    REQUIRE(tokens[3] == vnd::Token(vnd::TokenType::BOOLEAN_OPERATOR, "!=", vnd::CodeSourceLocation(filename, 1, 10)));
+    REQUIRE(tokens[0] == vnd::Token(BOOLEAN_OPERATOR, "==", vnd::CodeSourceLocation(filename, 1, 1)));
+    REQUIRE(tokens[1] == vnd::Token(BOOLEAN_OPERATOR, ">=", vnd::CodeSourceLocation(filename, 1, 4)));
+    REQUIRE(tokens[2] == vnd::Token(BOOLEAN_OPERATOR, "<=", vnd::CodeSourceLocation(filename, 1, t_colum3)));
+    REQUIRE(tokens[3] == vnd::Token(BOOLEAN_OPERATOR, "!=", vnd::CodeSourceLocation(filename, 1, 10)));
 }
 
 TEST_CASE("tokenizer emit logical operator token", "[tokenizer]") {
@@ -498,13 +517,14 @@ TEST_CASE("Tokenizer emit square curly token", "[Tokenizer]") {
 }
 
 TEST_CASE("Tokenizer emit char token", "[Tokenizer]") {
+    using enum vnd::TokenType;
     constexpr std::string_view code2 = R"('a' '\\' '')";
     vnd::Tokenizer tokenizer{code2, filename};
     std::vector<vnd::Token> tokens = tokenizer.tokenize();
     REQUIRE(tokens.size() == 4);
-    REQUIRE(tokens[0] == vnd::Token(vnd::TokenType::CHAR, "a", vnd::CodeSourceLocation(filename, 1, 2)));
-    REQUIRE(tokens[1] == vnd::Token(vnd::TokenType::CHAR, R"(\\)", vnd::CodeSourceLocation(filename, 1, t_colum)));
-    REQUIRE(tokens[2] == vnd::Token(vnd::TokenType::CHAR, "", vnd::CodeSourceLocation(filename, 1, t_colum8)));
+    REQUIRE(tokens[0] == vnd::Token(CHAR, "a", vnd::CodeSourceLocation(filename, 1, 2)));
+    REQUIRE(tokens[1] == vnd::Token(CHAR, R"(\\)", vnd::CodeSourceLocation(filename, 1, t_colum)));
+    REQUIRE(tokens[2] == vnd::Token(CHAR, "", vnd::CodeSourceLocation(filename, 1, t_colum8)));
 }
 
 TEST_CASE("Tokenizer emit exception for unknown char", "[Tokenizer]") {
@@ -513,13 +533,14 @@ TEST_CASE("Tokenizer emit exception for unknown char", "[Tokenizer]") {
 }
 
 TEST_CASE("Tokenizer emit string token", "[Tokenizer]") {
+    using enum vnd::TokenType;
     constexpr std::string_view code2 = R"("a" "\\" "")";
     vnd::Tokenizer tokenizer{code2, filename};
     std::vector<vnd::Token> tokens = tokenizer.tokenize();
     REQUIRE(tokens.size() == 4);
-    REQUIRE(tokens[0] == vnd::Token(vnd::TokenType::STRING, "a", vnd::CodeSourceLocation(filename, 1, 1)));
-    REQUIRE(tokens[1] == vnd::Token(vnd::TokenType::STRING, R"(\\)", vnd::CodeSourceLocation(filename, 1, 5)));
-    REQUIRE(tokens[2] == vnd::Token(vnd::TokenType::STRING, "", vnd::CodeSourceLocation(filename, 1, 10)));
+    REQUIRE(tokens[0] == vnd::Token(STRING, "a", vnd::CodeSourceLocation(filename, 1, 1)));
+    REQUIRE(tokens[1] == vnd::Token(STRING, R"(\\)", vnd::CodeSourceLocation(filename, 1, 5)));
+    REQUIRE(tokens[2] == vnd::Token(STRING, "", vnd::CodeSourceLocation(filename, 1, 10)));
 }
 
 TEST_CASE("tokenizer emit unknown token on non closed char token", "[tokenizer]") {
@@ -545,15 +566,6 @@ TEST_CASE("tokenizer emit multiline comment token", "[tokenizer]") {
     REQUIRE(tokens.size() == 2);
     REQUIRE(tokens[0] == vnd::Token(vnd::TokenType::COMMENT, R"(/*multi\nline\ncomment*/)", vnd::CodeSourceLocation(filename, 1, 1)));
 }
-
-/*
-TEST_CASE("tokenizer emit unknown token on non closed string token", "[tokenizer]"){
-    constexpr std::string_view code2 = R"("a')";
-    Tokenizer tokenizer{code2,filename};
-    std::vector<Token> tokens = tokenizer.tokenize();
-    REQUIRE(tokens.size() == 2);
-    REQUIRE(tokens[0] == Token(TokenType::UNKNOWN, R"(a')", vnd::CodeSourceLocation(filename,1, 2)));
-}*/
 
 TEST_CASE("corrected format for InstructionType", "[Instruction_type]") {
     using enum vnd::InstructionType;
@@ -635,9 +647,10 @@ TEST_CASE("Corrected type of multy assignation instruction", "[Instruction]") {
 }
 
 TEST_CASE("Corrected type of parameter expression instruction", "[Instruction]") {
+    using enum vnd::TokenType;
     vnd::Instruction instruction = vnd::Instruction::create(filename);
-    instruction.checkToken(vnd::Token{vnd::TokenType::IDENTIFIER, "", vnd::CodeSourceLocation(filename, 0, 0)});
-    instruction.checkToken(vnd::Token{vnd::TokenType::OPEN_PARENTESIS, "", vnd::CodeSourceLocation(filename, 0, 1)});
+    instruction.checkToken(vnd::Token{IDENTIFIER, "", vnd::CodeSourceLocation(filename, 0, 0)});
+    instruction.checkToken(vnd::Token{OPEN_PARENTESIS, "", vnd::CodeSourceLocation(filename, 0, 1)});
     REQUIRE(instruction.getLastType() == vnd::InstructionType::PARAMETER_EXPRESSION);
 }
 
@@ -764,36 +777,14 @@ TEST_CASE("ExpressionFactory emit function type", "[factory]") {
     REQUIRE(factory.size() == 1);
     REQUIRE(factory.getExpression().getType() == "i64");
 }
-namespace {
-    vnd::Transpiler createSimpleTranspiler(const std::vector<vnd::Token> &tokens) {
-        vnd::Instruction instruction = vnd::Instruction::create(filename);
-        for(const auto &token : tokens) { instruction.checkToken(token); }
-        return vnd::Transpiler::create({instruction});
-    }
-
-    vnd::Transpiler createComplexTranspiler(const std::vector<vnd::Token> &tokens) {
-        std::vector<vnd::Instruction> instructions = {vnd::Instruction::create(filename)};
-        auto line = tokens.at(0).getLine();
-        for(const auto &token : tokens) {
-            if(token.getLine() > line) {
-                instructions.emplace_back(vnd::Instruction::create(filename));
-                line = token.getLine();
-            }
-            instructions.back().checkToken(token);
-        }
-        return vnd::Transpiler::create(instructions);
-    }
-}  // namespace
 
 TEST_CASE("Transpiler transpile main instruction", "[transpiler]") {
     using enum vnd::TokenType;
     vnd::Tokenizer tokenizer{"main{}", filename};
-    auto tokens = tokenizer.tokenize();
-    auto transpiler = createSimpleTranspiler(tokens);
+    auto transpiler = createSimpleTranspiler(tokenizer.tokenize());
     transpiler.transpile(std::string{filename});
     REQUIRE(std::filesystem::exists(outFilename));
-    std::ifstream stream(outFilename.data());
-    std::string code(std::istreambuf_iterator<char>{stream}, {});
+    std::string code = fileContent();
     REQUIRE(code == "#include \"./include/base.hpp\"\n\n"
                     "int main(int argc, char **argv) {\n"
                     "\tconst vnd::vector<string> _args = vnd::createArgs(argc, argv);\n"
@@ -804,12 +795,10 @@ TEST_CASE("Transpiler transpile main instruction", "[transpiler]") {
 TEST_CASE("Transpiler transpile declaration instruction", "[transpiler]") {
     using enum vnd::TokenType;
     vnd::Tokenizer tokenizer{"var num, num1 : i32", filename};
-    auto tokens = tokenizer.tokenize();
-    auto transpiler = createSimpleTranspiler(tokens);
+    auto transpiler = createSimpleTranspiler(tokenizer.tokenize());
     transpiler.transpile(std::string{filename});
     REQUIRE(std::filesystem::exists(outFilename));
-    std::ifstream stream(outFilename.data());
-    std::string code(std::istreambuf_iterator<char>{stream}, {});
+    std::string code = fileContent();
     REQUIRE(code == "#include \"./include/base.hpp\"\n\n"
                     "i32 _num{}, _num1{};\n");
 }
@@ -817,12 +806,10 @@ TEST_CASE("Transpiler transpile declaration instruction", "[transpiler]") {
 TEST_CASE("Transpiler transpile declaration underscore instruction", "[transpiler]") {
     using enum vnd::TokenType;
     vnd::Tokenizer tokenizer{"var _num, _num1 : u32", filename};
-    auto tokens = tokenizer.tokenize();
-    auto transpiler = createSimpleTranspiler(tokens);
+    auto transpiler = createSimpleTranspiler(tokenizer.tokenize());
     transpiler.transpile(std::string{filename});
     REQUIRE(std::filesystem::exists(outFilename));
-    std::ifstream stream(outFilename.data());
-    std::string code(std::istreambuf_iterator<char>{stream}, {});
+    std::string code = fileContent();
     REQUIRE(code == "#include \"./include/base.hpp\"\n\n"
                     "u32 v_num{}, v_num1{};\n");
 }
@@ -830,12 +817,10 @@ TEST_CASE("Transpiler transpile declaration underscore instruction", "[transpile
 TEST_CASE("Transpiler transpile initialization instruction", "[transpiler]") {
     using enum vnd::TokenType;
     vnd::Tokenizer tokenizer{"var num, num1 : i8 = 1", filename};
-    auto tokens = tokenizer.tokenize();
-    auto transpiler = createSimpleTranspiler(tokens);
+    auto transpiler = createSimpleTranspiler(tokenizer.tokenize());
     transpiler.transpile(std::string{filename});
     REQUIRE(std::filesystem::exists(outFilename));
-    std::ifstream stream(outFilename.data());
-    std::string code(std::istreambuf_iterator<char>{stream}, {});
+    std::string code = fileContent();
     REQUIRE(code == "#include \"./include/base.hpp\"\n\n"
                     "i8 _num = 1, _num1{};\n");
 }
@@ -843,12 +828,10 @@ TEST_CASE("Transpiler transpile initialization instruction", "[transpiler]") {
 TEST_CASE("Transpiler transpile initialization underscore instruction", "[transpiler]") {
     using enum vnd::TokenType;
     vnd::Tokenizer tokenizer{"var _num, _num1 : u64 = 1", filename};
-    auto tokens = tokenizer.tokenize();
-    auto transpiler = createSimpleTranspiler(tokens);
+    auto transpiler = createSimpleTranspiler(tokenizer.tokenize());
     transpiler.transpile(std::string{filename});
     REQUIRE(std::filesystem::exists(outFilename));
-    std::ifstream stream(outFilename.data());
-    std::string code(std::istreambuf_iterator<char>{stream}, {});
+    std::string code = fileContent();
     REQUIRE(code == "#include \"./include/base.hpp\"\n\n"
                     "u64 v_num = 1, v_num1{};\n");
 }
@@ -856,12 +839,10 @@ TEST_CASE("Transpiler transpile initialization underscore instruction", "[transp
 TEST_CASE("Transpiler transpile const instruction", "[transpiler]") {
     using enum vnd::TokenType;
     vnd::Tokenizer tokenizer{"const num : u16 = 1 + 333", filename};
-    auto tokens = tokenizer.tokenize();
-    auto transpiler = createSimpleTranspiler(tokens);
+    auto transpiler = createSimpleTranspiler(tokenizer.tokenize());
     transpiler.transpile(std::string{filename});
     REQUIRE(std::filesystem::exists(outFilename));
-    std::ifstream stream(outFilename.data());
-    std::string code(std::istreambuf_iterator<char>{stream}, {});
+    std::string code = fileContent();
     REQUIRE(code == "#include \"./include/base.hpp\"\n\n"
                     "const u16 _num = 334;\n\n");
 }
@@ -869,12 +850,10 @@ TEST_CASE("Transpiler transpile const instruction", "[transpiler]") {
 TEST_CASE("Transpiler transpile operation instruction", "[transpiler]") {
     using enum vnd::TokenType;
     vnd::Tokenizer tokenizer{"main {\nprint(\"Test {}\", args[0])\n}", filename};
-    auto tokens = tokenizer.tokenize();
-    auto transpiler = createComplexTranspiler(tokens);
+    auto transpiler = createComplexTranspiler(tokenizer.tokenize());
     transpiler.transpile(std::string{filename});
     REQUIRE(std::filesystem::exists(outFilename));
-    std::ifstream stream(outFilename.data());
-    std::string code(std::istreambuf_iterator<char>{stream}, {});
+    std::string code = fileContent();
     REQUIRE(code == "#include \"./include/base.hpp\"\n\n"
                     "int main(int argc, char **argv) {\n"
                     "\tconst vnd::vector<string> _args = vnd::createArgs(argc, argv);\n"
@@ -886,12 +865,10 @@ TEST_CASE("Transpiler transpile operation instruction", "[transpiler]") {
 TEST_CASE("Transpiler transpile assignation instruction", "[transpiler]") {
     using enum vnd::TokenType;
     vnd::Tokenizer tokenizer{"main{\nvar num : i8\nnum = 1\n}", filename};
-    auto tokens = tokenizer.tokenize();
-    auto transpiler = createComplexTranspiler(tokens);
+    auto transpiler = createComplexTranspiler(tokenizer.tokenize());
     transpiler.transpile(std::string{filename});
     REQUIRE(std::filesystem::exists(outFilename));
-    std::ifstream stream(outFilename.data());
-    std::string code(std::istreambuf_iterator<char>{stream}, {});
+    std::string code = fileContent();
     REQUIRE(code == R"(#include "./include/base.hpp"
 
 int main(int argc, char **argv) {
@@ -906,12 +883,10 @@ int main(int argc, char **argv) {
 TEST_CASE("Transpiler transpile if instruction", "[transpiler]") {
     using enum vnd::TokenType;
     vnd::Tokenizer tokenizer{"main{\nif(true){\n} else if(false){\n} else{}\n\n}", filename};
-    auto tokens = tokenizer.tokenize();
-    auto transpiler = createComplexTranspiler(tokens);
+    auto transpiler = createComplexTranspiler(tokenizer.tokenize());
     transpiler.transpile(std::string{filename});
     REQUIRE(std::filesystem::exists(outFilename));
-    std::ifstream stream(outFilename.data());
-    std::string code(std::istreambuf_iterator<char>{stream}, {});
+    std::string code = fileContent();
     REQUIRE(code == "#include \"./include/base.hpp\"\n\n"
                     "int main(int argc, char **argv) {\n"
                     "\tconst vnd::vector<string> _args = vnd::createArgs(argc, argv);\n"
@@ -925,12 +900,10 @@ TEST_CASE("Transpiler transpile if instruction", "[transpiler]") {
 TEST_CASE("Transpiler transpile while and break instructions", "[transpiler]") {
     using enum vnd::TokenType;
     vnd::Tokenizer tokenizer{"main{\nwhile(true){\nbreak\n}\n}", filename};
-    auto tokens = tokenizer.tokenize();
-    auto transpiler = createComplexTranspiler(tokens);
+    auto transpiler = createComplexTranspiler(tokenizer.tokenize());
     transpiler.transpile(std::string{filename});
     REQUIRE(std::filesystem::exists(outFilename));
-    std::ifstream stream(outFilename.data());
-    std::string code(std::istreambuf_iterator<char>{stream}, {});
+    std::string code = fileContent();
     REQUIRE(code == "#include \"./include/base.hpp\"\n\n"
                     "int main(int argc, char **argv) {\n"
                     "\tconst vnd::vector<string> _args = vnd::createArgs(argc, argv);\n"
@@ -944,12 +917,10 @@ TEST_CASE("Transpiler transpile while and break instructions", "[transpiler]") {
 TEST_CASE("Transpiler transpile for instruction", "[transpiler]") {
     using enum vnd::TokenType;
     vnd::Tokenizer tokenizer{"main{\nfor var i : i8 = 0, 10, 1 {}\n}", filename};
-    auto tokens = tokenizer.tokenize();
-    auto transpiler = createComplexTranspiler(tokens);
+    auto transpiler = createComplexTranspiler(tokenizer.tokenize());
     transpiler.transpile(std::string{filename});
     REQUIRE(std::filesystem::exists(outFilename));
-    std::ifstream stream(outFilename.data());
-    std::string code(std::istreambuf_iterator<char>{stream}, {});
+    std::string code = fileContent();
     REQUIRE(code == "#include \"./include/base.hpp\"\n\n"
                     "int main(int argc, char **argv) {\n"
                     "\tconst vnd::vector<string> _args = vnd::createArgs(argc, argv);\n"
@@ -961,12 +932,10 @@ TEST_CASE("Transpiler transpile for instruction", "[transpiler]") {
 TEST_CASE("Transpiler transpile open and close scope instructions", "[transpiler]") {
     using enum vnd::TokenType;
     vnd::Tokenizer tokenizer{"main{\n{\n}\n\n}", filename};
-    auto tokens = tokenizer.tokenize();
-    auto transpiler = createComplexTranspiler(tokens);
+    auto transpiler = createComplexTranspiler(tokenizer.tokenize());
     transpiler.transpile(std::string{filename});
     REQUIRE(std::filesystem::exists(outFilename));
-    std::ifstream stream(outFilename.data());
-    std::string code(std::istreambuf_iterator<char>{stream}, {});
+    std::string code = fileContent();
     REQUIRE(code == "#include \"./include/base.hpp\"\n\n"
                     "int main(int argc, char **argv) {\n"
                     "\tconst vnd::vector<string> _args = vnd::createArgs(argc, argv);\n"
