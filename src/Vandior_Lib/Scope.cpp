@@ -351,8 +351,6 @@ namespace vnd {
     std::pair<FunType, bool> Scope::specializeFun(const FunType &fun, const std::vector<std::string> &typeSpecialized) const noexcept {
         std::vector<std::pair<std::string, std::string>> typeGeneric = fun.getTypeGeneric();
         std::vector<std::pair<std::string, std::string>> resultGeneric;
-        // TODO: fix this if statement
-        // if(typeGeneric.size() != typeGeneric.size()) { return {FunType::createEmpty(), false}; }
         auto it_specialized = typeSpecialized.begin();
         for(auto &[key, value] : typeGeneric) {
             if(it_specialized == typeSpecialized.end()) { return {FunType::createEmpty(), false}; }
