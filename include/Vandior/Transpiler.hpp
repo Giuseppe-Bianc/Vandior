@@ -251,7 +251,7 @@ namespace vnd {
                                    const std::string &value);
         void reformatConstansInGlobalScope();
         void handleInitialization(const Instruction &instruction, TokenVecIter &iterator, const TokenVecIter &endToken,
-                                  ExpressionFactory &factory);
+                                  ExpressionFactory &factory) const;
     };
 
 }  // namespace vnd

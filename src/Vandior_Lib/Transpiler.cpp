@@ -188,7 +188,7 @@ namespace vnd {
         }
     }
     void Transpiler::handleInitialization(const Instruction &instruction, TokenVecIter &iterator, const TokenVecIter &endToken,
-                                          ExpressionFactory &factory) {
+                                          ExpressionFactory &factory) const {
         if(iterator != endToken && iterator->isType(TokenType::EQUAL_OPERATOR)) {
             ++iterator;
             while(iterator != endToken) {
