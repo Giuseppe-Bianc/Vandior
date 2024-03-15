@@ -233,7 +233,7 @@ namespace vnd {
             } else [[unlikely]] {
                 for(size_t par = 0; par != expressions.size(); par++) {
                     std::string paramType = Scope::getParamType(params.at(par), i.getTypeGeneric());
-                    if(auto result = canAssign(paramType, expressions.at(par).getType()); !result.first) { found = false; }
+                    if(auto [first, second] = canAssign(paramType, expressions.at(par).getType()); !first) { found = false; }
                 }
             }
             if(found) { return {i.getReturnType(), i.isConstructor(), variadic}; }
@@ -277,7 +277,7 @@ namespace vnd {
     // NOLINTNEXTLINE(*-no-recursion)
     std::pair<bool, bool> Scope::canAssign(const std::string &left, const std::string &right) const noexcept {
         if(left == "any" || left == right) { return {true, false}; }
-        if((Scope::isNumber(left) && Scope::isNumber(right))) {
+        if(Scope::isNumber(left) && Scope::isNumber(right)) {
             if(left.at(0) == right.at(0) && std::stoi(left.substr(1)) < std::stoi(right.substr(1))) {
                 return {!Scope::isInteger(left), true};
             }
@@ -342,11 +342,11 @@ namespace vnd {
         std::vector<std::pair<std::string, std::string>> typeGeneric = fun.getTypeGeneric();
         std::vector<std::pair<std::string, std::string>> resultGeneric;
         // TODO: fix this if statement
-        if(typeGeneric.size() != typeGeneric.size()) { return {FunType::createEmpty(), false}; }
+        // if(typeGeneric.size() != typeGeneric.size()) { return {FunType::createEmpty(), false}; }
         auto it_specialized = typeSpecialized.begin();
         for(auto &[key, value] : typeGeneric) {
             if(it_specialized == typeSpecialized.end()) { return {FunType::createEmpty(), false}; }
-            if(auto result = canAssign(value, *it_specialized); !result.first) { return {FunType::createEmpty(), false}; }
+            if(auto [first, second] = canAssign(value, *it_specialized); !first) { return {FunType::createEmpty(), false}; }
             value = *it_specialized;
             ++it_specialized;
         }

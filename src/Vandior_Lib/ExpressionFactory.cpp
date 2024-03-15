@@ -144,7 +144,7 @@ namespace vnd {
     bool ExpressionFactory::empty() const noexcept { return _expressions.empty(); }
 
     Expression ExpressionFactory::getExpression() noexcept {
-        const auto result = *_expressions.begin();
+        const auto result = *std::move(_expressions.begin());
         _expressions.erase(_expressions.begin());
         return result;
     }
@@ -452,11 +452,11 @@ namespace vnd {
             if(newType == oprt) { return {}; }
             if(Scope::isNumber(std::string{newType})) {
                 std::function<std::string(const std::pair<char, std::string> &, const std::pair<char, std::string_view> &)> getType =
-                    [](auto &oldParts, auto &newParts) {
-                        auto size = static_cast<short>(std::max(std::stoi(oldParts.second), std::stoi(std::string{newParts.second})));
-                        if(oldParts.first == 'c' || newParts.first == 'c') { return FORMAT("c{}", size); }
-                        if(oldParts.first == 'f' || newParts.first == 'f') { return FORMAT("f{}", size); }
-                        if(oldParts.first == 'i' || newParts.first == 'i') { return FORMAT("i{}", size); }
+                    [this](auto &oldParts, auto &newParts) {
+                        auto size = C_S(std::max(std::stoi(oldParts.second), std::stoi(std::string{newParts.second})));
+                        if(oldAndNewCoincide(oldParts, newParts, 'c')) { return FORMAT("c{}", size); }
+                        if(oldAndNewCoincide(oldParts, newParts, 'f')) { return FORMAT("f{}", size); }
+                        if(oldAndNewCoincide(oldParts, newParts, 'i')) { return FORMAT("i{}", size); }
                         return FORMAT("u{}", size);
                     };
                 std::pair<char, std::string> oldParts = {std::get<2>(oldType).at(0), std::get<2>(oldType).substr(1)};
@@ -472,6 +472,10 @@ namespace vnd {
         if(newType == "boolean") { return handleBooleanType(oldType); }
         if(newType == "logical") { return handleLogicalType(oldType); }
         return FORMAT("Incompatible types: {}, {}", std::get<2>(oldType), newType);
+    }
+    bool ExpressionFactory::oldAndNewCoincide(const std::pair<char, std::string> &oldParts,
+                                              const std::pair<char, std::string_view> &newParts, char cha) const {
+        return oldParts.first == cha || newParts.first == cha;
     }
 
     // NOLINTNEXTLINE(*-easily-swappable-parameters)

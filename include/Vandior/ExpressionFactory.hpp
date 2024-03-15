@@ -231,6 +231,8 @@ namespace vnd {
         [[nodiscard]] std::string handleLogicalType(TupType &oldType) const noexcept;
         [[nodiscard]] std::string handleBooleanType(TupType &oldType) const noexcept;
         [[nodiscard]] bool isEnd(const TokenVecIter &nxtIter) const noexcept;
+        bool oldAndNewCoincide(const std::pair<char, std::string> &oldParts, const std::pair<char, std::string_view> &newParts,
+                               char cha) const;
     };
 
 }  // namespace vnd
