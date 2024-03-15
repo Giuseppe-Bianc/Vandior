@@ -1,0 +1,11 @@
+main {
+	var num1, num2: c32
+	print("Insert the first number:\t")
+	num1 = readLine().toC32()
+	println("{}", num1)
+	print("Insert the second number:\t")
+	num2 = readLine().toC32()
+	println("{}", num2)
+	val sum: c32 = num1 + num2
+	println("Sum:\t{}", sum)
+}
