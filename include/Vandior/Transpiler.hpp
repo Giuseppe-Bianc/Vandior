@@ -255,6 +255,13 @@ namespace vnd {
          * @return Bool indicating the result of the check.
          */
         [[nodiscard]] bool iteratorIs(const TokenVecIter &iterator, const std::string &value) const noexcept;
+        void transpileConstDeclaration(const Expression &expression, const Instruction &instruction, const std::string_view view);
+        void formatVariable(const std::string_view &jvar);
+        void addConstansOrVariable(const bool isConst, const bool isVal, const std::string &type, const std::string_view &jvar,
+                                   const std::string &value);
+        void reformatConstansInGlobalScope();
+        void handleInitialization(const Instruction &instruction, TokenVecIter &iterator, const TokenVecIter &endToken,
+                                  ExpressionFactory &factory) const;
     };
 
 }  // namespace vnd
