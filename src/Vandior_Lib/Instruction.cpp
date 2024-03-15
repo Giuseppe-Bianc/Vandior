@@ -10,11 +10,7 @@ namespace vnd {
                                                                         TokenType::OPEN_PARENTESIS, TokenType::OPEN_CUR_PARENTESIS,
                                                                         TokenType::K_NULLPTR};
 
-    Instruction::Instruction(const std::string_view filename) noexcept
-      : _allowedTokens({TokenType::K_MAIN, TokenType::K_VAR, TokenType::K_IF, TokenType::K_WHILE, TokenType::K_FOR, TokenType::K_FUN,
-                        TokenType::K_RETURN, TokenType::K_BREAK, TokenType::IDENTIFIER, TokenType::OPEN_CUR_PARENTESIS,
-                        TokenType::CLOSE_CUR_PARENTESIS, eofTokenType}),
-        _types({InstructionType::BLANK}), _booleanOperators({false}), _filename(filename) {
+    Instruction::Instruction(const std::string_view filename) noexcept : _filename(filename) {
         _tokens.reserve(10);  // NOLINT(*-avoid-magic-numbers, *-magic-numbers)
     }
 

@@ -54,11 +54,22 @@ namespace vnd {
          */
         explicit Instruction(const std::string_view filename) noexcept;
         static const std::vector<TokenType> _expressionStartTokens;  ///< Vector of the token types that can start an expression.
-        std::vector<TokenType> _allowedTokens;                       ///< Vector of tokens that are allowed.
-        std::vector<Token> _tokens;                                  ///< Vector of previous tokens.
-        std::vector<InstructionType> _types;                         ///< Vector of the types of the instruction.
-        std::vector<bool> _booleanOperators;                         ///< Vector of the flags for boolean operators.
-        std::string_view _filename;                                  ///< Filename that contains the instruction.
+        std::vector<TokenType> _allowedTokens = {TokenType::K_MAIN,
+                                                 TokenType::K_VAR,
+                                                 TokenType::K_IF,
+                                                 TokenType::K_WHILE,
+                                                 TokenType::K_FOR,
+                                                 TokenType::K_FUN,
+                                                 TokenType::K_RETURN,
+                                                 TokenType::K_BREAK,
+                                                 TokenType::IDENTIFIER,
+                                                 TokenType::OPEN_CUR_PARENTESIS,
+                                                 TokenType::CLOSE_CUR_PARENTESIS,
+                                                 eofTokenType};          ///< Vector of tokens that are allowed.
+        std::vector<Token> _tokens;                                      ///< Vector of previous tokens.
+        std::vector<InstructionType> _types = {InstructionType::BLANK};  ///< Vector of the types of the instruction.
+        std::vector<bool> _booleanOperators = {false};                   ///< Vector of the flags for boolean operators.
+        std::string_view _filename;                                      ///< Filename that contains the instruction.
 
         /**
          * @brief Checks an identifier or unary operator token.

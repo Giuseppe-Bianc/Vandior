@@ -11,12 +11,22 @@ DISABLE_WARNINGS_PUSH(
 
 namespace vnd {
     // NOLINTBEGIN
-    std::vector<std::string> Scope::_signedTypes = {"i8", "i16", "i32", "i64"};
-    std::vector<std::string> Scope::_unsignedTypes = {"u8", "u16", "u32", "u64"};
-    std::vector<std::string> Scope::_floatingTypes = {"f32", "f64"};
+    static const std::string int8s = "i8";
+    static const std::string int16s = "i16";
+    static const std::string int32s = "i32";
+    static const std::string int64s = "i64";
+    static const std::string uint8s = "u8";
+    static const std::string uint16s = "u16";
+    static const std::string uint32s = "u32";
+    static const std::string uint64s = "u64";
+    static const std::string flts = "f32";
+    static const std::string dlbs = "f64";
+    std::vector<std::string> Scope::_signedTypes = {int8s, int16s, int32s, int64s};
+    std::vector<std::string> Scope::_unsignedTypes = {uint8s, uint16s, uint32s, uint64s};
+    std::vector<std::string> Scope::_floatingTypes = {flts, dlbs};
     std::vector<std::string> Scope::_complexTypes = {"c32", "c64"};
-    std::vector<std::string> Scope::_primitiveTypes = {"i8",  "i16", "i32", "i64", "u8",   "u16",  "u32",   "u64",
-                                                       "f32", "f64", "c32", "c64", "char", "bool", "string"};
+    std::vector<std::string> Scope::_primitiveTypes = {int8s, int16s, int32s, int64s, uint8s, uint16s, uint32s, uint64s,
+                                                       flts,  dlbs,   "c32",  "c64",  "char", "bool",  "string"};
     // NOLINTEND
 
     Scope::Scope(std::shared_ptr<Scope> parent, const ScopeType &type) noexcept : _parent(std::move(parent)), _type(type) {
@@ -35,19 +45,19 @@ namespace vnd {
         for(const auto &type : _primitiveTypes) { mainScope->addType(type); }
         mainScope->addType("Object");
         mainScope->addType("Derived", {"Object"});
-        mainScope->addVariable("Object.a", "i32", false);
-        mainScope->addVariable("Object.test", "f32", true);
+        mainScope->addVariable("Object.a", int32s, false);
+        mainScope->addVariable("Object.test", flts, true);
         mainScope->addVariable("Object.s", "string", false);
         mainScope->addVariable("Derived._derivedProperty", "bool", false);
         mainScope->addVariable("Derived.obj", "Object", false);
-        mainScope->addConstant("Object.c", "i32", "2");
+        mainScope->addConstant("Object.c", int32s, "2");
         mainScope->addConstant("Derived._derivedConst", "bool", "true");
         mainScope->addFun("print", FunType::create("void", {"string", "any..."}, {}, {}));
         mainScope->addFun("println", FunType::create("void", {"string", "any..."}, {}, {}));
         mainScope->addFun("readLine", FunType::create("string", {}, {}, {}));
-        mainScope->addFun("_test", FunType::create("i32", {}, {}, {}));
-        mainScope->addFun("testPar", FunType::create("i32", {"i32", "i32"}, {}, {}));
-        mainScope->addFun("testPar", FunType::create("i64", {"string"}, {}, {}));
+        mainScope->addFun("_test", FunType::create(int32s, {}, {}, {}));
+        mainScope->addFun("testPar", FunType::create(int32s, {int32s, int32s}, {}, {}));
+        mainScope->addFun("testPar", FunType::create(int64s, {"string"}, {}, {}));
         mainScope->addFun("max", FunType::create("i64 f64", {"f32[]"}, {}, {}));
         mainScope->addFun("arrayTest", FunType::create("i32[]", {}, {}, {}));
         mainScope->addFun("createObject", FunType::create("Object", {}, {}, {}));
@@ -58,13 +68,13 @@ namespace vnd {
         mainScope->addFun("vnd::vector.add", FunType::create("void", {"T"}, {{"T", "any"}}, {}));
         mainScope->addFun("vnd::vector.addVector", FunType::create("void", {"T[]"}, {{"T", "any"}}, {}));
         mainScope->addFun("vnd::vector.addAll", FunType::create("void", {"T..."}, {{"T", "any"}}, {}));
-        mainScope->addFun("vnd::vector.size", FunType::create("i64", {}, {{"T", "any"}}, {}));
-        mainScope->addFun("vnd::array.size", FunType::create("i64", {}, {{"T", "any"}}, {}));
-        mainScope->addFun("string.size", FunType::create("i64", {}, {}, {}));
-        mainScope->addFun("string.toI32", FunType::create("i32", {}, {}, {}));
-        mainScope->addFun("string.toF32", FunType::create("f32", {}, {}, {}));
+        mainScope->addFun("vnd::vector.size", FunType::create(int64s, {}, {{"T", "any"}}, {}));
+        mainScope->addFun("vnd::array.size", FunType::create(int64s, {}, {{"T", "any"}}, {}));
+        mainScope->addFun("string.size", FunType::create(int64s, {}, {}, {}));
+        mainScope->addFun("string.toI32", FunType::create(int32s, {}, {}, {}));
+        mainScope->addFun("string.toF32", FunType::create(flts, {}, {}, {}));
         mainScope->addFun("string.toC32", FunType::create("c32", {}, {}, {}));
-        mainScope->addFun("Object.f", FunType::create("f64", {"f64"}, {}, {}));
+        mainScope->addFun("Object.f", FunType::create(dlbs, {dlbs}, {}, {}));
         mainScope->addFun("Object.fs", FunType::create("string", {}, {}, {}));
         mainScope->addFun("Derived.derivedFun", FunType::create("bool", {"Object"}, {}, {}));
         mainScope->addFun("Derived.object", FunType::create("Object", {}, {}, {}));
