@@ -174,22 +174,14 @@ namespace vnd {
         }
         for(const auto &jvar : variables) {
             std::string value;
-            if(!jvar.empty() && jvar.starts_with('_')) {
-                _text += FORMAT("v{}", jvar);
-            } else {
-                _text += FORMAT("_{}", jvar);
-            }
+            formatVariable(jvar);
             if(!factory.empty()) {
                 auto expression = factory.getExpression();
                 if(!_scope->canAssign(type, expression.getType())) {
                     throw TRANSPILER_EXCEPTIONF(instruction, "Cannot assign {} to {}", expression.getType(), type);
                 }
                 if(isConst) {
-                    if(expression.isConst()) [[likely]] {
-                        _text += FORMAT(" = {}", expression.getValue());
-                    } else [[unlikely]] {
-                        throw TRANSPILER_EXCEPTIONF(instruction, "Cannot evaluate {} at compile time", jvar);
-                    }
+                    transpileConstDeclaration(expression, instruction, jvar);
                 } else {
                     _text += FORMAT(" = {}", expression.getText());
                 }
@@ -201,13 +193,34 @@ namespace vnd {
                 if(!shadowing) { throw TranspilerException(FORMAT("{} already defined", jvar), instruction); }
                 LWARN("{} already defined", jvar);
             }
-            if(isConst) {
-                _scope->addConstant(jvar, type, value);
-            } else {
-                _scope->addVariable(jvar, type, isVal);
-            }
+            addConstansOrVariable(isConst, isVal, type, jvar, value);
             emplaceCommaColon(jvar == variables.back());
             if(isConst) { _text += "\n"; }
+        }
+    }
+
+    void Transpiler::addConstansOrVariable(const bool isConst, const bool isVal, const std::string &type, const std::string_view &jvar,
+                                           const std::string &value) {
+        if(isConst) {
+            _scope->addConstant(jvar, type, value);
+        } else {
+            _scope->addVariable(jvar, type, isVal);
+        }
+    }
+
+    void Transpiler::formatVariable(const std::string_view &jvar) {
+        if(!jvar.empty() && jvar.starts_with('_')) {
+            _text += FORMAT("v{}", jvar);
+        } else {
+            _text += FORMAT("_{}", jvar);
+        }
+    }
+
+    void Transpiler::transpileConstDeclaration(const Expression &expression, const Instruction &instruction, const std::string_view view) {
+        if(expression.isConst()) [[likely]] {
+            _text += FORMAT(" = {}", expression.getValue());
+        } else [[unlikely]] {
+            throw TRANSPILER_EXCEPTIONF(instruction, "Cannot evaluate {} at compile time", view);
         }
     }
 

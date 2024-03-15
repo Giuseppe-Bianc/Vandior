@@ -1,7 +1,6 @@
 // NOLINTBEGIN(*-include-cleaner, *-env33-c)
 #include "FileReaderError.hpp"
 #include "Vandior/vandior.hpp"
-#include <future>
 
 DISABLE_WARNINGS_PUSH(
     4005 4201 4459 4514 4625 4626 4820 6244 6285 6385 6386 26408 26409 26415 26418 26426 26429 26432 26437 26438 26440 26446 26447 26450 26451 26455 26457 26459 26460 26461 26462 26467 26472 26473 26474 26475 26481 26482 26485 26490 26491 26493 26494 26495 26496 26497 26498 26800 26814 26818 26821 26826 26827)
@@ -73,7 +72,6 @@ auto extractInstructions(const std::vector<vnd::Token> &tokens) -> std::vector<v
         if(token.isType(vnd::TokenType::COMMENT)) [[unlikely]] { continue; }
         if(token.getLine() >= line) [[likely]] {
             if(instructions.empty() || instructions.back().canTerminate()) [[likely]] {
-                // if(!instructions.empty()) { LINFO("{}", instructions.back().getLastType()); }
                 instructions.emplace_back(vnd::Instruction::create(filename));
             } else if(instructions.back().typeToString().back() != "EXPRESSION" && token.isType(vnd::TokenType::STRING)) [[unlikely]] {
                 throw vnd::InstructionException(token);
@@ -84,6 +82,9 @@ auto extractInstructions(const std::vector<vnd::Token> &tokens) -> std::vector<v
     }
     return instructions;
 }
+
+namespace fs = std::filesystem;
+
 // NOLINTNEXTLINE(*-function-cognitive-complexity)
 auto main(int argc, const char *const argv[]) -> int {
     // NOLINTNEXTLINE
