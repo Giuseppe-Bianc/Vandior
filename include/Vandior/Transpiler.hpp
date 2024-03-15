@@ -249,6 +249,9 @@ namespace vnd {
         void formatVariable(const std::string_view &jvar);
         void addConstansOrVariable(const bool isConst, const bool isVal, const std::string &type, const std::string_view &jvar,
                                    const std::string &value);
+        void reformatConstansInGlobalScope();
+        void handleInitialization(const Instruction &instruction, TokenVecIter &iterator, const TokenVecIter &endToken,
+                                  ExpressionFactory &factory);
     };
 
 }  // namespace vnd

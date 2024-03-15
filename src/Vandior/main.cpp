@@ -83,7 +83,7 @@ auto extractInstructions(const std::vector<vnd::Token> &tokens) -> std::vector<v
     return instructions;
 }
 
-namespace fs = std::filesystem;
+// namespace fs = std::filesystem;
 
 // NOLINTNEXTLINE(*-function-cognitive-complexity)
 auto main(int argc, const char *const argv[]) -> int {

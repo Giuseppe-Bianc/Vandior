@@ -148,11 +148,7 @@ namespace vnd {
         const auto endToken = tokens.end();
         auto factory = ExpressionFactory::create(iterator, tokens.end(), _scope, isConst);
         if(isConst || isVal) {
-            if(_text.ends_with(R"(;
-
-)")) {
-                _text = FORMAT("{}", _text.substr(0, _text.size() - 1));
-            }
+            reformatConstansInGlobalScope();
             _text += "const ";
         }
         auto [type, typeValue] = transpileType(iterator, tokens.end(), {TokenType::EQUAL_OPERATOR}, instruction);
@@ -161,19 +157,12 @@ namespace vnd {
             throw TRANSPILER_EXCEPTIONF(instruction, "Cannot declare const variables of {} type", type);
         }
         // Handle initialization
-        if(iterator != endToken && iterator->isType(TokenType::EQUAL_OPERATOR)) {
-            ++iterator;
-            while(iterator != endToken) {
-                if(auto error = factory.parse({TokenType::COMMA}); !error.empty()) { throw TranspilerException(error, instruction); }
-                if(iterator != endToken) { ++iterator; }
-            }
-        }
+        handleInitialization(instruction, iterator, endToken, factory);
         if((isConst || isVal) && variables.size() > factory.size()) {
             throw TRANSPILER_EXCEPTIONF(instruction, "Uninitialized constant: {} values for {} constants", factory.size(),
                                         variables.size());
         }
-        for(const auto &jvar : variables) {
-            std::string value;
+        for(std::string value; const auto &jvar : variables) {
             formatVariable(jvar);
             if(!factory.empty()) {
                 auto expression = factory.getExpression();
@@ -196,6 +185,24 @@ namespace vnd {
             addConstansOrVariable(isConst, isVal, type, jvar, value);
             emplaceCommaColon(jvar == variables.back());
             if(isConst) { _text += "\n"; }
+        }
+    }
+    void Transpiler::handleInitialization(const Instruction &instruction, TokenVecIter &iterator, const TokenVecIter &endToken,
+                                          ExpressionFactory &factory) {
+        if(iterator != endToken && iterator->isType(TokenType::EQUAL_OPERATOR)) {
+            ++iterator;
+            while(iterator != endToken) {
+                if(auto error = factory.parse({TokenType::COMMA}); !error.empty()) { throw TranspilerException(error, instruction); }
+                if(iterator != endToken) { ++iterator; }
+            }
+        }
+    }
+
+    void Transpiler::reformatConstansInGlobalScope() {
+        if(_text.ends_with(R"(;
+
+)")) {
+            _text = FORMAT("{}", _text.substr(0, _text.size() - 1));
         }
     }
 
