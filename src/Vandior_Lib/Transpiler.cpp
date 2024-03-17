@@ -620,9 +620,11 @@ namespace vnd {
         if(variables.size() != 2 || expressions.size() != 2) { return false; }
         std::vector<std::string> swapVariables = {variables.at(0).first, variables.at(1).first};
         std::vector<std::string> swapExpressions = {expressions.at(0).getText(), expressions.at(1).getText()};
-        std::vector<std::pair<bool, bool>> results = {_scope->canAssign(expressions.at(0).getType(), expressions.at(1).getType()),
-                                                      _scope->canAssign(expressions.at(1).getType(), expressions.at(0).getType())};
-        if(!results.at(0).first || !results.at(1).first) { return false; }
+        if(std::vector<std::pair<bool, bool>> results = {_scope->canAssign(expressions.at(0).getType(), expressions.at(1).getType()),
+                                                         _scope->canAssign(expressions.at(1).getType(), expressions.at(0).getType())};
+           !results.at(0).first || !results.at(1).first) {
+            return false;
+        }
         for(auto &iter : swapVariables) {
             if(iter.ends_with('(')) { return false; }
             std::erase_if(iter, isspace);

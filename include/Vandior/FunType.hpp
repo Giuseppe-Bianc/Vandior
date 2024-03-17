@@ -20,8 +20,8 @@ namespace vnd {
          * @return FunType instance.
          */
         [[nodiscard]] static FunType create(const std::string &returnType, const std::vector<std::string> &params,
-                                            const std::vector<std::pair<std::string, std::string>> &typeGeneric,
-                                            const std::vector<std::pair<std::string, std::string>> &funcGeneric,
+                                            const std::vector<std::pair<std::string, std::string>> &typeGeneric = {},
+                                            const std::vector<std::pair<std::string, std::string>> &funcGeneric = {},
                                             const bool constructor = false) noexcept;
 
         /**
@@ -79,8 +79,7 @@ namespace vnd {
         FunType(const std::string &returnType, const std::vector<std::string> &params,
                 const std::vector<std::pair<std::string, std::string>> &typeGeneric,
                 const std::vector<std::pair<std::string, std::string>> &funcGeneric, const bool constructor) noexcept
-          : _returnType(returnType), _params(params), _typeGeneric(typeGeneric), _funcGeneric(funcGeneric),
-            _constructor(constructor) {}
+          : _returnType(returnType), _params(params), _typeGeneric(typeGeneric), _funcGeneric(funcGeneric), _constructor(constructor) {}
 
         std::string _returnType;                                        ///< String of the return types separate by a whitespace.
         std::vector<std::string> _params;                               ///< Vector of type parameters.

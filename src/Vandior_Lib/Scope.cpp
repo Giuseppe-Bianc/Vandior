@@ -52,14 +52,14 @@ namespace vnd {
         mainScope->addVariable("Derived.obj", "Object", false);
         mainScope->addConstant("Object.c", int32s, "2");
         mainScope->addConstant("Derived._derivedConst", "bool", "true");
-        mainScope->addFun("print", FunType::create("void", {"string", "any..."}, {}, {}));
-        mainScope->addFun("println", FunType::create("void", {"string", "any..."}, {}, {}));
-        mainScope->addFun("readLine", FunType::create("string", {}, {}, {}));
-        mainScope->addFun("_test", FunType::create(int32s, {}, {}, {}));
-        mainScope->addFun("testPar", FunType::create(int32s, {int32s, int32s}, {}, {}));
-        mainScope->addFun("testPar", FunType::create(int64s, {"string"}, {}, {}));
-        mainScope->addFun("max", FunType::create("i64 f64", {"f32[]"}, {}, {}));
-        mainScope->addFun("arrayTest", FunType::create("i32[]", {}, {}, {}));
+        mainScope->addFun("print", FunType::create("void", {"string", "any..."}));
+        mainScope->addFun("println", FunType::create("void", {"string", "any..."}));
+        mainScope->addFun("readLine", FunType::create("string", {}));
+        mainScope->addFun("_test", FunType::create(int32s, {}));
+        mainScope->addFun("testPar", FunType::create(int32s, {int32s, int32s}));
+        mainScope->addFun("testPar", FunType::create(int64s, {"string"}));
+        mainScope->addFun("max", FunType::create("i64 f64", {"f32[]"}));
+        mainScope->addFun("arrayTest", FunType::create("i32[]", {}));
         mainScope->addFun("createObject", FunType::create("Object", {}, {}, {}));
         mainScope->addFun("Object", FunType::create("Object", {}, {}, {}, true));
         mainScope->addFun("Derived", FunType::create("Derived", {}, {}, {}, true));
@@ -211,7 +211,7 @@ namespace vnd {
         if(_vals.contains(key)) { return _vals.at(key); }
         if(_consts.contains(key)) { return _consts.at(key).first; }
         if(_types.contains(type)) {
-            for(const std::string &i : _types.at(type)) {
+            for(const auto &i : _types.at(type)) {
                 std::string_view result = getVariableType(i, identifier);
                 if(!result.empty()) { return result; }
             }
@@ -249,7 +249,7 @@ namespace vnd {
             if(found) { return {i.getReturnType(), i.isConstructor(), variadic}; }
         }
         if(_types.contains(type)) {
-            for(const std::string &i : _types.at(type)) {
+            for(const auto &i : _types.at(type)) {
                 auto [result, constructor, variadic] = getFunType(i, identifier, expressions);
                 if(!result.empty()) { return {result, constructor, variadic}; }
             }
@@ -262,7 +262,7 @@ namespace vnd {
     std::string Scope::getConstValue(const std::string &type, const std::string_view &identifier) const noexcept {
         if(auto key = Scope::getKey(type, identifier); _consts.contains(key)) { return _consts.at(key).second; }
         if(_types.contains(type)) {
-            for(const std::string &i : _types.at(type)) {
+            for(const auto &i : _types.at(type)) {
                 std::string result = getConstValue(i, identifier);
                 if(!result.empty()) { return result; }
             }
@@ -275,7 +275,7 @@ namespace vnd {
     bool Scope::isConstant(const std::string &type, const std::string_view &identifier) const noexcept {
         if(auto key = Scope::getKey(type, identifier); _consts.contains(key) || _vals.contains(key)) { return true; }
         if(_types.contains(type)) {
-            for(const std::string &i : _types.at(type)) {
+            for(const auto &i : _types.at(type)) {
                 bool result = isConstant(i, identifier);
                 if(result) { return result; }
             }
@@ -300,8 +300,9 @@ namespace vnd {
                                                                       Scope::checkVector(types.first) && Scope::checkVector(types.second)) {
             return canAssign(types.first, types.second);
         }
+
         if(_types.contains(right)) {
-            for(const std::string &i : _types.at(right)) {  // NOLINT(*-use-anyofallof)
+            for(const auto &i : _types.at(right)) {  // NOLINT(*-use-anyofallof)
                 if(auto result = canAssign(left, i); result.first) { return result; }
             }
         }
@@ -349,7 +350,7 @@ namespace vnd {
     }
 
     std::pair<FunType, bool> Scope::specializeFun(const FunType &fun, const std::vector<std::string> &typeSpecialized) const noexcept {
-        std::vector<std::pair<std::string, std::string>> typeGeneric = fun.getTypeGeneric();
+        auto typeGeneric = fun.getTypeGeneric();
         std::vector<std::pair<std::string, std::string>> resultGeneric;
         auto it_specialized = typeSpecialized.begin();
         for(auto &[key, value] : typeGeneric) {

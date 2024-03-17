@@ -4,8 +4,7 @@
 namespace vnd {
     FunType FunType::create(const std::string &returnType, const std::vector<std::string> &params,
                             const std::vector<std::pair<std::string, std::string>> &typeGeneric,
-                            const std::vector<std::pair<std::string, std::string>> &funcGeneric,
-                            const bool constructor) noexcept {
+                            const std::vector<std::pair<std::string, std::string>> &funcGeneric, const bool constructor) noexcept {
         return {returnType, params, typeGeneric, funcGeneric, constructor};
     }
 
