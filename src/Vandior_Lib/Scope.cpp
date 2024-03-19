@@ -1,6 +1,7 @@
 // NOLINTBEGIN(*-include-cleaner,*-identifier-length)
 #include "Vandior/Scope.hpp"
 #include <Vandior/Log.hpp>
+using namespace std::literals::string_view_literals;
 /**
  * This macro disable some msvc warnigs.
  * \cond
@@ -217,7 +218,7 @@ namespace vnd {
             }
         }
         if(_parent) { return _parent->getVariableType(type, identifier); }
-        return "";
+        return ""sv;
     }
 
     // NOLINTNEXTLINE(*-no-recursion,readability-function-cognitive-complexity)

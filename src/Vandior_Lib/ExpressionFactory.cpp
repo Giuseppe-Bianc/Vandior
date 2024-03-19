@@ -117,10 +117,10 @@ namespace vnd {
             } else if(iterType == OPEN_PARENTESIS) {
                 if(auto error = handleInnerExpression(type); !error.empty()) { return error; }
             } else if(iterType == OPEN_SQ_PARENTESIS) {
-                if(std::string error = handleSquareExpression(type); !error.empty()) { return error; }
+                if(auto error = handleSquareExpression(type); !error.empty()) { return error; }
             } else if(iterType == OPEN_CUR_PARENTESIS) {
-                if(std::string error = handleVectorInitialization(type); !error.empty()) { return error; }
-            } else if(std::string error = handleToken(type); !error.empty()) {
+                if(auto error = handleVectorInitialization(type); !error.empty()) { return error; }
+            } else if(auto error = handleToken(type); !error.empty()) {
                 return error;
             }
         }
@@ -144,7 +144,7 @@ namespace vnd {
     bool ExpressionFactory::empty() const noexcept { return _expressions.empty(); }
 
     Expression ExpressionFactory::getExpression() noexcept {
-        const auto result = *std::move(_expressions.begin());
+        const auto result = *_expressions.begin();
         _expressions.erase(_expressions.begin());
         return result;
     }
@@ -220,17 +220,15 @@ namespace vnd {
         }
         if(value == "^") {
             if(!_operators.has_value()) { _operators = _text.size() - 1; }
-            const auto textIndex = _text.begin() + C_LL(_operators.value());
-            _text.emplace(textIndex, "vnd::pow(");
+            _text.emplace(_text.begin() + C_LL(_operators.value()), "vnd::pow(");
             _text.emplace_back(",");
             _expressionText += "**";
             ++_iterator;
             return;
         }
         if(value == "%") {
-            if(!_operators.has_value()) { _operators = _text.size() - 1; }
-            const auto textIndex = _text.begin() + C_LL(_operators.value());
-            _text.emplace(textIndex, "vnd::mod(");
+            if(!_operators.has_value()) { _operators = _text.size() - 1; };
+            _text.emplace(_text.begin() + C_LL(_operators.value()), "vnd::mod(");
             _text.emplace_back(",");
             _expressionText += value;
             ++_iterator;
@@ -286,7 +284,7 @@ namespace vnd {
     std::string ExpressionFactory::handleFun(TupType &type) noexcept {  // NOLINT(*-no-recursion)
         using enum vnd::TokenType;
         auto identifier = _iterator->getValue();
-        ExpressionFactory factory = ExpressionFactory::create(_iterator, _end, _scope, false);
+        auto factory = ExpressionFactory::create(_iterator, _end, _scope, false);
         std::vector<Expression> expressions;
         std::string params;
         if(_const && !_temp.empty()) { return "Cannot call methods on const value"; }
@@ -309,7 +307,7 @@ namespace vnd {
             if(value.starts_with(".")) { value.erase(0, 1); }
             return FORMAT("Function {} not found", value);
         }
-        if(std::string error = ExpressionFactory::checkType(type, newType); !error.empty()) { return error; }
+        if(auto error = ExpressionFactory::checkType(type, newType); !error.empty()) { return error; }
         params = ExpressionFactory::transpileFun(expressions, variadic);
         auto value = FORMAT("{}({})", std::string{identifier}, params);
         if(_temp.empty()) {
