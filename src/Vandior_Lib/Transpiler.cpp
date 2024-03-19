@@ -445,8 +445,7 @@ namespace vnd {
         auto value = iterator->getValue();
         std::string_view newType;
         if(value == "_") {
-            if(currentVariable.empty() &&
-               (next == end || next->isType(COLON) || next->isType(EQUAL_OPERATOR) || next->isType(OPERATION_EQUAL))) {
+            if(currentVariable.empty() && (next == end || next->isTypeAny_of({COLON, EQUAL_OPERATOR, OPERATION_EQUAL}))) {
                 currentVariable = "_";
                 type = "";
                 return {};
@@ -455,8 +454,7 @@ namespace vnd {
             }
         }
         std::tie(newType, assignable) = std::make_pair(_scope->getVariableType(type, value), _scope->getConstValue(type, value).empty());
-        if(next != end &&
-           (next->isType(COMMA) || next->isType(EQUAL_OPERATOR) || next->isType(OPERATION_EQUAL) || next->isType(OPEN_SQ_PARENTESIS))) {
+        if(next != end && (next->isTypeAny_of({COMMA, EQUAL_OPERATOR, OPERATION_EQUAL, OPEN_SQ_PARENTESIS}))) {
             assignable = !_scope->isConstant(type, value);
         }
         if(newType.empty()) { return FORMAT("Cannot find identifier {}.{}", type, value); }
@@ -531,9 +529,7 @@ namespace vnd {
         auto next = std::ranges::next(iterator);
         if(auto newType = expression.getType(); !Scope::isInteger(newType)) { return FORMAT("{} index not allowed", newType); }
         if(type == "char") { return "Strings are immutable"; }
-        if(!assignable && (next->isType(COMMA) || next->isType(EQUAL_OPERATOR) || next->isType(OPERATION_EQUAL))) {
-            return "Cannot assign constant vectors";
-        }
+        if(!assignable && next->isTypeAny_of({COMMA, EQUAL_OPERATOR, OPERATION_EQUAL})) { return "Cannot assign constant vectors"; }
         currentVariable += FORMAT(".at({})->", expression.getText());
         return {};
     }

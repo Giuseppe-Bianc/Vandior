@@ -479,7 +479,7 @@ namespace vnd {
     // NOLINTNEXTLINE(*-easily-swappable-parameters)
     bool ExpressionFactory::checkNextToken(const std::string_view &type, const std::string &value) noexcept {
         if(auto nxtIter = std::ranges::next(_iterator);
-           !isEnd(nxtIter) && (nxtIter->isType(TokenType::DOT_OPERATOR) || nxtIter->isType(TokenType::OPEN_SQ_PARENTESIS))) {
+           !isEnd(nxtIter) && nxtIter->isTypeAny_of({TokenType::DOT_OPERATOR, TokenType::OPEN_SQ_PARENTESIS})) {
             _type = type;
             if(type == "string" || type.ends_with(']')) {
                 _temp += value + ".";

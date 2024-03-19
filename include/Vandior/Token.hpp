@@ -70,7 +70,9 @@ namespace vnd {
         [[nodiscard]] inline TokenType getType() const noexcept { return _type; }
 
         [[nodiscard]] inline bool isType(TokenType type) const noexcept { return _type == type; }
-
+        [[nodiscard]] inline bool isTypeAny_of(const std::initializer_list<TokenType> &tokenTypes) const noexcept {
+            return std::ranges::any_of(tokenTypes, [&](const auto &value) { return _type == value; });
+        }
         /**
          * @brief Get the value associated with the token.
          * @return The value associated with the token.
