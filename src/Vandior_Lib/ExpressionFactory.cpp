@@ -292,7 +292,7 @@ namespace vnd {
         while(!_iterator->isType(TokenType::CLOSE_PARENTESIS)) {
             ++_iterator;
             if(!_iterator->isType(CLOSE_PARENTESIS)) {
-                if(std::string error = factory.parse({COMMA, CLOSE_PARENTESIS}); !error.empty()) { return error; }
+                if(auto error = factory.parse({COMMA, CLOSE_PARENTESIS}); !error.empty()) { return error; }
             }
         }
 

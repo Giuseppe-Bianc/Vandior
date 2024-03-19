@@ -261,7 +261,7 @@ namespace vnd {
     void Instruction::checkComma() noexcept {
         using enum TokenType;
         using enum InstructionType;
-        if(lastTypeIs(OPERATION) || lastTypeIs(DECLARATION) || lastTypeIs(PARAMETER_DEFINITION) || lastTypeIs(RETURN_DEFINITION)) {
+        if(lastTypeIsAny_of({OPERATION, DECLARATION, PARAMETER_DEFINITION, RETURN_DEFINITION})) {
             _allowedTokens = {IDENTIFIER};
             return;
         }
@@ -286,7 +286,7 @@ namespace vnd {
                 _allowedTokens = {IDENTIFIER, CLOSE_PARENTESIS};
                 return;
             }
-            if(getLastTokenType() == IDENTIFIER || getLastTokenType() == CLOSE_SQ_PARENTESIS) {
+            if(isLastTokenTypeAny_of({IDENTIFIER, CLOSE_SQ_PARENTESIS})) {
                 addType(PARAMETER_EXPRESSION);
                 return;
             }
@@ -339,8 +339,7 @@ namespace vnd {
     void Instruction::checkOpenCurParentesis() noexcept {
         using enum InstructionType;
         using enum TokenType;
-        if(getLastTokenType() == EQUAL_OPERATOR || getLastTokenType() == COMMA || getLastTokenType() == OPEN_PARENTESIS ||
-           getLastTokenType() == OPEN_CUR_PARENTESIS) {
+        if(isLastTokenTypeAny_of({EQUAL_OPERATOR, COMMA, OPEN_PARENTESIS, OPEN_CUR_PARENTESIS})) {
             addType(ARRAY_INIZIALIZATION);
             _allowedTokens.emplace_back(CLOSE_CUR_PARENTESIS);
             return;
@@ -382,7 +381,7 @@ namespace vnd {
     void Instruction::checkKStructure() noexcept {
         using enum TokenType;
         using enum InstructionType;
-        if(getLastType() == BLANK) { setLastType(STRUCTURE); }
+        if(lastTypeIs(BLANK)) { setLastType(STRUCTURE); }
         _allowedTokens = {OPEN_PARENTESIS};
     }
 
@@ -432,8 +431,18 @@ namespace vnd {
         return _tokens.back().getType();
     }
 
+    bool Instruction::isLastTokenTypeAny_of(const std::initializer_list<TokenType> &tokenTypes) const noexcept {
+        auto lastTokenType = getLastTokenType();
+        // Assuming values is a collection of values to check against
+        return std::ranges::any_of(tokenTypes, [&](const auto &value) { return lastTokenType == value; });
+    }
     bool Instruction::lastTypeIs(const InstructionType &type) const noexcept { return getLastType() == type; }
+    bool Instruction::lastTypeIsAny_of(const std::initializer_list<InstructionType> &types) const noexcept {
+        auto last_type = getLastType();
 
+        // Assuming values is a collection of values to check against
+        return std::ranges::any_of(types, [&](const auto &value) { return last_type == value; });
+    }
     bool Instruction::getLastBooleanOperator() const noexcept {
         if(_booleanOperators.empty()) [[unlikely]] { return false; }
         return _booleanOperators.back();
@@ -455,14 +464,14 @@ namespace vnd {
 
     bool Instruction::isExpression() const noexcept {
         using enum InstructionType;
-        return lastTypeIs(PARAMETER_EXPRESSION) || lastTypeIs(ASSIGNATION) || lastTypeIs(INITIALIZATION) ||
-               lastTypeIs(ARRAY_INIZIALIZATION) || lastTypeIs(EXPRESSION) || lastTypeIs(SQUARE_EXPRESSION) ||
-               lastTypeIs(RETURN_EXPRESSION) || isForExpression();
+        return lastTypeIsAny_of({PARAMETER_EXPRESSION, ASSIGNATION, INITIALIZATION, ARRAY_INIZIALIZATION, EXPRESSION, SQUARE_EXPRESSION,
+                                 RETURN_EXPRESSION}) ||
+               isForExpression();
     }
 
     bool Instruction::isForExpression() const noexcept {
         using enum InstructionType;
-        return lastTypeIs(FOR_INITIALIZATION) || lastTypeIs(FOR_CONDITION) || lastTypeIs(FOR_STEP);
+        return lastTypeIsAny_of({FOR_INITIALIZATION, FOR_CONDITION, FOR_STEP});
     }
 
     bool Instruction::emplaceTokenType(const InstructionType &instruction, const TokenType token) noexcept {

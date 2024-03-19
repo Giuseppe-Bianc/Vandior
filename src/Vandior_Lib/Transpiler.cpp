@@ -1,8 +1,11 @@
 #include "Vandior/Transpiler.hpp"
-#include <sstream>
-
 namespace vnd {
     // NOLINTBEGIN(*-include-cleaner, *-easily-swappable-parameters)
+
+    // Types aren't allowed in global scope
+    static inline constexpr std::initializer_list<InstructionType> disallowedTypesInGlobalScope = {
+        InstructionType::OPERATION,     InstructionType::ASSIGNATION, InstructionType::STRUCTURE,
+        InstructionType::FOR_CONDITION, InstructionType::FOR_STEP,    InstructionType::OPEN_SCOPE};
     Transpiler::Transpiler(const std::vector<Instruction> &instructions) noexcept : _instructions(instructions) {}
 
     Transpiler Transpiler::create(const std::vector<Instruction> &instructions) noexcept { return Transpiler{instructions}; }
@@ -16,9 +19,7 @@ namespace vnd {
     }
 
     bool Transpiler::checkGlobalScope(const InstructionType &type) noexcept {
-        using enum InstructionType;
-        return type != OPERATION && type != ASSIGNATION && type != STRUCTURE && type != FOR_CONDITION && type != FOR_STEP &&
-               type != OPEN_SCOPE;
+        return std::ranges::none_of(disallowedTypesInGlobalScope, [&](InstructionType typ) { return typ == type; });
     }
 
     void Transpiler::printPrecisionLossWarning(const Instruction &instruction, bool loss, const std::string &left,
@@ -309,9 +310,7 @@ namespace vnd {
         }
         _text += iterator->getValue();
         iterator += 2;
-        if(std::string error = transpileCondition(iterator, tokens.end()); !error.empty()) {
-            throw TranspilerException(error, instruction);
-        }
+        if(auto error = transpileCondition(iterator, tokens.end()); !error.empty()) { throw TranspilerException(error, instruction); }
         checkTrailingBracket(instruction);
     }
 
@@ -352,7 +351,7 @@ namespace vnd {
         ++iterator;
         auto [identifier, type] = transpileForInitialization(iterator, endToken, instruction);
         ++iterator;
-        if(std::string error = factory.parse({TokenType::COMMA}); !error.empty()) { throw TranspilerException(error, instruction); }
+        if(auto error = factory.parse({TokenType::COMMA}); !error.empty()) { throw TranspilerException(error, instruction); }
         auto condition = factory.getExpression();
         if(!Scope::isNumber(condition.getType())) { throw TranspilerException("For final value must be of numeric type", instruction); }
         if(iterator == endToken) {
@@ -365,7 +364,7 @@ namespace vnd {
             return;
         }
         ++iterator;
-        if(std::string error = factory.parse({}); !error.empty()) { throw TranspilerException(error, instruction); }
+        if(auto error = factory.parse({}); !error.empty()) { throw TranspilerException(error, instruction); }
         auto step = factory.getExpression();
         if(!Scope::isNumber(step.getType())) { throw TranspilerException("For step value must be of numeric type", instruction); }
         _text += FORMAT("{}, {}) {{", condition.getText(), step.getText());
@@ -377,7 +376,7 @@ namespace vnd {
     }
 
     void Transpiler::transpileBreak(const Instruction &instruction) {
-        std::string_view identifier = instruction.getTokens().begin()->getValue();
+        auto identifier = instruction.getTokens().begin()->getValue();
         auto scope = _scope;
         while(scope->getType() != ScopeType::LOOP_SCOPE) {
             if(scope->isGlobalScope()) { throw TRANSPILER_EXCEPTIONF(instruction, "Cannot use {} outside a loop", identifier); }

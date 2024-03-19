@@ -50,6 +50,7 @@ DISABLE_WARNINGS_PUSH(
 #include <iomanip>
 #include <iostream>
 #include <iterator>
+#include <initializer_list>
 #include <limits>
 #include <map>
 #include <memory>
@@ -108,10 +109,10 @@ static inline constexpr const char *NEWL = &CNL;  // Default case
  * @brief A macro to pause the system and wait for user input.
  * Usage: SYSPAUSE();
  */
-#define SYSPAUSE()                                                                                                               \
-    do {                                                                                                                         \
-        LINFO("Press enter to exit...");                                                                                         \
-        std::cin.ignore();                                                                                                       \
+#define SYSPAUSE()                                                                                                                         \
+    do {                                                                                                                                   \
+        LINFO("Press enter to exit...");                                                                                                   \
+        std::cin.ignore();                                                                                                                 \
     } while(0);
 
 /**

@@ -185,6 +185,12 @@ namespace vnd {
          * @return Bool containing the result of the check.
          */
         [[nodiscard]] inline bool lastTypeIs(const InstructionType &type) const noexcept;
+        /**
+         * @brief Checks the last types of the instruction if is any of the inputs.
+         * @param types InstructionTypes to check.
+         * @return Bool containing the result of the check.
+         */
+        [[nodiscard]] inline bool lastTypeIsAny_of(const std::initializer_list<InstructionType> &types) const noexcept;
 
         /**
          * @brief Gets the flag for the last boolean operator.
@@ -214,6 +220,12 @@ namespace vnd {
          */
         [[nodiscard]] TokenType getLastTokenType() const noexcept;
 
+        /**
+         * @brief Gets the type of the last checked token and control if the type is in the types in the input.
+         * @param tokenTypes the types to verify.
+         * @return true if the type correspond to any of the elements in input.
+         */
+        [[nodiscard]] inline bool isLastTokenTypeAny_of(const std::initializer_list<TokenType> &tokenTypes) const noexcept;
         /**
          * @brief Checks if the the vector of the checked tokens is empty.
          * @return Bool containing the result of the check..
