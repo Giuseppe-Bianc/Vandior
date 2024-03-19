@@ -212,7 +212,7 @@ namespace vnd {
         if(_consts.contains(key)) { return _consts.at(key).first; }
         if(_types.contains(type)) {
             for(const auto &i : _types.at(type)) {
-                std::string_view result = getVariableType(i, identifier);
+                auto result = getVariableType(i, identifier);
                 if(!result.empty()) { return result; }
             }
         }
@@ -228,24 +228,8 @@ namespace vnd {
             auto params = i.getParams();
             std::optional<size_t> variadic;
             found = true;
-            if(!params.empty() && params.back().ends_with("...")) {
-                variadic = params.size() - 1;
-                if(expressions.size() == params.size() - 1) {
-                    params.pop_back();
-                } else if(expressions.size() >= params.size()) {
-                    params.back().erase(params.back().end() - 3, params.back().end());
-                    std::string lastPar = params.back();
-                    while(params.size() < expressions.size()) { params.push_back(lastPar); }
-                }
-            }
-            if(params.size() != expressions.size()) [[likely]] {
-                found = false;
-            } else [[unlikely]] {
-                for(size_t par = 0; par != expressions.size(); par++) {
-                    std::string paramType = Scope::getParamType(params.at(par), i.getTypeGeneric());
-                    if(auto [first, second] = canAssign(paramType, expressions.at(par).getType()); !first) { found = false; }
-                }
-            }
+            processVariadicParams(params, expressions, variadic);
+            processParams(expressions, params, i, found);
             if(found) { return {i.getReturnType(), i.isConstructor(), variadic}; }
         }
         if(_types.contains(type)) {
@@ -256,6 +240,31 @@ namespace vnd {
         }
         if(_parent) { return _parent->getFunType(type, identifier, expressions); }
         return {"", false, {}};
+    }
+    void Scope::processParams(const std::vector<Expression> &expressions, std::vector<std::string> &params, const FunType &item,
+                              bool &found) const noexcept {
+        if(params.size() != expressions.size()) [[likely]] {
+            found = false;
+        } else [[unlikely]] {
+            for(size_t par = 0; par != expressions.size(); par++) {
+                auto paramType = getParamType(params.at(par), item.getTypeGeneric());
+                if(auto [first, second] = canAssign(paramType, expressions.at(par).getType()); !first) { found = false; }
+            }
+        }
+    }
+
+    void Scope::processVariadicParams(std::vector<std::string> &params, const std::vector<Expression> &expressions,
+                                      std::optional<size_t> &variadic) const noexcept {
+        if(!params.empty() && params.back().ends_with("...")) {
+            variadic = params.size() - 1;
+            if(expressions.size() == variadic) {
+                params.pop_back();
+            } else if(expressions.size() >= params.size()) {
+                auto &lastParam = params.back();
+                lastParam.erase(lastParam.end() - 3, lastParam.end());
+                while(params.size() < expressions.size()) { params.push_back(lastParam); }
+            }
+        }
     }
 
     // NOLINTNEXTLINE(*-no-recursion)
