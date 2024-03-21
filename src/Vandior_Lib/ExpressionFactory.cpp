@@ -66,10 +66,13 @@ namespace vnd {
         } else {
             number = std::stoull(std::string{value});
         }
-        if(number <= std::numeric_limits<uint8_t>::max()) { return "u8"; }
-        if(number <= std::numeric_limits<uint16_t>::max()) { return "u16"; }
-        if(number <= std::numeric_limits<uint32_t>::max()) { return "u32"; }
+        if(isLessThanOrEqualToMax<uint8_t>(number)) { return "u8"; }
+        if(isLessThanOrEqualToMax<uint16_t>(number)) { return "u16"; }
+        if(isLessThanOrEqualToMax<uint32_t>(number)) { return "u32"; }
         return "u64";
+    }
+    template <typename T> bool ExpressionFactory::isLessThanOrEqualToMax(uint64_t number) noexcept {
+        return number <= std::numeric_limits<T>::max();
     }
 
     std::string ExpressionFactory::evaluate(const std::string &expression) const noexcept {
@@ -482,9 +485,9 @@ namespace vnd {
            !isEnd(nxtIter) && nxtIter->isTypeAny_of({TokenType::DOT_OPERATOR, TokenType::OPEN_SQ_PARENTESIS})) {
             _type = type;
             if(type == "string" || type.ends_with(']')) {
-                _temp += value + ".";
+                _temp += FORMAT("{}.", value);
             } else {
-                _temp += value + "->";
+                _temp += FORMAT("{}->", value);
             }
             _dot = true;
             ++_iterator;
