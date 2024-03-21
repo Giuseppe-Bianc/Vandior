@@ -363,8 +363,8 @@ namespace vnd {
         auto typeGeneric = fun.getTypeGeneric();
         std::vector<std::pair<std::string, std::string>> resultGeneric;
         auto it_specialized = typeSpecialized.begin();
+        if(typeGeneric.size() != typeSpecialized.size()) { return {FunType::createEmpty(), false}; }
         for(auto &[key, value] : typeGeneric) {
-            if(it_specialized == typeSpecialized.end()) { return {FunType::createEmpty(), false}; }
             if(auto [first, second] = canAssign(value, *it_specialized); !first) { return {FunType::createEmpty(), false}; }
             value = *it_specialized;
             ++it_specialized;
