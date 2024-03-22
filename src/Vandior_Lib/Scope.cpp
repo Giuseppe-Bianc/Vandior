@@ -274,7 +274,7 @@ namespace vnd {
         if(auto key = Scope::getKey(type, identifier); _consts.contains(key)) { return _consts.at(key).second; }
         if(_types.contains(type)) {
             for(const auto &i : _types.at(type)) {
-                std::string result = getConstValue(i, identifier);
+                auto result = getConstValue(i, identifier);
                 if(!result.empty()) { return result; }
             }
         }
@@ -287,7 +287,7 @@ namespace vnd {
         if(auto key = Scope::getKey(type, identifier); _consts.contains(key) || _vals.contains(key)) { return true; }
         if(_types.contains(type)) {
             for(const auto &i : _types.at(type)) {
-                bool result = isConstant(i, identifier);
+                auto result = isConstant(i, identifier);
                 if(result) { return result; }
             }
         }
@@ -331,7 +331,7 @@ namespace vnd {
         const bool typContainsMin = type.contains('<');
 #endif
         if(typContainsMin) {
-            size_t pos = type.find('<');
+            auto pos = type.find('<');
             std::string currentParam;
             for(const char c : type.substr(pos + 1, type.find_last_of('>') - 1)) {
                 switch(c) {

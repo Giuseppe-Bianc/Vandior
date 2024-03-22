@@ -6,6 +6,7 @@
 #include "Expression.hpp"
 #include "Scope.hpp"
 #include "Token.hpp"
+#include <string>
 
 namespace vnd {
     using TokenVecIter = std::vector<Token>::iterator;
@@ -234,6 +235,7 @@ namespace vnd {
         bool oldAndNewCoincide(const std::pair<char, std::string> &oldParts, const std::pair<char, std::string_view> &newParts,
                                char cha) const;
         template <typename T> static bool isLessThanOrEqualToMax(uint64_t number) noexcept;
+        std::string handleExpression(const TokenType iterType, std::tuple<bool, bool, std::string> type);
     };
 
 }  // namespace vnd
