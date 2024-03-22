@@ -133,8 +133,8 @@ namespace vnd {
          * @param instruction The instruction to extract variables from.
          * @return Vector of extracted variables and their types.
          */
-        [[nodiscard]] std::vector<std::pair<std::string, std::string>> extractVariables(TokenVecIter &iterator, const TokenVecIter &end,
-                                                                                        const Instruction &instruction) const;
+        [[nodiscard]] std::vector<stringPair> extractVariables(TokenVecIter &iterator, const TokenVecIter &end,
+                                                               const Instruction &instruction) const;
 
         /**
          * @brief Extracts a token from an assignation instruction.
@@ -178,8 +178,7 @@ namespace vnd {
          * @param expressiom Expression conataining the function.
          * @return Pair of parsed error and warning strings. If no error occurs, an empty string is returned.
          */
-        [[nodiscard]] std::pair<std::string, std::string> transpileMultipleFun(const std::vector<std::pair<std::string, std::string>> &variables,
-                                                                               const Expression &expression) noexcept;
+        [[nodiscard]] stringPair transpileMultipleFun(const std::vector<stringPair> &variables, const Expression &expression) noexcept;
 
         /**
          * @brief Transpile a type name.
@@ -189,9 +188,8 @@ namespace vnd {
          * @param instruction The instruction to extract type from.
          * @return Pair that represent the type and the value to transpile.
          */
-        [[nodiscard]] std::pair<std::string, std::string> transpileType(TokenVecIter &iterator, const TokenVecIter &end,
-                                                                        const std::vector<TokenType> &endTokens,
-                                                                        const Instruction &instruction);
+        [[nodiscard]] stringPair transpileType(TokenVecIter &iterator, const TokenVecIter &end, const std::vector<TokenType> &endTokens,
+                                               const Instruction &instruction);
 
         /**
          * @brief Transpile a swap assignation.
@@ -199,8 +197,7 @@ namespace vnd {
          * @param expressions Vector of expressions to assign.
          * @return Bool flag indicating if the instruction is a swap.
          */
-        [[nodiscard]] bool transpileSwap(const std::vector<std::pair<std::string, std::string>> &variables,
-                                         const std::vector<Expression> &expressions) noexcept;
+        [[nodiscard]] bool transpileSwap(const std::vector<stringPair> &variables, const std::vector<Expression> &expressions) noexcept;
 
         /**
          * @brief Transpile a single assigment of an assignation instruction.
@@ -210,8 +207,8 @@ namespace vnd {
          * @param expression Expression to assign.
          * @return Pair of parsed error string and precision loss flag. If no error occurs, an empty string is returned.
          */
-        [[nodiscard]] std::pair<std::string, bool> transpileAssigment(const std::string &variable, const std::string &type, const Token &equalToken,
-                                                     const Expression &expression) noexcept;
+        [[nodiscard]] std::pair<std::string, bool> transpileAssigment(const std::string &variable, const std::string &type,
+                                                                      const Token &equalToken, const Expression &expression) noexcept;
 
         /**
          * @brief Transpile an if or while condition.
@@ -228,8 +225,8 @@ namespace vnd {
          * @param instruction The instruction to containing the for loop.
          * @return Pair representing the declared index identifier and type.
          */
-        [[nodiscard]] std::pair<std::string, std::string> transpileForInitialization(TokenVecIter &iterator, const TokenVecIter &end,
-                                                                                     const Instruction &instruction);
+        [[nodiscard]] stringPair transpileForInitialization(TokenVecIter &iterator, const TokenVecIter &end,
+                                                            const Instruction &instruction);
 
         /**
          * @brief Opens a new scope.

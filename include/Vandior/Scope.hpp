@@ -220,13 +220,11 @@ namespace vnd {
          * @param typeGeneric Vector of generic parameters of the type.
          * @return String containing the parameter type. If the parameter is not generic, the result is the same of param.
          */
-        [[nodiscard]] static std::string getParamType(const std::string &param,
-                                                      const std::vector<std::pair<std::string, std::string>> &typeGeneric) noexcept;
+        [[nodiscard]] static std::string getParamType(const std::string &param, const std::vector<stringPair> &typeGeneric) noexcept;
 
-        std::unordered_map<std::string, std::string> _vars;  ///< Map of variables identifiers and types.
-        std::unordered_map<std::string, std::string> _vals;  ///< Map of constants identifiers and types.
-        std::unordered_map<std::string, std::pair<std::string, std::string>>
-            _consts;                                                       ///< Map of compile time constants identifiers and types.
+        std::unordered_map<std::string, std::string> _vars;                ///< Map of variables identifiers and types.
+        std::unordered_map<std::string, std::string> _vals;                ///< Map of constants identifiers and types.
+        std::unordered_map<std::string, stringPair> _consts;               ///< Map of compile time constants identifiers and types.
         std::unordered_map<std::string, std::vector<std::string>> _types;  ///< Map of types and assignabled types.
         std::unordered_map<std::string, std::vector<FunType>> _funs;       ///< Map of function identifiers and informations.
         std::shared_ptr<Scope> _parent;                                    ///< Shared pointer to the parent scope.

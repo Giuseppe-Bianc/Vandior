@@ -22,6 +22,8 @@ namespace vnd {
     static const std::string uint64s = "u64";
     static const std::string flts = "f32";
     static const std::string dlbs = "f64";
+    static const std::string objs = "Object";
+    static const std::string drvds = "Derived";
     std::vector<std::string> Scope::_signedTypes = {int8s, int16s, int32s, int64s};
     std::vector<std::string> Scope::_unsignedTypes = {uint8s, uint16s, uint32s, uint64s};
     std::vector<std::string> Scope::_floatingTypes = {flts, dlbs};
@@ -44,13 +46,13 @@ namespace vnd {
         auto mainScope = std::make_shared<Scope>(Scope{nullptr, ScopeType::GLOBAL_SCOPE});
         mainScope->addType("void");
         for(const auto &type : _primitiveTypes) { mainScope->addType(type); }
-        mainScope->addType("Object");
-        mainScope->addType("Derived", {"Object"});
+        mainScope->addType(objs);
+        mainScope->addType(drvds, {objs});
         mainScope->addVariable("Object.a", int32s, false);
         mainScope->addVariable("Object.test", flts, true);
         mainScope->addVariable("Object.s", "string", false);
         mainScope->addVariable("Derived._derivedProperty", "bool", false);
-        mainScope->addVariable("Derived.obj", "Object", false);
+        mainScope->addVariable("Derived.obj", objs, false);
         mainScope->addConstant("Object.c", int32s, "2");
         mainScope->addConstant("Derived._derivedConst", "bool", "true");
         mainScope->addFun("print", FunType::create("void", {"string", "any..."}));
@@ -61,11 +63,11 @@ namespace vnd {
         mainScope->addFun("testPar", FunType::create(int64s, {"string"}));
         mainScope->addFun("max", FunType::create("i64 f64", {"f32[]"}));
         mainScope->addFun("arrayTest", FunType::create("i32[]", {}));
-        mainScope->addFun("createObject", FunType::create("Object", {}, {}, {}));
-        mainScope->addFun("Object", FunType::create("Object", {}, {}, {}, true));
-        mainScope->addFun("Derived", FunType::create("Derived", {}, {}, {}, true));
-        mainScope->addFun("Derived", FunType::create("Derived", {"Object", "bool"}, {}, {}, true));
-        mainScope->addFun("createDerived", FunType::create("Derived", {}, {}, {}));
+        mainScope->addFun("createObject", FunType::create(objs, {}, {}, {}));
+        mainScope->addFun(objs, FunType::create(objs, {}, {}, {}, true));
+        mainScope->addFun(drvds, FunType::create(drvds, {}, {}, {}, true));
+        mainScope->addFun(drvds, FunType::create(drvds, {objs, "bool"}, {}, {}, true));
+        mainScope->addFun("createDerived", FunType::create(drvds, {}, {}, {}));
         mainScope->addFun("vnd::vector.add", FunType::create("void", {"T"}, {{"T", "any"}}, {}));
         mainScope->addFun("vnd::vector.addVector", FunType::create("void", {"T[]"}, {{"T", "any"}}, {}));
         mainScope->addFun("vnd::vector.addAll", FunType::create("void", {"T..."}, {{"T", "any"}}, {}));
@@ -77,8 +79,8 @@ namespace vnd {
         mainScope->addFun("string.toC32", FunType::create("c32", {}, {}, {}));
         mainScope->addFun("Object.f", FunType::create(dlbs, {dlbs}, {}, {}));
         mainScope->addFun("Object.fs", FunType::create("string", {}, {}, {}));
-        mainScope->addFun("Derived.derivedFun", FunType::create("bool", {"Object"}, {}, {}));
-        mainScope->addFun("Derived.object", FunType::create("Object", {}, {}, {}));
+        mainScope->addFun("Derived.derivedFun", FunType::create("bool", {objs}, {}, {}));
+        mainScope->addFun("Derived.object", FunType::create(objs, {}, {}, {}));
         return mainScope;
     }
 
@@ -146,10 +148,9 @@ namespace vnd {
         return type;
     }
 
-    std::string Scope::getParamType(const std::string &param,
-                                    const std::vector<std::pair<std::string, std::string>> &typeGeneric) noexcept {
+    std::string Scope::getParamType(const std::string &param, const std::vector<stringPair> &typeGeneric) noexcept {
         size_t pos = param.find('[');
-        auto it = std::ranges::find_if(typeGeneric, [&param, pos](const std::pair<std::string, std::string> &element) {
+        auto it = std::ranges::find_if(typeGeneric, [&param, pos](const stringPair &element) {
             if(pos == std::string::npos) { return param == element.first; }
             return param.substr(0, pos) == element.first;
         });
@@ -306,8 +307,8 @@ namespace vnd {
         }
         if(right == "nullptr") { return {!Scope::isPrimitive(left), false}; }
         if(right == "[]" && left.ends_with(']')) { return {true, false}; }
-        if(std::pair<std::string, std::string> types = {left, right}; (types.first.ends_with("[]") || types.second.ends_with("[]")) &&
-                                                                      Scope::checkVector(types.first) && Scope::checkVector(types.second)) {
+        if(stringPair types = {left, right}; (types.first.ends_with("[]") || types.second.ends_with("[]")) &&
+                                             Scope::checkVector(types.first) && Scope::checkVector(types.second)) {
             return canAssign(types.first, types.second);
         }
 
@@ -361,7 +362,7 @@ namespace vnd {
 
     std::pair<FunType, bool> Scope::specializeFun(const FunType &fun, const std::vector<std::string> &typeSpecialized) const noexcept {
         auto typeGeneric = fun.getTypeGeneric();
-        std::vector<std::pair<std::string, std::string>> resultGeneric;
+        std::vector<stringPair> resultGeneric;
         auto it_specialized = typeSpecialized.begin();
         if(typeGeneric.size() != typeSpecialized.size()) { return {FunType::createEmpty(), false}; }
         for(auto &[key, value] : typeGeneric) {
