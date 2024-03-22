@@ -338,9 +338,8 @@ namespace vnd {
     }
 
     void Transpiler::transpileFor(const Instruction &instruction) {
-        std::vector<Token> tmp;
         auto tokens = instruction.getTokens();
-        tmp.emplace_back(tokens.back());
+        auto tmp = std::vector<Token>{tokens.back()};
         tokens.pop_back();
         if(tokens.back().isType(TokenType::OPEN_CUR_PARENTESIS)) { tokens.pop_back(); }
         auto iterator = tokens.begin();
