@@ -460,8 +460,8 @@ namespace vnd {
                         if(oldAndNewCoincide(oldParts, newParts, 'i')) { return FORMAT("i{}", size); }
                         return FORMAT("u{}", size);
                     };
-                std::pair<char, std::string> oldParts = {std::get<2>(oldType).at(0), std::get<2>(oldType).substr(1)};
-                std::pair<char, std::string_view> newParts = {newType.at(0), newType.substr(1)};
+                auto oldParts = std::pair<char, std::string>{std::get<2>(oldType).at(0), std::get<2>(oldType).substr(1)};
+                auto newParts = std::pair<char, std::string_view>{newType.at(0), newType.substr(1)};
                 std::get<2>(oldType) = getType(oldParts, newParts);
                 return {};
             }

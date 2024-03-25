@@ -203,7 +203,7 @@ namespace vnd {
             return {true, shadowing};
         }
         if(_parent) { return _parent->checkVariable(identifier, true); }
-        return {false, false};
+        return std::pair<bool, bool>{false, false};
     }
 
     // NOLINTNEXTLINE(*-no-recursion)
@@ -232,16 +232,16 @@ namespace vnd {
             found = true;
             processVariadicParams(params, expressions, variadic);
             processParams(expressions, params, i, found);
-            if(found) { return {i.getReturnType(), i.isConstructor(), variadic}; }
+            if(found) { return std::tuple<std::string, bool, std::optional<size_t>>{i.getReturnType(), i.isConstructor(), variadic}; }
         }
         if(_types.contains(type)) {
             for(const auto &i : _types.at(type)) {
                 auto [result, constructor, variadic] = getFunType(i, identifier, expressions);
-                if(!result.empty()) { return {result, constructor, variadic}; }
+                if(!result.empty()) { return std::tuple<std::string, bool, std::optional<size_t>>{result, constructor, variadic}; }
             }
         }
         if(_parent) { return _parent->getFunType(type, identifier, expressions); }
-        return {"", false, {}};
+        return std::tuple<std::string, bool, std::optional<size_t>>{"", false, std::optional<size_t>{}};
     }
     void Scope::processParams(const std::vector<Expression> &expressions, std::vector<std::string> &params, const FunType &item,
                               bool &found) const noexcept {
@@ -258,7 +258,7 @@ namespace vnd {
     void Scope::processVariadicParams(std::vector<std::string> &params, const std::vector<Expression> &expressions,
                                       std::optional<size_t> &variadic) const noexcept {
         if(!params.empty() && params.back().ends_with("...")) {
-            variadic = params.size() - 1;
+            variadic = std::optional<size_t>(params.size() - 1);
             if(expressions.size() == variadic) {
                 params.pop_back();
             } else if(expressions.size() >= params.size()) {
@@ -297,16 +297,16 @@ namespace vnd {
 
     // NOLINTNEXTLINE(*-no-recursion)
     std::pair<bool, bool> Scope::canAssign(const std::string &left, const std::string &right) const noexcept {
-        if(left == "any" || left == right) { return {true, false}; }
+        if(left == "any" || left == right) { return std::pair<bool, bool>{true, false}; }
         if(Scope::isNumber(left) && Scope::isNumber(right)) {
             if(left.at(0) == right.at(0) && std::stoi(left.substr(1)) < std::stoi(right.substr(1))) {
-                return {!Scope::isInteger(left), true};
+                return std::pair<bool, bool>{!Scope::isInteger(left), true};
             }
             if(Scope::isComplex(right)) { return {Scope::isComplex(left), false}; }
-            return {true, false};
+            return std::pair<bool, bool>{true, false};
         }
-        if(right == "nullptr") { return {!Scope::isPrimitive(left), false}; }
-        if(right == "[]" && left.ends_with(']')) { return {true, false}; }
+        if(right == "nullptr") { return std::pair<bool, bool>{!Scope::isPrimitive(left), false}; }
+        if(right == "[]" && left.ends_with(']')) { return std::pair<bool, bool>{true, false}; }
         if(stringPair types = {left, right}; (types.first.ends_with("[]") || types.second.ends_with("[]")) &&
                                              Scope::checkVector(types.first) && Scope::checkVector(types.second)) {
             return canAssign(types.first, types.second);
@@ -318,7 +318,7 @@ namespace vnd {
             }
         }
         if(_parent) { return _parent->canAssign(left, right); }
-        return {};
+        return std::pair<bool, bool>{};
     }
 
     std::vector<FunType> Scope::getFuns(const std::string &type, const std::string_view &identifier) const noexcept {
@@ -372,8 +372,9 @@ namespace vnd {
         }
 
         // Check if typeSpecialized still has remaining elements
-        if(it_specialized != typeSpecialized.end()) { return {FunType::createEmpty(), false}; }
-        return {FunType::create(fun.getReturnType(), fun.getParams(), typeGeneric, fun.getFuncGeneric(), fun.isConstructor()), true};
+        if(it_specialized != typeSpecialized.end()) { return std::pair<FunType, bool>{FunType::createEmpty(), false}; }
+        return std::pair<FunType, bool>{
+            FunType::create(fun.getReturnType(), fun.getParams(), typeGeneric, fun.getFuncGeneric(), fun.isConstructor()), true};
     }
 
 }  // namespace vnd
