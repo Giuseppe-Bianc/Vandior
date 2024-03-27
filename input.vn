@@ -66,10 +66,14 @@ main {
 	for var j: f32 = 1, 10 {}
 	while(true) {
 		var s: string = readLine()
-		if(s == "Exit") {
+		if(s.upper() == "END") {
+			exit(0)
+		}
+		if(s.lower() == "exit") {
 			break
 		}
-		println(s)
+		println(s.lower())
+		println(s.upper())
 	}
 	array1[0 ^ 1] = Object()
 	array1[-1].a = 45

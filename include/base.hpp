@@ -211,6 +211,11 @@ void _print(const string text, const vnd::vector<printTypes>& args) {
 	std::cout << result;
 	
 }
+void _exit(i32 code) {
+	
+	std::exit(code);
+	
+}
 void _println(const string text, const vnd::vector<printTypes>& args) {
 	
 	_print(text, args);
@@ -228,7 +233,9 @@ std::tuple<i64, f64> _max(vnd::vector<f64>) {
 	
 }
 vnd::vector<i32> _arrayTest() {
+	
 	return {1, 2, 3};
+	
 }
 std::shared_ptr<Object> _createObject() { return std::make_shared<Object>(); }
 std::shared_ptr<Derived> _createDerived() { return std::make_shared<Derived>(); }
