@@ -1,7 +1,7 @@
 main {
 	var s: string
 	print("Insert a string:\t")
-	s = readLine()
+	s = readLine().lower()
 	for var i: u64 = 0, s.size() / 2 {
 		if(s[i] != s[-i - 1]) {
 			println("The string is not palindrome")
