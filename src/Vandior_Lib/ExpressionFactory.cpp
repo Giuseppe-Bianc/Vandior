@@ -90,6 +90,9 @@ namespace vnd {
         while(fgets(buffer.data(), buffer_size, pipe.get()) != nullptr) { sss << buffer.data(); }
         std::string result = sss.str();
         if(result.ends_with('\n')) { result.pop_back(); }
+        if(result.starts_with('(')) { result.erase(0, 1); }
+        if(result.ends_with(')')) { result.pop_back(); }
+        if(result.ends_with('j')) { result.back() = 'i'; }
         return result;
     }
 
@@ -239,16 +242,27 @@ namespace vnd {
         }
         auto text = _temp + writeToken();
         if(_const) {
+            std::string constValue;
             if(_iterator->isType(TokenType::IDENTIFIER)) {
-                auto constValue = _scope->getConstValue(_type, _iterator->getValue());
+                constValue = _scope->getConstValue(_type, _iterator->getValue());
                 if(constValue.empty()) {
                     _const = false;
-                } else {
-                    _expressionText += constValue;
                 }
             } else {
-                _expressionText += text;
+                constValue += text;
             }
+            if(Scope::isNumber(std::string{type})) {
+                auto iterator = constValue.begin();
+                while(iterator != constValue.end()) {
+                    if(*iterator == 'f') {
+                        constValue.erase(iterator);
+                    } else if(*iterator == 'i') {
+                        *iterator = 'j';
+                    }
+                    if(iterator != constValue.end()) { iterator = std::next(iterator); }
+                }
+            }
+            _expressionText += constValue;
         }
         checkOperators(text);
         if(!_text.empty()) { text = FORMAT(" {}", text); }

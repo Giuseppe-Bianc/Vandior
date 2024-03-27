@@ -55,6 +55,7 @@ namespace vnd {
         mainScope->addVariable("Derived.obj", objs, false);
         mainScope->addConstant("Object.c", int32s, "2");
         mainScope->addConstant("Derived._derivedConst", "bool", "true");
+        mainScope->addFun("exit", FunType::create("void", {"i32"}));
         mainScope->addFun("print", FunType::create("void", {"string", "any..."}));
         mainScope->addFun("println", FunType::create("void", {"string", "any..."}));
         mainScope->addFun("readLine", FunType::create("string", {}));
@@ -74,6 +75,8 @@ namespace vnd {
         mainScope->addFun("vnd::vector.size", FunType::create(int64s, {}, {{"T", "any"}}, {}));
         mainScope->addFun("vnd::array.size", FunType::create(int64s, {}, {{"T", "any"}}, {}));
         mainScope->addFun("string.size", FunType::create(int64s, {}, {}, {}));
+        mainScope->addFun("string.lower", FunType::create("string", {}, {}, {}));
+        mainScope->addFun("string.upper", FunType::create("string", {}, {}, {}));
         mainScope->addFun("string.toI32", FunType::create(int32s, {}, {}, {}));
         mainScope->addFun("string.toF32", FunType::create(flts, {}, {}, {}));
         mainScope->addFun("string.toC32", FunType::create("c32", {}, {}, {}));

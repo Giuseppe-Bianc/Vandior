@@ -168,7 +168,8 @@ namespace vnd {
             throw TRANSPILER_EXCEPTIONF(instruction, "Uninitialized constant: {} values for {} constants", factory.size(),
                                         variables.size());
         }
-        for(std::string value; const auto &jvar : variables) {
+        for(const auto &jvar : variables) {
+            std::string value;
             formatVariable(jvar);
             if(!factory.empty()) {
                 auto expression = factory.getExpression();
@@ -180,6 +181,7 @@ namespace vnd {
                 } else {
                     _text += FORMAT(" = {}", expression.getText());
                 }
+                value = expression.getValue();
             } else {
                 _text += "{}";
             }

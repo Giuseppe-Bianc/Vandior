@@ -18,6 +18,20 @@ class string {
 			if(index < 0 || index >= size()) { throw std::runtime_error("Index " + std::to_string(index) +  " out of bounds for size " + std::to_string(size())); }
 			return str->at(index);
 		}
+		string lower() {
+			std::string result;
+			for(const char c: *str) {
+				result += std::tolower(c);
+			}
+			return string(result);
+		}
+		string upper() {
+			std::string result;
+			for(const char c: *str) {
+				result += std::toupper(c);
+			}
+			return string(result);
+		}
 		const bool empty() {
 			return str->empty();
 		}
@@ -70,6 +84,7 @@ class string {
 			return *str;
 		}
 	private:
+		std::shared_ptr<const std::string> str;
 		static std::vector<std::pair<std::shared_ptr<const std::string>, i64>> pool;
 		static std::shared_ptr<const std::string> create(const std::string &str) {
 			for(auto &i: string::pool) {
@@ -94,6 +109,5 @@ class string {
 				++iterator;
 			}
 		}
-		std::shared_ptr<const std::string> str;
 };
 std::vector<std::pair<std::shared_ptr<const std::string>, i64>> string::pool{};
