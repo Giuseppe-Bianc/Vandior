@@ -2,6 +2,7 @@
 #include "Vandior/ExpressionFactory.hpp"
 #include "Vandior/disableWarn.hpp"
 #include <algorithm>
+#include <iterator>
 
 /**
  * This macro disable some msvc warnigs.
@@ -225,51 +226,57 @@ namespace vnd {
             return;
         }
         if(value == "^") {
-            if(!_operators.has_value()) { _operators = _text.size() - 1; }
-            _text.emplace(_text.begin() + C_LL(_operators.value()), "vnd::pow(");
-            _text.emplace_back(",");
-            _expressionText += "**";
-            ++_iterator;
+            operatorsEmplace("**", "vnd::pow(");
             return;
         }
         if(value == "%") {
-            if(!_operators.has_value()) { _operators = _text.size() - 1; };
-            _text.emplace(_text.begin() + C_LL(_operators.value()), "vnd::mod(");
-            _text.emplace_back(",");
-            _expressionText += value;
-            ++_iterator;
+            operatorsEmplace(value, "vnd::mod(");
             return;
         }
         auto text = _temp + writeToken();
-        if(_const) {
-            std::string constValue;
-            if(_iterator->isType(TokenType::IDENTIFIER)) {
-                constValue = _scope->getConstValue(_type, _iterator->getValue());
-                if(constValue.empty()) {
-                    _const = false;
-                }
-            } else {
-                constValue += text;
-            }
-            if(Scope::isNumber(std::string{type})) {
-                auto iterator = constValue.begin();
-                while(iterator != constValue.end()) {
-                    if(*iterator == 'f') {
-                        constValue.erase(iterator);
-                    } else if(*iterator == 'i') {
-                        *iterator = 'j';
-                    }
-                    if(iterator != constValue.end()) { iterator = std::next(iterator); }
-                }
-            }
-            _expressionText += constValue;
-        }
+        checkConst(type, text);
         checkOperators(text);
         if(!_text.empty()) { text = FORMAT(" {}", text); }
         _text.emplace_back(text);
         if(value == "/" && !_sq) { _divide = true; }
         ++_iterator;
     }
+    // NOLINTBEGIN(*-easily-swappable-parameters)
+    void ExpressionFactory::checkConst(const std::string_view &type, const std::string_view &text) {
+        if(_const) {
+            std::string constValue;
+            if(_iterator->isType(TokenType::IDENTIFIER)) {
+                constValue = _scope->getConstValue(_type, _iterator->getValue());
+                if(constValue.empty()) { _const = false; }
+            } else {
+                constValue += text;
+            }
+            if(Scope::isNumber(std::string{type})) {
+                auto iterator = constValue.begin();
+                factorConst(constValue, iterator);
+            }
+            _expressionText += constValue;
+        }
+    }
+    void ExpressionFactory::factorConst(std::string &constValue,
+                                        std::_String_iterator<std::_String_val<std::_Simple_types<char>>> &iter) const {
+        while(iter != constValue.end()) {
+            if(*iter == 'f') {
+                constValue.erase(iter);
+            } else if(*iter == 'i') {
+                *iter = 'j';
+            }
+            if(iter != constValue.end()) { iter = std::next(iter); }
+        }
+    }
+    void ExpressionFactory::operatorsEmplace(const std::string_view &value, const std::string_view &txtVal) {
+        if(!_operators.has_value()) { _operators = _text.size() - 1; };
+        _text.emplace(_text.begin() + C_LL(_operators.value()), txtVal);
+        _text.emplace_back(",");
+        _expressionText += value;
+        ++_iterator;
+    }
+    // NOLINTEND(*-easily-swappable-parameters)
 
     std::string ExpressionFactory::writeToken() noexcept {
         auto value = std::string{_iterator->getValue()};

@@ -6,6 +6,7 @@
 #include "Expression.hpp"
 #include "Scope.hpp"
 #include "Token.hpp"
+#include <iterator>
 #include <string>
 
 namespace vnd {
@@ -236,6 +237,9 @@ namespace vnd {
                                char cha) const;
         template <typename T> static bool isLessThanOrEqualToMax(uint64_t number) noexcept;
         std::string handleExpression(const TokenType iterType, std::tuple<bool, bool, std::string> type);
+        void operatorsEmplace(const std::string_view &value, const std::string_view &txtVal);
+        void checkConst(const std::string_view &type, const std::string_view &text);
+        void factorConst(std::string &constValue, std::_String_iterator<std::_String_val<std::_Simple_types<char>>> &iter) const;
     };
 
 }  // namespace vnd
