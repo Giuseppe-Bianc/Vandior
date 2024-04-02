@@ -211,12 +211,12 @@ void _print(const string text, const vnd::vector<printTypes>& args) {
 	std::cout << result;
 	
 }
-void _exit(i32 code) {
+inline void _exit(i32 code) {
 	
 	std::exit(code);
 	
 }
-void _println(const string text, const vnd::vector<printTypes>& args) {
+inline void _println(const string text, const vnd::vector<printTypes>& args) {
 	
 	_print(text, args);
 	std::cout << std::endl;
