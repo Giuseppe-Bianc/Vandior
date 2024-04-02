@@ -137,7 +137,9 @@ auto main(int argc, const char *const argv[]) -> int {
         // for(const auto &item : tokens) { LINFO("{}", item); }
         std::vector<vnd::Instruction> instructions = extractInstructions(tokens);
         vnd::Timer tim("transpiling time");
-        if(vnd::Transpiler transpiler = vnd::Transpiler::create(instructions); !transpiler.transpile(path.value_or(filename.data()))) {
+        vnd::Transpiler transpiler = vnd::Transpiler::create(instructions);
+        auto [success, output] = transpiler.transpile(path.value_or(filename.data()));
+        if(!success) {
             return EXIT_FAILURE;
         }
         LINFO("{}", tim);
@@ -156,7 +158,13 @@ auto main(int argc, const char *const argv[]) -> int {
                 vnd::Timer rtim("compile code time");
 
                 // Compile the code
-                int compileResult = std::system("g++ --std=c++20 output.cpp");
+#ifdef _WIN32
+                std::string home = "%VNHOME%";
+#else
+                std::string home = "$VNHOME";
+#endif
+
+                int compileResult = std::system(FORMAT("g++ --std=c++20 {}.cpp -I \"{}\"", output, home).c_str());
                 LINFO("{}", rtim);
                 if(compileResult != 0) {
                     LERROR("Compilation failed");

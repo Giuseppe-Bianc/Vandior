@@ -27,27 +27,22 @@ namespace vnd {
         if(loss) { LWARN("{}\nPossible loss of precision from {} to {}", instruction.toString(), left, right); }
     }
 
-    bool Transpiler::transpile(std::string filename) {
+    std::pair<bool, std::string> Transpiler::transpile(std::string filename) {
         using enum TokenType;
         using enum InstructionType;
-        const std::string examples = "examples";
-        _output.open("output.cpp");
+        if(filename.ends_with(".vn")) {
+            filename.pop_back();
+            filename.pop_back();
+            filename.pop_back();
+        }
 #ifdef _WIN32
         for(char &iter : filename) {
             if(iter == '\\') { iter = '/'; }
         }
 #endif
-        if(auto pos = filename.find_last_of('/'); pos != std::string::npos) {
-            filename = filename.substr(0, pos);
-            if(filename == examples) {
-                filename = ".";
-            } else if(filename.ends_with(FORMAT("/{}", examples))) {
-                filename = filename.substr(0, filename.size() - examples.size() - 1);
-            }
-        } else {
-            filename = ".";
-        }
-        _text += FORMAT("#include \"{}/include/base.hpp\"\n\n", filename);
+        if(auto pos = filename.find_last_of('/'); pos != std::string::npos) { filename = filename.substr(pos + 1); }
+        _output.open(FORMAT("{}.cpp", filename));
+        _text += "#include <base/base.hpp>\n\n";
         try {
             for(const auto &instruction : _instructions) {
                 const auto type = instruction.getLastType();
@@ -115,9 +110,9 @@ namespace vnd {
         } catch(const TranspilerException &e) {
             LERROR("{}", e.what());
             _output.close();
-            return false;
+            return {false, {}};
         }
-        return true;
+        return {true, filename};
     }
 
     void Transpiler::checkTrailingBracket(const Instruction &instruction) {
