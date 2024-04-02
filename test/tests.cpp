@@ -30,7 +30,7 @@ static inline constexpr std::string_view timerName = "My Timer";
 static inline constexpr std::string_view timerBigs = "-----------";
 static inline constexpr std::string_view timerTime1 = "ms";
 static inline constexpr std::string_view timerTime2 = "ns";
-static inline constexpr std::string_view outFilename = "./output.cpp";
+static inline constexpr std::string_view outFilename = "./unknown.cpp";
 static inline constexpr long long int timerSleap = 12;
 static inline constexpr long long int timerSleap2 = 5;
 static inline constexpr std::size_t timerCicles = 1000000;
@@ -785,7 +785,7 @@ TEST_CASE("Transpiler transpile main instruction", "[transpiler]") {
     transpiler.transpile(std::string{filename});
     REQUIRE(std::filesystem::exists(outFilename));
     std::string code = fileContent();
-    REQUIRE(code == "#include \"./include/base.hpp\"\n\n"
+    REQUIRE(code == "#include <base/base.hpp>\n\n"
                     "int main(int argc, char **argv) {\n"
                     "\tconst vnd::vector<string> _args = vnd::createArgs(argc, argv);\n"
                     "\treturn 0;\n"
@@ -799,7 +799,7 @@ TEST_CASE("Transpiler transpile declaration instruction", "[transpiler]") {
     transpiler.transpile(std::string{filename});
     REQUIRE(std::filesystem::exists(outFilename));
     std::string code = fileContent();
-    REQUIRE(code == "#include \"./include/base.hpp\"\n\n"
+    REQUIRE(code == "#include <base/base.hpp>\n\n"
                     "i32 _num{}, _num1{};\n");
 }
 
@@ -810,7 +810,7 @@ TEST_CASE("Transpiler transpile declaration underscore instruction", "[transpile
     transpiler.transpile(std::string{filename});
     REQUIRE(std::filesystem::exists(outFilename));
     std::string code = fileContent();
-    REQUIRE(code == "#include \"./include/base.hpp\"\n\n"
+    REQUIRE(code == "#include <base/base.hpp>\n\n"
                     "u32 v_num{}, v_num1{};\n");
 }
 
@@ -821,7 +821,7 @@ TEST_CASE("Transpiler transpile initialization instruction", "[transpiler]") {
     transpiler.transpile(std::string{filename});
     REQUIRE(std::filesystem::exists(outFilename));
     std::string code = fileContent();
-    REQUIRE(code == "#include \"./include/base.hpp\"\n\n"
+    REQUIRE(code == "#include <base/base.hpp>\n\n"
                     "i8 _num = 1, _num1{};\n");
 }
 
@@ -832,7 +832,7 @@ TEST_CASE("Transpiler transpile initialization underscore instruction", "[transp
     transpiler.transpile(std::string{filename});
     REQUIRE(std::filesystem::exists(outFilename));
     std::string code = fileContent();
-    REQUIRE(code == "#include \"./include/base.hpp\"\n\n"
+    REQUIRE(code == "#include <base/base.hpp>\n\n"
                     "u64 v_num = 1, v_num1{};\n");
 }
 
@@ -843,7 +843,7 @@ TEST_CASE("Transpiler transpile const instruction", "[transpiler]") {
     transpiler.transpile(std::string{filename});
     REQUIRE(std::filesystem::exists(outFilename));
     std::string code = fileContent();
-    REQUIRE(code == "#include \"./include/base.hpp\"\n\n"
+    REQUIRE(code == "#include <base/base.hpp>\n\n"
                     "const u16 _num = 334;\n\n");
 }
 
@@ -854,7 +854,7 @@ TEST_CASE("Transpiler transpile operation instruction", "[transpiler]") {
     transpiler.transpile(std::string{filename});
     REQUIRE(std::filesystem::exists(outFilename));
     std::string code = fileContent();
-    REQUIRE(code == "#include \"./include/base.hpp\"\n\n"
+    REQUIRE(code == "#include <base/base.hpp>\n\n"
                     "int main(int argc, char **argv) {\n"
                     "\tconst vnd::vector<string> _args = vnd::createArgs(argc, argv);\n"
                     "\t_print(string(\"Test {}\"), {_args.at(0)});\n"
@@ -869,15 +869,14 @@ TEST_CASE("Transpiler transpile assignation instruction", "[transpiler]") {
     transpiler.transpile(std::string{filename});
     REQUIRE(std::filesystem::exists(outFilename));
     std::string code = fileContent();
-    REQUIRE(code == R"(#include "./include/base.hpp"
-
-int main(int argc, char **argv) {
-	const vnd::vector<string> _args = vnd::createArgs(argc, argv);
-	i8 _num{};
-	_num = 1;
-	return 0;
-}
-)");
+    REQUIRE(code == "#include <base/base.hpp>\n\n"
+            "int main(int argc, char **argv) {\n"
+            "\tconst vnd::vector<string> _args = vnd::createArgs(argc, argv);\n"
+            "\ti8 _num{};\n"
+            "\t_num = 1;\n"
+            "\treturn 0;\n"
+            "}\n");
+    ;
 }
 
 TEST_CASE("Transpiler transpile if instruction", "[transpiler]") {
@@ -887,7 +886,7 @@ TEST_CASE("Transpiler transpile if instruction", "[transpiler]") {
     transpiler.transpile(std::string{filename});
     REQUIRE(std::filesystem::exists(outFilename));
     std::string code = fileContent();
-    REQUIRE(code == "#include \"./include/base.hpp\"\n\n"
+    REQUIRE(code == "#include <base/base.hpp>\n\n"
                     "int main(int argc, char **argv) {\n"
                     "\tconst vnd::vector<string> _args = vnd::createArgs(argc, argv);\n"
                     "\tif(true) {\n"
@@ -904,7 +903,7 @@ TEST_CASE("Transpiler transpile while and break instructions", "[transpiler]") {
     transpiler.transpile(std::string{filename});
     REQUIRE(std::filesystem::exists(outFilename));
     std::string code = fileContent();
-    REQUIRE(code == "#include \"./include/base.hpp\"\n\n"
+    REQUIRE(code == "#include <base/base.hpp>\n\n"
                     "int main(int argc, char **argv) {\n"
                     "\tconst vnd::vector<string> _args = vnd::createArgs(argc, argv);\n"
                     "\twhile(true) {\n"
@@ -921,7 +920,7 @@ TEST_CASE("Transpiler transpile for instruction", "[transpiler]") {
     transpiler.transpile(std::string{filename});
     REQUIRE(std::filesystem::exists(outFilename));
     std::string code = fileContent();
-    REQUIRE(code == "#include \"./include/base.hpp\"\n\n"
+    REQUIRE(code == "#include <base/base.hpp>\n\n"
                     "int main(int argc, char **argv) {\n"
                     "\tconst vnd::vector<string> _args = vnd::createArgs(argc, argv);\n"
                     "\tFOR_LOOP(i8, _i, 0, 10, 1) {}\n"
@@ -936,7 +935,7 @@ TEST_CASE("Transpiler transpile open and close scope instructions", "[transpiler
     transpiler.transpile(std::string{filename});
     REQUIRE(std::filesystem::exists(outFilename));
     std::string code = fileContent();
-    REQUIRE(code == "#include \"./include/base.hpp\"\n\n"
+    REQUIRE(code == "#include <base/base.hpp>\n\n"
                     "int main(int argc, char **argv) {\n"
                     "\tconst vnd::vector<string> _args = vnd::createArgs(argc, argv);\n"
                     "\t{\n"
