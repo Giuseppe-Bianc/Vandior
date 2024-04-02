@@ -159,12 +159,12 @@ auto main(int argc, const char *const argv[]) -> int {
 
                 // Compile the code
 #ifdef _WIN32
-                std::string home = "%VNHOME%";
+                std::string home = "%VNHOME%", bin = "exe";
 #else
-                std::string home = "$VNHOME";
+                std::string home = "$VNHOME", bin = "out";
 #endif
 
-                int compileResult = std::system(FORMAT("g++ --std=c++20 {}.cpp -I \"{}\"", output, home).c_str());
+                int compileResult = std::system(FORMAT("g++ --std=c++20 {}.cpp -o {}.{} -I \"{}\"", output, output, bin, home).c_str());
                 LINFO("{}", rtim);
                 if(compileResult != 0) {
                     LERROR("Compilation failed");
