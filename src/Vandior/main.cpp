@@ -159,12 +159,11 @@ auto main(int argc, const char *const argv[]) -> int {
 
                 // Compile the code
 #ifdef _WIN32
-                std::string home = "%VNHOME%", bin = "exe";
+                int compileResult = std::system(FORMAT("g++ --std=c++20 {}.cpp -o {}.exe -I \"%VNHOME%\"", output, output).c_str());
 #else
-                std::string home = "$VNHOME", bin = "out";
+                int compileResult = std::system(FORMAT("g++ --std=c++20 {}.cpp -o {} -I \"$VNHOME\"", output, output).c_str());
 #endif
 
-                int compileResult = std::system(FORMAT("g++ --std=c++20 {}.cpp -o {}.{} -I \"{}\"", output, output, bin, home).c_str());
                 LINFO("{}", rtim);
                 if(compileResult != 0) {
                     LERROR("Compilation failed");
@@ -172,10 +171,11 @@ auto main(int argc, const char *const argv[]) -> int {
                 }
                 if(run) {
                     vnd::AutoTimer rctim("run code time");
+
 #ifdef _WIN32
-                    std::system("a.exe");
+                    std::system(FORMAT("{}.exe", output).c_str());
 #else
-                    std::system("./a.out");
+                    std::system(FORMAT("{}", output).c_str());
 #endif
                 }
             } else {
