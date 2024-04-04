@@ -19,3 +19,30 @@ A modern c++20 transpiler.
 * [Dependency Setup](README_dependencies.md)
 * [Building Details](README_building.md)
 * [Docker](README_docker.md)
+
+## Usage
+
+Define a VNHOME environment variable containing the path to the project root (This is necessary to allow the compiler find the base header files).
+```
+vandior -i input_file.vn [-c] [-r]
+```
+Flags:
+- --input (-i): the vn input source file;
+- --compile (-c): compiles the resulting C++ file if no error occurs;
+- --run (-r): Compiles and executes the resulting C++ file if no error occurs.
+
+Using -c and -r together is the same as using only -r.
+
+To manually compile the output C++ code:
+
+### Windows
+
+```
+g++ -std=c++20 input_file.cpp -I %VNHOME%
+```
+
+### Unix
+
+```
+g++ -std=c++20 input_file.cpp -I $VNHOME
+```

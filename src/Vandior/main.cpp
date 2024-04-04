@@ -137,7 +137,9 @@ auto main(int argc, const char *const argv[]) -> int {
         // for(const auto &item : tokens) { LINFO("{}", item); }
         std::vector<vnd::Instruction> instructions = extractInstructions(tokens);
         vnd::Timer tim("transpiling time");
-        if(vnd::Transpiler transpiler = vnd::Transpiler::create(instructions); !transpiler.transpile(path.value_or(filename.data()))) {
+        vnd::Transpiler transpiler = vnd::Transpiler::create(instructions);
+        auto [success, output] = transpiler.transpile(path.value_or(filename.data()));
+        if(!success) {
             return EXIT_FAILURE;
         }
         LINFO("{}", tim);
@@ -156,7 +158,12 @@ auto main(int argc, const char *const argv[]) -> int {
                 vnd::Timer rtim("compile code time");
 
                 // Compile the code
-                int compileResult = std::system("g++ --std=c++20 output.cpp");
+#ifdef _WIN32
+                int compileResult = std::system(FORMAT("g++ --std=c++20 {}.cpp -o {}.exe -I \"%VNHOME%\"", output, output).c_str());
+#else
+                int compileResult = std::system(FORMAT("g++ --std=c++20 {}.cpp -o {} -I \"$VNHOME\"", output, output).c_str());
+#endif
+
                 LINFO("{}", rtim);
                 if(compileResult != 0) {
                     LERROR("Compilation failed");
@@ -164,10 +171,11 @@ auto main(int argc, const char *const argv[]) -> int {
                 }
                 if(run) {
                     vnd::AutoTimer rctim("run code time");
+
 #ifdef _WIN32
-                    std::system("a.exe");
+                    std::system(FORMAT("{}.exe", output).c_str());
 #else
-                    std::system("./a.out");
+                    std::system(FORMAT("{}", output).c_str());
 #endif
                 }
             } else {
