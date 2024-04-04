@@ -236,10 +236,10 @@ namespace vnd {
         bool oldAndNewCoincide(const std::pair<char, std::string> &oldParts, const std::pair<char, std::string_view> &newParts,
                                char cha) const;
         template <typename T> static bool isLessThanOrEqualToMax(uint64_t number) noexcept;
-        std::string handleExpression(const TokenType iterType, std::tuple<bool, bool, std::string> type);
+        //std::string handleExpression(const TokenType iterType, std::tuple<bool, bool, std::string> type);
         void operatorsEmplace(const std::string_view &value, const std::string_view &txtVal);
         void checkConst(const std::string_view &type, const std::string_view &text);
-        void factorConst(std::string &constValue, std::_String_iterator<std::_String_val<std::_Simple_types<char>>> &iter) const;
+        void factorConst(std::string &constValue, std::string::iterator &iter) const;
     };
 
 }  // namespace vnd

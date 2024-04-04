@@ -258,8 +258,7 @@ namespace vnd {
             _expressionText += constValue;
         }
     }
-    void ExpressionFactory::factorConst(std::string &constValue,
-                                        std::_String_iterator<std::_String_val<std::_Simple_types<char>>> &iter) const {
+    void ExpressionFactory::factorConst(std::string &constValue, std::string::iterator &iter) const {
         while(iter != constValue.end()) {
             if(*iter == 'f') {
                 constValue.erase(iter);
