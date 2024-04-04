@@ -30,11 +30,7 @@ namespace vnd {
     std::pair<bool, std::string> Transpiler::transpile(std::string filename) {
         using enum TokenType;
         using enum InstructionType;
-        if(filename.ends_with(".vn")) {
-            filename.pop_back();
-            filename.pop_back();
-            filename.pop_back();
-        }
+        if(filename.ends_with(".vn")) { filename.erase(filename.end() - 3, filename.end()); }
 #ifdef _WIN32
         for(char &iter : filename) {
             if(iter == '\\') { iter = '/'; }
@@ -97,6 +93,10 @@ namespace vnd {
                     _text.pop_back();
                     if(_scope->isGlobalScope()) { throw TranspilerException("Unexpected '}'", instruction); }
                     checkTrailingBracket(instruction);
+                    _text += "\n";
+                    break;
+                case RETURN_DEFINITION:
+                    transpileDefinition(instruction);
                     _text += "\n";
                     break;
                 default:
@@ -379,6 +379,54 @@ namespace vnd {
             scope = scope->getParent();
         }
         _text += FORMAT("{};", identifier);
+    }
+
+     void Transpiler::transpileDefinition(const Instruction &instruction) {
+        auto tokens = instruction.getTokens();
+        auto iterator = tokens.begin();
+        const auto endToken = tokens.end();
+        std::vector<stringPair> params;
+        std::vector<std::string> returnTypevalues;
+        iterator = std::next(iterator);
+        const auto identifier = iterator->getValue();
+        iterator = std::next(iterator);
+        openScope(ScopeType::FUNCTION_SCOPE);
+        if(auto next = std::next(iterator); next->getType() == TokenType::CLOSE_PARENTESIS) { iterator = next; }
+        while(iterator->getType() != TokenType::CLOSE_PARENTESIS) {
+            iterator = std::next(iterator);
+            auto param = iterator->getValue();
+            iterator = std::next(iterator);
+            auto [type, typevalue] = transpileType(iterator, endToken, {TokenType::COMMA, TokenType::CLOSE_PARENTESIS}, instruction);
+            _scope->addVariable(param, std::string_view{type}, false);
+            params.emplace_back(std::make_pair(param, typevalue));
+        }
+        iterator = std::next(iterator);
+        while(iterator->getType() != TokenType::OPEN_CUR_PARENTESIS) {
+            auto [type, typevalue] = transpileType(iterator, endToken, {TokenType::COMMA, TokenType::OPEN_CUR_PARENTESIS}, instruction);
+            _returnTypes.emplace_back(type);
+            returnTypevalues.emplace_back(typevalue);
+        }
+        if(returnTypevalues.empty()) {
+            _text += "void ";
+        } else if(returnTypevalues.size() == 1) {
+            _text += FORMAT("{} ", returnTypevalues.at(0));
+        } else {
+            _text += "std::tuple<";
+            for(const auto &typevalue : returnTypevalues) { _text += FORMAT("{}, ", typevalue); }
+            _text.erase(_text.end() - 2, _text.end());
+            _text += "> ";
+        }
+        formatVariable(identifier);
+        _text += "(";
+        for(const auto &param : params) {
+            _text += FORMAT("{} ", param.second);
+            formatVariable(param.first);
+            _text += ", ";
+        }
+        if(!params.empty()) { _text.erase(_text.end() - 2, _text.end()); }
+        _text += ") {";
+        checkTrailingBracket(instruction);
+
     }
 
     std::vector<std::string_view> Transpiler::extractIdentifiers(TokenVecIter &iterator, const Instruction &instruction) const {

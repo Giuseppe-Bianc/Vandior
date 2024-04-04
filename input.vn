@@ -1,3 +1,5 @@
+fun funzione(num: i8) {}
+
 const nume: u32 = 334
 const num2: u32 = nume
 const dmnum : f64 = 1.222222222222f * num2 + nume
