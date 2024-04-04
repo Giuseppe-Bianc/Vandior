@@ -139,9 +139,7 @@ auto main(int argc, const char *const argv[]) -> int {
         vnd::Timer tim("transpiling time");
         vnd::Transpiler transpiler = vnd::Transpiler::create(instructions);
         auto [success, output] = transpiler.transpile(path.value_or(filename.data()));
-        if(!success) {
-            return EXIT_FAILURE;
-        }
+        if(!success) { return EXIT_FAILURE; }
         LINFO("{}", tim);
         if(compile || run) {
 #ifdef HIDE_SYSTEM_OUTPUT
@@ -173,10 +171,11 @@ auto main(int argc, const char *const argv[]) -> int {
                     vnd::AutoTimer rctim("run code time");
 
 #ifdef _WIN32
-                    std::system(FORMAT("{}.exe", output).c_str());
+                    int result = std::system(FORMAT("{}", output).c_str());
 #else
-                    std::system(FORMAT("{}", output).c_str());
+                    int result = std::system(FORMAT("{}", output).c_str());
 #endif
+                    if(result != 0) { LWARN("Error: Command failed with exit status {}", result); }
                 }
             } else {
                 LERROR("Failed to execute command: {}", command);
