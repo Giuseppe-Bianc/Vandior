@@ -381,12 +381,14 @@ namespace vnd {
         _text += FORMAT("{};", identifier);
     }
 
-     void Transpiler::transpileDefinition(const Instruction &instruction) {
+    void Transpiler::transpileDefinition(const Instruction &instruction) {
         auto tokens = instruction.getTokens();
         auto iterator = tokens.begin();
         const auto endToken = tokens.end();
+        auto parentScope = _scope;
         std::vector<stringPair> params;
         std::vector<std::string> returnTypevalues;
+        FunType fun = FunType::createEmpty();
         iterator = std::next(iterator);
         const auto identifier = iterator->getValue();
         iterator = std::next(iterator);
@@ -398,6 +400,7 @@ namespace vnd {
             iterator = std::next(iterator);
             auto [type, typevalue] = transpileType(iterator, endToken, {TokenType::COMMA, TokenType::CLOSE_PARENTESIS}, instruction);
             _scope->addVariable(param, std::string_view{type}, false);
+            fun.addParam(type);
             params.emplace_back(std::make_pair(param, typevalue));
         }
         iterator = std::next(iterator);
@@ -408,11 +411,16 @@ namespace vnd {
         }
         if(returnTypevalues.empty()) {
             _text += "void ";
+            fun.addReturn("void");
         } else if(returnTypevalues.size() == 1) {
             _text += FORMAT("{} ", returnTypevalues.at(0));
+            fun.addReturn(returnTypevalues.at(0));
         } else {
             _text += "std::tuple<";
-            for(const auto &typevalue : returnTypevalues) { _text += FORMAT("{}, ", typevalue); }
+            for(const auto &typevalue : returnTypevalues) {
+                _text += FORMAT("{}, ", typevalue);
+                fun.addReturn(typevalue);
+            }
             _text.erase(_text.end() - 2, _text.end());
             _text += "> ";
         }
@@ -425,8 +433,8 @@ namespace vnd {
         }
         if(!params.empty()) { _text.erase(_text.end() - 2, _text.end()); }
         _text += ") {";
+        parentScope->addFun(identifier, fun);
         checkTrailingBracket(instruction);
-
     }
 
     std::vector<std::string_view> Transpiler::extractIdentifiers(TokenVecIter &iterator, const Instruction &instruction) const {

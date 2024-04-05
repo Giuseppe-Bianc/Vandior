@@ -1,4 +1,8 @@
-fun funzione(num: i8) {}
+fun funzione(num: i8) {
+	println("Funzione:\t{}", num)
+}
+fun func(): char {}
+fun func(num: u64): char, bool {}
 
 const nume: u32 = 334
 const num2: u32 = nume
@@ -87,4 +91,7 @@ main {
 	var maxF: f64
 	maxI, maxF = max({})
 	println("{} {}", maxI, maxF)
+	funzione(1)
+	var character: char = func()
+	character, _ = func(10)
 }
