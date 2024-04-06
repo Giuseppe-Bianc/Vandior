@@ -12,7 +12,9 @@ namespace vnd {
 
     std::string FunType::getReturnType() const noexcept { return _returnType; }
 
-    std::vector<std::string> FunType::getParams() const noexcept { return _params; }
+    std::vector<std::string> FunType::getParams() const noexcept {
+        return _params;
+    }
 
     std::vector<stringPair> FunType::getTypeGeneric() const noexcept { return _typeGeneric; }
 

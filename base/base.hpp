@@ -1,17 +1,12 @@
 #pragma once
+#include <build/_deps/fmt-src/include/fmt/core.h>
 #include "headers.hpp"
 #include "primitives.hpp"
 #include "string.hpp"
+#include<format>
 
 #define FOR_LOOP(type, var, initial, final, step) \
 for (type var = initial; (step > 0 ? var < final : var > final); var += step)
-
-#define printTypes std::variant<i8, i64, u8, u16, u32, u64, f64, c32, c64, char, bool, string, std::shared_ptr<Object>>
-
-#define printType(type)\
-if(std::holds_alternative<type>(param)) {\
-	return std::to_string(std::get<type>(param));\
-}
 
 namespace vnd {
 	template <typename T, i64 N>
@@ -146,80 +141,21 @@ class Derived: public Object {
 		bool _derivedProperty{};
 		std::shared_ptr<Object> obj{};
 };
-void _print(const string text, const vnd::vector<printTypes>& args) {
+template<typename... Args>
+inline void _print(string format, Args&&... args) {
 	
-	size_t par = 0;
-	auto iterator = text.begin();
-	std::string result;
-	std::function<std::string(printTypes)> format = [&format](auto param) -> std::string {
-		printType(i8)
-		printType(i64)
-		printType(u8)
-		printType(u16)
-		printType(u32)
-		printType(u64)
-		if(std::holds_alternative<f64>(param)) {
-			std::string value = std::to_string(std::get<f64>(param));
-			while(value.ends_with('0')) {
-				value.pop_back();
-			}
-			if(value.ends_with('.')) {
-				value.pop_back();
-			}
-			return value;
-		}
-		if(std::holds_alternative<c32>(param)) {
-			c32 value = std::get<c32>(param);
-			return "(" + format(value.real()) + "," + format(value.imag()) + ")";
-		}
-		if(std::holds_alternative<c64>(param)) {
-			c64 value = std::get<c64>(param);
-			return "(" + format(value.real()) + "," + format(value.imag()) + ")";
-		}
-		if(std::holds_alternative<char>(param)) {
-			return std::string(1, std::get<char>( param));
-		}
-		if(std::holds_alternative<bool>(param)) {
-			if(std::get<bool>(param) == true) {
-				return "true";
-			} else {
-				return "false";
-			}
-		}
-		if(std::holds_alternative<string>(param)) {
-			return std::get<string>(param);
-		}
-		return std::get<std::shared_ptr<Object>>(param)->toString();
-	};
-
-	while(iterator != text.end()) {
-		if(*iterator == '{') {
-			char next = *std::next(iterator);
-			if(next == '}') {
-				if(par < args.size()) {
-					auto param = args.at(par);
-					result += format(args.at(par));
-					par++;
-				}
-				iterator++;
-			}
-		} else {
-			result += *iterator;
-		}
-		iterator++;
-	}
-	std::cout << result;
+    std::cout << fmt::format(fmt::runtime(std::string(format)), std::forward<Args>(args)...);
+	
+}
+template<typename... Args>
+inline void _println(string format, Args&&... args) {
+	
+    std::cout << fmt::format(fmt::runtime(std::string(format)), std::forward<Args>(args)...) << std::endl;
 	
 }
 inline void _exit(i32 code) {
 	
 	std::exit(code);
-	
-}
-inline void _println(const string text, const vnd::vector<printTypes>& args) {
-	
-	_print(text, args);
-	std::cout << std::endl;
 	
 }
 string _readLine() {

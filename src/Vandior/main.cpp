@@ -157,9 +157,10 @@ auto main(int argc, const char *const argv[]) -> int {
 
                 // Compile the code
 #ifdef _WIN32
-                int compileResult = std::system(FORMAT("g++ --std=c++20 {}.cpp -o {}.exe -I \"%VNHOME%\"", output, output).c_str());
+                int compileResult = std::system(FORMAT("g++ --std=c++20 {}.cpp -o {}.exe -I \"%VNHOME%\" -lfmt", output, output).c_str());
 #else
-                int compileResult = std::system(FORMAT("g++ --std=c++20 {}.cpp -o {} -I \"$VNHOME\"", output, output).c_str());
+                int compileResult = std::system(FORMAT("g++ --std=c++20 {}.cpp -o {} -I \"$VNHOME\"
+                                                       "-L \"$VNHOME\"/build/_deps/fmt-src/lib\" -lfmt", output, output).c_str());
 #endif
 
                 LINFO("{}", rtim);

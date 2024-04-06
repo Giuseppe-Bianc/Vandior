@@ -33,9 +33,11 @@ namespace vnd {
          * @brief Creates the text for the arguments of a function.
          * @param expressions Vector of the expressions passed as arguments to the function.
          * @param variadic Optional indicating the position of the first variadic argument, if present.
+         * @param print Bool indicating if the function is print or println.
          * @return the transpiled text for the arguments.
          */
-        [[nodiscard]] static std::string transpileFun(const std::vector<Expression> &expressions, std::optional<size_t> variadic) noexcept;
+        [[nodiscard]] static std::string transpileFun(const std::vector<Expression> &expressions, std::optional<size_t> variadic,
+                                                      const bool print = false) noexcept;
 
         /**
          * @brief Parses the token sequence until reaching the specified end tokens.
