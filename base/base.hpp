@@ -3,79 +3,13 @@
 #include "headers.hpp"
 #include "primitives.hpp"
 #include "string.hpp"
+#include "container.hpp"
 #include<format>
 
 #define FOR_LOOP(type, var, initial, final, step) \
 for (type var = initial; (step > 0 ? var < final : var > final); var += step)
 
 namespace vnd {
-	template <typename T, i64 N>
-	class array: public std::array<T, N> {
-		public:
-			array(): std::array<T, N>() {};
-			array(const std::vector<T>& vec) {
-				if (vec.size() == N) {
-					std::copy(vec.begin(), vec.end(), this->begin());
-				} else {
-					throw std::invalid_argument("Vector size does not match array size");
-				}
-			}
-			array(std::initializer_list<T> init) : std::array<T, N>() {
-				if (init.size() != N) {
-					throw std::runtime_error("Initializer list size does not match array size.");
-				}
-				std::copy(init.begin(), init.end(), this->begin());
-			}
-			T& at(i64 index) {
-				if(index < 0) {
-					index += N;
-				}
-				if(index < 0 || index >= N) { throw std::runtime_error("Index " + std::to_string(index) +  " out of bounds for size " + std::to_string(N)); }
-				return std::array<T, N>::at(index);
-			}
-			const T& at(i64 index) const {
-				if(index < 0) {
-					index += N;
-				}
-				if(index < 0 || index >= N) { throw std::runtime_error("Index " + std::to_string(index) +  " out of bounds for size " + std::to_string(N)); }
-				return std::array<T, N>::at(index);
-			}
-	};
-	template <typename T>
-	class vector: public std::vector<T> {
-		public:
-			vector(): std::vector<T>() {};
-			vector(std::initializer_list<T> init) : std::vector<T>(init) {}
-			template <typename InputIt>
-			vector(InputIt first, InputIt last) : std::vector<T>(first, last) {}
-			T& at(i64 index) {
-				if(index < 0) {
-					index += static_cast<i64>(this->size());
-				}
-				if(index < 0 || index >= static_cast<i64>(this->size())) { throw std::runtime_error("Index " + std::to_string(index) +  " out of bounds for size " + std::to_string(static_cast<int64_t>(this->size()))); }
-				return std::vector<T>::at(index);
-			}
-			const T at(i64 index) const {
-				if(index < 0) {
-					index += static_cast<i64>(this->size());
-				}
-				if(index < 0 || index >= static_cast<i64>(this->size())) { throw std::runtime_error("Index " + std::to_string(index) +  " out of bounds for size " + std::to_string(static_cast<int64_t>(this->size()))); }
-				return std::vector<T>::at(index);
-			}
-			void addVector(const vnd::vector<T> elems) {
-				for(const T &i: elems) {
-					std::vector<T>::emplace_back(i);
-				}
-			}
-			void addAll(const vnd::vector<T> elems) {
-				for(const T &i: elems) {
-					std::vector<T>::emplace_back(i);
-				}
-			}
-			void add(const T elem) {
-				std::vector<T>::emplace_back(elem);
-			}
-	};
 	std::unordered_map<std::string, std::any> tmp;
 	vnd::vector<string> createArgs(int argc, char **argv) {
 		vnd::vector<string> args;
@@ -136,6 +70,9 @@ class Derived: public Object {
 		bool get_derivedConst() { return _derivedConst; }
 		virtual bool derivedFun(std::shared_ptr<Object> obj) { return obj->getS().empty(); }
 		virtual std::shared_ptr<Object> object() { return std::make_shared<Object>(); }
+		virtual string toString() {
+			return string("Derived" + std::string(Object::toString()));
+		}
 	private:
 		const bool _derivedConst = true;
 		bool _derivedProperty{};
@@ -144,13 +81,13 @@ class Derived: public Object {
 template<typename... Args>
 inline void _print(string format, Args&&... args) {
 	
-    std::cout << fmt::format(fmt::runtime(std::string(format)), std::forward<Args>(args)...);
+    fmt::print(fmt::runtime(std::string(format)), std::forward<Args>(args)...);
 	
 }
 template<typename... Args>
 inline void _println(string format, Args&&... args) {
 	
-    std::cout << fmt::format(fmt::runtime(std::string(format)), std::forward<Args>(args)...) << std::endl;
+    fmt::print(fmt::runtime(std::string(format) + "\n"), std::forward<Args>(args)...);
 	
 }
 inline void _exit(i32 code) {
@@ -175,3 +112,16 @@ vnd::vector<i32> _arrayTest() {
 }
 std::shared_ptr<Object> _createObject() { return std::make_shared<Object>(); }
 std::shared_ptr<Derived> _createDerived() { return std::make_shared<Derived>(); }
+
+template<>
+struct fmt::formatter<std::shared_ptr<Object>> {
+    constexpr auto parse(format_parse_context& ctx) { return ctx.begin(); }
+    template <typename FormatContext>
+    auto format(const std::shared_ptr<Object>& obj, FormatContext& ctx) {
+        if (obj) {
+            return fmt::format_to(ctx.out(), "{}", obj->toString());
+        } else {
+            return fmt::format_to(ctx.out(), "nullptr");
+        }
+    }
+};

@@ -234,7 +234,7 @@ namespace vnd {
             std::optional<size_t> variadic;
             found = true;
             processVariadicParams(params, expressions, variadic);
-            processParams(expressions, params, i, found, variadic);
+            processParams(expressions, params, i, found);
             if(found) {
                 return std::tuple<std::string, bool, std::optional<size_t>>{i.getReturnType(), i.isConstructor(), variadic};
             }
@@ -249,17 +249,12 @@ namespace vnd {
         return std::tuple<std::string, bool, std::optional<size_t>>{"", false, std::optional<size_t>{}};
     }
     void Scope::processParams(const std::vector<Expression> &expressions, std::vector<std::string> &params, const FunType &item,
-                              bool &found, std::optional<size_t> &variadic) const noexcept {
-        auto limit = expressions.size();
-        if(variadic.has_value()) {
-            limit = std::min(limit, variadic.value() + 1);
-        }
-        if(params.size() != limit && !variadic.has_value()) [[likely]] {
+                              bool &found) const noexcept {
+        if(params.size() != expressions.size()) [[likely]] {
             found = false;
         } else [[unlikely]] {
-            for(size_t par = 0; par != limit; par++) {
+            for(size_t par = 0; par != expressions.size(); par++) {
                 auto paramType = getParamType(params.at(par), item.getTypeGeneric());
-                if(paramType.ends_with("...")) { paramType.erase(paramType.end() - 3, paramType.end()); }
                 if(auto [first, second] = canAssign(paramType, expressions.at(par).getType()); !first) { found = false; }
             }
         }
@@ -273,6 +268,7 @@ namespace vnd {
                 params.pop_back();
             } else if(expressions.size() >= params.size()) {
                 auto lastParam = params.back();
+                params.pop_back();
                 lastParam.erase(lastParam.end() - 3, lastParam.end());
                 while(params.size() < expressions.size()) { params.emplace_back(lastParam); }
             }

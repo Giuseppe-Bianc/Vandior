@@ -2,6 +2,16 @@
 #include <cstdint>
 #include <complex>
 
+#define COMPLEX_FORMATTER(type)\
+template <>\
+struct fmt::formatter<type> {\
+    constexpr auto parse(format_parse_context& ctx) { return ctx.begin(); }\
+    template <typename FormatContext>\
+    auto format(const type& num, FormatContext& ctx) {\
+        return fmt::format_to(ctx.out(), "({}, {})", std::real(num), std::imag(num));\
+    }\
+};
+
 // Signed integer types
 using i8 = int8_t;
 using i16 = int16_t;
@@ -22,3 +32,6 @@ using f64 = double;
 using c32 = std::complex<f32>;
 using c64 = std::complex<f64>;
 using namespace std::complex_literals;
+
+COMPLEX_FORMATTER(c32)
+COMPLEX_FORMATTER(c64)
