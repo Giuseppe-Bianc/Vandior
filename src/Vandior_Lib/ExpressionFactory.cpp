@@ -242,7 +242,7 @@ namespace vnd {
         ++_iterator;
     }
     // NOLINTBEGIN(*-easily-swappable-parameters)
-    void ExpressionFactory::checkConst(const std::string_view &type, const std::string_view &text) {
+    void ExpressionFactory::checkConst(const std::string_view &type, const std::string_view &text) noexcept {
         if(_const) {
             std::string constValue;
             if(_iterator->isType(TokenType::IDENTIFIER)) {
@@ -495,7 +495,7 @@ namespace vnd {
         return FORMAT("Incompatible types: {}, {}", std::get<2>(oldType), newType);
     }
     bool ExpressionFactory::oldAndNewCoincide(const std::pair<char, std::string> &oldParts,
-                                              const std::pair<char, std::string_view> &newParts, char cha) const {
+                                              const std::pair<char, std::string_view> &newParts, char cha) const noexcept {
         return oldParts.first == cha || newParts.first == cha;
     }
 

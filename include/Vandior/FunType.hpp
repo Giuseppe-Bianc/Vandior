@@ -19,9 +19,9 @@ namespace vnd {
          * @param constructor Bool flag that indicates if it's a constructor.
          * @return FunType instance.
          */
-        [[nodiscard]] static FunType create(const std::string &returnType, const std::vector<std::string> &params,
-                                            const std::vector<stringPair> &typeGeneric = {},
-                                            const std::vector<stringPair> &funcGeneric = {}, const bool constructor = false) noexcept;
+        [[nodiscard]] static FunType create(const std::string &returnType, const StringVec &params,
+                                            const std::vector<StringPair> &typeGeneric = {},
+                                            const std::vector<StringPair> &funcGeneric = {}, const bool constructor = false) noexcept;
 
         /**
          * @brief Creates an empty FunType instance
@@ -40,19 +40,19 @@ namespace vnd {
          * @brief Gets the parameter types.
          * @return vector containing the types of the parameters. If it's a variadic function, the last type ends with "...".
          */
-        [[nodiscard]] std::vector<std::string> getParams() const noexcept;
+        [[nodiscard]] StringVec getParams() const noexcept;
 
         /**
          * @brief Gets the generic parameters of the class.
          * @return vector containing the parameters.
          */
-        [[nodiscard]] std::vector<stringPair> getTypeGeneric() const noexcept;
+        [[nodiscard]] std::vector<StringPair> getTypeGeneric() const noexcept;
 
         /**
          * @brief Gets the generic parameters of the function.
          * @return vector containing the parameters.
          */
-        [[nodiscard]] std::vector<stringPair> getFuncGeneric() const noexcept;
+        [[nodiscard]] std::vector<StringPair> getFuncGeneric() const noexcept;
 
         /**
          * @brief Indicates if the function is a constructor,
@@ -75,12 +75,12 @@ namespace vnd {
          * @param funcGeneric Vector of generic parameters of the function.
          * @param constructor Bool flag that indicates if it's a constructor.
          */
-        FunType(const std::string &returnType, const std::vector<std::string> &params, const std::vector<stringPair> &typeGeneric,
-                const std::vector<stringPair> &funcGeneric, const bool constructor) noexcept
+        FunType(const std::string &returnType, const StringVec &params, const std::vector<StringPair> &typeGeneric,
+                const std::vector<StringPair> &funcGeneric, const bool constructor) noexcept
           : _returnType(returnType), _params(params), _typeGeneric(typeGeneric), _funcGeneric(funcGeneric), _constructor(constructor) {}
 
         std::string _returnType;                                        ///< String of the return types separate by a whitespace.
-        std::vector<std::string> _params;                               ///< Vector of type parameters.
+        StringVec _params;                                              ///< Vector of type parameters.
         std::vector<std::pair<std::string, std::string>> _typeGeneric;  ///< Vector of generic types associated at the type.
         std::vector<std::pair<std::string, std::string>> _funcGeneric;  ///< Vector of generic types associated at the function.
         bool _constructor;                                              ///< Flag that indicates if the function is a constructor.

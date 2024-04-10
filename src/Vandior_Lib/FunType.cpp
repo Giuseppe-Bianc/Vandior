@@ -3,7 +3,7 @@
 
 namespace vnd {
     FunType FunType::create(const std::string &returnType, const std::vector<std::string> &params,
-                            const std::vector<stringPair> &typeGeneric, const std::vector<stringPair> &funcGeneric,
+                            const std::vector<StringPair> &typeGeneric, const std::vector<StringPair> &funcGeneric,
                             const bool constructor) noexcept {
         return {returnType, params, typeGeneric, funcGeneric, constructor};
     }
@@ -14,9 +14,9 @@ namespace vnd {
 
     std::vector<std::string> FunType::getParams() const noexcept { return _params; }
 
-    std::vector<stringPair> FunType::getTypeGeneric() const noexcept { return _typeGeneric; }
+    std::vector<StringPair> FunType::getTypeGeneric() const noexcept { return _typeGeneric; }
 
-    std::vector<stringPair> FunType::getFuncGeneric() const noexcept { return _funcGeneric; }
+    std::vector<StringPair> FunType::getFuncGeneric() const noexcept { return _funcGeneric; }
 
     bool FunType::isConstructor() const noexcept { return _constructor; }
 

@@ -48,6 +48,7 @@ namespace vnd {
     };
 
     static inline constexpr TokenType eofTokenType = TokenType::EOFT;
+    using TokenTypeVec = std::vector<TokenType>;
 }  // namespace vnd
 
 /**

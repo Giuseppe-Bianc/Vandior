@@ -24,7 +24,7 @@ namespace vnd {
          * @brief Tokenize the input string.
          * @return A vector of Token objects.
          */
-        [[nodiscard]] std::vector<Token> tokenize();  // NOLINT(*-include-cleaner)
+        [[nodiscard]] TokenVec tokenize();  // NOLINT(*-include-cleaner)
 
     private:
         std::string_view _input;     ///< The input string to tokenize.
@@ -159,7 +159,7 @@ namespace vnd {
          * @brief Handles operators.
          * @return Tokens representing operators.
          */
-        [[nodiscard]] std::vector<Token> handleOperators();
+        [[nodiscard]] TokenVec handleOperators();
 
         /**
          * @brief Extracts variable length operator.

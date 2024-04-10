@@ -181,5 +181,7 @@ template <typename T, glm::qualifier Q> struct fmt::formatter<glm::qua<T, Q>> : 
 };
 /** \endcond */
 
-using stringPair = std::pair<std::string, std::string>;
+using StringPair = std::pair<std::string, std::string>;
+using StringVec = std::vector<std::string>;
+using OptionalSizeT = std::optional<size_t>;
 // NOLINTEND

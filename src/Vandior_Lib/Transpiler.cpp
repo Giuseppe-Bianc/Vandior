@@ -399,10 +399,10 @@ namespace vnd {
         return result;
     }
 
-    std::vector<stringPair> Transpiler::extractVariables(TokenVecIter &iterator, const TokenVecIter &end,
+    std::vector<StringPair> Transpiler::extractVariables(TokenVecIter &iterator, const TokenVecIter &end,
                                                          const Instruction &instruction) const {
         using enum TokenType;
-        std::vector<stringPair> result;
+        std::vector<StringPair> result;
         std::string currentVariable;
         std::string type;
         bool assignable = true;
@@ -530,7 +530,7 @@ namespace vnd {
         return {};
     }
 
-    stringPair Transpiler::transpileMultipleFun(const std::vector<stringPair> &variables, const Expression &expression) noexcept {
+    StringPair Transpiler::transpileMultipleFun(const std::vector<StringPair> &variables, const Expression &expression) noexcept {
         auto types = Transpiler::tokenize(expression.getType());
         std::string values;
         std::string warnings;
@@ -566,7 +566,7 @@ namespace vnd {
         return {{}, warnings};
     }
 
-    stringPair Transpiler::transpileType(TokenVecIter &iterator, const TokenVecIter &end, const std::vector<TokenType> &endTokens,
+    StringPair Transpiler::transpileType(TokenVecIter &iterator, const TokenVecIter &end, const std::vector<TokenType> &endTokens,
                                          const Instruction &instruction) {
         using enum TokenType;
         auto type = std::string{(++iterator)->getValue()};
@@ -605,7 +605,7 @@ namespace vnd {
         return {type, FORMAT("{}{}{}", prefix, typeValue, suffix)};
     }
 
-    bool Transpiler::transpileSwap(const std::vector<stringPair> &variables, const std::vector<Expression> &expressions) noexcept {
+    bool Transpiler::transpileSwap(const std::vector<StringPair> &variables, const std::vector<Expression> &expressions) noexcept {
         if(variables.size() != 2 || expressions.size() != 2) { return false; }
         std::vector<std::string> swapVariables = {variables.at(0).first, variables.at(1).first};
         std::vector<std::string> swapExpressions = {expressions.at(0).getText(), expressions.at(1).getText()};
@@ -679,7 +679,7 @@ namespace vnd {
         return {};
     }
 
-    stringPair Transpiler::transpileForInitialization(TokenVecIter &iterator, const TokenVecIter &end, const Instruction &instruction) {
+    StringPair Transpiler::transpileForInitialization(TokenVecIter &iterator, const TokenVecIter &end, const Instruction &instruction) {
         auto factory = ExpressionFactory::create(iterator, end, _scope, false);
         std::string identifier;
         std::string type;

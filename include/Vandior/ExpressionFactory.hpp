@@ -1,4 +1,4 @@
-/**�
+/**
  * @brief Defines the ExpressionFactory class for parsing and creating expressions.
  */
 #pragma once
@@ -10,7 +10,6 @@
 #include <string>
 
 namespace vnd {
-    using TokenVecIter = std::vector<Token>::iterator;
 
     /**
      * @brief Factory class for parsing and creating expressions from a sequence of tokens.
@@ -35,14 +34,14 @@ namespace vnd {
          * @param variadic Optional indicating the position of the first variadic argument, if present.
          * @return the transpiled text for the arguments.
          */
-        [[nodiscard]] static std::string transpileFun(const std::vector<Expression> &expressions, std::optional<size_t> variadic) noexcept;
+        [[nodiscard]] static std::string transpileFun(const ExprVec &expressions, OptionalSizeT variadic) noexcept;
 
         /**
          * @brief Parses the token sequence until reaching the specified end tokens.
          * @param endToken Vector of token types indicating the end of parsing.
          * @return Parsed string.
          */
-        [[nodiscard]] std::string parse(const std::vector<TokenType> &endToken) noexcept;
+        [[nodiscard]] std::string parse(const TokenTypeVec &endToken) noexcept;
 
         /**
          * @brief Gets the size of the vector of parsed expressions.
@@ -66,7 +65,7 @@ namespace vnd {
          * @brief Gets the vector of parsed expressions clearing it.
          * @return Vector of parsed expressions.
          */
-        [[nodiscard]] std::vector<Expression> getExpressions() noexcept;
+        [[nodiscard]] ExprVec getExpressions() noexcept;
 
         /*
          * @brief Checks if the factory contains only one expression and that this is a multiple return value function.
@@ -90,19 +89,19 @@ namespace vnd {
          * @brief Type definition for a tuple used during parsing for representing the current expression type.
          */
         using TupType = std::tuple<bool, bool, std::string>;
-        TokenVecIter &_iterator;                 ///< Iterator pointing to the current position in the token sequence.
-        TokenVecIter _end;                       ///< Iterator pointing to the end of the token sequence.
-        std::shared_ptr<Scope> _scope;           ///< Shared pointer to the current scope.
-        std::vector<std::string> _text{};        ///< Vector storing the parsed text.
-        std::vector<Expression> _expressions{};  ///< Vector storing the parsed expressions.
-        std::optional<size_t> _operators;        ///< Optional value used to parse ^ and % operators.
-        bool _divide = false;                    ///< Flag indicating division operation during parsing.
-        bool _dot = false;                       ///< Flag used for indicate the presence of . token.
-        bool _const;                             ///< Flag used to indicate if it's a const expression.
-        bool _sq;                                ///< Flag used to indicate if it's a square expression.
-        std::string _expressionText;             ///< String containing the text to evaluate a constant expression.
-        std::string _type;                       ///< String containing the temp type of the operand.
-        std::string _temp;                       ///< String containing the temp value of the operand.
+        TokenVecIter &_iterator;        ///< Iterator pointing to the current position in the token sequence.
+        TokenVecIter _end;              ///< Iterator pointing to the end of the token sequence.
+        std::shared_ptr<Scope> _scope;  ///< Shared pointer to the current scope.
+        StringVec _text{};              ///< Vector storing the parsed text.
+        ExprVec _expressions{};         ///< Vector storing the parsed expressions.
+        OptionalSizeT _operators;       ///< Optional value used to parse ^ and % operators.
+        bool _divide = false;           ///< Flag indicating division operation during parsing.
+        bool _dot = false;              ///< Flag used for indicate the presence of . token.
+        bool _const;                    ///< Flag used to indicate if it's a const expression.
+        bool _sq;                       ///< Flag used to indicate if it's a square expression.
+        std::string _expressionText;    ///< String containing the text to evaluate a constant expression.
+        std::string _type;              ///< String containing the temp type of the operand.
+        std::string _temp;              ///< String containing the temp value of the operand.
 
         /**
          * @brief Checks if the type of a token is allowed for array indexing.
@@ -233,12 +232,12 @@ namespace vnd {
         [[nodiscard]] std::string handleLogicalType(TupType &oldType) const noexcept;
         [[nodiscard]] std::string handleBooleanType(TupType &oldType) const noexcept;
         [[nodiscard]] bool isEnd(const TokenVecIter &nxtIter) const noexcept;
-        bool oldAndNewCoincide(const std::pair<char, std::string> &oldParts, const std::pair<char, std::string_view> &newParts,
-                               char cha) const;
-        template <typename T> static bool isLessThanOrEqualToMax(uint64_t number) noexcept;
+        [[nodiscard]] bool oldAndNewCoincide(const std::pair<char, std::string> &oldParts,
+                                             const std::pair<char, std::string_view> &newParts, char cha) const noexcept;
+        template <typename T> [[nodiscard]] static bool isLessThanOrEqualToMax(uint64_t number) noexcept;
         // std::string handleExpression(const TokenType iterType, std::tuple<bool, bool, std::string> type);
         void operatorsEmplace(const std::string_view &value, const std::string_view &txtVal);
-        void checkConst(const std::string_view &type, const std::string_view &text);
+        void checkConst(const std::string_view &type, const std::string_view &text) noexcept;
         void factorConst(std::string &constValue, std::string::iterator &iter) const;
     };
 
