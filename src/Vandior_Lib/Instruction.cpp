@@ -188,13 +188,13 @@ namespace vnd {
             break;
         case PARAMETER_DEFINITION:
             if(getLastTokenType() == COLON) {
-                _allowedTokens = {COMMA, CLOSE_PARENTESIS};
+                _allowedTokens = {COMMA, OPEN_SQ_PARENTESIS, CLOSE_PARENTESIS};
                 break;
             }
             _allowedTokens = {COLON};
             break;
         case RETURN_DEFINITION:
-            _allowedTokens = {COMMA, OPEN_CUR_PARENTESIS};
+            _allowedTokens = {COMMA, OPEN_SQ_PARENTESIS, OPEN_CUR_PARENTESIS};
             break;
         default:
             _allowedTokens = {};
@@ -293,7 +293,7 @@ namespace vnd {
             addType(EXPRESSION);
             return;
         }
-        if(lastTypeIs(DECLARATION)) { _allowedTokens.emplace_back(CLOSE_SQ_PARENTESIS); }
+        if(lastTypeIs(DECLARATION) || lastTypeIs(PARAMETER_DEFINITION) || lastTypeIs(RETURN_DEFINITION)) { _allowedTokens.emplace_back(CLOSE_SQ_PARENTESIS); }
         addType(SQUARE_EXPRESSION);
     }
 
@@ -330,6 +330,12 @@ namespace vnd {
             setLastType(RETURN_DEFINITION);
             _allowedTokens = {COLON, OPEN_CUR_PARENTESIS};
             break;
+        case PARAMETER_DEFINITION:
+            _allowedTokens = {COMMA, OPEN_SQ_PARENTESIS, CLOSE_PARENTESIS};
+            break;
+        case RETURN_DEFINITION:
+            _allowedTokens = {COMMA, OPEN_SQ_PARENTESIS, OPEN_CUR_PARENTESIS};
+            break;
         default:
             _allowedTokens = {};
             break;
@@ -339,7 +345,7 @@ namespace vnd {
     void Instruction::checkOpenCurParentesis() noexcept {
         using enum InstructionType;
         using enum TokenType;
-        if(isLastTokenTypeAny_of({EQUAL_OPERATOR, COMMA, OPEN_PARENTESIS, OPEN_CUR_PARENTESIS})) {
+        if(isLastTokenTypeAny_of({EQUAL_OPERATOR, COMMA, OPEN_PARENTESIS, OPEN_CUR_PARENTESIS, K_RETURN})) {
             addType(ARRAY_INIZIALIZATION);
             _allowedTokens.emplace_back(CLOSE_CUR_PARENTESIS);
             return;

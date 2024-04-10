@@ -99,6 +99,10 @@ namespace vnd {
                     transpileDefinition(instruction);
                     _text += "\n";
                     break;
+                case RETURN_EXPRESSION:
+                    transpileReturn(instruction);
+                    _text += "\n";
+                    break;
                 default:
                     break;
                 }
@@ -414,12 +418,14 @@ namespace vnd {
             fun.addReturn("void");
         } else if(returnTypevalues.size() == 1) {
             _text += FORMAT("{} ", returnTypevalues.at(0));
-            fun.addReturn(returnTypevalues.at(0));
+            fun.addReturn(_returnTypes.at(0));
         } else {
             _text += "std::tuple<";
+            auto returnValue = _returnTypes.begin();
             for(const auto &typevalue : returnTypevalues) {
                 _text += FORMAT("{}, ", typevalue);
-                fun.addReturn(typevalue);
+                fun.addReturn(*returnValue);
+                returnValue = std::next(returnValue);
             }
             _text.erase(_text.end() - 2, _text.end());
             _text += "> ";
@@ -435,6 +441,40 @@ namespace vnd {
         _text += ") {";
         parentScope->addFun(identifier, fun);
         checkTrailingBracket(instruction);
+    }
+
+    void Transpiler::transpileReturn(const Instruction &instruction) {
+        auto scope = _scope;
+        while(scope->getType() != ScopeType::FUNCTION_SCOPE) {
+            if(scope->getType() == ScopeType::GLOBAL_SCOPE) {
+                throw TranspilerException("Cannot use return outside a function", instruction);
+            }
+            scope = scope->getParent();
+        }
+        auto tokens = instruction.getTokens();
+        auto iterator = tokens.begin();
+        const auto endToken = tokens.end();
+        auto factory = ExpressionFactory::create(iterator, endToken, _scope, false);
+        _text += "return";
+        if(_returnTypes.size() > 1) { _text += " {"; }
+        iterator = std::next(iterator);
+        while(iterator != endToken) {
+            if(auto error = factory.parse({TokenType::COMMA}); !error.empty()) { throw TranspilerException(error, instruction); }
+            if(iterator != endToken) { iterator = std::next(iterator); }
+        }
+        if(_returnTypes.size() != factory.size()) {
+            throw TRANSPILER_EXCEPTIONF(instruction, "Inconsistent return: {} values where {} expected", factory.size(), _returnTypes.size());
+        }
+        for(const auto &type : _returnTypes) {
+            auto expression = factory.getExpression();
+            auto [first, second] = _scope->canAssign(type, expression.getType());
+            if(!first) { throw TRANSPILER_EXCEPTIONF(instruction, "Cannot return {} as {}", expression.getType(), type); }
+            printPrecisionLossWarning(instruction, second, type, expression.getType());
+            _text += FORMAT(" {},", expression.getText());
+        }
+        if(!_returnTypes.empty()) { _text.pop_back(); }
+        if(_returnTypes.size() > 1) { _text += "}"; }
+        _text += ";";
     }
 
     std::vector<std::string_view> Transpiler::extractIdentifiers(TokenVecIter &iterator, const Instruction &instruction) const {
@@ -497,7 +537,7 @@ namespace vnd {
         auto value = iterator->getValue();
         std::string_view newType;
         if(value == "_") {
-            if(currentVariable.empty() && (next == end || next->isTypeAny_of({COLON, EQUAL_OPERATOR, OPERATION_EQUAL}))) {
+            if(currentVariable.empty() && (next == end || next->isTypeAny_of({COMMA, EQUAL_OPERATOR, OPERATION_EQUAL}))) {
                 currentVariable = "_";
                 type = "";
                 return {};
@@ -782,6 +822,7 @@ namespace vnd {
         auto oldScope = _scope;
         _scope = _scope->getParent();
         oldScope->removeParent();
+        if(oldScope->getType() == ScopeType::FUNCTION_SCOPE) { _returnTypes.clear(); }
         _tabs--;
     }
 

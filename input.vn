@@ -1,8 +1,15 @@
-fun funzione(num: i8) {
+fun funzione(num: i8[][]): i8[2], Derived {
 	println("Funzione:\t{}", num)
+	var s: string = "CCCCC"
+	var d: Derived
+	return {1, 2}, d
 }
-fun func(): char {}
-fun func(num: u64): char, bool {}
+fun func(): char {
+	return 'c'
+}
+fun func(num: u64): char, bool {
+	return 'a', true
+}
 
 const nume: u32 = 334
 const num2: u32 = nume
@@ -91,7 +98,8 @@ main {
 	var maxF: f64
 	maxI, maxF = max({})
 	println("{} {}", maxI, maxF)
-	funzione(1)
+	var arg: i8[][]
+	_, _ = funzione(arg)
 	var character: char = func()
 	character, _ = func(10)
 }
