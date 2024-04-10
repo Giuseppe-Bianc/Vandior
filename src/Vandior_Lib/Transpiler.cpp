@@ -10,8 +10,8 @@ namespace vnd {
 
     Transpiler Transpiler::create(const std::vector<Instruction> &instructions) noexcept { return Transpiler{instructions}; }
 
-    std::vector<std::string> Transpiler::tokenize(const std::string &str) noexcept {
-        std::vector<std::string> result;
+    StringVec Transpiler::tokenize(const std::string &str) noexcept {
+        StringVec result;
         std::istringstream iss(str);
         std::string strr;
         while(iss >> strr) { result.emplace_back(std::move(strr)); }
@@ -534,7 +534,7 @@ namespace vnd {
         auto types = Transpiler::tokenize(expression.getType());
         std::string values;
         std::string warnings;
-        std::vector<std::string> tmp;
+        StringVec tmp;
         std::size_t typeIndex = 0;
         if(variables.size() != types.size()) {
             return {FORMAT("Inconsistent assignation: {} return values for {} variables", types.size(), variables.size()), {}};
@@ -607,8 +607,8 @@ namespace vnd {
 
     bool Transpiler::transpileSwap(const std::vector<StringPair> &variables, const std::vector<Expression> &expressions) noexcept {
         if(variables.size() != 2 || expressions.size() != 2) { return false; }
-        std::vector<std::string> swapVariables = {variables.at(0).first, variables.at(1).first};
-        std::vector<std::string> swapExpressions = {expressions.at(0).getText(), expressions.at(1).getText()};
+        StringVec swapVariables = {variables.at(0).first, variables.at(1).first};
+        StringVec swapExpressions = {expressions.at(0).getText(), expressions.at(1).getText()};
         if(std::vector<std::pair<bool, bool>> results = {_scope->canAssign(expressions.at(0).getType(), expressions.at(1).getType()),
                                                          _scope->canAssign(expressions.at(1).getType(), expressions.at(0).getType())};
            !results.at(0).first || !results.at(1).first) {

@@ -1,14 +1,14 @@
 #include "Vandior/Expression.hpp"
 namespace vnd {
     // NOLINTBEGIN(*-include-cleaner, *-easily-swappable-parameters , *-pass-by-value)
-    Expression::Expression(const std::string &text, const std::string &type, const bool isConst, const std::string &value) noexcept
+    Expression::Expression(const std::string &text, const std::string &type, bool isConst, const std::string &value) noexcept
       : _text(text), _type(type), _const(isConst), _value(value) {}
 
-    Expression Expression::create(const StringVec &text, const std::string &type, const bool isConst, const std::string &value) noexcept {
+    Expression Expression::create(const StringVec &text, const std::string &type, bool isConst, const std::string &value) noexcept {
         return {std::accumulate(text.begin(), text.end(), std::string()), type, isConst, value};
     }
 
-    Expression Expression::create(const StringVec &text, const std::string &type, const bool isConst) noexcept {
+    Expression Expression::create(const StringVec &text, const std::string &type, bool isConst) noexcept {
         std::string textString = std::accumulate(text.begin(), text.end(), std::string());
         return {textString, type, isConst, textString};
     }

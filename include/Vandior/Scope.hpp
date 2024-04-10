@@ -3,7 +3,6 @@
 #include "FunType.hpp"
 #include "ScopeType.hpp"
 #include "headers.hpp"
-#include <iostream>
 
 namespace vnd {
     /**

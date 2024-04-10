@@ -6,7 +6,6 @@
 #include "Expression.hpp"
 #include "Scope.hpp"
 #include "Token.hpp"
-#include <iterator>
 #include <string>
 
 namespace vnd {
@@ -112,7 +111,7 @@ namespace vnd {
 
         /**
          * @brief Gets the type of a literal integer value.
-         * @param type String_view representing the token value.
+         * @param value String_view representing the token value.
          * @return String_view indicating the type.
          */
         [[nodiscard]] static std::string_view getIntType(const std::string_view &value) noexcept;

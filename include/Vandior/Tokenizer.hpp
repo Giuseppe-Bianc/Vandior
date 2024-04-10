@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Vandior/Log.hpp"    // NOLINT(*-include-cleaner)
-#include "Vandior/Timer.hpp"  // NOLINT(*-include-cleaner)
+// #include "Vandior/Log.hpp"  // NOLINT(*-include-cleaner)
+//  #include "Vandior/Timer.hpp"  // NOLINT(*-include-cleaner)
 #include "Vandior/Token.hpp"
 #include "Vandior/TokenizerUtility.hpp"
 #include <string>

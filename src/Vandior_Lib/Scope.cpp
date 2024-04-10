@@ -290,8 +290,7 @@ namespace vnd {
         if(auto key = Scope::getKey(type, identifier); _consts.contains(key) || _vals.contains(key)) { return true; }
         if(_types.contains(type)) {
             for(const auto &i : _types.at(type)) {
-                auto result = isConstant(i, identifier);
-                if(result) { return result; }
+                if(auto result = isConstant(i, identifier)) { return result; }
             }
         }
         if(_parent) { return _parent->isConstant(type, identifier); }
