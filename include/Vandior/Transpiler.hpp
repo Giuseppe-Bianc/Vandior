@@ -1,9 +1,10 @@
 #pragma once
-#include "Vandior/Expression.hpp"
-#include "Vandior/ExpressionFactory.hpp"
-#include "Vandior/Instruction.hpp"
-#include "Vandior/Scope.hpp"
-#include "Vandior/TranspilerException.hpp"
+#include "Expression.hpp"
+#include "ExpressionFactory.hpp"
+#include "Instruction.hpp"
+#include "Scope.hpp"
+#include "TranspilerException.hpp"
+#include "headers.hpp"
 #include <fstream>
 
 namespace vnd {
@@ -46,7 +47,7 @@ namespace vnd {
          * @param str String to tokenize.
          * @return Vector of tokenized string.
          */
-        static std::vector<std::string> tokenize(const std::string &str) noexcept;
+        static StringVec tokenize(const std::string &str) noexcept;
 
         /**
          * @brief Check if an instruction can be placed in the global scope.
@@ -146,7 +147,7 @@ namespace vnd {
          * @param instruction The instruction to extract variables from.
          * @return Vector of extracted variables and their types.
          */
-        [[nodiscard]] std::vector<stringPair> extractVariables(TokenVecIter &iterator, const TokenVecIter &end,
+        [[nodiscard]] std::vector<StringPair> extractVariables(TokenVecIter &iterator, const TokenVecIter &end,
                                                                const Instruction &instruction) const;
 
         /**
@@ -191,7 +192,7 @@ namespace vnd {
          * @param expressiom Expression conataining the function.
          * @return Pair of parsed error and warning strings. If no error occurs, an empty string is returned.
          */
-        [[nodiscard]] stringPair transpileMultipleFun(const std::vector<stringPair> &variables, const Expression &expression) noexcept;
+        [[nodiscard]] StringPair transpileMultipleFun(const std::vector<StringPair> &variables, const Expression &expression) noexcept;
 
         /**
          * @brief Transpile a type name.
@@ -201,7 +202,7 @@ namespace vnd {
          * @param instruction The instruction to extract type from.
          * @return Pair that represent the type and the value to transpile.
          */
-        [[nodiscard]] stringPair transpileType(TokenVecIter &iterator, const TokenVecIter &end, const std::vector<TokenType> &endTokens,
+        [[nodiscard]] StringPair transpileType(TokenVecIter &iterator, const TokenVecIter &end, const TokenTypeVec &endTokens,
                                                const Instruction &instruction);
 
         /**
@@ -210,7 +211,7 @@ namespace vnd {
          * @param expressions Vector of expressions to assign.
          * @return Bool flag indicating if the instruction is a swap.
          */
-        [[nodiscard]] bool transpileSwap(const std::vector<stringPair> &variables, const std::vector<Expression> &expressions) noexcept;
+        [[nodiscard]] bool transpileSwap(const std::vector<StringPair> &variables, const ExprVec &expressions) noexcept;
 
         /**
          * @brief Transpile a single assigment of an assignation instruction.
@@ -238,7 +239,7 @@ namespace vnd {
          * @param instruction The instruction to containing the for loop.
          * @return Pair representing the declared index identifier and type.
          */
-        [[nodiscard]] stringPair transpileForInitialization(TokenVecIter &iterator, const TokenVecIter &end,
+        [[nodiscard]] StringPair transpileForInitialization(TokenVecIter &iterator, const TokenVecIter &end,
                                                             const Instruction &instruction);
 
         /**

@@ -20,7 +20,7 @@ namespace vnd {
          * @brief Gtes the tokens of the instruction.
          * @return Vector containing the tokens of the instruction.
          */
-        [[nodiscard]] std::vector<Token> getTokens() const noexcept;
+        [[nodiscard]] TokenVec getTokens() const noexcept;
         /**
          * @brief gets the last type of the instruction.
          * @return InstructionType representing the last type of the instruction.
@@ -30,7 +30,7 @@ namespace vnd {
          * @brief Gets a vector containing the the string representation of the instruction types.
          * @return Vector of the instruction type.
          */
-        [[nodiscard]] std::vector<std::string> typeToString() const noexcept;
+        [[nodiscard]] StringVec typeToString() const noexcept;
         /**
          * @brief Check the correctness of a token.
          * @param token The token to check.
@@ -53,20 +53,20 @@ namespace vnd {
          * @param filename String representing the filename that contains the instruction.
          */
         explicit Instruction(const std::string_view filename) noexcept;
-        static const std::vector<TokenType> _expressionStartTokens;  ///< Vector of the token types that can start an expression.
-        std::vector<TokenType> _allowedTokens = {TokenType::K_MAIN,
-                                                 TokenType::K_VAR,
-                                                 TokenType::K_IF,
-                                                 TokenType::K_WHILE,
-                                                 TokenType::K_FOR,
-                                                 TokenType::K_FUN,
-                                                 TokenType::K_RETURN,
-                                                 TokenType::K_BREAK,
-                                                 TokenType::IDENTIFIER,
-                                                 TokenType::OPEN_CUR_PARENTESIS,
-                                                 TokenType::CLOSE_CUR_PARENTESIS,
-                                                 eofTokenType};          ///< Vector of tokens that are allowed.
-        std::vector<Token> _tokens;                                      ///< Vector of previous tokens.
+        static const TokenTypeVec _expressionStartTokens;  ///< Vector of the token types that can start an expression.
+        TokenTypeVec _allowedTokens = {TokenType::K_MAIN,
+                                       TokenType::K_VAR,
+                                       TokenType::K_IF,
+                                       TokenType::K_WHILE,
+                                       TokenType::K_FOR,
+                                       TokenType::K_FUN,
+                                       TokenType::K_RETURN,
+                                       TokenType::K_BREAK,
+                                       TokenType::IDENTIFIER,
+                                       TokenType::OPEN_CUR_PARENTESIS,
+                                       TokenType::CLOSE_CUR_PARENTESIS,
+                                       eofTokenType};                    ///< Vector of tokens that are allowed.
+        TokenVec _tokens;                                                ///< Vector of previous tokens.
         std::vector<InstructionType> _types = {InstructionType::BLANK};  ///< Vector of the types of the instruction.
         std::vector<bool> _booleanOperators = {false};                   ///< Vector of the flags for boolean operators.
         std::string_view _filename;                                      ///< Filename that contains the instruction.

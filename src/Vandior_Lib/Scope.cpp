@@ -151,9 +151,9 @@ namespace vnd {
         return type;
     }
 
-    std::string Scope::getParamType(const std::string &param, const std::vector<stringPair> &typeGeneric) noexcept {
+    std::string Scope::getParamType(const std::string &param, const std::vector<StringPair> &typeGeneric) noexcept {
         size_t pos = param.find('[');
-        auto it = std::ranges::find_if(typeGeneric, [&param, pos](const stringPair &element) {
+        auto it = std::ranges::find_if(typeGeneric, [&param, pos](const StringPair &element) {
             if(pos == std::string::npos) { return param == element.first; }
             return param.substr(0, pos) == element.first;
         });
@@ -293,8 +293,7 @@ namespace vnd {
         if(auto key = Scope::getKey(type, identifier); _consts.contains(key) || _vals.contains(key)) { return true; }
         if(_types.contains(type)) {
             for(const auto &i : _types.at(type)) {
-                auto result = isConstant(i, identifier);
-                if(result) { return result; }
+                if(auto result = isConstant(i, identifier)) { return result; }
             }
         }
         if(_parent) { return _parent->isConstant(type, identifier); }
@@ -313,7 +312,7 @@ namespace vnd {
         }
         if(right == "nullptr") { return std::pair<bool, bool>{!Scope::isPrimitive(left), false}; }
         if(right == "[]" && left.ends_with(']')) { return std::pair<bool, bool>{true, false}; }
-        if(stringPair types = {left, right}; (types.first.ends_with("[]") || types.second.ends_with("[]")) &&
+        if(StringPair types = {left, right}; (types.first.ends_with("[]") || types.second.ends_with("[]")) &&
                                              Scope::checkVector(types.first) && Scope::checkVector(types.second)) {
             return canAssign(types.first, types.second);
         }
@@ -368,7 +367,7 @@ namespace vnd {
 
     std::pair<FunType, bool> Scope::specializeFun(const FunType &fun, const std::vector<std::string> &typeSpecialized) const noexcept {
         auto typeGeneric = fun.getTypeGeneric();
-        std::vector<stringPair> resultGeneric;
+        std::vector<StringPair> resultGeneric;
         auto it_specialized = typeSpecialized.begin();
         if(typeGeneric.size() != typeSpecialized.size()) { return {FunType::createEmpty(), false}; }
         for(auto &[key, value] : typeGeneric) {

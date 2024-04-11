@@ -159,6 +159,8 @@ namespace vnd {
         CodeSourceLocation _sourceLocation;  ///< the token source location;
     };
 
+    using TokenVec = std::vector<Token>;
+    using TokenVecIter = TokenVec::iterator;
 }  // namespace vnd
 
 /**

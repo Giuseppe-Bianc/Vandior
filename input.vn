@@ -1,4 +1,4 @@
-fun funzione(num: i8[][]): i8[2], Derived {
+fun funzione(num: i8[][2]): i8[2], Derived {
 	println("Funzione:\t{}", num)
 	var s: string = "CCCCC"
 	var d: Derived
@@ -98,7 +98,7 @@ main {
 	var maxF: f64
 	maxI, maxF = max({})
 	println("{} {}", maxI, maxF)
-	var arg: i8[][]
+	var arg: i8[][2]
 	_, _ = funzione(arg)
 	var character: char = func()
 	character, _ = func(10)

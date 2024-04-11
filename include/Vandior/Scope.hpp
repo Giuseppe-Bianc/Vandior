@@ -3,7 +3,6 @@
 #include "FunType.hpp"
 #include "ScopeType.hpp"
 #include "headers.hpp"
-#include <iostream>
 
 namespace vnd {
     /**
@@ -90,7 +89,7 @@ namespace vnd {
          * @param type String_view representing the type to add.
          * @param assignable Vector of types to which the type can be assigned.
          */
-        void addType(const std::string_view &type, const std::vector<std::string> &assignable = {}) noexcept;
+        void addType(const std::string_view &type, const StringVec &assignable = {}) noexcept;
 
         /**
          * @brief Adds a compile time evaluated constant to the scope.
@@ -154,8 +153,8 @@ namespace vnd {
          * @return Tuple containing the function informations: the type (empty if the function does not exist),
          * the flag indicating if the function is a constructor and the optional position of the first variadic parameter.
          */
-        [[nodiscard]] std::tuple<std::string, bool, std::optional<size_t>> getFunType(
-            const std::string &type, const std::string_view &identifier, const std::vector<Expression> &expressions) const noexcept;
+        [[nodiscard]] std::tuple<std::string, bool, OptionalSizeT> getFunType(const std::string &type, const std::string_view &identifier,
+                                                                              const ExprVec &expressions) const noexcept;
 
         /**
          * @brief Gets the value of a compile time evaluated constant.
@@ -192,11 +191,11 @@ namespace vnd {
          */
         explicit Scope(std::shared_ptr<Scope> parent, const ScopeType &type) noexcept;
 
-        static std::vector<std::string> _signedTypes;     ///< Vector of signed integer types
-        static std::vector<std::string> _unsignedTypes;   ///< Vector of unsigned integer types
-        static std::vector<std::string> _floatingTypes;   ///< Vector of floating point types
-        static std::vector<std::string> _complexTypes;    ///< Vector of complex types
-        static std::vector<std::string> _primitiveTypes;  ///< Vector of primitive types
+        static StringVec _signedTypes;     ///< Vector of signed integer types
+        static StringVec _unsignedTypes;   ///< Vector of unsigned integer types
+        static StringVec _floatingTypes;   ///< Vector of floating point types
+        static StringVec _complexTypes;    ///< Vector of complex types
+        static StringVec _primitiveTypes;  ///< Vector of primitive types
 
         /**
          * @brief Gets key used by the maps.
@@ -220,14 +219,14 @@ namespace vnd {
          * @param typeGeneric Vector of generic parameters of the type.
          * @return String containing the parameter type. If the parameter is not generic, the result is the same of param.
          */
-        [[nodiscard]] static std::string getParamType(const std::string &param, const std::vector<stringPair> &typeGeneric) noexcept;
+        [[nodiscard]] static std::string getParamType(const std::string &param, const std::vector<StringPair> &typeGeneric) noexcept;
 
-        std::unordered_map<std::string, std::string> _vars;                ///< Map of variables identifiers and types.
-        std::unordered_map<std::string, std::string> _vals;                ///< Map of constants identifiers and types.
-        std::unordered_map<std::string, stringPair> _consts;               ///< Map of compile time constants identifiers and types.
-        std::unordered_map<std::string, std::vector<std::string>> _types;  ///< Map of types and assignabled types.
-        std::unordered_map<std::string, std::vector<FunType>> _funs;       ///< Map of function identifiers and informations.
-        std::shared_ptr<Scope> _parent;                                    ///< Shared pointer to the parent scope.
+        std::unordered_map<std::string, std::string> _vars;           ///< Map of variables identifiers and types.
+        std::unordered_map<std::string, std::string> _vals;           ///< Map of constants identifiers and types.
+        std::unordered_map<std::string, StringPair> _consts;          ///< Map of compile time constants identifiers and types.
+        std::unordered_map<std::string, StringVec> _types;            ///< Map of types and assignabled types.
+        std::unordered_map<std::string, std::vector<FunType>> _funs;  ///< Map of function identifiers and informations.
+        std::shared_ptr<Scope> _parent;                               ///< Shared pointer to the parent scope.
         ScopeType _type;
 
         /**
@@ -245,14 +244,12 @@ namespace vnd {
          * @param typeSpecialized Vector of type specialized parameters.
          * @return Pair of the specialized FunType and flag that indicates if the specialization succeeds.
          */
-        [[nodiscard]] std::pair<FunType, bool> specializeFun(const FunType &fun,
-                                                             const std::vector<std::string> &typeSpecialized) const noexcept;
+        [[nodiscard]] std::pair<FunType, bool> specializeFun(const FunType &fun, const StringVec &typeSpecialized) const noexcept;
 
         template <typename KeyType, typename ValueType>
         [[nodiscard]] bool contains_key(const std::unordered_map<KeyType, ValueType> &map, std::string_view key) const noexcept;
-        void processVariadicParams(std::vector<std::string> &params, const std::vector<Expression> &expressions,
-                                   std::optional<size_t> &variadic) const noexcept;
-        void processParams(const std::vector<Expression> &expressions, std::vector<std::string> &params, const FunType &item, bool &found) const noexcept;
+        void processVariadicParams(StringVec &params, const ExprVec &expressions, OptionalSizeT &variadic) const noexcept;
+        void processParams(const ExprVec &expressions, StringVec &params, const FunType &item, bool &found) const noexcept;
     };
 
 }  // namespace vnd

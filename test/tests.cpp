@@ -857,7 +857,7 @@ TEST_CASE("Transpiler transpile operation instruction", "[transpiler]") {
     REQUIRE(code == "#include <base/base.hpp>\n\n"
                     "int main(int argc, char **argv) {\n"
                     "\tconst vnd::vector<string> _args = vnd::createArgs(argc, argv);\n"
-                    "\t_print(string(\"Test {}\"), {_args.at(0)});\n"
+                    "\t_print(string(\"Test {}\"), _args.at(0));\n"
                     "\treturn 0;\n"
                     "}\n");
 }
@@ -941,6 +941,27 @@ TEST_CASE("Transpiler transpile open and close scope instructions", "[transpiler
                     "\t{\n"
                     "\t}\n"
                     "\treturn 0;\n"
+                    "}\n");
+}
+
+TEST_CASE("Transpiler transpile function instructions", "[transpiler]") {
+    using enum vnd::TokenType;
+    vnd::Tokenizer tokenizer{"fun funzione(num: u8): u8, bool {\n"
+                             "\treturn num * 2, num % 2 == 0\n"
+                             "}\n"
+                             "fun procedura() {\n"
+                             "\tprint(\"Procedura\")\n"
+                             "}\n", filename};
+    auto transpiler = createComplexTranspiler(tokenizer.tokenize());
+    transpiler.transpile(std::string{filename});
+    REQUIRE(std::filesystem::exists(outFilename));
+    std::string code = fileContent();
+    REQUIRE(code == "#include <base/base.hpp>\n\n"
+                    "std::tuple<u8, bool> _funzione(u8 _num) {\n"
+                    "\treturn { _num * 2,  vnd::mod(_num, 2) == 0};\n"
+                    "}\n"
+                    "void _procedura() {\n"
+                    "\t_print(string(\"Procedura\"));\n"
                     "}\n");
 }
 // NOLINTEND(*-include-cleaner)
