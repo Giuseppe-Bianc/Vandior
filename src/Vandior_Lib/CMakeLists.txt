@@ -6,6 +6,7 @@ add_library(vandior_lib vandior.cpp
         Tokenizer.cpp
         TokenizerUtility.cpp
         InstructionException.cpp
+        InstructionFactory.cpp
         Instruction.cpp
         FunType.cpp
         Scope.cpp

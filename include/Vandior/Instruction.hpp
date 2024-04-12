@@ -46,8 +46,7 @@ namespace vnd {
          * @return String representing the instruction.
          */
         [[nodiscard]] std::string toString() const noexcept;
-
-    private:
+        
         /**
          * @brief Constructs an Instruction.
          * @param filename String representing the filename that contains the instruction.
