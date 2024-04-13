@@ -16,6 +16,9 @@ namespace vnd {
          * @return the created Instruction instance.
          */
         [[nodiscard]] static Instruction create(const std::string_view filename) noexcept;
+
+        void emplaceToken(const Token& token) { _tokens.emplace_back(token); }
+
         /**
          * @brief Gtes the tokens of the instruction.
          * @return Vector containing the tokens of the instruction.

@@ -2,18 +2,35 @@
 
 namespace vnd {
     // NOLINTBEGIN(*-include-cleaner)
+    const TokenTypeVec InstructionFactory::_startTokens = {TokenType::K_MAIN,               TokenType::K_VAR,
+                                                           TokenType::K_IF,                 TokenType::K_WHILE,
+                                                           TokenType::K_FOR,                TokenType::K_FUN,
+                                                           TokenType::K_RETURN,             TokenType::K_BREAK,
+                                                           TokenType::IDENTIFIER,           TokenType::OPEN_CUR_PARENTESIS,
+                                                           TokenType::CLOSE_CUR_PARENTESIS, eofTokenType};
+
     const TokenTypeVec InstructionFactory::_expressionStartTokens = {TokenType::IDENTIFIER,      TokenType::INTEGER,
-                                                                        TokenType::DOUBLE,          TokenType::CHAR,
-                                                                        TokenType::STRING,          TokenType::BOOLEAN,
-                                                                        TokenType::MINUS_OPERATOR,  TokenType::NOT_OPERATOR,
-                                                                        TokenType::OPEN_PARENTESIS, TokenType::OPEN_CUR_PARENTESIS,
-                                                                        TokenType::K_NULLPTR};
+                                                                     TokenType::DOUBLE,          TokenType::CHAR,
+                                                                     TokenType::STRING,          TokenType::BOOLEAN,
+                                                                     TokenType::MINUS_OPERATOR,  TokenType::NOT_OPERATOR,
+                                                                     TokenType::OPEN_PARENTESIS, TokenType::OPEN_CUR_PARENTESIS,
+                                                                     TokenType::K_NULLPTR};
 
     InstructionFactory::InstructionFactory(const std::string_view filename, const TokenVec &tokens) noexcept
       : _instruction(Instruction::create(filename)), _filename(filename), _tokens(tokens) {}
 
     InstructionFactory InstructionFactory::create(const std::string_view filename, const TokenVec &tokens) noexcept {
         return InstructionFactory{filename, tokens};
+    }
+
+    Instruction InstructionFactory::getInstruction() const noexcept { return _instruction; }
+
+    std::vector<Instruction> InstructionFactory::getInstructions() const noexcept { return _instructions; }
+
+    void InstructionFactory::addInstruction() noexcept {
+        _instructions.emplace_back(_instruction);
+        _instruction = Instruction::create(_filename);
+        _allowedTokens = _startTokens;
     }
 
     void InstructionFactory::checkToken(const Token &token) {
@@ -106,15 +123,15 @@ namespace vnd {
             _allowedTokens = {};
             break;
         }
-        if(tokType != eofTokenType) { _tokens.emplace_back(token); }
+        if(tokType != eofTokenType) { _instruction.emplaceToken(token); }
     }
     void InstructionFactory::checkIdentifier(const TokenType &type) noexcept {
         using enum TokenType;
         using enum InstructionType;
         if(_instruction.isExpression()) {
             _allowedTokens = {OPERATOR, MINUS_OPERATOR, LOGICAL_OPERATOR};
-            _instruction.emplaceUnaryOperator(type);
-            _instruction.emplaceExpressionTokens();
+            emplaceUnaryOperator(type);
+            emplaceExpressionTokens();
             return;
         }
         switch(_instruction.getLastType()) {
@@ -122,7 +139,7 @@ namespace vnd {
         case OPERATION:
             _instruction.setLastType(OPERATION);
             _allowedTokens = {EQUAL_OPERATOR, OPERATION_EQUAL, COMMA, eofTokenType};
-            _instruction.emplaceUnaryOperator(type);
+            emplaceUnaryOperator(type);
             break;
         case DECLARATION:
             if(!_instruction.isEmpty() && _instruction.getLastTokenType() == COLON) {
@@ -167,7 +184,7 @@ namespace vnd {
         if(_instruction.isExpression()) {
             _allowedTokens = {OPERATOR, MINUS_OPERATOR, LOGICAL_OPERATOR};
             if(type == STRING) { _allowedTokens.insert(_allowedTokens.end(), {DOT_OPERATOR, OPEN_SQ_PARENTESIS}); }
-            _instruction.emplaceExpressionTokens();
+            emplaceExpressionTokens();
             return;
         }
         _allowedTokens = {};
@@ -267,7 +284,7 @@ namespace vnd {
         if(_instruction.isExpression()) {
             _allowedTokens = {OPERATOR, MINUS_OPERATOR, LOGICAL_OPERATOR, DOT_OPERATOR, OPEN_SQ_PARENTESIS};
             if(type == CLOSE_SQ_PARENTESIS) { _allowedTokens.insert(_allowedTokens.end(), {UNARY_OPERATOR, OPEN_PARENTESIS}); }
-            _instruction.emplaceExpressionTokens();
+            emplaceExpressionTokens();
             return;
         }
         switch(_instruction.getLastType()) {
@@ -325,7 +342,7 @@ namespace vnd {
                 _allowedTokens = {COMMA, CLOSE_CUR_PARENTESIS};
                 return;
             }
-            _instruction.emplaceExpressionTokens();
+            emplaceExpressionTokens();
             return;
         }
         if(_instruction.lastTypeIs(BLANK)) { _instruction.setLastType(CLOSE_SCOPE); }
@@ -380,6 +397,55 @@ namespace vnd {
         _instruction.setLastType(RETURN_EXPRESSION);
         _allowedTokens = _expressionStartTokens;
         _allowedTokens.emplace_back(eofTokenType);
+    }
+
+     bool InstructionFactory::emplaceTokenType(const InstructionType &type, const TokenType token) noexcept {
+        if(_instruction.lastTypeIs(type)) [[likely]] {
+            _allowedTokens.emplace_back(token);
+            return true;
+        }
+        return false;
+    }
+
+    void InstructionFactory::emplaceExpressionTokens() noexcept {
+        using enum InstructionType;
+        using enum TokenType;
+        emplaceBooleanOperator();
+        if(emplaceTokenType(SQUARE_EXPRESSION, CLOSE_SQ_PARENTESIS)) { return; }
+        if(emplaceTokenType(EXPRESSION, CLOSE_PARENTESIS)) { return; }
+        if(_instruction.lastTypeIs(PARAMETER_EXPRESSION)) {
+            _allowedTokens.insert(_allowedTokens.end(), {CLOSE_PARENTESIS, COMMA});
+            return;
+        }
+        if(_instruction.lastTypeIs(ARRAY_INIZIALIZATION)) {
+            _allowedTokens.insert(_allowedTokens.end(), {CLOSE_CUR_PARENTESIS, COMMA});
+            return;
+        }
+        if(emplaceForTokens()) { return; }
+        emplaceCommaEoft();
+    }
+
+    inline void InstructionFactory::emplaceCommaEoft() noexcept {
+        _allowedTokens.insert(_allowedTokens.end(), {TokenType::COMMA, eofTokenType});
+    }
+
+    inline void InstructionFactory::emplaceBooleanOperator() noexcept {
+        if(!_instruction.getLastBooleanOperator()) { _allowedTokens.emplace_back(TokenType::BOOLEAN_OPERATOR); }
+    }
+
+    inline bool InstructionFactory::emplaceForTokens() noexcept {
+        if(_instruction.isForExpression()) [[likely]] {
+            _allowedTokens.emplace_back(TokenType::OPEN_CUR_PARENTESIS);
+            if(!_instruction.lastTypeIs(InstructionType::FOR_STEP)) { _allowedTokens.emplace_back(TokenType::COMMA); }
+            return true;
+        }
+        return false;
+    }
+
+    inline void InstructionFactory::emplaceUnaryOperator(const TokenType &type) noexcept {
+        using enum vnd::TokenType;
+        if(type == IDENTIFIER) { _allowedTokens.insert(_allowedTokens.end(), {DOT_OPERATOR, OPEN_PARENTESIS, OPEN_SQ_PARENTESIS}); }
+        if(type != UNARY_OPERATOR) { _allowedTokens.emplace_back(UNARY_OPERATOR); }
     }
     // NOLINTEND(*-include-cleaner)
 }  // namespace vnd
