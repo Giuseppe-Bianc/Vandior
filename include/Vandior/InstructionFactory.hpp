@@ -19,6 +19,12 @@ namespace vnd {
         [[nodiscard]] std::vector<Instruction> getInstructions() const noexcept;
 
         void addInstruction() noexcept;
+        
+        /**
+         * @brief Checks if the current instruction can terminate.
+         * @return Bool containing the result of the check.
+         */
+        [[nodiscard]] bool canTerminate() const noexcept;
 
         /**
          * @brief Check the correctness of a token.

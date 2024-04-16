@@ -17,7 +17,7 @@ namespace vnd {
                                                                      TokenType::K_NULLPTR};
 
     InstructionFactory::InstructionFactory(const std::string_view filename, const TokenVec &tokens) noexcept
-      : _instruction(Instruction::create(filename)), _filename(filename), _tokens(tokens) {}
+      : _instruction(Instruction::create(filename)), _filename(filename), _tokens(tokens), _allowedTokens(_startTokens) {}
 
     InstructionFactory InstructionFactory::create(const std::string_view filename, const TokenVec &tokens) noexcept {
         return InstructionFactory{filename, tokens};
@@ -31,6 +31,10 @@ namespace vnd {
         _instructions.emplace_back(_instruction);
         _instruction = Instruction::create(_filename);
         _allowedTokens = _startTokens;
+    }
+
+    bool InstructionFactory::canTerminate() const noexcept {
+        return std::ranges::find(_allowedTokens, eofTokenType) != _allowedTokens.end();
     }
 
     void InstructionFactory::checkToken(const Token &token) {
@@ -125,6 +129,7 @@ namespace vnd {
         }
         if(tokType != eofTokenType) { _instruction.emplaceToken(token); }
     }
+
     void InstructionFactory::checkIdentifier(const TokenType &type) noexcept {
         using enum TokenType;
         using enum InstructionType;

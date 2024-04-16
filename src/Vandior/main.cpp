@@ -71,7 +71,7 @@ auto extractInstructions(const std::vector<vnd::Token> &tokens) -> std::vector<v
     for(const vnd::Token &token : tokens) {
         if(token.isType(vnd::TokenType::COMMENT)) [[unlikely]] { continue; }
         if(token.getLine() >= line) [[likely]] {
-            if(factory.getInstruction().canTerminate()) [[likely]] {
+            if(factory.canTerminate()) [[likely]] {
                 factory.addInstruction();
             } else if(factory.getInstruction().typeToString().back() != "EXPRESSION" && token.isType(vnd::TokenType::STRING))
                 [[unlikely]] {

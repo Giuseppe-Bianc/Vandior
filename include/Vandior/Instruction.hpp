@@ -34,16 +34,7 @@ namespace vnd {
          * @return Vector of the instruction type.
          */
         [[nodiscard]] StringVec typeToString() const noexcept;
-        /**
-         * @brief Check the correctness of a token.
-         * @param token The token to check.
-         */
-        void checkToken(const Token &token);
-        /**
-         * @brief Checks if the instruction can terminate.
-         * @return Bool containing the result of the check.
-         */
-        [[nodiscard]] bool canTerminate() const noexcept;
+
         /**
          * @brief Gets a representation of the instruction in form of a string.
          * @return String representing the instruction.
@@ -74,97 +65,6 @@ namespace vnd {
         std::string_view _filename;                                      ///< Filename that contains the instruction.
 
         /**
-         * @brief Checks an identifier or unary operator token.
-         * @param type TokenType of the token.
-         */
-        void checkIdentifier(const TokenType &type) noexcept;
-
-        /**
-         * @brief Checks a literal value token.
-         * @param type TokenType of the token.
-         */
-        void checkValue(const TokenType &type) noexcept;
-
-        /**
-         * @brief Checks an operator token.
-         * @param type TokenType of the token.
-         */
-        void checkOperator(const TokenType &type) noexcept;
-
-        /**
-         * @brief Checks an operator token.
-         */
-        void checkEqualOperator() noexcept;
-
-        /**
-         * @brief Checks a boolean or logical operator token.
-         * @param type TokenType of the token.
-         */
-        void checkBooleanLogicalOperator(const TokenType &type) noexcept;
-
-        /**
-         * @brief Checks a comma token.
-         */
-        void checkComma() noexcept;
-
-        /**
-         * @brief Checks an open parentesis token.
-         * @param type TokenType of the token.
-         */
-        void checkOpenParentesis(const TokenType &type) noexcept;
-
-        /**
-         * @brief Checks an closed parentesis token.
-         * @param type TokenType of the token.
-         */
-        void checkClosedParentesis(const TokenType &type) noexcept;
-
-        /**
-         * @brief Checks an open curly parentesis token.
-         */
-        void checkOpenCurParentesis() noexcept;
-
-        /**
-         * @brief Checks an closed curly parentesis token.
-         */
-        void checkClosedCurParentesis() noexcept;
-
-        /**
-         * @brief Checks a main keyword token.
-         */
-        void checkKMain() noexcept;
-
-        /**
-         * @brief Checks a var keyword token.
-         */
-        void checkKVar() noexcept;
-
-        /**
-         * @brief Checks an if or while keyword token.
-         */
-        void checkKStructure() noexcept;
-
-        /**
-         * @brief Checks an else keyword parentesis token.
-         */
-        void checkKElse() noexcept;
-
-        /**
-         * @brief Checks a for keyword token.
-         */
-        void checkKFor() noexcept;
-
-        /**
-         * @brief Checks a fun keyword token.
-         */
-        void checkKFun() noexcept;
-
-        /**
-         * @brief Checks a return keyword token.
-         */
-        void checkKReturn() noexcept;
-
-        /**
          * @brief Sets the last type of the instruction.
          * @param type InstructionType to set.
          */
@@ -186,19 +86,19 @@ namespace vnd {
          * @param type InstructionType to check.
          * @return Bool containing the result of the check.
          */
-        [[nodiscard]] inline bool lastTypeIs(const InstructionType &type) const noexcept;
+        [[nodiscard]] bool lastTypeIs(const InstructionType &type) const noexcept;
         /**
          * @brief Checks the last types of the instruction if is any of the inputs.
          * @param types InstructionTypes to check.
          * @return Bool containing the result of the check.
          */
-        [[nodiscard]] inline bool lastTypeIsAny_of(const std::initializer_list<InstructionType> &types) const noexcept;
+        [[nodiscard]] bool lastTypeIsAny_of(const std::initializer_list<InstructionType> &types) const noexcept;
 
         /**
          * @brief Gets the flag for the last boolean operator.
          * @return Bool containing the flag.
          */
-        [[nodiscard]] inline bool getLastBooleanOperator() const noexcept;
+        [[nodiscard]] bool getLastBooleanOperator() const noexcept;
 
         /**
          * @brief Sets the flag for the last boolean operator.
@@ -227,12 +127,12 @@ namespace vnd {
          * @param tokenTypes the types to verify.
          * @return true if the type correspond to any of the elements in input.
          */
-        [[nodiscard]] inline bool isLastTokenTypeAny_of(const std::initializer_list<TokenType> &tokenTypes) const noexcept;
+        [[nodiscard]] bool isLastTokenTypeAny_of(const std::initializer_list<TokenType> &tokenTypes) const noexcept;
         /**
          * @brief Checks if the the vector of the checked tokens is empty.
          * @return Bool containing the result of the check..
          */
-        [[nodiscard]] inline bool isEmpty() const noexcept;
+        [[nodiscard]] bool isEmpty() const noexcept;
 
         /**
          * @brief Checks if the last type of the instruction is an expression.
@@ -245,39 +145,6 @@ namespace vnd {
          * @return Bool containing the result of the check.
          */
         [[nodiscard]] bool isForExpression() const noexcept;
-
-        /**
-         * @brief Adds an allowed token type in base at the last type of the instruction.
-         * @param instruction InstructionType that must be the last type.
-         * @param token TokenType to add.
-         * @return Bool containing true is the token type is added.
-         */
-        [[nodiscard]] inline bool emplaceTokenType(const InstructionType &instruction, const TokenType token) noexcept;
-
-        /**
-         * @brief Adds the token types that can start an expression to the allowed types.
-         */
-        void emplaceExpressionTokens() noexcept;
-
-        /**
-         * @brief Adds the comma and eoft token types to the allowed types.
-         */
-        inline void emplaceCommaEoft() noexcept;
-
-        /**
-         * @brief Adds the boolean operator token type to the allowed types if not already present in the instruction.
-         */
-        inline void emplaceBooleanOperator() noexcept;
-
-        /**
-         * @brief Adds the for instruction related token types to the allowed types.
-         */
-        inline bool emplaceForTokens() noexcept;
-
-        /**
-         * @brief Adds the unary operator related token types to the allowed types.
-         */
-        inline void emplaceUnaryOperator(const TokenType &type) noexcept;
     };
 }  // namespace vnd
 
