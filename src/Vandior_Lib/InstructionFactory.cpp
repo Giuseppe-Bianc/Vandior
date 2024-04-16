@@ -16,12 +16,10 @@ namespace vnd {
                                                                      TokenType::OPEN_PARENTESIS, TokenType::OPEN_CUR_PARENTESIS,
                                                                      TokenType::K_NULLPTR};
 
-    InstructionFactory::InstructionFactory(const std::string_view filename, const TokenVec &tokens) noexcept
-      : _instruction(Instruction::create(filename)), _filename(filename), _tokens(tokens), _allowedTokens(_startTokens) {}
+    InstructionFactory::InstructionFactory(const std::string_view filename) noexcept
+      : _instruction(Instruction::create(filename)), _filename(filename), _allowedTokens(_startTokens) {}
 
-    InstructionFactory InstructionFactory::create(const std::string_view filename, const TokenVec &tokens) noexcept {
-        return InstructionFactory{filename, tokens};
-    }
+    InstructionFactory InstructionFactory::create(const std::string_view filename) noexcept { return InstructionFactory{filename}; }
 
     Instruction InstructionFactory::getInstruction() const noexcept { return _instruction; }
 

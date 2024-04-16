@@ -211,22 +211,24 @@ TEST_CASE("corrected format for Tokentype", "[token_type]") {
 
 namespace {
     vnd::Transpiler createSimpleTranspiler(const std::vector<vnd::Token> &tokens) {
-        vnd::Instruction instruction = vnd::Instruction::create(filename);
-        for(const auto &token : tokens) { instruction.checkToken(token); }
-        return vnd::Transpiler::create({instruction});
+        vnd::InstructionFactory factory = vnd::InstructionFactory::create(filename);
+        for(const auto &token : tokens) { factory.checkToken(token); }
+        factory.addInstruction();
+        return vnd::Transpiler::create(factory.getInstructions());
     }
 
     vnd::Transpiler createComplexTranspiler(const std::vector<vnd::Token> &tokens) {
-        std::vector<vnd::Instruction> instructions = {vnd::Instruction::create(filename)};
+        vnd::InstructionFactory factory = vnd::InstructionFactory::create(filename);
         auto line = tokens.at(0).getLine();
         for(const auto &token : tokens) {
             if(token.getLine() > line) {
-                instructions.emplace_back(vnd::Instruction::create(filename));
+                factory.addInstruction();
                 line = token.getLine();
             }
-            instructions.back().checkToken(token);
+            factory.checkToken(token);
         }
-        return vnd::Transpiler::create(instructions);
+        factory.addInstruction();
+        return vnd::Transpiler::create(factory.getInstructions());
     }
     void modifyToken(vnd::Token &token) {
         token.setType(vnd::TokenType::INTEGER);
@@ -602,96 +604,96 @@ TEST_CASE("Instruction typeToString function", "[Instruction]") {
 }
 
 TEST_CASE("Instruction checkToken function for valid tokens", "[Instruction]") {
-    vnd::Instruction instruction = vnd::Instruction::create(filename);
+    vnd::InstructionFactory factory = vnd::InstructionFactory::create(filename);
     vnd::Token identifierToken(vnd::TokenType::IDENTIFIER, "variable", vnd::CodeSourceLocation(filename, 1, 2));
-    instruction.checkToken(identifierToken);
-    REQUIRE(instruction.canTerminate() == true);
+    factory.checkToken(identifierToken);
+    REQUIRE(factory.canTerminate() == true);
 }
 
 TEST_CASE("Instruction checkToken function for invalid tokens", "[Instruction]") {
-    vnd::Instruction instruction = vnd::Instruction::create(filename);
+    vnd::InstructionFactory factory = vnd::InstructionFactory::create(filename);
     vnd::Token invalidToken(vnd::TokenType::UNKNOWN, "invalid", vnd::CodeSourceLocation(filename, 1, 2));
-    REQUIRE_THROWS_AS(instruction.checkToken(invalidToken), vnd::InstructionException);
+    REQUIRE_THROWS_AS(factory.checkToken(invalidToken), vnd::InstructionException);
 }
 
 TEST_CASE("Corrected type of assignation instruction", "[Instruction]") {
     using enum vnd::TokenType;
-    vnd::Instruction instruction = vnd::Instruction::create(filename);
-    REQUIRE(instruction.getLastType() == vnd::InstructionType::BLANK);
-    instruction.checkToken(vnd::Token{IDENTIFIER, "a", vnd::CodeSourceLocation(filename, 1, 0)});
-    REQUIRE(instruction.getLastType() == vnd::InstructionType::OPERATION);
-    instruction.checkToken(vnd::Token{EQUAL_OPERATOR, "", vnd::CodeSourceLocation(filename, 1, 1)});
-    REQUIRE(instruction.getLastType() == vnd::InstructionType::ASSIGNATION);
-    instruction.checkToken(vnd::Token{OPEN_PARENTESIS, "", vnd::CodeSourceLocation(filename, 1, 2)});
-    REQUIRE(instruction.getLastType() == vnd::InstructionType::EXPRESSION);
+    vnd::InstructionFactory factory = vnd::InstructionFactory::create(filename);
+    REQUIRE(factory.getInstruction().getLastType() == vnd::InstructionType::BLANK);
+    factory.checkToken(vnd::Token{IDENTIFIER, "a", vnd::CodeSourceLocation(filename, 1, 0)});
+    REQUIRE(factory.getInstruction().getLastType() == vnd::InstructionType::OPERATION);
+    factory.checkToken(vnd::Token{EQUAL_OPERATOR, "", vnd::CodeSourceLocation(filename, 1, 1)});
+    REQUIRE(factory.getInstruction().getLastType() == vnd::InstructionType::ASSIGNATION);
+    factory.checkToken(vnd::Token{OPEN_PARENTESIS, "", vnd::CodeSourceLocation(filename, 1, 2)});
+    REQUIRE(factory.getInstruction().getLastType() == vnd::InstructionType::EXPRESSION);
 }
 
 TEST_CASE("Corrected type of multy assignation instruction", "[Instruction]") {
     using enum vnd::TokenType;
-    vnd::Instruction instruction = vnd::Instruction::create(filename);
-    instruction.checkToken(vnd::Token{K_VAR, "", vnd::CodeSourceLocation(filename, 0, 0)});
-    instruction.checkToken(vnd::Token{IDENTIFIER, "", vnd::CodeSourceLocation(filename, 0, 1)});
-    REQUIRE(instruction.getLastType() == vnd::InstructionType::DECLARATION);
-    instruction.checkToken(vnd::Token{COLON, "", vnd::CodeSourceLocation(filename, 0, 2)});
-    instruction.checkToken(vnd::Token{IDENTIFIER, "", vnd::CodeSourceLocation(filename, 0, 3)});
-    instruction.checkToken(vnd::Token{OPEN_SQ_PARENTESIS, "", vnd::CodeSourceLocation(filename, 0, 4)});
-    REQUIRE(instruction.getLastType() == vnd::InstructionType::SQUARE_EXPRESSION);
-    instruction.checkToken(vnd::Token{CLOSE_SQ_PARENTESIS, "", vnd::CodeSourceLocation(filename, 0, t_colum2)});
-    instruction.checkToken(vnd::Token{EQUAL_OPERATOR, "", vnd::CodeSourceLocation(filename, 0, t_colum)});
-    REQUIRE(instruction.getLastType() == vnd::InstructionType::INITIALIZATION);
-    instruction.checkToken(vnd::Token{IDENTIFIER, "", vnd::CodeSourceLocation(filename, 0, t_colum3)});
-    instruction.checkToken(vnd::Token{OPEN_SQ_PARENTESIS, "", vnd::CodeSourceLocation(filename, 0, t_colum4)});
-    instruction.checkToken(vnd::Token{INTEGER, "", vnd::CodeSourceLocation(filename, 0, t_colum5)});
-    REQUIRE(instruction.getLastType() == vnd::InstructionType::SQUARE_EXPRESSION);
-    instruction.checkToken(vnd::Token{CLOSE_SQ_PARENTESIS, "", vnd::CodeSourceLocation(filename, 0, t_colum6)});
+    vnd::InstructionFactory factory = vnd::InstructionFactory::create(filename);
+    factory.checkToken(vnd::Token{K_VAR, "", vnd::CodeSourceLocation(filename, 0, 0)});
+    factory.checkToken(vnd::Token{IDENTIFIER, "", vnd::CodeSourceLocation(filename, 0, 1)});
+    REQUIRE(factory.getInstruction().getLastType() == vnd::InstructionType::DECLARATION);
+    factory.checkToken(vnd::Token{COLON, "", vnd::CodeSourceLocation(filename, 0, 2)});
+    factory.checkToken(vnd::Token{IDENTIFIER, "", vnd::CodeSourceLocation(filename, 0, 3)});
+    factory.checkToken(vnd::Token{OPEN_SQ_PARENTESIS, "", vnd::CodeSourceLocation(filename, 0, 4)});
+    REQUIRE(factory.getInstruction().getLastType() == vnd::InstructionType::SQUARE_EXPRESSION);
+    factory.checkToken(vnd::Token{CLOSE_SQ_PARENTESIS, "", vnd::CodeSourceLocation(filename, 0, t_colum2)});
+    factory.checkToken(vnd::Token{EQUAL_OPERATOR, "", vnd::CodeSourceLocation(filename, 0, t_colum)});
+    REQUIRE(factory.getInstruction().getLastType() == vnd::InstructionType::INITIALIZATION);
+    factory.checkToken(vnd::Token{IDENTIFIER, "", vnd::CodeSourceLocation(filename, 0, t_colum3)});
+    factory.checkToken(vnd::Token{OPEN_SQ_PARENTESIS, "", vnd::CodeSourceLocation(filename, 0, t_colum4)});
+    factory.checkToken(vnd::Token{INTEGER, "", vnd::CodeSourceLocation(filename, 0, t_colum5)});
+    REQUIRE(factory.getInstruction().getLastType() == vnd::InstructionType::SQUARE_EXPRESSION);
+    factory.checkToken(vnd::Token{CLOSE_SQ_PARENTESIS, "", vnd::CodeSourceLocation(filename, 0, t_colum6)});
 }
 
 TEST_CASE("Corrected type of parameter expression instruction", "[Instruction]") {
     using enum vnd::TokenType;
-    vnd::Instruction instruction = vnd::Instruction::create(filename);
-    instruction.checkToken(vnd::Token{IDENTIFIER, "", vnd::CodeSourceLocation(filename, 0, 0)});
-    instruction.checkToken(vnd::Token{OPEN_PARENTESIS, "", vnd::CodeSourceLocation(filename, 0, 1)});
-    REQUIRE(instruction.getLastType() == vnd::InstructionType::PARAMETER_EXPRESSION);
+    vnd::InstructionFactory factory = vnd::InstructionFactory::create(filename);
+    factory.checkToken(vnd::Token{IDENTIFIER, "", vnd::CodeSourceLocation(filename, 0, 0)});
+    factory.checkToken(vnd::Token{OPEN_PARENTESIS, "", vnd::CodeSourceLocation(filename, 0, 1)});
+    REQUIRE(factory.getInstruction().getLastType() == vnd::InstructionType::PARAMETER_EXPRESSION);
 }
 
 TEST_CASE("Corrected type of parameter definition instruction", "[Instruction]") {
     using enum vnd::TokenType;
-    vnd::Instruction instruction = vnd::Instruction::create(filename);
-    instruction.checkToken(vnd::Token{K_FUN, "", vnd::CodeSourceLocation(filename, 0, 0)});
-    instruction.checkToken(vnd::Token{IDENTIFIER, "", vnd::CodeSourceLocation(filename, 0, 1)});
-    instruction.checkToken(vnd::Token{OPEN_PARENTESIS, "", vnd::CodeSourceLocation(filename, 0, 2)});
-    REQUIRE(instruction.getLastType() == vnd::InstructionType::PARAMETER_DEFINITION);
-    instruction.checkToken(vnd::Token{CLOSE_PARENTESIS, "", vnd::CodeSourceLocation(filename, 0, 3)});
+    vnd::InstructionFactory factory = vnd::InstructionFactory::create(filename);
+    factory.checkToken(vnd::Token{K_FUN, "", vnd::CodeSourceLocation(filename, 0, 0)});
+    factory.checkToken(vnd::Token{IDENTIFIER, "", vnd::CodeSourceLocation(filename, 0, 1)});
+    factory.checkToken(vnd::Token{OPEN_PARENTESIS, "", vnd::CodeSourceLocation(filename, 0, 2)});
+    REQUIRE(factory.getInstruction().getLastType() == vnd::InstructionType::PARAMETER_DEFINITION);
+    factory.checkToken(vnd::Token{CLOSE_PARENTESIS, "", vnd::CodeSourceLocation(filename, 0, 3)});
 }
 
 TEST_CASE("Corrected type of return expression instruction", "[Instruction]") {
-    vnd::Instruction instruction = vnd::Instruction::create(filename);
-    instruction.checkToken(vnd::Token{vnd::TokenType::K_RETURN, "", vnd::CodeSourceLocation(filename, 0, 0)});
-    instruction.checkToken(vnd::Token{vnd::TokenType::BOOLEAN, "", vnd::CodeSourceLocation(filename, 0, 1)});
-    REQUIRE(instruction.getLastType() == vnd::InstructionType::RETURN_EXPRESSION);
+    vnd::InstructionFactory factory = vnd::InstructionFactory::create(filename);
+    factory.checkToken(vnd::Token{vnd::TokenType::K_RETURN, "", vnd::CodeSourceLocation(filename, 0, 0)});
+    factory.checkToken(vnd::Token{vnd::TokenType::BOOLEAN, "", vnd::CodeSourceLocation(filename, 0, 1)});
+    REQUIRE(factory.getInstruction().getLastType() == vnd::InstructionType::RETURN_EXPRESSION);
 }
 
 TEST_CASE("Corrected type of main instruction", "[Instruction]") {
-    vnd::Instruction instruction = vnd::Instruction::create(filename);
-    instruction.checkToken(vnd::Token{vnd::TokenType::K_MAIN, "", vnd::CodeSourceLocation(filename, 0, 0)});
-    instruction.checkToken(vnd::Token{vnd::TokenType::OPEN_CUR_PARENTESIS, "", vnd::CodeSourceLocation(filename, 0, 1)});
-    REQUIRE(instruction.getLastType() == vnd::InstructionType::MAIN);
+    vnd::InstructionFactory factory = vnd::InstructionFactory::create(filename);
+    factory.checkToken(vnd::Token{vnd::TokenType::K_MAIN, "", vnd::CodeSourceLocation(filename, 0, 0)});
+    factory.checkToken(vnd::Token{vnd::TokenType::OPEN_CUR_PARENTESIS, "", vnd::CodeSourceLocation(filename, 0, 1)});
+    REQUIRE(factory.getInstruction().getLastType() == vnd::InstructionType::MAIN);
 }
 
 TEST_CASE("Corrected type of for instruction", "[Instruction]") {
     using enum vnd::TokenType;
-    vnd::Instruction instruction = vnd::Instruction::create(filename);
-    instruction.checkToken(vnd::Token{K_FOR, "", vnd::CodeSourceLocation(filename, 0, 0)});
-    REQUIRE(instruction.getLastType() == vnd::InstructionType::FOR_STRUCTURE);
-    instruction.checkToken(vnd::Token{IDENTIFIER, "", vnd::CodeSourceLocation(filename, 0, 1)});
-    instruction.checkToken(vnd::Token{EQUAL_OPERATOR, "", vnd::CodeSourceLocation(filename, 0, 2)});
-    REQUIRE(instruction.getLastType() == vnd::InstructionType::FOR_INITIALIZATION);
-    instruction.checkToken(vnd::Token{DOUBLE, "", vnd::CodeSourceLocation(filename, 0, 3)});
-    instruction.checkToken(vnd::Token{COMMA, "", vnd::CodeSourceLocation(filename, 0, 4)});
-    REQUIRE(instruction.getLastType() == vnd::InstructionType::FOR_CONDITION);
-    instruction.checkToken(vnd::Token{DOUBLE, "", vnd::CodeSourceLocation(filename, 0, t_colum2)});
-    instruction.checkToken(vnd::Token{COMMA, "", vnd::CodeSourceLocation(filename, 0, t_colum)});
-    REQUIRE(instruction.getLastType() == vnd::InstructionType::FOR_STEP);
+    vnd::InstructionFactory factory = vnd::InstructionFactory::create(filename);
+    factory.checkToken(vnd::Token{K_FOR, "", vnd::CodeSourceLocation(filename, 0, 0)});
+    REQUIRE(factory.getInstruction().getLastType() == vnd::InstructionType::FOR_STRUCTURE);
+    factory.checkToken(vnd::Token{IDENTIFIER, "", vnd::CodeSourceLocation(filename, 0, 1)});
+    factory.checkToken(vnd::Token{EQUAL_OPERATOR, "", vnd::CodeSourceLocation(filename, 0, 2)});
+    REQUIRE(factory.getInstruction().getLastType() == vnd::InstructionType::FOR_INITIALIZATION);
+    factory.checkToken(vnd::Token{DOUBLE, "", vnd::CodeSourceLocation(filename, 0, 3)});
+    factory.checkToken(vnd::Token{COMMA, "", vnd::CodeSourceLocation(filename, 0, 4)});
+    REQUIRE(factory.getInstruction().getLastType() == vnd::InstructionType::FOR_CONDITION);
+    factory.checkToken(vnd::Token{DOUBLE, "", vnd::CodeSourceLocation(filename, 0, t_colum2)});
+    factory.checkToken(vnd::Token{COMMA, "", vnd::CodeSourceLocation(filename, 0, t_colum)});
+    REQUIRE(factory.getInstruction().getLastType() == vnd::InstructionType::FOR_STEP);
 }
 TEST_CASE("Instruction toString() Empty tokens", "[Instruction]") {
     vnd::Instruction instruction = vnd::Instruction::create(filename);
@@ -704,25 +706,24 @@ TEST_CASE("Instruction toString() Empty tokens FMT", "[Instruction]") {
 }
 
 TEST_CASE("Instruction toString()", "[Instruction]") {
-    vnd::Instruction instruction = vnd::Instruction::create(filename);
-    instruction.checkToken(vnd::Token{vnd::TokenType::K_MAIN, "", vnd::CodeSourceLocation(filename, 0, 0)});
-    instruction.checkToken(vnd::Token{vnd::TokenType::OPEN_CUR_PARENTESIS, "", vnd::CodeSourceLocation(filename, 0, 1)});
-    REQUIRE(instruction.toString() == "0\t  ");
+    vnd::InstructionFactory factory = vnd::InstructionFactory::create(filename);
+    factory.checkToken(vnd::Token{vnd::TokenType::K_MAIN, "", vnd::CodeSourceLocation(filename, 0, 0)});
+    factory.checkToken(vnd::Token{vnd::TokenType::OPEN_CUR_PARENTESIS, "", vnd::CodeSourceLocation(filename, 0, 1)});
+    REQUIRE(factory.getInstruction().toString() == "0\t  ");
 }
 
 TEST_CASE("Instruction getTokens()", "[Instruction]") {
-    vnd::Instruction instruction = vnd::Instruction::create(filename);
-    instruction.checkToken(vnd::Token{vnd::TokenType::K_MAIN, "", vnd::CodeSourceLocation(filename, 0, 0)});
-    instruction.checkToken(vnd::Token{vnd::TokenType::OPEN_CUR_PARENTESIS, "", vnd::CodeSourceLocation(filename, 0, 1)});
-    REQUIRE(!instruction.getTokens().empty());
-    REQUIRE(instruction.getTokens().size() == 2);
+    vnd::InstructionFactory factory = vnd::InstructionFactory::create(filename);
+    factory.checkToken(vnd::Token{vnd::TokenType::K_MAIN, "", vnd::CodeSourceLocation(filename, 0, 0)});
+    factory.checkToken(vnd::Token{vnd::TokenType::OPEN_CUR_PARENTESIS, "", vnd::CodeSourceLocation(filename, 0, 1)});
+    REQUIRE(factory.getInstruction().getTokens().size() == 2);
 }
 
 TEST_CASE("Instruction toString() FMT", "[Instruction]") {
-    vnd::Instruction instruction = vnd::Instruction::create(filename);
-    instruction.checkToken(vnd::Token{vnd::TokenType::K_MAIN, "", vnd::CodeSourceLocation(filename, 0, 0)});
-    instruction.checkToken(vnd::Token{vnd::TokenType::OPEN_CUR_PARENTESIS, "", vnd::CodeSourceLocation(filename, 0, 1)});
-    REQ_FORMAT(instruction, "0\t  ")
+    vnd::InstructionFactory factory = vnd::InstructionFactory::create(filename);
+    factory.checkToken(vnd::Token{vnd::TokenType::K_MAIN, "", vnd::CodeSourceLocation(filename, 0, 0)});
+    factory.checkToken(vnd::Token{vnd::TokenType::OPEN_CUR_PARENTESIS, "", vnd::CodeSourceLocation(filename, 0, 1)});
+    REQ_FORMAT(factory.getInstruction(), "0\t  ")
 }
 
 TEST_CASE("ExpressionFactory emit int type", "[factory]") {

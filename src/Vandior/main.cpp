@@ -65,7 +65,7 @@ constexpr std::string_view filename = "../../../input.vn";
 constexpr std::string_view filename = "../../../input.vn";  // Linux and Unix
 #endif
 auto extractInstructions(const std::string file, const std::vector<vnd::Token> &tokens) -> std::vector<vnd::Instruction> {
-    vnd::InstructionFactory factory = vnd::InstructionFactory::create(file, tokens);
+    vnd::InstructionFactory factory = vnd::InstructionFactory::create(file);
     auto line = tokens.at(0).getLine();
     vnd::AutoTimer ictim("Instructions creation time");
     for(const vnd::Token &token : tokens) {

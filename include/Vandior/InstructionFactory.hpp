@@ -10,10 +10,9 @@ namespace vnd {
         /**
          * @brief Create an InstructionFactory instance.
          * @param filename String representing the filename that contains the instructions.
-         * @param tokens The vector of tokens of the instructions.
          * @return The created InstructionFactory instance.
          */
-        [[nodiscard]] static InstructionFactory create(const std::string_view filename, const TokenVec &tokens) noexcept;
+        [[nodiscard]] static InstructionFactory create(const std::string_view filename) noexcept;
 
         [[nodiscard]] Instruction getInstruction() const noexcept;
 
@@ -37,13 +36,11 @@ namespace vnd {
         /**
         * @brief Constructs an InstructionFactory.
         * @param filename String representing the filename that contains the instructions.
-        * @param tokens The vector of tokens of the instructions.
         */
-        explicit InstructionFactory(const std::string_view filename, const TokenVec &tokens) noexcept;
+        explicit InstructionFactory(const std::string_view filename) noexcept;
 
         static const TokenTypeVec _expressionStartTokens;  ///< Vector of the token types that can start an expression.
         static const TokenTypeVec _startTokens;            ///< Vector of tokens that are allowedat the start of an instruction.
-        TokenVec _tokens;                                  ///< Tokens of the instructions.
         Instruction _instruction;                          ///< Current instruction.
         std::vector<Instruction> _instructions;            ///< Vector of the instructios.
         TokenTypeVec _allowedTokens;                       ///< Vector of allowed tokenTypes for the next token.
