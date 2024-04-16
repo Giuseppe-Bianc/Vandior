@@ -147,8 +147,7 @@ namespace vnd {
          * @param instruction The instruction to extract variables from.
          * @return Vector of extracted variables and their types.
          */
-        [[nodiscard]] std::vector<StringPair> extractVariables(TokenVecIter &iterator, const TokenVecIter &end,
-                                                               const Instruction &instruction) const;
+        [[nodiscard]] StringPairVec extractVariables(TokenVecIter &iterator, const TokenVecIter &end, const Instruction &instruction) const;
 
         /**
          * @brief Extracts a token from an assignation instruction.
@@ -192,7 +191,7 @@ namespace vnd {
          * @param expressiom Expression conataining the function.
          * @return Pair of parsed error and warning strings. If no error occurs, an empty string is returned.
          */
-        [[nodiscard]] StringPair transpileMultipleFun(const std::vector<StringPair> &variables, const Expression &expression) noexcept;
+        [[nodiscard]] StringPair transpileMultipleFun(const StringPairVec &variables, const Expression &expression) noexcept;
 
         /**
          * @brief Transpile a type name.
@@ -211,7 +210,7 @@ namespace vnd {
          * @param expressions Vector of expressions to assign.
          * @return Bool flag indicating if the instruction is a swap.
          */
-        [[nodiscard]] bool transpileSwap(const std::vector<StringPair> &variables, const ExprVec &expressions) noexcept;
+        [[nodiscard]] bool transpileSwap(const StringPairVec &variables, const ExprVec &expressions) noexcept;
 
         /**
          * @brief Transpile a single assigment of an assignation instruction.

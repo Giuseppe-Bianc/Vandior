@@ -19,9 +19,8 @@ namespace vnd {
          * @param constructor Bool flag that indicates if it's a constructor.
          * @return FunType instance.
          */
-        [[nodiscard]] static FunType create(const std::string &returnType, const StringVec &params,
-                                            const std::vector<StringPair> &typeGeneric = {},
-                                            const std::vector<StringPair> &funcGeneric = {}, const bool constructor = false) noexcept;
+        [[nodiscard]] static FunType create(const std::string &returnType, const StringVec &params, const StringPairVec &typeGeneric = {},
+                                            const StringPairVec &funcGeneric = {}, const bool constructor = false) noexcept;
 
         /**
          * @brief Creates an empty FunType instance
@@ -46,13 +45,13 @@ namespace vnd {
          * @brief Gets the generic parameters of the class.
          * @return vector containing the parameters.
          */
-        [[nodiscard]] std::vector<StringPair> getTypeGeneric() const noexcept;
+        [[nodiscard]] StringPairVec getTypeGeneric() const noexcept;
 
         /**
          * @brief Gets the generic parameters of the function.
          * @return vector containing the parameters.
          */
-        [[nodiscard]] std::vector<StringPair> getFuncGeneric() const noexcept;
+        [[nodiscard]] StringPairVec getFuncGeneric() const noexcept;
 
         /**
          * @brief Indicates if the function is a constructor,
@@ -61,9 +60,9 @@ namespace vnd {
         [[nodiscard]] bool isConstructor() const noexcept;
 
         /**
-        * @brief Adds a parameter to the function.
-        * @param param the type of the parameter.
-        **/
+         * @brief Adds a parameter to the function.
+         * @param param the type of the parameter.
+         **/
         void addParam(const std::string &param) noexcept;
 
         /**
@@ -87,8 +86,8 @@ namespace vnd {
          * @param funcGeneric Vector of generic parameters of the function.
          * @param constructor Bool flag that indicates if it's a constructor.
          */
-        FunType(const std::string &returnType, const StringVec &params, const std::vector<StringPair> &typeGeneric,
-                const std::vector<StringPair> &funcGeneric, const bool constructor) noexcept
+        FunType(const std::string &returnType, const StringVec &params, const StringPairVec &typeGeneric,
+                const StringPairVec &funcGeneric, const bool constructor) noexcept
           : _returnType(returnType), _params(params), _typeGeneric(typeGeneric), _funcGeneric(funcGeneric), _constructor(constructor) {}
 
         std::string _returnType;                                        ///< String of the return types separate by a whitespace.

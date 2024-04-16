@@ -19,7 +19,7 @@ namespace vnd {
         [[nodiscard]] std::vector<Instruction> getInstructions() const noexcept;
 
         void addInstruction() noexcept;
-        
+
         /**
          * @brief Checks if the current instruction can terminate.
          * @return Bool containing the result of the check.
@@ -34,9 +34,9 @@ namespace vnd {
 
     private:
         /**
-        * @brief Constructs an InstructionFactory.
-        * @param filename String representing the filename that contains the instructions.
-        */
+         * @brief Constructs an InstructionFactory.
+         * @param filename String representing the filename that contains the instructions.
+         */
         explicit InstructionFactory(const std::string_view filename) noexcept;
 
         static const TokenTypeVec _expressionStartTokens;  ///< Vector of the token types that can start an expression.
@@ -137,9 +137,9 @@ namespace vnd {
          */
         void checkKReturn() noexcept;
 
-         /**
+        /**
          * @brief Adds an allowed token type in base at the last type of the instruction.
-         * @param instruction InstructionType that must be the last type.
+         * @param type InstructionType that must be the last type.
          * @param token TokenType to add.
          * @return Bool containing true is the token type is added.
          */

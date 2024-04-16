@@ -2,12 +2,18 @@
 
 namespace vnd {
     // NOLINTBEGIN(*-include-cleaner)
-    const TokenTypeVec InstructionFactory::_startTokens = {TokenType::K_MAIN,               TokenType::K_VAR,
-                                                           TokenType::K_IF,                 TokenType::K_WHILE,
-                                                           TokenType::K_FOR,                TokenType::K_FUN,
-                                                           TokenType::K_RETURN,             TokenType::K_BREAK,
-                                                           TokenType::IDENTIFIER,           TokenType::OPEN_CUR_PARENTESIS,
-                                                           TokenType::CLOSE_CUR_PARENTESIS, eofTokenType};
+    const TokenTypeVec InstructionFactory::_startTokens = {TokenType::K_MAIN,
+                                                           TokenType::K_VAR,
+                                                           TokenType::K_IF,
+                                                           TokenType::K_WHILE,
+                                                           TokenType::K_FOR,
+                                                           TokenType::K_FUN,
+                                                           TokenType::K_RETURN,
+                                                           TokenType::K_BREAK,
+                                                           TokenType::IDENTIFIER,
+                                                           TokenType::OPEN_CUR_PARENTESIS,
+                                                           TokenType::CLOSE_CUR_PARENTESIS,
+                                                           eofTokenType};
 
     const TokenTypeVec InstructionFactory::_expressionStartTokens = {TokenType::IDENTIFIER,      TokenType::INTEGER,
                                                                      TokenType::DOUBLE,          TokenType::CHAR,
@@ -17,7 +23,7 @@ namespace vnd {
                                                                      TokenType::K_NULLPTR};
 
     InstructionFactory::InstructionFactory(const std::string_view filename) noexcept
-      : _instruction(Instruction::create(filename)), _filename(filename), _allowedTokens(_startTokens) {}
+      : _instruction(Instruction::create(filename)), _allowedTokens(_startTokens), _filename(filename) {}
 
     InstructionFactory InstructionFactory::create(const std::string_view filename) noexcept { return InstructionFactory{filename}; }
 
@@ -402,7 +408,7 @@ namespace vnd {
         _allowedTokens.emplace_back(eofTokenType);
     }
 
-     bool InstructionFactory::emplaceTokenType(const InstructionType &type, const TokenType token) noexcept {
+    bool InstructionFactory::emplaceTokenType(const InstructionType &type, const TokenType token) noexcept {
         if(_instruction.lastTypeIs(type)) [[likely]] {
             _allowedTokens.emplace_back(token);
             return true;

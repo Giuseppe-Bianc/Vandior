@@ -151,7 +151,7 @@ namespace vnd {
         return type;
     }
 
-    std::string Scope::getParamType(const std::string &param, const std::vector<StringPair> &typeGeneric) noexcept {
+    std::string Scope::getParamType(const std::string &param, const StringPairVec &typeGeneric) noexcept {
         size_t pos = param.find('[');
         auto it = std::ranges::find_if(typeGeneric, [&param, pos](const StringPair &element) {
             if(pos == std::string::npos) { return param == element.first; }
@@ -367,7 +367,7 @@ namespace vnd {
 
     std::pair<FunType, bool> Scope::specializeFun(const FunType &fun, const std::vector<std::string> &typeSpecialized) const noexcept {
         auto typeGeneric = fun.getTypeGeneric();
-        std::vector<StringPair> resultGeneric;
+        StringPairVec resultGeneric;
         auto it_specialized = typeSpecialized.begin();
         if(typeGeneric.size() != typeSpecialized.size()) { return {FunType::createEmpty(), false}; }
         for(auto &[key, value] : typeGeneric) {

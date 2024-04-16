@@ -390,7 +390,7 @@ namespace vnd {
         auto iterator = tokens.begin();
         const auto endToken = tokens.end();
         auto parentScope = _scope;
-        std::vector<StringPair> params;
+        StringPairVec params;
         std::vector<std::string> returnTypevalues;
         FunType fun = FunType::createEmpty();
         iterator = std::next(iterator);
@@ -495,10 +495,10 @@ namespace vnd {
         return result;
     }
 
-    std::vector<StringPair> Transpiler::extractVariables(TokenVecIter &iterator, const TokenVecIter &end,
+    StringPairVec Transpiler::extractVariables(TokenVecIter &iterator, const TokenVecIter &end,
                                                          const Instruction &instruction) const {
         using enum TokenType;
-        std::vector<StringPair> result;
+        StringPairVec result;
         std::string currentVariable;
         std::string type;
         bool assignable = true;
@@ -626,7 +626,7 @@ namespace vnd {
         return {};
     }
 
-    StringPair Transpiler::transpileMultipleFun(const std::vector<StringPair> &variables, const Expression &expression) noexcept {
+    StringPair Transpiler::transpileMultipleFun(const StringPairVec &variables, const Expression &expression) noexcept {
         auto types = Transpiler::tokenize(expression.getType());
         std::string values;
         std::string warnings;
@@ -701,7 +701,7 @@ namespace vnd {
         return {type, FORMAT("{}{}{}", prefix, typeValue, suffix)};
     }
 
-    bool Transpiler::transpileSwap(const std::vector<StringPair> &variables, const std::vector<Expression> &expressions) noexcept {
+    bool Transpiler::transpileSwap(const StringPairVec &variables, const std::vector<Expression> &expressions) noexcept {
         if(variables.size() != 2 || expressions.size() != 2) { return false; }
         StringVec swapVariables = {variables.at(0).first, variables.at(1).first};
         StringVec swapExpressions = {expressions.at(0).getText(), expressions.at(1).getText()};

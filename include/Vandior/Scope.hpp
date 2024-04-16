@@ -219,7 +219,7 @@ namespace vnd {
          * @param typeGeneric Vector of generic parameters of the type.
          * @return String containing the parameter type. If the parameter is not generic, the result is the same of param.
          */
-        [[nodiscard]] static std::string getParamType(const std::string &param, const std::vector<StringPair> &typeGeneric) noexcept;
+        [[nodiscard]] static std::string getParamType(const std::string &param, const StringPairVec &typeGeneric) noexcept;
 
         std::unordered_map<std::string, std::string> _vars;           ///< Map of variables identifiers and types.
         std::unordered_map<std::string, std::string> _vals;           ///< Map of constants identifiers and types.
