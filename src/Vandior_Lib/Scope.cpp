@@ -235,7 +235,9 @@ namespace vnd {
             found = true;
             processVariadicParams(params, expressions, variadic);
             processParams(expressions, params, i, found);
-            if(found) { return std::tuple<std::string, bool, std::optional<size_t>>{i.getReturnType(), i.isConstructor(), variadic}; }
+            if(found) {
+                return std::tuple<std::string, bool, std::optional<size_t>>{i.getReturnType(), i.isConstructor(), variadic};
+            }
         }
         if(_types.contains(type)) {
             for(const auto &i : _types.at(type)) {
@@ -265,9 +267,10 @@ namespace vnd {
             if(expressions.size() == variadic) {
                 params.pop_back();
             } else if(expressions.size() >= params.size()) {
-                auto &lastParam = params.back();
+                auto lastParam = params.back();
+                params.pop_back();
                 lastParam.erase(lastParam.end() - 3, lastParam.end());
-                while(params.size() < expressions.size()) { params.push_back(lastParam); }
+                while(params.size() < expressions.size()) { params.emplace_back(lastParam); }
             }
         }
     }

@@ -80,7 +80,7 @@ class string {
 			os << *(s.str);
 			return os;
 		}
-		operator std::string() {
+		operator std::string() const {
 			return *str;
 		}
 	private:
@@ -111,3 +111,12 @@ class string {
 		}
 };
 std::vector<std::pair<std::shared_ptr<const std::string>, i64>> string::pool{};
+
+template <>
+struct fmt::formatter<string> {
+    constexpr auto parse(format_parse_context& ctx) { return ctx.begin(); }
+    template <typename FormatContext>
+    auto format(const string& str, FormatContext& ctx) {
+        return fmt::format_to(ctx.out(), "{}", std::string(str));
+    }
+};

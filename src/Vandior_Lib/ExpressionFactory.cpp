@@ -36,16 +36,17 @@ namespace vnd {
     }
     // NOLINTEND(*-pass-by-value, *-identifier-length)
 
-    std::string ExpressionFactory::transpileFun(const std::vector<Expression> &expressions, std::optional<size_t> variadic) noexcept {
+    std::string ExpressionFactory::transpileFun(const std::vector<Expression> &expressions, std::optional<size_t> variadic,
+                                                const bool print) noexcept {
         std::string params;
         size_t pos = 0;
         std::ranges::for_each(expressions, [&](const Expression &expression) {
-            if(variadic.has_value() && pos == variadic.value()) { params += "{"; }
+            if(variadic.has_value() && pos == variadic.value() && !print) { params += "{"; }
             params += FORMAT("{}, ", expression.getText());
             pos++;
         });
         if(!params.empty()) { params.erase(params.size() - 2, 2); }
-        if(variadic.has_value()) {
+        if(variadic.has_value() && !print) {
             if(pos <= variadic.value()) { params += ", {"; }
             params += "}";
         }
@@ -318,7 +319,6 @@ namespace vnd {
                 if(auto error = factory.parse({COMMA, CLOSE_PARENTESIS}); !error.empty()) { return error; }
             }
         }
-
         if(auto nxtIter = std::ranges::next(_iterator); isEnd(nxtIter) || !nxtIter->isType(DOT_OPERATOR)) { _const = false; }
         expressions = factory.getExpressions();
         auto [newType, constructor, variadic] = _scope->getFunType(_type, identifier, expressions);
@@ -331,7 +331,7 @@ namespace vnd {
             return FORMAT("Function {} not found", value);
         }
         if(auto error = ExpressionFactory::checkType(type, newType); !error.empty()) { return error; }
-        params = ExpressionFactory::transpileFun(expressions, variadic);
+        params = ExpressionFactory::transpileFun(expressions, variadic, identifier == "print" || identifier == "println");
         auto value = FORMAT("{}({})", std::string{identifier}, params);
         if(_temp.empty()) {
             if(constructor) {

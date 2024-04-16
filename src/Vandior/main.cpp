@@ -64,23 +64,25 @@ constexpr std::string_view filename = "../../../input.vn";
 // constexpr std::string_view filename = "../../../../input.vn";  // Linux and Unix  form editor
 constexpr std::string_view filename = "../../../input.vn";  // Linux and Unix
 #endif
-auto extractInstructions(const std::vector<vnd::Token> &tokens) -> std::vector<vnd::Instruction> {
-    std::vector<vnd::Instruction> instructions;
+auto extractInstructions(const std::string file, const std::vector<vnd::Token> &tokens) -> std::vector<vnd::Instruction> {
+    vnd::InstructionFactory factory = vnd::InstructionFactory::create(file);
     auto line = tokens.at(0).getLine();
     vnd::AutoTimer ictim("Instructions creation time");
     for(const vnd::Token &token : tokens) {
         if(token.isType(vnd::TokenType::COMMENT)) [[unlikely]] { continue; }
         if(token.getLine() >= line) [[likely]] {
-            if(instructions.empty() || instructions.back().canTerminate()) [[likely]] {
-                instructions.emplace_back(vnd::Instruction::create(filename));
-            } else if(instructions.back().typeToString().back() != "EXPRESSION" && token.isType(vnd::TokenType::STRING)) [[unlikely]] {
+            if(factory.canTerminate()) [[likely]] {
+                factory.addInstruction();
+            } else if(factory.getInstruction().typeToString().back() != "EXPRESSION" && token.isType(vnd::TokenType::STRING))
+                [[unlikely]] {
                 throw vnd::InstructionException(token);
             }
             line = token.getLine() + 1;
         }
-        instructions.back().checkToken(token);
+        factory.checkToken(token);
     }
-    return instructions;
+    factory.addInstruction();
+    return factory.getInstructions();
 }
 
 // namespace fs = std::filesystem;
@@ -135,7 +137,7 @@ auto main(int argc, const char *const argv[]) -> int {
         std::vector<vnd::Token> tokens;
         timeTokenizer(tokenizer, tokens);
         // for(const auto &item : tokens) { LINFO("{}", item); }
-        std::vector<vnd::Instruction> instructions = extractInstructions(tokens);
+        std::vector<vnd::Instruction> instructions = extractInstructions(path.value_or(filename.data()), tokens);
         vnd::Timer tim("transpiling time");
         vnd::Transpiler transpiler = vnd::Transpiler::create(instructions);
         auto [success, output] = transpiler.transpile(path.value_or(filename.data()));
@@ -157,9 +159,10 @@ auto main(int argc, const char *const argv[]) -> int {
 
                 // Compile the code
 #ifdef _WIN32
-                int compileResult = std::system(FORMAT("g++ --std=c++20 {}.cpp -o {}.exe -I \"%VNHOME%\"", output, output).c_str());
+                int compileResult = std::system(FORMAT("g++ --std=c++20 {}.cpp -o {}.exe -I \"%VNHOME%\" -lfmt", output, output).c_str());
 #else
-                int compileResult = std::system(FORMAT("g++ --std=c++20 {}.cpp -o {} -I \"$VNHOME\"", output, output).c_str());
+                int compileResult = std::system(FORMAT("g++ --std=c++20 {}.cpp -o {} -I \"$VNHOME\"
+                                                       "-L \"$VNHOME\"/build/_deps/fmt-src/lib\" -lfmt", output, output).c_str());
 #endif
 
                 LINFO("{}", rtim);

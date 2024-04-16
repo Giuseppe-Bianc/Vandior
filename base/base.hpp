@@ -1,86 +1,15 @@
 #pragma once
+#include <build/_deps/fmt-src/include/fmt/core.h>
 #include "headers.hpp"
 #include "primitives.hpp"
 #include "string.hpp"
+#include "container.hpp"
+#include<format>
 
 #define FOR_LOOP(type, var, initial, final, step) \
 for (type var = initial; (step > 0 ? var < final : var > final); var += step)
 
-#define printTypes std::variant<i8, i64, u8, u16, u32, u64, f64, c32, c64, char, bool, string, std::shared_ptr<Object>>
-
-#define printType(type)\
-if(std::holds_alternative<type>(param)) {\
-	return std::to_string(std::get<type>(param));\
-}
-
 namespace vnd {
-	template <typename T, i64 N>
-	class array: public std::array<T, N> {
-		public:
-			array(): std::array<T, N>() {};
-			array(const std::vector<T>& vec) {
-				if (vec.size() == N) {
-					std::copy(vec.begin(), vec.end(), this->begin());
-				} else {
-					throw std::invalid_argument("Vector size does not match array size");
-				}
-			}
-			array(std::initializer_list<T> init) : std::array<T, N>() {
-				if (init.size() != N) {
-					throw std::runtime_error("Initializer list size does not match array size.");
-				}
-				std::copy(init.begin(), init.end(), this->begin());
-			}
-			T& at(i64 index) {
-				if(index < 0) {
-					index += N;
-				}
-				if(index < 0 || index >= N) { throw std::runtime_error("Index " + std::to_string(index) +  " out of bounds for size " + std::to_string(N)); }
-				return std::array<T, N>::at(index);
-			}
-			const T& at(i64 index) const {
-				if(index < 0) {
-					index += N;
-				}
-				if(index < 0 || index >= N) { throw std::runtime_error("Index " + std::to_string(index) +  " out of bounds for size " + std::to_string(N)); }
-				return std::array<T, N>::at(index);
-			}
-	};
-	template <typename T>
-	class vector: public std::vector<T> {
-		public:
-			vector(): std::vector<T>() {};
-			vector(std::initializer_list<T> init) : std::vector<T>(init) {}
-			template <typename InputIt>
-			vector(InputIt first, InputIt last) : std::vector<T>(first, last) {}
-			T& at(i64 index) {
-				if(index < 0) {
-					index += static_cast<i64>(this->size());
-				}
-				if(index < 0 || index >= static_cast<i64>(this->size())) { throw std::runtime_error("Index " + std::to_string(index) +  " out of bounds for size " + std::to_string(static_cast<int64_t>(this->size()))); }
-				return std::vector<T>::at(index);
-			}
-			const T at(i64 index) const {
-				if(index < 0) {
-					index += static_cast<i64>(this->size());
-				}
-				if(index < 0 || index >= static_cast<i64>(this->size())) { throw std::runtime_error("Index " + std::to_string(index) +  " out of bounds for size " + std::to_string(static_cast<int64_t>(this->size()))); }
-				return std::vector<T>::at(index);
-			}
-			void addVector(const vnd::vector<T> elems) {
-				for(const T &i: elems) {
-					std::vector<T>::emplace_back(i);
-				}
-			}
-			void addAll(const vnd::vector<T> elems) {
-				for(const T &i: elems) {
-					std::vector<T>::emplace_back(i);
-				}
-			}
-			void add(const T elem) {
-				std::vector<T>::emplace_back(elem);
-			}
-	};
 	std::unordered_map<std::string, std::any> tmp;
 	vnd::vector<string> createArgs(int argc, char **argv) {
 		vnd::vector<string> args;
@@ -141,85 +70,29 @@ class Derived: public Object {
 		bool get_derivedConst() { return _derivedConst; }
 		virtual bool derivedFun(std::shared_ptr<Object> obj) { return obj->getS().empty(); }
 		virtual std::shared_ptr<Object> object() { return std::make_shared<Object>(); }
+		virtual string toString() {
+			return string("Derived" + std::string(Object::toString()));
+		}
 	private:
 		const bool _derivedConst = true;
 		bool _derivedProperty{};
 		std::shared_ptr<Object> obj{};
 };
-void _print(const string text, const vnd::vector<printTypes>& args) {
+template<typename... Args>
+inline void _print(string format, Args&&... args) {
 	
-	size_t par = 0;
-	auto iterator = text.begin();
-	std::string result;
-	std::function<std::string(printTypes)> format = [&format](auto param) -> std::string {
-		printType(i8)
-		printType(i64)
-		printType(u8)
-		printType(u16)
-		printType(u32)
-		printType(u64)
-		if(std::holds_alternative<f64>(param)) {
-			std::string value = std::to_string(std::get<f64>(param));
-			while(value.ends_with('0')) {
-				value.pop_back();
-			}
-			if(value.ends_with('.')) {
-				value.pop_back();
-			}
-			return value;
-		}
-		if(std::holds_alternative<c32>(param)) {
-			c32 value = std::get<c32>(param);
-			return "(" + format(value.real()) + "," + format(value.imag()) + ")";
-		}
-		if(std::holds_alternative<c64>(param)) {
-			c64 value = std::get<c64>(param);
-			return "(" + format(value.real()) + "," + format(value.imag()) + ")";
-		}
-		if(std::holds_alternative<char>(param)) {
-			return std::string(1, std::get<char>( param));
-		}
-		if(std::holds_alternative<bool>(param)) {
-			if(std::get<bool>(param) == true) {
-				return "true";
-			} else {
-				return "false";
-			}
-		}
-		if(std::holds_alternative<string>(param)) {
-			return std::get<string>(param);
-		}
-		return std::get<std::shared_ptr<Object>>(param)->toString();
-	};
-
-	while(iterator != text.end()) {
-		if(*iterator == '{') {
-			char next = *std::next(iterator);
-			if(next == '}') {
-				if(par < args.size()) {
-					auto param = args.at(par);
-					result += format(args.at(par));
-					par++;
-				}
-				iterator++;
-			}
-		} else {
-			result += *iterator;
-		}
-		iterator++;
-	}
-	std::cout << result;
+    fmt::print(fmt::runtime(std::string(format)), std::forward<Args>(args)...);
+	
+}
+template<typename... Args>
+inline void _println(string format, Args&&... args) {
+	
+    fmt::print(fmt::runtime(std::string(format) + "\n"), std::forward<Args>(args)...);
 	
 }
 inline void _exit(i32 code) {
 	
 	std::exit(code);
-	
-}
-inline void _println(const string text, const vnd::vector<printTypes>& args) {
-	
-	_print(text, args);
-	std::cout << std::endl;
 	
 }
 string _readLine() {
@@ -239,3 +112,16 @@ vnd::vector<i32> _arrayTest() {
 }
 std::shared_ptr<Object> _createObject() { return std::make_shared<Object>(); }
 std::shared_ptr<Derived> _createDerived() { return std::make_shared<Derived>(); }
+
+template<>
+struct fmt::formatter<std::shared_ptr<Object>> {
+    constexpr auto parse(format_parse_context& ctx) { return ctx.begin(); }
+    template <typename FormatContext>
+    auto format(const std::shared_ptr<Object>& obj, FormatContext& ctx) {
+        if (obj) {
+            return fmt::format_to(ctx.out(), "{}", obj->toString());
+        } else {
+            return fmt::format_to(ctx.out(), "nullptr");
+        }
+    }
+};

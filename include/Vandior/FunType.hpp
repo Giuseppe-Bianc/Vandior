@@ -60,6 +60,18 @@ namespace vnd {
          */
         [[nodiscard]] bool isConstructor() const noexcept;
 
+        /**
+        * @brief Adds a parameter to the function.
+        * @param param the type of the parameter.
+        **/
+        void addParam(const std::string &param) noexcept;
+
+        /**
+         * @brief Adds a return type to the function.
+         * @param type the return type to add.
+         **/
+        void addReturn(const std::string &type) noexcept;
+
     private:
         /**
          * @brief Default constructor of a FunType.

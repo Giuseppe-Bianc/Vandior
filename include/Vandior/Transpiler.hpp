@@ -1,9 +1,10 @@
 #pragma once
-#include "Vandior/Expression.hpp"
-#include "Vandior/ExpressionFactory.hpp"
-#include "Vandior/Instruction.hpp"
-#include "Vandior/Scope.hpp"
-#include "Vandior/TranspilerException.hpp"
+#include "Expression.hpp"
+#include "ExpressionFactory.hpp"
+#include "Instruction.hpp"
+#include "Scope.hpp"
+#include "TranspilerException.hpp"
+#include "headers.hpp"
 #include <fstream>
 
 namespace vnd {
@@ -39,6 +40,7 @@ namespace vnd {
         std::vector<Instruction> _instructions;               ///< Vector of instructions.
         std::shared_ptr<Scope> _scope = Scope::createMain();  ///< Shared pointer to the current scope.
         bool _main = false;                                   ///< Flag used to check main transpiling.
+        std::vector<std::string> _returnTypes;                ///< Return types of currently definied function.
 
         /**
          * @brief Tokenize a string.
@@ -117,6 +119,18 @@ namespace vnd {
          * @param instruction The instruction to transpile.
          */
         void transpileBreak(const Instruction &instruction);
+
+        /**
+         * @brief Transpile a definition instruction of the program.
+         * @param instruction The instruction to transpile.
+         */
+        void transpileDefinition(const Instruction &instruction);
+
+        /**
+         * @brief Transpile a return instruction of the program.
+         * @param instruction The instruction to transpile.
+         */
+        void transpileReturn(const Instruction &instruction);
 
         /**
          * @brief Extracts identifiers of declared variables from a declaration instruction.

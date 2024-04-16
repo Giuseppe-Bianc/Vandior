@@ -1,0 +1,14 @@
+fun maxIndex(arr: i32[]): u64 {
+	var result: u64 = 0
+	for var i: u64 = 1, arr.size() {
+		if(arr[i] > arr[result]) {
+			result = i
+		}
+	}
+	return result
+}
+
+main {
+	var arr: i32[] = {1, 2, 6, 34, -5, 10}
+	println("Max of {}:\t{}", arr, arr[maxIndex(arr)])	
+}
