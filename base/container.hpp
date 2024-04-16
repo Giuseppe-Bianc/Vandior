@@ -82,12 +82,16 @@ namespace vnd {
 	};
 }
 
+/**
+ * This function is a formatter for Token using fmt.
+ * \cond
+ */
 template <typename T, i64 N>
 struct fmt::formatter<vnd::array<T, N>> {
     constexpr auto parse(format_parse_context& ctx) { return ctx.begin(); }
     template <typename FormatContext>
     auto format(const vnd::array<T, N>& arr, FormatContext& ctx) {
-		FORMAT_CONTAINER(arr);
+        FORMAT_CONTAINER(arr);
     }
 };
 template <typename T>
@@ -98,3 +102,4 @@ struct fmt::formatter<vnd::vector<T>> {
         FORMAT_CONTAINER(vec);
     }
 };
+/** \endcond */

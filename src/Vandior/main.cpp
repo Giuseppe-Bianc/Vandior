@@ -64,7 +64,7 @@ constexpr std::string_view filename = "../../../input.vn";
 // constexpr std::string_view filename = "../../../../input.vn";  // Linux and Unix  form editor
 constexpr std::string_view filename = "../../../input.vn";  // Linux and Unix
 #endif
-auto extractInstructions(const std::string file, const std::vector<vnd::Token> &tokens) -> std::vector<vnd::Instruction> {
+auto extractInstructions(const std::string &file, const std::vector<vnd::Token> &tokens) -> std::vector<vnd::Instruction> {
     vnd::InstructionFactory factory = vnd::InstructionFactory::create(file);
     auto line = tokens.at(0).getLine();
     vnd::AutoTimer ictim("Instructions creation time");
@@ -73,8 +73,7 @@ auto extractInstructions(const std::string file, const std::vector<vnd::Token> &
         if(token.getLine() >= line) [[likely]] {
             if(factory.canTerminate()) [[likely]] {
                 factory.addInstruction();
-            } else if(factory.getInstruction().typeToString().back() != "EXPRESSION" && token.isType(vnd::TokenType::STRING))
-                [[unlikely]] {
+            } else if(factory.getInstruction().typeToString().back() != "EXPRESSION" && token.isType(vnd::TokenType::STRING)) [[unlikely]] {
                 throw vnd::InstructionException(token);
             }
             line = token.getLine() + 1;
@@ -113,7 +112,6 @@ auto main(int argc, const char *const argv[]) -> int {
     // LINFO("code length {}", code.length());
     try {
         CLI::App app{FORMAT("{} version {}", Vandior::cmake::project_name, Vandior::cmake::project_version)};  // NOLINT(*-include-cleaner)
-
         // std::optional<std::string> message;  // NOLINT(*-include-cleaner)
         std::optional<std::string> path;
         // app.add_option("-m,--message", message, "A message to print back out");
@@ -159,10 +157,15 @@ auto main(int argc, const char *const argv[]) -> int {
 
                 // Compile the code
 #ifdef _WIN32
-                int compileResult = std::system(FORMAT("g++ --std=c++20 {}.cpp -o {}.exe -I \"%VNHOME%\" -lfmt", output, output).c_str());
+                // C:\dev\visualStudio\Vandior\build\_deps\fmt-build\Debug\fmtd.lib
+
+                auto augument = FORMAT(
+                    "g++ --std=c++20 {}.cpp -o {} -I \"%VNHOME%\" -L \"%VNHOME%\\build\\_deps\\fmt-build\\Debug\\\" -lfmt", output, output);
+                int compileResult = std::system(augument.c_str());
 #else
-                int compileResult = std::system(FORMAT("g++ --std=c++20 {}.cpp -o {} -I \"$VNHOME\"
-                                                       "-L \"$VNHOME\"/build/_deps/fmt-src/lib\" -lfmt", output, output).c_str());
+                auto augument = FORMAT("g++ --std=c++20 {}.cpp -o {} -I \"$VNHOME\" -L \"$VNHOME/build/_deps/fmt-build\" -lfmt", output,
+                                       output);
+                int compileResult = std::system(augument.c_str());
 #endif
 
                 LINFO("{}", rtim);

@@ -113,6 +113,10 @@ vnd::vector<i32> _arrayTest() {
 std::shared_ptr<Object> _createObject() { return std::make_shared<Object>(); }
 std::shared_ptr<Derived> _createDerived() { return std::make_shared<Derived>(); }
 
+/**
+ * This function is a formatter for Token using fmt.
+ * \cond
+ */
 template<>
 struct fmt::formatter<std::shared_ptr<Object>> {
     constexpr auto parse(format_parse_context& ctx) { return ctx.begin(); }
@@ -125,3 +129,5 @@ struct fmt::formatter<std::shared_ptr<Object>> {
         }
     }
 };
+
+/** \endcond */

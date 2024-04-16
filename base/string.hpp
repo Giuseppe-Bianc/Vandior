@@ -112,6 +112,10 @@ class string {
 };
 std::vector<std::pair<std::shared_ptr<const std::string>, i64>> string::pool{};
 
+/**
+ * This function is a formatter for Token using fmt.
+ * \cond
+ */
 template <>
 struct fmt::formatter<string> {
     constexpr auto parse(format_parse_context& ctx) { return ctx.begin(); }
@@ -120,3 +124,4 @@ struct fmt::formatter<string> {
         return fmt::format_to(ctx.out(), "{}", std::string(str));
     }
 };
+/** \endcond */

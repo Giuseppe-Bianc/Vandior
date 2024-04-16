@@ -2,6 +2,10 @@
 #include <cstdint>
 #include <complex>
 
+/**
+ * This function is a formatter for the complex numbers using fmt.
+ * \cond
+ */
 #define COMPLEX_FORMATTER(type)\
 template <>\
 struct fmt::formatter<type> {\
@@ -11,6 +15,8 @@ struct fmt::formatter<type> {\
         return fmt::format_to(ctx.out(), "({}, {})", std::real(num), std::imag(num));\
     }\
 };
+
+/** \endcond */
 
 // Signed integer types
 using i8 = int8_t;
