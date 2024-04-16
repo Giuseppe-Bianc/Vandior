@@ -3,14 +3,15 @@
 
 namespace vnd {
     /**
-     * @brief A class to that check the correctness of an instruction.
+     * @brief A class taht build instructions.
      */
     class InstructionFactory {
     public:
         /**
-         * @brief Create an instruction instance.
-         * @param filename String representing the filename that contains the instruction.
-         * @return the created Instruction instance.
+         * @brief Create an InstructionFactory instance.
+         * @param filename String representing the filename that contains the instructions.
+         * @param tokens The vector of tokens of the instructions.
+         * @return The created InstructionFactory instance.
          */
         [[nodiscard]] static InstructionFactory create(const std::string_view filename, const TokenVec &tokens) noexcept;
 
@@ -33,14 +34,20 @@ namespace vnd {
         void checkToken(const Token &token);
 
     private:
+        /**
+        * @brief Constructs an InstructionFactory.
+        * @param filename String representing the filename that contains the instructions.
+        * @param tokens The vector of tokens of the instructions.
+        */
         explicit InstructionFactory(const std::string_view filename, const TokenVec &tokens) noexcept;
+
         static const TokenTypeVec _expressionStartTokens;  ///< Vector of the token types that can start an expression.
-        static const TokenTypeVec _startTokens;            ///< Vector of tokens that are allowed.
+        static const TokenTypeVec _startTokens;            ///< Vector of tokens that are allowedat the start of an instruction.
         TokenVec _tokens;                                  ///< Tokens of the instructions.
         Instruction _instruction;                          ///< Current instruction.
         std::vector<Instruction> _instructions;            ///< Vector of the instructios.
-        TokenTypeVec _allowedTokens;
-        std::string_view _filename;                    ///< Filename that contains the instruction.
+        TokenTypeVec _allowedTokens;                       ///< Vector of allowed tokenTypes for the next token.
+        std::string_view _filename;                        ///< Filename that contains the instructions.
 
         /**
          * @brief Checks an identifier or unary operator token.

@@ -64,8 +64,8 @@ constexpr std::string_view filename = "../../../input.vn";
 // constexpr std::string_view filename = "../../../../input.vn";  // Linux and Unix  form editor
 constexpr std::string_view filename = "../../../input.vn";  // Linux and Unix
 #endif
-auto extractInstructions(const std::vector<vnd::Token> &tokens) -> std::vector<vnd::Instruction> {
-    vnd::InstructionFactory factory = vnd::InstructionFactory::create(filename, tokens);
+auto extractInstructions(const std::string file, const std::vector<vnd::Token> &tokens) -> std::vector<vnd::Instruction> {
+    vnd::InstructionFactory factory = vnd::InstructionFactory::create(file, tokens);
     auto line = tokens.at(0).getLine();
     vnd::AutoTimer ictim("Instructions creation time");
     for(const vnd::Token &token : tokens) {
@@ -137,7 +137,7 @@ auto main(int argc, const char *const argv[]) -> int {
         std::vector<vnd::Token> tokens;
         timeTokenizer(tokenizer, tokens);
         // for(const auto &item : tokens) { LINFO("{}", item); }
-        std::vector<vnd::Instruction> instructions = extractInstructions(tokens);
+        std::vector<vnd::Instruction> instructions = extractInstructions(path.value_or(filename.data()), tokens);
         vnd::Timer tim("transpiling time");
         vnd::Transpiler transpiler = vnd::Transpiler::create(instructions);
         auto [success, output] = transpiler.transpile(path.value_or(filename.data()));

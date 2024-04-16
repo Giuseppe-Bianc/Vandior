@@ -11,24 +11,30 @@ namespace vnd {
     class Instruction {
     public:
         /**
-         * @brief Create an instruction instance.
+         * @brief Creates an instruction instance.
          * @param filename String representing the filename that contains the instruction.
-         * @return the created Instruction instance.
+         * @return The created Instruction instance.
          */
         [[nodiscard]] static Instruction create(const std::string_view filename) noexcept;
 
+        /**
+        * @brief Adds a token to the instruction.
+        * @param token The token to add.
+        */
         void emplaceToken(const Token& token) { _tokens.emplace_back(token); }
 
         /**
-         * @brief Gtes the tokens of the instruction.
+         * @brief Gets the tokens of the instruction.
          * @return Vector containing the tokens of the instruction.
          */
         [[nodiscard]] TokenVec getTokens() const noexcept;
+
         /**
-         * @brief gets the last type of the instruction.
+         * @brief Gets the last type of the instruction.
          * @return InstructionType representing the last type of the instruction.
          */
         [[nodiscard]] InstructionType getLastType() const noexcept;
+
         /**
          * @brief Gets a vector containing the the string representation of the instruction types.
          * @return Vector of the instruction type.
@@ -41,29 +47,6 @@ namespace vnd {
          */
         [[nodiscard]] std::string toString() const noexcept;
         
-        /**
-         * @brief Constructs an Instruction.
-         * @param filename String representing the filename that contains the instruction.
-         */
-        explicit Instruction(const std::string_view filename) noexcept;
-        static const TokenTypeVec _expressionStartTokens;  ///< Vector of the token types that can start an expression.
-        TokenTypeVec _allowedTokens = {TokenType::K_MAIN,
-                                       TokenType::K_VAR,
-                                       TokenType::K_IF,
-                                       TokenType::K_WHILE,
-                                       TokenType::K_FOR,
-                                       TokenType::K_FUN,
-                                       TokenType::K_RETURN,
-                                       TokenType::K_BREAK,
-                                       TokenType::IDENTIFIER,
-                                       TokenType::OPEN_CUR_PARENTESIS,
-                                       TokenType::CLOSE_CUR_PARENTESIS,
-                                       eofTokenType};                    ///< Vector of tokens that are allowed.
-        TokenVec _tokens;                                                ///< Vector of previous tokens.
-        std::vector<InstructionType> _types = {InstructionType::BLANK};  ///< Vector of the types of the instruction.
-        std::vector<bool> _booleanOperators = {false};                   ///< Vector of the flags for boolean operators.
-        std::string_view _filename;                                      ///< Filename that contains the instruction.
-
         /**
          * @brief Sets the last type of the instruction.
          * @param type InstructionType to set.
@@ -145,6 +128,19 @@ namespace vnd {
          * @return Bool containing the result of the check.
          */
         [[nodiscard]] bool isForExpression() const noexcept;
+        
+    private:
+        /**
+         * @brief Constructs an Instruction.
+         * @param filename String representing the filename that contains the instruction.
+         */
+        explicit Instruction(const std::string_view filename) noexcept;
+
+        TokenVec _tokens;                                                ///< Vector of instruction tokens.
+        std::vector<InstructionType> _types = {InstructionType::BLANK};  ///< Vector of the types of the instruction.
+        std::vector<bool> _booleanOperators = {false};                   ///< Vector of the flags for boolean operators.
+        std::string_view _filename;                                      ///< Filename that contains the instruction.
+
     };
 }  // namespace vnd
 

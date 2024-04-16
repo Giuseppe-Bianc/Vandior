@@ -3,12 +3,6 @@
 
 namespace vnd {
     // NOLINTBEGIN(*-include-cleaner)
-    const std::vector<TokenType> Instruction::_expressionStartTokens = {TokenType::IDENTIFIER,      TokenType::INTEGER,
-                                                                        TokenType::DOUBLE,          TokenType::CHAR,
-                                                                        TokenType::STRING,          TokenType::BOOLEAN,
-                                                                        TokenType::MINUS_OPERATOR,  TokenType::NOT_OPERATOR,
-                                                                        TokenType::OPEN_PARENTESIS, TokenType::OPEN_CUR_PARENTESIS,
-                                                                        TokenType::K_NULLPTR};
 
     Instruction::Instruction(const std::string_view filename) noexcept : _filename(filename) {
         _tokens.reserve(10);  // NOLINT(*-avoid-magic-numbers, *-magic-numbers)
