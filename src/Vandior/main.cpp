@@ -12,8 +12,11 @@ DISABLE_WARNINGS_POP()
 // configuration step. It creates a namespace called `Vandior`. You can modify
 // the source template at `configured_files/config.hpp.in`.
 #include <internal_use_only/config.hpp>
+#include <system_error>
 
 #define HIDE_SYSTEM_OUTPUT
+
+namespace fs = std::filesystem;
 
 namespace {
     auto timeTokenizer(vnd::Tokenizer &tokenizer, std::vector<vnd::Token> &tokens) -> void {
@@ -21,11 +24,61 @@ namespace {
         vnd::AutoTimer timer("tokenization");
         tokens = tokenizer.tokenize();
     }
+
+    auto createFolder(const std::string &folderName, const fs::path &parentDir) -> bool {
+        // Validate the parameters
+        if(parentDir.empty() || folderName.empty()) {
+            LERROR("Invalid parameters: parentPath or folderName is empty.");
+            return false;
+        }
+
+        auto newDirPath = parentDir / folderName;
+        if(fs::exists(newDirPath)) {
+            LWARN("The folder already exists: {}", newDirPath);
+            return true;  // Return true since the folder already exists
+        }
+
+        // Create the new directory
+        std::error_code error_codec;
+        if(fs::create_directories(newDirPath, error_codec)) {
+            LINFO("Folder '{}' created successfully at '{}'", folderName, newDirPath);
+            return true;
+        } else {
+            if(error_codec) {
+                // Log the error with specific details
+                LERROR("Failed to create folder '{}' at '{}': {} (Error code: {})", folderName, newDirPath, error_codec.message(),
+                       error_codec.value());
+            } else {
+                LERROR("Failed to create folder '{}' at '{}' for an unknown error", folderName, newDirPath);
+            }
+            return false;
+        }
+    }
+
+    auto createFolderNextToFile(const std::string_view &filePath, const std::string &folderName) -> bool {
+        try {
+            // Check if the file path exists
+            if(!fs::exists(filePath)) {
+                LERROR("The file path does not exist: {}", filePath);
+                return false;
+            }
+
+            // Get the parent directory of the file
+            auto parentDir = fs::path(filePath).parent_path();
+
+            // Construct the path for the new directory
+            return createFolder(folderName, parentDir);
+        } catch(const std::exception &e) {
+            LERROR("Exception occurred: {}", e.what());
+            return false;
+        }
+    }
+
     auto readFromFile(const std::string &filename) -> std::string {
         vnd::AutoTimer timer(FORMAT("reading file {}", filename));
-        const auto &filePath = std::filesystem::path(filename);
-        if(!std::filesystem::exists(filePath)) { throw FILEREADEREERRORF("File not found: {}", filePath); }
-        if(!std::filesystem::is_regular_file(filePath)) { throw FILEREADEREERRORF("Path is not a regular file: {}", filePath); }
+        const auto &filePath = fs::path(filename);
+        if(!fs::exists(filePath)) { throw FILEREADEREERRORF("File not found: {}", filePath); }
+        if(!fs::is_regular_file(filePath)) { throw FILEREADEREERRORF("Path is not a regular file: {}", filePath); }
 
         std::stringstream buffer;
         // NOLINTNEXTLINE(*-include-cleaner,  hicpp-signed-bitwise)
@@ -128,17 +181,19 @@ auto main(int argc, const char *const argv[]) -> int {
             LINFO("{}", Vandior::cmake::project_version);
             return EXIT_SUCCESS;  // NOLINT(*-include-cleaner)
         }
-        std::string str = readFromFile(path.value_or(filename.data()));
+        auto pathOrFileName = path.value_or(filename.data());
+        if(!createFolderNextToFile(filename, "vnbuild")) { return EXIT_FAILURE; }
+        std::string str = readFromFile(pathOrFileName);
 
         std::string_view code(str);
-        vnd::Tokenizer tokenizer{code, filename};
+        vnd::Tokenizer tokenizer{code, pathOrFileName};
         std::vector<vnd::Token> tokens;
         timeTokenizer(tokenizer, tokens);
         // for(const auto &item : tokens) { LINFO("{}", item); }
-        std::vector<vnd::Instruction> instructions = extractInstructions(path.value_or(filename.data()), tokens);
+        std::vector<vnd::Instruction> instructions = extractInstructions(pathOrFileName, tokens);
         vnd::Timer tim("transpiling time");
         vnd::Transpiler transpiler = vnd::Transpiler::create(instructions);
-        auto [success, output] = transpiler.transpile(path.value_or(filename.data()));
+        auto [success, output] = transpiler.transpile(pathOrFileName);
         if(!success) { return EXIT_FAILURE; }
         LINFO("{}", tim);
         if(compile || run) {
