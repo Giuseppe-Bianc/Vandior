@@ -28,7 +28,7 @@ namespace {
 
     auto createFolder(const std::string &folderName, const fs::path &parentDir) -> vnd::FolderCreationResult {
         // Validate the parameters
-        if(parentDir.empty() || folderName.empty()) {
+        if(folderName.empty()) {
             LERROR("Invalid parameters: parentPath or folderName is empty.");
             return {false, fs ::path()};
         }
@@ -182,7 +182,6 @@ auto main(int argc, const char *const argv[]) -> int {
             LINFO("{}", Vandior::cmake::project_version);
             return EXIT_SUCCESS;  // NOLINT(*-include-cleaner)
         }
-        // auto pathOrFileName = path.value_or(filename.data());
         auto resultFolderCreation = createFolderNextToFile(path.value_or(filename.data()), "vnbuild");
         auto vnBuildFolder = resultFolderCreation.pathcref();
         if(!resultFolderCreation.success()) {
