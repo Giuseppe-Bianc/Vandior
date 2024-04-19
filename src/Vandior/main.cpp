@@ -102,17 +102,15 @@ namespace {
     }
 
 }  // namespace
-// constexpr std::string_view code2 = R"('a' '\\' '')";
-// constexpr std::string_view code2 = R"("a" "\\" "")";
 DISABLE_WARNINGS_PUSH(26461 26821)
 // NOLINTNEXTLINE(bugprone-exception-escape, readability-function-cognitive-complexity)
 #ifdef _WIN32  // Windows
 #ifdef __MINGW32__
-constexpr std::string_view filename = "../../../../input.vn";  // windows mingw form editor, use this when building for mingw
+constexpr std::string_view filename = R"(..\..\..\..\input.vn)";  // windows mingw form editor, use this when building for mingw
 #elifdef __clang__
-constexpr std::string_view filename = "../../../../input.vn";  // windows mingw form editor, use this when building for clang
+constexpr std::string_view filename = R"(..\..\..\..\input.vn)";  // windows mingw form editor, use this when building for clang
 #else
-constexpr std::string_view filename = "../../../input.vn";
+constexpr std::string_view filename = "..\\..\\..\\input.vn";
 #endif
 #elif defined __unix__  // Linux and Unix-like systems
 // constexpr std::string_view filename = "../../../../input.vn";  // Linux and Unix  form editor
@@ -183,11 +181,14 @@ auto main(int argc, const char *const argv[]) -> int {
             return EXIT_SUCCESS;  // NOLINT(*-include-cleaner)
         }
         auto resultFolderCreation = createFolderNextToFile(path.value_or(filename.data()), "vnbuild");
-        auto vnBuildFolder = resultFolderCreation.pathcref();
-        if(!resultFolderCreation.success()) {
+        const auto &vnBuildFolder = resultFolderCreation.pathcref();
+        if(!resultFolderCreation.success()) { return EXIT_FAILURE; }
+        auto resultFolderCreationsrc = createFolder("src", vnBuildFolder);
+        auto vnSrcFolder = resultFolderCreationsrc.pathcref();
+        if(!resultFolderCreationsrc.success()) {
             return EXIT_FAILURE;
         } else {
-            LINFO("build folder path {}", vnBuildFolder);
+            LINFO("build folder path {}", vnSrcFolder);
         }
         auto str = readFromFile(path.value_or(filename.data()));
         const std::string_view code(str);

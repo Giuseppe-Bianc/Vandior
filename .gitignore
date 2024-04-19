@@ -39,3 +39,4 @@ Thumbs.db
 /input.cpp
 examples/*.cpp
 *.exe
+/vnbuild/src/

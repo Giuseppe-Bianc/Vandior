@@ -30,14 +30,14 @@ namespace vnd {
     std::pair<bool, std::string> Transpiler::transpile(std::string filename) {
         using enum TokenType;
         using enum InstructionType;
-        if(filename.ends_with(".vn")) { filename.erase(filename.end() - 3, filename.end()); }
-#ifdef _WIN32
-        for(char &iter : filename) {
-            if(iter == '\\') { iter = '/'; }
-        }
-#endif
-        if(auto pos = filename.find_last_of('/'); pos != std::string::npos) { filename = filename.substr(pos + 1); }
-        _output.open(FORMAT("{}.cpp", filename));
+        auto filenameP = std::filesystem::path(filename);
+
+        if(filenameP.extension().string() != ".vn") { return {false, {}}; }
+        LINFO("transpiling from {}", filenameP);
+        auto newfilenameP = filenameP.parent_path() / "vnbuild" / "src" / filenameP.stem();
+        LINFO("transpiling to {}", FORMAT("{}.cpp", newfilenameP));
+        _output.open(FORMAT("{}.cpp", newfilenameP));
+        filename = newfilenameP.string();
         _text += "#include <base/base.hpp>\n\n";
         try {
             for(const auto &instruction : _instructions) {
@@ -463,7 +463,8 @@ namespace vnd {
             if(iterator != endToken) { iterator = std::next(iterator); }
         }
         if(_returnTypes.size() != factory.size()) {
-            throw TRANSPILER_EXCEPTIONF(instruction, "Inconsistent return: {} values where {} expected", factory.size(), _returnTypes.size());
+            throw TRANSPILER_EXCEPTIONF(instruction, "Inconsistent return: {} values where {} expected", factory.size(),
+                                        _returnTypes.size());
         }
         for(const auto &type : _returnTypes) {
             auto expression = factory.getExpression();
@@ -495,8 +496,7 @@ namespace vnd {
         return result;
     }
 
-    StringPairVec Transpiler::extractVariables(TokenVecIter &iterator, const TokenVecIter &end,
-                                                         const Instruction &instruction) const {
+    StringPairVec Transpiler::extractVariables(TokenVecIter &iterator, const TokenVecIter &end, const Instruction &instruction) const {
         using enum TokenType;
         StringPairVec result;
         std::string currentVariable;
