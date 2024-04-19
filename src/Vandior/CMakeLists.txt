@@ -1,5 +1,6 @@
 add_executable(vandior main.cpp
-        FileReaderError.hpp)
+        FileReaderError.hpp
+        FolderCreationResult.hpp)
 
 
 if (CMAKE_CXX_COMPILER_ID MATCHES ".*Clang")
@@ -13,15 +14,15 @@ else ()
 endif ()
 
 target_link_libraries(
-  vandior
-  PRIVATE Vandior::Vandior_options
-          Vandior::Vandior_warnings)
+        vandior
+        PRIVATE Vandior::Vandior_options
+        Vandior::Vandior_warnings)
 
 target_link_system_libraries(
-  vandior
-  PRIVATE
-          CLI11::CLI11
-          Vandior::vandior_lib
+        vandior
+        PRIVATE
+        CLI11::CLI11
+        Vandior::vandior_lib
 )
 
 target_include_directories(vandior PRIVATE "${CMAKE_BINARY_DIR}/configured_files/include")
