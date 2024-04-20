@@ -4,6 +4,7 @@
 #include "primitives.hpp"
 #include "string.hpp"
 #include "container.hpp"
+#include "basemath.cpp"
 #include<format>
 
 #define FOR_LOOP(type, var, initial, final, step) \
@@ -18,19 +19,7 @@ namespace vnd {
 		}
 		return args;
 	}
-	template<typename T1, typename T2>
-	std::common_type_t<T1, T2> mod(T1 a, T2 b) {
-		using result_type = std::common_type_t<T1, T2>;
-		if constexpr (std::is_same_v<result_type, i64>) {
-			std::cout << "Int" << std::endl;
-			return a % b;
-		}
-		return std::fmod(static_cast<result_type>(a), static_cast<result_type>(b));	
-	}
-	template<typename T1, typename T2>
-	std::common_type_t<T1, T2> pow(T1 a, T2 b)  {
-		return static_cast<std::common_type_t<T1, T2>>(std::pow(a, b));
-	}
+	
 }
 
 i32 v_test() { return 0; }

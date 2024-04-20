@@ -53,6 +53,10 @@ namespace vnd {
         mainScope->addVariable("Object.s", "string", false);
         mainScope->addVariable("Derived._derivedProperty", "bool", false);
         mainScope->addVariable("Derived.obj", objs, false);
+        mainScope->addConstant("PI", "f64", std::to_string(std::numbers::pi));
+        mainScope->addConstant("TAU", "f64", std::to_string(std::numbers::pi * 2));
+        mainScope->addConstant("E", "f64", std::to_string(std::numbers::e));
+        mainScope->addConstant("INF", "f64", std::to_string(std::numeric_limits<double>::infinity()));
         mainScope->addConstant("Object.c", int32s, "2");
         mainScope->addConstant("Derived._derivedConst", "bool", "true");
         mainScope->addFun("exit", FunType::create("void", {"i32"}));
