@@ -57,6 +57,7 @@ DISABLE_WARNINGS_PUSH(
 #include <memory_resource>
 #include <numbers>
 //#include <omp.h>
+#include <ostream>
 #include <optional>
 #include <random>
 #include <ranges>
@@ -78,6 +79,8 @@ DISABLE_WARNINGS_PUSH(
 #include "glm_prety_string_cast.hpp"
 // Restore warning levels.
 DISABLE_WARNINGS_POP()
+
+namespace fs = std::filesystem;
 
 static inline constexpr long double NINFINITY = std::numeric_limits<long double>::infinity();
 static inline constexpr long double PI = std::numbers::pi_v<long double>;

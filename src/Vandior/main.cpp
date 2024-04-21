@@ -17,43 +17,11 @@ DISABLE_WARNINGS_POP()
 
 #define HIDE_SYSTEM_OUTPUT
 
-namespace fs = std::filesystem;
-
 namespace {
     auto timeTokenizer(vnd::Tokenizer &tokenizer, std::vector<vnd::Token> &tokens) -> void {
         tokens.clear();
         vnd::AutoTimer timer("tokenization");
         tokens = tokenizer.tokenize();
-    }
-
-    auto createFolder(const std::string &folderName, const fs::path &parentDir) -> vnd::FolderCreationResult {
-        // Validate the parameters
-        if(folderName.empty()) {
-            LERROR("Invalid parameters: parentPath or folderName is empty.");
-            return {false, fs ::path()};
-        }
-
-        auto newDirPath = parentDir / folderName;
-        if(fs::exists(newDirPath)) {
-            LWARN("The folder already exists: {}", newDirPath);
-            return {true, newDirPath};  // Return true since the folder already exists
-        }
-
-        // Create the new directory
-        std::error_code error_codec;
-        if(fs::create_directories(newDirPath, error_codec)) {
-            LINFO("Folder '{}' created successfully at '{}'", folderName, newDirPath);
-            return {true, newDirPath};
-        } else {
-            if(error_codec) {
-                // Log the error with specific details
-                LERROR("Failed to create folder '{}' at '{}': {} (Error code: {})", folderName, newDirPath, error_codec.message(),
-                       error_codec.value());
-            } else {
-                LERROR("Failed to create folder '{}' at '{}' for an unknown error", folderName, newDirPath);
-            }
-            return {false, fs ::path()};
-        }
     }
 
     auto createFolderNextToFile(const std::string_view &filePath, const std::string &folderName) -> vnd::FolderCreationResult {
@@ -68,7 +36,7 @@ namespace {
             auto parentDir = fs::path(filePath).parent_path();
 
             // Construct the path for the new directory
-            return createFolder(folderName, parentDir);
+            return vnd::FolderCreationResult::createFolder(folderName, parentDir);
         } catch(const std::exception &e) {
             LERROR("Exception occurred: {}", e.what());
             return {false, fs ::path()};
@@ -136,8 +104,6 @@ auto extractInstructions(const std::string &file, const std::vector<vnd::Token> 
     return factory.getInstructions();
 }
 
-// namespace fs = std::filesystem;
-
 // NOLINTNEXTLINE(*-function-cognitive-complexity)
 auto main(int argc, const char *const argv[]) -> int {
     // NOLINTNEXTLINE
@@ -183,7 +149,7 @@ auto main(int argc, const char *const argv[]) -> int {
         auto resultFolderCreation = createFolderNextToFile(path.value_or(filename.data()), "vnbuild");
         const auto &vnBuildFolder = resultFolderCreation.pathcref();
         if(!resultFolderCreation.success()) { return EXIT_FAILURE; }
-        auto resultFolderCreationsrc = createFolder("src", vnBuildFolder);
+        auto resultFolderCreationsrc = vnd::FolderCreationResult::createFolder("src", vnBuildFolder);
         auto vnSrcFolder = resultFolderCreationsrc.pathcref();
         if(!resultFolderCreationsrc.success()) {
             return EXIT_FAILURE;

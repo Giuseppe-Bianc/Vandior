@@ -1,7 +1,6 @@
 #pragma once
 
-#include <filesystem>
-#include <ostream>
+#include "Vandior/vandior.hpp"
 
 namespace vnd {
 
@@ -120,6 +119,36 @@ namespace vnd {
          */
         friend std::ostream &operator<<(std::ostream &os, const FolderCreationResult &obj) {
             return os << "success_: " << obj.success_ << " path_: " << obj.path_;
+        }
+
+        [[nodiscard]] static auto createFolder(const std::string &folderName, const fs::path &parentDir) -> FolderCreationResult {
+            // Validate the parameters
+            if(folderName.empty()) {
+                LERROR("Invalid parameters: parentPath or folderName is empty.");
+                return {false, fs ::path()};
+            }
+
+            auto newDirPath = parentDir / folderName;
+            if(fs::exists(newDirPath)) {
+                LWARN("The folder already exists: {}", newDirPath);
+                return {true, newDirPath};  // Return true since the folder already exists
+            }
+
+            // Create the new directory
+            std::error_code error_codec;
+            if(fs::create_directories(newDirPath, error_codec)) {
+                LINFO("Folder '{}' created successfully at '{}'", folderName, newDirPath);
+                return {true, newDirPath};
+            } else {
+                if(error_codec) {
+                    // Log the error with specific details
+                    LERROR("Failed to create folder '{}' at '{}': {} (Error code: {})", folderName, newDirPath, error_codec.message(),
+                           error_codec.value());
+                } else {
+                    LERROR("Failed to create folder '{}' at '{}' for an unknown error", folderName, newDirPath);
+                }
+                return {false, fs ::path()};
+            }
         }
 
     private:
