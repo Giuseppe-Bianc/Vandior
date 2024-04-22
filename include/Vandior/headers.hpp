@@ -77,10 +77,12 @@ DISABLE_WARNINGS_PUSH(
 #include "casts.hpp"
 #include "glm_matld.hpp"
 #include "glm_prety_string_cast.hpp"
+#include <nlohmann/json.hpp>
 // Restore warning levels.
 DISABLE_WARNINGS_POP()
 
 namespace fs = std::filesystem;
+using json = nlohmann::json;
 
 static inline constexpr long double NINFINITY = std::numeric_limits<long double>::infinity();
 static inline constexpr long double PI = std::numbers::pi_v<long double>;
@@ -180,6 +182,21 @@ template <typename T, glm::qualifier Q> struct fmt::formatter<glm::qua<T, Q>> : 
      */
     template <typename FormatContext> auto format(const glm::qua<T, Q> &quaternion, FormatContext &ctx) {
         return formatter<std::string_view>::format(glmp::to_string(quaternion), ctx);
+    }
+};
+
+/**
+ * @brief Specialization of fmt::formatter for std::filesystem::path.
+ */
+template <> struct fmt::formatter<nlohmann::basic_json<>> : formatter<std::string_view> {
+    /**
+     * @brief Format function for std::filesystem::path.
+     * @param path The path to be formatted.
+     * @param ctx The format context.
+     * @return The formatted string.
+     */
+    template <typename FormatContext> auto format(const nlohmann::basic_json<> &json, FormatContext &ctx) {
+        return formatter<std::string_view>::format(json.dump(4), ctx);
     }
 };
 /** \endcond */
