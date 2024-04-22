@@ -106,9 +106,15 @@ namespace vnd {
          * @return The hash value of the object.
          */
         friend std::size_t hash_value(const FolderCreationResult &obj) noexcept {
+#ifdef __llvm__
+            std::hash<bool> bool_hasher;
+            std::hash<std::string> string_hasher;
+            return bool_hasher(obj.success_) ^ (string_hasher(obj.path_.string()) << 1);
+#else
             std::hash<bool> bool_hasher;
             std::hash<std::filesystem::path> path_hasher;
             return bool_hasher(obj.success_) ^ (path_hasher(obj.path_) << 1);
+#endif
         }
 
         /**
