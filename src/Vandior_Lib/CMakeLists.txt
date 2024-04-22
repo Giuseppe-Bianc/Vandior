@@ -34,6 +34,7 @@ target_link_libraries(vandior_lib PUBLIC
         fmt::fmt
         spdlog::spdlog
         glm::glm
+        nlohmann_json
 )
 
 target_include_directories(vandior_lib ${WARNING_GUARD} PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>

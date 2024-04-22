@@ -56,5 +56,12 @@ function(Vandior_setup_dependencies)
     if (NOT TARGET CLI11::CLI11)
         CPMAddPackage("gh:CLIUtils/CLI11@2.3.2")
     endif ()
-
+	
+	CPMAddPackage(
+	  NAME nlohmann_json
+	  VERSION 3.9.1
+	  URL https://github.com/nlohmann/json/archive/v3.9.1.tar.gz
+	  OPTIONS
+		"JSON_BuildTests OFF"
+	)
 endfunction()
