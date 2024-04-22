@@ -1,6 +1,5 @@
 // NOLINTBEGIN(*-include-cleaner, *-env33-c)
 #include "FileReaderError.hpp"
-#include "FolderCreationResult.hpp"
 #include "Vandior/vandior.hpp"
 
 DISABLE_WARNINGS_PUSH(
@@ -22,25 +21,6 @@ namespace {
         tokens.clear();
         vnd::AutoTimer timer("tokenization");
         tokens = tokenizer.tokenize();
-    }
-
-    auto createFolderNextToFile(const std::string_view &filePath, const std::string &folderName) -> vnd::FolderCreationResult {
-        try {
-            // Check if the file path exists
-            if(!fs::exists(filePath)) {
-                LERROR("The file path does not exist: {}", filePath);
-                return {false, fs ::path()};
-            }
-
-            // Get the parent directory of the file
-            auto parentDir = fs::path(filePath).parent_path();
-
-            // Construct the path for the new directory
-            return vnd::FolderCreationResult::createFolder(folderName, parentDir);
-        } catch(const std::exception &e) {
-            LERROR("Exception occurred: {}", e.what());
-            return {false, fs ::path()};
-        }
     }
 
     auto readFromFile(const std::string &filename) -> std::string {
@@ -78,7 +58,7 @@ constexpr std::string_view filename = R"(..\..\..\..\input.vn)";  // windows min
 #elifdef __clang__
 constexpr std::string_view filename = R"(..\..\..\..\input.vn)";  // windows mingw form editor, use this when building for clang
 #else
-constexpr std::string_view filename = "..\\..\\..\\input.vn";
+constexpr std::string_view filename = R"(..\..\..\input.vn)";
 #endif
 #elif defined __unix__  // Linux and Unix-like systems
 // constexpr std::string_view filename = "../../../../input.vn";  // Linux and Unix  form editor
@@ -146,7 +126,7 @@ auto main(int argc, const char *const argv[]) -> int {
             LINFO("{}", Vandior::cmake::project_version);
             return EXIT_SUCCESS;  // NOLINT(*-include-cleaner)
         }
-        auto resultFolderCreation = createFolderNextToFile(path.value_or(filename.data()), "vnbuild");
+        auto resultFolderCreation = vnd::FolderCreationResult::createFolderNextToFile(path.value_or(filename.data()), "vnbuild");
         const auto &vnBuildFolder = resultFolderCreation.pathcref();
         if(!resultFolderCreation.success()) { return EXIT_FAILURE; }
         auto resultFolderCreationsrc = vnd::FolderCreationResult::createFolder("src", vnBuildFolder);

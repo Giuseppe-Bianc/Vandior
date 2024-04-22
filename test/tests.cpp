@@ -22,7 +22,11 @@ static inline constexpr auto identf = vnd::TokenType::IDENTIFIER;
 static inline constexpr auto inte = vnd::TokenType::INTEGER;
 static inline constexpr auto doub = vnd::TokenType::DOUBLE;
 static inline constexpr auto oper = vnd::TokenType::OPERATOR;
-static inline constexpr std::string_view filename = "unknown.vn";
+#ifdef _WIN32  // Windows
+static inline constexpr std::string_view filename = R"(.\unknown.vn)";
+#else
+static inline constexpr std::string_view filename = R"(./unknown.vn)";
+#endif
 static inline constexpr std::string_view filename2 = "example.cpp";
 static inline constexpr std::string_view filename3 = "new_file.cpp";
 static inline constexpr std::string_view filename4 = "unknown";
@@ -30,7 +34,12 @@ static inline constexpr std::string_view timerName = "My Timer";
 static inline constexpr std::string_view timerBigs = "-----------";
 static inline constexpr std::string_view timerTime1 = "ms";
 static inline constexpr std::string_view timerTime2 = "ns";
-static inline constexpr std::string_view outFilename = "./unknown.cpp";
+#ifdef _WIN32  // Windows
+static inline constexpr std::string_view outFilename = R"(.\vnbuild\src\unknown.cpp)";
+#else
+static inline constexpr std::string_view outFilename = R"(./vnbuild/src/unknown.cpp)";
+#endif
+
 static inline constexpr long long int timerSleap = 12;
 static inline constexpr long long int timerSleap2 = 5;
 static inline constexpr std::size_t timerCicles = 1000000;
@@ -49,6 +58,7 @@ TEST_CASE("glm::vec formater", "[FMT]") {
     REQUIRE(FORMAT("{}", glm::dvec4{0.0, 0.0, 0.0, 0.0}) == "dvec4(0, 0, 0, 0)");
     REQUIRE(FORMAT("{}", glm::ldvec4{0.0, 0.0, 0.0F, 0.0}) == "ldvec4(0, 0, 0, 0)");
 }
+
 TEST_CASE("glm::mat formater", "[FMT]") {
     REQUIRE(FORMAT("{}", glm::mat2{0.0F, 0.0F, 0.0F, 0.0F}) == "mat2x2((0,0), (0,0))");
     REQUIRE(FORMAT("{}", glm::dmat2{0.0, 0.0, 0.0, 0.0}) == "dmat2x2((0,0), (0,0))");
@@ -319,7 +329,11 @@ TEST_CASE("default constructed token set propriety tostring", "[token]") {
     REQUIRE(token.getFileName() == filename);
     REQUIRE(token.getLine() == 1);
     REQUIRE(token.getColumn() == 1);
-    REQUIRE(token.to_string() == "(type: INTEGER, value: 'assss', source location:(file:unknown.vn, line:1, column:1))");
+#ifdef _WIN32  // Windows
+    REQUIRE(token.to_string() == R"((type: INTEGER, value: 'assss', source location:(file:.\unknown.vn, line:1, column:1)))");
+#else
+    REQUIRE(token.to_string() == R"((type: INTEGER, value: 'assss', source location:(file:./unknown.vn, line:1, column:1)))");
+#endif
 }
 
 TEST_CASE("default constructed token set propriety format", "[token]") {
@@ -336,7 +350,11 @@ TEST_CASE("default constructed token set propriety format", "[token]") {
     REQUIRE(token.getFileName() == filename);
     REQUIRE(token.getLine() == 1);
     REQUIRE(token.getColumn() == 1);
-    REQUIRE(FORMAT("{}", token) == "(type: INTEGER, value: 'assss', source location:(file:unknown.vn, line:1, column:1))");
+#ifdef _WIN32  // Windows
+    REQUIRE(FORMAT("{}", token) == R"((type: INTEGER, value: 'assss', source location:(file:.\unknown.vn, line:1, column:1)))");
+#else
+    REQUIRE(FORMAT("{}", token) == R"((type: INTEGER, value: 'assss', source location:(file:./unknown.vn, line:1, column:1)))");
+#endif
 }
 
 TEST_CASE("Token Comparison Equality", "[Token]") {
@@ -778,11 +796,22 @@ TEST_CASE("ExpressionFactory emit function type", "[factory]") {
     REQUIRE(factory.size() == 1);
     REQUIRE(factory.getExpression().getType() == "i64");
 }
-
+namespace {
+    void createBuildSrcFolder(std::string_view fname) {
+        auto fpath = fs::path(fname);
+        fpath = fpath.parent_path();
+        auto buildfres = vnd::FolderCreationResult::createFolder("vnbuild", fpath);
+        if(buildfres.success()) {
+            auto srcfres = vnd::FolderCreationResult::createFolder("src", buildfres.pathcref());
+            // auto srcf = srcfres.pathcref();
+        }
+    }
+}  // namespace
 TEST_CASE("Transpiler transpile main instruction", "[transpiler]") {
     using enum vnd::TokenType;
     vnd::Tokenizer tokenizer{"main{}", filename};
     auto transpiler = createSimpleTranspiler(tokenizer.tokenize());
+    createBuildSrcFolder(filename);
     transpiler.transpile(std::string{filename});
     REQUIRE(std::filesystem::exists(outFilename));
     std::string code = fileContent();
@@ -791,12 +820,13 @@ TEST_CASE("Transpiler transpile main instruction", "[transpiler]") {
                     "\tconst vnd::vector<string> _args = vnd::createArgs(argc, argv);\n"
                     "\treturn 0;\n"
                     "}\n");
-}
+}  // namespace TEST_CASE("Transpiler transpile main instruction","[transpiler]")
 
 TEST_CASE("Transpiler transpile declaration instruction", "[transpiler]") {
     using enum vnd::TokenType;
     vnd::Tokenizer tokenizer{"var num, num1 : i32", filename};
     auto transpiler = createSimpleTranspiler(tokenizer.tokenize());
+    createBuildSrcFolder(filename);
     transpiler.transpile(std::string{filename});
     REQUIRE(std::filesystem::exists(outFilename));
     std::string code = fileContent();
@@ -808,6 +838,7 @@ TEST_CASE("Transpiler transpile declaration underscore instruction", "[transpile
     using enum vnd::TokenType;
     vnd::Tokenizer tokenizer{"var _num, _num1 : u32", filename};
     auto transpiler = createSimpleTranspiler(tokenizer.tokenize());
+    createBuildSrcFolder(filename);
     transpiler.transpile(std::string{filename});
     REQUIRE(std::filesystem::exists(outFilename));
     std::string code = fileContent();
@@ -819,6 +850,7 @@ TEST_CASE("Transpiler transpile initialization instruction", "[transpiler]") {
     using enum vnd::TokenType;
     vnd::Tokenizer tokenizer{"var num, num1 : i8 = 1", filename};
     auto transpiler = createSimpleTranspiler(tokenizer.tokenize());
+    createBuildSrcFolder(filename);
     transpiler.transpile(std::string{filename});
     REQUIRE(std::filesystem::exists(outFilename));
     std::string code = fileContent();
@@ -830,6 +862,7 @@ TEST_CASE("Transpiler transpile initialization underscore instruction", "[transp
     using enum vnd::TokenType;
     vnd::Tokenizer tokenizer{"var _num, _num1 : u64 = 1", filename};
     auto transpiler = createSimpleTranspiler(tokenizer.tokenize());
+    createBuildSrcFolder(filename);
     transpiler.transpile(std::string{filename});
     REQUIRE(std::filesystem::exists(outFilename));
     std::string code = fileContent();
@@ -841,6 +874,7 @@ TEST_CASE("Transpiler transpile const instruction", "[transpiler]") {
     using enum vnd::TokenType;
     vnd::Tokenizer tokenizer{"const num : u16 = 1 + 333", filename};
     auto transpiler = createSimpleTranspiler(tokenizer.tokenize());
+    createBuildSrcFolder(filename);
     transpiler.transpile(std::string{filename});
     REQUIRE(std::filesystem::exists(outFilename));
     std::string code = fileContent();
@@ -852,6 +886,7 @@ TEST_CASE("Transpiler transpile operation instruction", "[transpiler]") {
     using enum vnd::TokenType;
     vnd::Tokenizer tokenizer{"main {\nprint(\"Test {}\", args[0])\n}", filename};
     auto transpiler = createComplexTranspiler(tokenizer.tokenize());
+    createBuildSrcFolder(filename);
     transpiler.transpile(std::string{filename});
     REQUIRE(std::filesystem::exists(outFilename));
     std::string code = fileContent();
@@ -867,16 +902,17 @@ TEST_CASE("Transpiler transpile assignation instruction", "[transpiler]") {
     using enum vnd::TokenType;
     vnd::Tokenizer tokenizer{"main{\nvar num : i8\nnum = 1\n}", filename};
     auto transpiler = createComplexTranspiler(tokenizer.tokenize());
+    createBuildSrcFolder(filename);
     transpiler.transpile(std::string{filename});
     REQUIRE(std::filesystem::exists(outFilename));
     std::string code = fileContent();
     REQUIRE(code == "#include <base/base.hpp>\n\n"
-            "int main(int argc, char **argv) {\n"
-            "\tconst vnd::vector<string> _args = vnd::createArgs(argc, argv);\n"
-            "\ti8 _num{};\n"
-            "\t_num = 1;\n"
-            "\treturn 0;\n"
-            "}\n");
+                    "int main(int argc, char **argv) {\n"
+                    "\tconst vnd::vector<string> _args = vnd::createArgs(argc, argv);\n"
+                    "\ti8 _num{};\n"
+                    "\t_num = 1;\n"
+                    "\treturn 0;\n"
+                    "}\n");
     ;
 }
 
@@ -884,6 +920,7 @@ TEST_CASE("Transpiler transpile if instruction", "[transpiler]") {
     using enum vnd::TokenType;
     vnd::Tokenizer tokenizer{"main{\nif(true){\n} else if(false){\n} else{}\n\n}", filename};
     auto transpiler = createComplexTranspiler(tokenizer.tokenize());
+    createBuildSrcFolder(filename);
     transpiler.transpile(std::string{filename});
     REQUIRE(std::filesystem::exists(outFilename));
     std::string code = fileContent();
@@ -901,6 +938,7 @@ TEST_CASE("Transpiler transpile while and break instructions", "[transpiler]") {
     using enum vnd::TokenType;
     vnd::Tokenizer tokenizer{"main{\nwhile(true){\nbreak\n}\n}", filename};
     auto transpiler = createComplexTranspiler(tokenizer.tokenize());
+    createBuildSrcFolder(filename);
     transpiler.transpile(std::string{filename});
     REQUIRE(std::filesystem::exists(outFilename));
     std::string code = fileContent();
@@ -918,6 +956,7 @@ TEST_CASE("Transpiler transpile for instruction", "[transpiler]") {
     using enum vnd::TokenType;
     vnd::Tokenizer tokenizer{"main{\nfor var i : i8 = 0, 10, 1 {}\n}", filename};
     auto transpiler = createComplexTranspiler(tokenizer.tokenize());
+    createBuildSrcFolder(filename);
     transpiler.transpile(std::string{filename});
     REQUIRE(std::filesystem::exists(outFilename));
     std::string code = fileContent();
@@ -933,6 +972,7 @@ TEST_CASE("Transpiler transpile open and close scope instructions", "[transpiler
     using enum vnd::TokenType;
     vnd::Tokenizer tokenizer{"main{\n{\n}\n\n}", filename};
     auto transpiler = createComplexTranspiler(tokenizer.tokenize());
+    createBuildSrcFolder(filename);
     transpiler.transpile(std::string{filename});
     REQUIRE(std::filesystem::exists(outFilename));
     std::string code = fileContent();
@@ -952,9 +992,11 @@ TEST_CASE("Transpiler transpile function instructions", "[transpiler]") {
                              "}\n"
                              "fun procedura() {\n"
                              "\tprint(\"Procedura\")\n"
-                             "}\n", filename};
+                             "}\n",
+                             filename};
     auto transpiler = createComplexTranspiler(tokenizer.tokenize());
     transpiler.transpile(std::string{filename});
+    createBuildSrcFolder(filename);
     REQUIRE(std::filesystem::exists(outFilename));
     std::string code = fileContent();
     REQUIRE(code == "#include <base/base.hpp>\n\n"

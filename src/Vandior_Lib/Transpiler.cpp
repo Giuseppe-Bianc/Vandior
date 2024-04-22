@@ -32,6 +32,10 @@ namespace vnd {
         using enum InstructionType;
         auto filenameP = std::filesystem::path(filename);
 
+        std::ifstream file(std::string(std::getenv("VNHOME")) + "/base/base.vnh");
+        json data;
+        file >> data;
+        file.close();
         if(filenameP.extension().string() != ".vn") { return {false, {}}; }
         LINFO("transpiling from {}", filenameP);
         auto newfilenameP = filenameP.parent_path() / "vnbuild" / "src" / filenameP.stem();
