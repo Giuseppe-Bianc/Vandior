@@ -272,6 +272,7 @@ namespace vnd {
         void reformatConstansInGlobalScope();
         void handleInitialization(const Instruction &instruction, TokenVecIter &iterator, const TokenVecIter &endToken,
                                   ExpressionFactory &factory) const;
+        std::string constructFilepath(const fs::path &filenameP) const noexcept;
     };
 
 }  // namespace vnd

@@ -30,14 +30,10 @@ namespace vnd {
     std::pair<bool, std::string> Transpiler::transpile(std::string filename) {
         using enum TokenType;
         using enum InstructionType;
-        auto filenameP = std::filesystem::path(filename);
 
-        if(filenameP.extension().string() != ".vn") { return {false, {}}; }
-        LINFO("transpiling from {}", filenameP);
-        auto newfilenameP = filenameP.parent_path() / "vnbuild" / "src" / filenameP.stem();
-        LINFO("transpiling to {}", FORMAT("{}.cpp", newfilenameP));
-        _output.open(FORMAT("{}.cpp", newfilenameP));
-        filename = newfilenameP.string();
+        if(filename != ".vn") { return {false, {}}; }
+        filename = constructFilepath(fs::path(filename));
+        _output.open(filename);
         _text += "#include <base/base.hpp>\n\n";
         try {
             for(const auto &instruction : _instructions) {
@@ -117,6 +113,9 @@ namespace vnd {
             return {false, {}};
         }
         return {true, filename};
+    }
+    std::string Transpiler::constructFilepath(const fs::path &filenameP) const noexcept {
+        return (filenameP.parent_path() / "vnbuild" / "src" / FORMAT("{}.cpp", filenameP.stem())).string();
     }
 
     void Transpiler::checkTrailingBracket(const Instruction &instruction) {
