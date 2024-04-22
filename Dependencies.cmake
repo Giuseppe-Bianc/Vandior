@@ -50,11 +50,20 @@ function(Vandior_setup_dependencies)
     endif ()
 
     if (NOT TARGET Catch2::Catch2WithMain)
-        CPMAddPackage("gh:catchorg/Catch2@3.5.2")
+        CPMAddPackage("gh:catchorg/Catch2@3.5.4")
     endif ()
 
     if (NOT TARGET CLI11::CLI11)
         CPMAddPackage("gh:CLIUtils/CLI11@2.3.2")
     endif ()
 
+    if (NOT TARGET nlohmann_json::nlohmann_json)
+        CPMAddPackage(
+                NAME nlohmann_json
+                GITHUB_REPOSITORY "nlohmann/json"
+                VERSION 3.11.3
+                OPTIONS
+                "JSON_BuildTests OFF"
+        )
+    endif ()
 endfunction()

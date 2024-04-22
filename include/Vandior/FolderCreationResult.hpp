@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Vandior/vandior.hpp"
+#include "headers.hpp"
 
 namespace vnd {
 
@@ -149,6 +149,31 @@ namespace vnd {
                 }
                 return {false, fs ::path()};
             }
+        }
+
+        [[nodiscard]] static auto createFolderNextToFile(const fs::path &filePath, const std::string &folderName) -> FolderCreationResult {
+            try {
+                // Get the parent directory of the file
+                auto parentDir = filePath.parent_path();
+
+                // Construct the path for the new directory
+                return vnd::FolderCreationResult::createFolder(folderName, parentDir);
+            } catch(const std::exception &e) {
+                LERROR("Exception occurred: {}", e.what());
+                return {false, fs ::path()};
+            }
+        }
+
+        // Add the to_json and from_json functions here:
+        friend void to_json(nlohmann::json &j, const FolderCreationResult &result) {
+            j = nlohmann::json{
+                {"success", result.success()}, {"path", result.path().string()}  // Convert path to string for JSON
+            };
+        }
+
+        friend void from_json(const nlohmann::json &j, FolderCreationResult &result) {
+            result.set_success(j.at("success").get<bool>());
+            result.set_path(j.at("path").get<std::filesystem::path>());
         }
 
     private:
