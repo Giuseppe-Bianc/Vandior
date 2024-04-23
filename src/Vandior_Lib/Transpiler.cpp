@@ -30,9 +30,11 @@ namespace vnd {
     std::pair<bool, std::string> Transpiler::transpile(std::string filename) {
         using enum TokenType;
         using enum InstructionType;
+        auto filenameP = std::filesystem::path(filename);
 
-        if(filename != ".vn") { return {false, {}}; }
-        filename = constructFilepath(fs::path(filename));
+        if(filenameP.extension() != ".vn") { return {false, {}}; }
+        filename = (filenameP.parent_path() / "vnbuild" / "src" / FORMAT("{}.cpp", filenameP.stem())).string();
+        LINFO("transpiling from {} to {}", filenameP, filename);
         _output.open(filename);
         _text += "#include <base/base.hpp>\n\n";
         try {
@@ -113,9 +115,6 @@ namespace vnd {
             return {false, {}};
         }
         return {true, filename};
-    }
-    std::string Transpiler::constructFilepath(const fs::path &filenameP) const noexcept {
-        return (filenameP.parent_path() / "vnbuild" / "src" / FORMAT("{}.cpp", filenameP.stem())).string();
     }
 
     void Transpiler::checkTrailingBracket(const Instruction &instruction) {
@@ -248,7 +247,7 @@ namespace vnd {
         std::vector<Expression> expressions;
         auto factory = ExpressionFactory::create(iterator, endToken, _scope, false);
         while(iterator != endToken) {
-            if(auto error = factory.parse({TokenType::COMMA}); !error.empty()) { throw TranspilerException(error, instruction); }
+            if(const auto &error = factory.parse({TokenType::COMMA}); !error.empty()) { throw TranspilerException(error, instruction); }
             if(iterator != endToken) { iterator = std::next(iterator); }
         }
         for(const auto &expression : factory.getExpressions()) {
@@ -458,7 +457,7 @@ namespace vnd {
         if(_returnTypes.size() > 1) { _text += " {"; }
         iterator = std::next(iterator);
         while(iterator != endToken) {
-            if(auto error = factory.parse({TokenType::COMMA}); !error.empty()) { throw TranspilerException(error, instruction); }
+            if(const auto &error = factory.parse({TokenType::COMMA}); !error.empty()) { throw TranspilerException(error, instruction); }
             if(iterator != endToken) { iterator = std::next(iterator); }
         }
         if(_returnTypes.size() != factory.size()) {
@@ -505,14 +504,14 @@ namespace vnd {
             const auto next = std::ranges::next(iterator);
             if(iterator->isType(IDENTIFIER)) {
                 if(next != end && next->isType(OPEN_PARENTESIS)) {
-                    if(auto error = extractFun(iterator, end, currentVariable, type); !error.empty()) {
+                    if(const auto &error = extractFun(iterator, end, currentVariable, type); !error.empty()) {
                         throw TranspilerException(error, instruction);
                     }
-                } else if(auto error = extractToken(iterator, end, next, currentVariable, type, assignable); !error.empty()) {
+                } else if(const auto &error = extractToken(iterator, end, next, currentVariable, type, assignable); !error.empty()) {
                     throw TranspilerException(error, instruction);
                 }
             } else if(iterator->isType(OPEN_SQ_PARENTESIS)) {
-                if(auto error = extractSquareExpression(iterator, end, currentVariable, type, assignable); !error.empty()) {
+                if(const auto &error = extractSquareExpression(iterator, end, currentVariable, type, assignable); !error.empty()) {
                     throw TranspilerException(error, instruction);
                 }
             } else if(iterator->isType(UNARY_OPERATOR)) {
@@ -576,7 +575,7 @@ namespace vnd {
         while(iterator->getType() != TokenType::CLOSE_PARENTESIS) {
             iterator = std::next(iterator);
             if(iterator->getType() != CLOSE_PARENTESIS) {
-                if(auto error = factory.parse({COMMA, CLOSE_PARENTESIS}); !error.empty()) { return error; }
+                if(const auto &error = factory.parse({COMMA, CLOSE_PARENTESIS}); !error.empty()) { return error; }
             }
         }
         expressions = factory.getExpressions();
@@ -615,7 +614,7 @@ namespace vnd {
         if(!Scope::checkVector(type)) { return FORMAT("Indexing not allowed for {} type", type); }
         auto factory = ExpressionFactory::create(iterator, end, _scope, false, true);
         iterator = std::next(iterator);
-        if(auto error = factory.parse({TokenType::CLOSE_SQ_PARENTESIS}); !error.empty()) { return error; }
+        if(const auto &error = factory.parse({TokenType::CLOSE_SQ_PARENTESIS}); !error.empty()) { return error; }
         auto expression = factory.getExpression();
         auto next = std::ranges::next(iterator);
         if(auto newType = expression.getType(); !Scope::isInteger(newType)) { return FORMAT("{} index not allowed", newType); }
@@ -683,7 +682,7 @@ namespace vnd {
                     std::string size;
                     iterator = std::next(iterator);
                     auto factory = ExpressionFactory::create(iterator, end, _scope, true, true);
-                    if(auto error = factory.parse({CLOSE_SQ_PARENTESIS, EQUAL_OPERATOR}); !error.empty()) {
+                    if(const auto &error = factory.parse({CLOSE_SQ_PARENTESIS, EQUAL_OPERATOR}); !error.empty()) {
                         throw TranspilerException(error, instruction);
                     }
                     auto expression = factory.getExpression();
@@ -767,7 +766,7 @@ namespace vnd {
 
     std::string Transpiler::transpileCondition(TokenVecIter &iterator, const TokenVecIter &end) noexcept {
         auto factory = ExpressionFactory::create(iterator, end, _scope, false);
-        if(auto error = factory.parse({TokenType::CLOSE_PARENTESIS}); !error.empty()) { return error; }
+        if(const auto &error = factory.parse({TokenType::CLOSE_PARENTESIS}); !error.empty()) { return error; }
         auto expression = factory.getExpression();
         if(expression.getType() != "bool") { return "Invalid condition type"; }
         _text += FORMAT("({}) {{", expression.getText());
@@ -804,7 +803,7 @@ namespace vnd {
         }
         _text += FORMAT("{}, {}, ", typeValue, identifier);
         iterator = std::next(iterator);
-        if(auto error = factory.parse({TokenType::COMMA}); !error.empty()) { throw TranspilerException(error, instruction); }
+        if(const auto &error = factory.parse({TokenType::COMMA}); !error.empty()) { throw TranspilerException(error, instruction); }
         auto expression = factory.getExpression();
         if(!Scope::isNumber(expression.getType())) { throw TranspilerException("For variables must be of numeric type", instruction); }
         _text += FORMAT("{}, ", expression.getText());
