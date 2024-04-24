@@ -139,7 +139,7 @@ namespace vnd {
         }
         // NOLINTEND
 
-        [[nodiscard]] times multi_time() const { return make_named_times(make_time()); }
+        [[maybe_unused]] [[nodiscard]] times multi_time() const { return make_named_times(make_time()); }
 
         /**
          * @brief Get the named time and its unit.

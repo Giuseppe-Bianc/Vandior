@@ -43,7 +43,7 @@ namespace vnd {
 
     void InstructionFactory::checkToken(const Token &token) {
         if(std::ranges::find(_allowedTokens, token.getType()) == _allowedTokens.end()) { throw InstructionException(token); }
-        auto tokType = token.getType();
+        const auto tokType = token.getType();
         switch(tokType) {
             using enum TokenType;
         case IDENTIFIER:

@@ -33,9 +33,9 @@ namespace vnd {
         auto filenameP = std::filesystem::path(filename);
 
         if(filenameP.extension() != ".vn") { return {false, {}}; }
-        filename = (filenameP.parent_path() / "vnbuild" / "src" / FORMAT("{}.cpp", filenameP.stem())).string();
-        LINFO("transpiling from {} to {}", filenameP, filename);
-        _output.open(filename);
+        filename = (filenameP.parent_path() / "vnbuild" / "src" / filenameP.stem()).string();
+        LINFO("transpiling from {} to {}.cpp", filenameP, filename);
+        _output.open(FORMAT("{}.cpp", filename));
         _text += "#include <base/base.hpp>\n\n";
         try {
             for(const auto &instruction : _instructions) {
@@ -197,7 +197,7 @@ namespace vnd {
         if(iterator != endToken && iterator->isType(TokenType::EQUAL_OPERATOR)) {
             iterator = std::next(iterator);
             while(iterator != endToken) {
-                if(auto error = factory.parse({TokenType::COMMA}); !error.empty()) { throw TranspilerException(error, instruction); }
+                if(const auto &error = factory.parse({TokenType::COMMA}); !error.empty()) { throw TranspilerException(error, instruction); }
                 if(iterator != endToken) { iterator = std::next(iterator); }
             }
         }
@@ -212,7 +212,7 @@ namespace vnd {
     }
 
     void Transpiler::addConstansOrVariable(const bool isConst, const bool isVal, const std::string &type, const std::string_view &jvar,
-                                           const std::string &value) {
+                                           const std::string &value) noexcept {
         if(isConst) {
             _scope->addConstant(jvar, type, value);
         } else {
@@ -271,7 +271,7 @@ namespace vnd {
         equalToken = *iterator;
         iterator = std::next(iterator);
         while(iterator != endToken) {
-            if(auto error = factory.parse({TokenType::COMMA}); !error.empty()) { throw TranspilerException(error, instruction); }
+            if(const auto &error = factory.parse({TokenType::COMMA}); !error.empty()) { throw TranspilerException(error, instruction); }
             if(iterator != endToken) { iterator = std::next(iterator); }
         }
         if(factory.isMultiplefun()) {
@@ -309,7 +309,9 @@ namespace vnd {
         }
         _text += iterator->getValue();
         iterator += 2;
-        if(auto error = transpileCondition(iterator, tokens.end()); !error.empty()) { throw TranspilerException(error, instruction); }
+        if(const auto &error = transpileCondition(iterator, tokens.end()); !error.empty()) {
+            throw TranspilerException(error, instruction);
+        }
         checkTrailingBracket(instruction);
     }
 
@@ -331,7 +333,9 @@ namespace vnd {
         }
         iterator += 2;
         _text += "if";
-        if(auto error = transpileCondition(iterator, tokens.end()); !error.empty()) { throw TranspilerException(error, instruction); }
+        if(const auto &error = transpileCondition(iterator, tokens.end()); !error.empty()) {
+            throw TranspilerException(error, instruction);
+        }
         openScope(ScopeType::IF_SCOPE);
         checkTrailingBracket(instruction);
     }
@@ -349,7 +353,7 @@ namespace vnd {
         iterator = std::next(iterator);
         auto [identifier, type] = transpileForInitialization(iterator, endToken, instruction);
         iterator = std::next(iterator);
-        if(auto error = factory.parse({TokenType::COMMA}); !error.empty()) { throw TranspilerException(error, instruction); }
+        if(const auto &error = factory.parse({TokenType::COMMA}); !error.empty()) { throw TranspilerException(error, instruction); }
         auto condition = factory.getExpression();
         if(!Scope::isNumber(condition.getType())) { throw TranspilerException("For final value must be of numeric type", instruction); }
         if(iterator == endToken) {
@@ -362,7 +366,7 @@ namespace vnd {
             return;
         }
         iterator = std::next(iterator);
-        if(auto error = factory.parse({}); !error.empty()) { throw TranspilerException(error, instruction); }
+        if(const auto &error = factory.parse({}); !error.empty()) { throw TranspilerException(error, instruction); }
         auto step = factory.getExpression();
         if(!Scope::isNumber(step.getType())) { throw TranspilerException("For step value must be of numeric type", instruction); }
         _text += FORMAT("{}, {}) {{", condition.getText(), step.getText());
@@ -720,7 +724,7 @@ namespace vnd {
 
     std::pair<std::string, bool> Transpiler::transpileAssigment(const std::string &variable, const std::string &type,
                                                                 const Token &equalToken, const Expression &expression) noexcept {
-        std::string_view equalValue = equalToken.getValue();
+        const std::string_view equalValue = equalToken.getValue();
 #ifdef __llvm__
         const bool exprContainsSpace = expression.getType().find(' ') != std::string::npos;
 #else
