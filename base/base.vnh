@@ -1,5 +1,11 @@
 {
-	"vars": [],
+	"vars": [
+		[ "Object.a", "i32", false ],
+		[ "Object.test", "f32", true ],
+		[ "Object.s", "string", false ],
+		[ "Derived._derivedProperty", "bool", false ],
+		[ "Derived.obj", "Object", false]
+	],
 	"consts": [],
 	"funcs": []
 }
