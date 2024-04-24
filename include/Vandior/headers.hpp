@@ -84,7 +84,6 @@ DISABLE_WARNINGS_PUSH(26476 26446 26482 26497 26472 26440 26447 26490 26481 2642
 #include <nlohmann/json.hpp>
 DISABLE_WARNINGS_POP()
 namespace fs = std::filesystem;
-using json = nlohmann::json;
 
 static inline constexpr long double NINFINITY = std::numeric_limits<long double>::infinity();
 static inline constexpr long double PI = std::numbers::pi_v<long double>;
