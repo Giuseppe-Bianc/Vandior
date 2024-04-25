@@ -51,39 +51,11 @@ namespace vnd {
         nlohmann::json data;
         file >> data;
         file.close();
-        for(const auto i : data["vars"]) { mainScope->addVariable(i[0], i[1], i[2]); }
-        for(const auto i : data["consts"]) { mainScope->addConstant(i[0], i[1], i[2]); }
         mainScope->addType(objs);
         mainScope->addType(drvds, {objs});
-        mainScope->addFun("exit", FunType::create("void", {"i32"}));
-        mainScope->addFun("print", FunType::create("void", {"string", "any..."}));
-        mainScope->addFun("println", FunType::create("void", {"string", "any..."}));
-        mainScope->addFun("readLine", FunType::create("string", {}));
-        mainScope->addFun("_test", FunType::create(int32s, {}));
-        mainScope->addFun("testPar", FunType::create(int32s, {int32s, int32s}));
-        mainScope->addFun("testPar", FunType::create(int64s, {"string"}));
-        mainScope->addFun("max", FunType::create("i64 f64", {"f32[]"}));
-        mainScope->addFun("arrayTest", FunType::create("i32[]", {}));
-        mainScope->addFun("createObject", FunType::create(objs, {}, {}, {}));
-        mainScope->addFun(objs, FunType::create(objs, {}, {}, {}, true));
-        mainScope->addFun(drvds, FunType::create(drvds, {}, {}, {}, true));
-        mainScope->addFun(drvds, FunType::create(drvds, {objs, "bool"}, {}, {}, true));
-        mainScope->addFun("createDerived", FunType::create(drvds, {}, {}, {}));
-        mainScope->addFun("vnd::vector.add", FunType::create("void", {"T"}, {{"T", "any"}}, {}));
-        mainScope->addFun("vnd::vector.addVector", FunType::create("void", {"T[]"}, {{"T", "any"}}, {}));
-        mainScope->addFun("vnd::vector.addAll", FunType::create("void", {"T..."}, {{"T", "any"}}, {}));
-        mainScope->addFun("vnd::vector.size", FunType::create(int64s, {}, {{"T", "any"}}, {}));
-        mainScope->addFun("vnd::array.size", FunType::create(int64s, {}, {{"T", "any"}}, {}));
-        mainScope->addFun("string.size", FunType::create(int64s, {}, {}, {}));
-        mainScope->addFun("string.lower", FunType::create("string", {}, {}, {}));
-        mainScope->addFun("string.upper", FunType::create("string", {}, {}, {}));
-        mainScope->addFun("string.toI32", FunType::create(int32s, {}, {}, {}));
-        mainScope->addFun("string.toF32", FunType::create(flts, {}, {}, {}));
-        mainScope->addFun("string.toC32", FunType::create("c32", {}, {}, {}));
-        mainScope->addFun("Object.f", FunType::create(dlbs, {dlbs}, {}, {}));
-        mainScope->addFun("Object.fs", FunType::create("string", {}, {}, {}));
-        mainScope->addFun("Derived.derivedFun", FunType::create("bool", {objs}, {}, {}));
-        mainScope->addFun("Derived.object", FunType::create(objs, {}, {}, {}));
+        for(const auto &var : data["vars"]) { mainScope->addVariable(var[0], var[1], var[2]); }
+        for(const auto &con : data["consts"]) { mainScope->addConstant(con[0], con[1], con[2]); }
+        for(const auto &fun : data["funcs"]) { mainScope->addFun(fun[0], FunType::create(fun[1], fun[2], fun[3], fun[4], fun[5])); }
         return mainScope;
     }
 

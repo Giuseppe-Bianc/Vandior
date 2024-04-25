@@ -14,5 +14,35 @@
 		[ "Object.c", "i32", "2"],
 		[ "Derived._derivedConst", "bool", "true" ]
 	],
-	"funcs": []
+	"funcs": [
+		[ "exit", "void", [ "i32" ], [], [], false ],
+		[ "print", "void", [ "string", "any..." ], [], [], false ],
+		[ "println", "void", [ "string", "any..." ], [], [], false ],
+		[ "readLine", "string", [], [], [], false ],
+		[ "_test", "i32", [], [], [], false],
+		[ "testPar", "i32", [ "i32", "i32" ], [], [], false],
+		[ "testPar", "i64", [ "string" ], [], [], false],
+		[ "max", "i64 f64", [ "f32[]" ], [], [], false],
+		[ "arrayTest", "i32[]", [], [], [], false],
+		[ "createObject", "Object", [], [], [], false],
+		[ "createDerived", "Derived", [], [], [], false],
+		[ "Object", "Object", [], [], [], true],
+		[ "Derived", "Derived", [], [], [], true],
+		[ "Derived", "Derived", [ "Object", "bool"], [], [], true],
+		[ "vnd::vector.add", "void", [ "T" ], [ ["T", "any"] ], [], false ],
+		[ "vnd::vector.addVector", "void", [ "T[]" ], [ ["T", "any"] ], [], false ],
+		[ "vnd::vector.addAll", "void", [ "T..." ], [ ["T", "any"] ], [], false ],
+		[ "vnd::vector.size", "i64", [], [ ["T", "any"] ], [], false ],
+		[ "vnd::array.size", "i64", [], [ ["T", "any"] ], [], false ],
+		[ "string.size", "i64", [], [], [], false ],
+		[ "string.lower", "string", [], [], [], false ],
+		[ "string.upper", "string", [], [], [], false ],
+		[ "string.toI32", "i32", [], [], [], false ],
+		[ "string.toF32", "f32", [], [], [], false ],
+		[ "string.toC32", "c32", [], [], [], false ],
+		[ "Object.f", "f64", [ "f64" ], [], [], false ],
+		[ "Object.fs", "string", [], [], [], false ],
+		[ "Derived.derivedFun", "bool", [ "Object" ], [], [], false ],
+		[ "Derived.object", "Object", [], [], [], false ]
+	]
 }
