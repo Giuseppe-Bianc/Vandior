@@ -123,7 +123,7 @@ namespace vnd {
         if(!Scope::isPrimitive(typeValue)) { typeValue = FORMAT("std::shared_ptr<{}>", typeValue); }
         if(pos != type.size()) {
             std::string size;
-            for(auto c : type) {
+            std::ranges::for_each(type, [&](char c) {
                 if(c == '[') {
                     size.clear();
                 } else if(c == ']') {
@@ -135,7 +135,7 @@ namespace vnd {
                 } else if(std::isdigit(c)) {
                     size += c;
                 }
-            }
+            });
         }
         return typeValue;
     }
@@ -235,9 +235,7 @@ namespace vnd {
             found = true;
             processVariadicParams(params, expressions, variadic);
             processParams(expressions, params, i, found);
-            if(found) {
-                return std::tuple<std::string, bool, std::optional<size_t>>{i.getReturnType(), i.isConstructor(), variadic};
-            }
+            if(found) { return std::tuple<std::string, bool, std::optional<size_t>>{i.getReturnType(), i.isConstructor(), variadic}; }
         }
         if(_types.contains(type)) {
             for(const auto &i : _types.at(type)) {

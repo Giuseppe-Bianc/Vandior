@@ -208,6 +208,12 @@ namespace vnd {
     public:
         using Timer::Timer;
 
+        // Delete copy and move operations in AutoTimer
+        AutoTimer(const AutoTimer &other) = delete;
+        AutoTimer &operator=(const AutoTimer &other) = delete;
+        AutoTimer(AutoTimer &&other) = delete;
+        AutoTimer &operator=(AutoTimer &&other) = delete;
+
         /**
          * @brief Destructor for AutoTimer class that prints the time string.
          */

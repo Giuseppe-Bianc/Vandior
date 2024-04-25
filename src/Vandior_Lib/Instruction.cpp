@@ -1,8 +1,9 @@
 #include "Vandior/Instruction.hpp"
-#include <algorithm>
+
+// NOLINTBEGIN(*-include-cleaner)
+DISABLE_WARNINGS_PUSH(26447)
 
 namespace vnd {
-    // NOLINTBEGIN(*-include-cleaner)
 
     Instruction::Instruction(const std::string_view filename) noexcept : _filename(filename) {
         _tokens.reserve(10);  // NOLINT(*-avoid-magic-numbers, *-magic-numbers)
@@ -107,5 +108,6 @@ namespace vnd {
         using enum InstructionType;
         return lastTypeIsAny_of({FOR_INITIALIZATION, FOR_CONDITION, FOR_STEP});
     }
-    // NOLINTEND(*-include-cleaner)
 }  // namespace vnd
+DISABLE_WARNINGS_POP()
+// NOLINTEND(*-include-cleaner)

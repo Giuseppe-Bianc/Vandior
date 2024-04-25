@@ -1,7 +1,8 @@
 #include "Vandior/Tokenizer.hpp"
 using namespace std::literals::string_view_literals;
+// NOLINTBEGIN(*-include-cleaner)
+DISABLE_WARNINGS_PUSH(26446)
 namespace vnd {
-    // NOLINTBEGIN(*-include-cleaner)
     std::vector<Token> Tokenizer::tokenize() {
         std::vector<Token> tokens;
         while(positionIsInText()) {
@@ -78,7 +79,7 @@ namespace vnd {
         if(value == "true"sv || value == "false"sv) { type = BOOLEAN; }
     }
 
-    bool Tokenizer::inTextAndE() const noexcept { return positionIsInText() && std::toupper(_input[position]) == ECR; }
+    bool Tokenizer::inTextAndE() const noexcept { return positionIsInText() && std::toupper(_input.at(position)) == ECR; }
 
     Token Tokenizer::handleDigits() {
         using enum vnd::TokenType;
@@ -357,5 +358,6 @@ namespace vnd {
         const auto value = _input.substr(start, position - start);
         return {TokenType::INTEGER, value, {_filename, line, column - value.size() - 1}};
     }
-    // NOLINTEND(*-include-cleaner)
 }  // namespace vnd
+DISABLE_WARNINGS_POP()
+// NOLINTEND(*-include-cleaner)

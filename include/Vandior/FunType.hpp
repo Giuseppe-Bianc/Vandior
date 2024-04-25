@@ -86,15 +86,15 @@ namespace vnd {
          * @param funcGeneric Vector of generic parameters of the function.
          * @param constructor Bool flag that indicates if it's a constructor.
          */
-        FunType(const std::string &returnType, const StringVec &params, const StringPairVec &typeGeneric,
-                const StringPairVec &funcGeneric, const bool constructor) noexcept
+        FunType(const std::string &returnType, const StringVec &params, const StringPairVec &typeGeneric, const StringPairVec &funcGeneric,
+                const bool constructor) noexcept
           : _returnType(returnType), _params(params), _typeGeneric(typeGeneric), _funcGeneric(funcGeneric), _constructor(constructor) {}
 
-        std::string _returnType;                                        ///< String of the return types separate by a whitespace.
-        StringVec _params;                                              ///< Vector of type parameters.
-        std::vector<std::pair<std::string, std::string>> _typeGeneric;  ///< Vector of generic types associated at the type.
-        std::vector<std::pair<std::string, std::string>> _funcGeneric;  ///< Vector of generic types associated at the function.
-        bool _constructor;                                              ///< Flag that indicates if the function is a constructor.
+        std::string _returnType{};                                        ///< String of the return types separate by a whitespace.
+        StringVec _params{};                                              ///< Vector of type parameters.
+        std::vector<std::pair<std::string, std::string>> _typeGeneric{};  ///< Vector of generic types associated at the type.
+        std::vector<std::pair<std::string, std::string>> _funcGeneric{};  ///< Vector of generic types associated at the function.
+        bool _constructor{};                                              ///< Flag that indicates if the function is a constructor.
     };
 
 }  // namespace vnd

@@ -73,9 +73,11 @@ namespace vnd {
         if(isLessThanOrEqualToMax<uint32_t>(number)) { return "u32"; }
         return "u64";
     }
+    DISABLE_WARNINGS_PUSH(26497)
     template <typename T> bool ExpressionFactory::isLessThanOrEqualToMax(uint64_t number) noexcept {
         return number <= std::numeric_limits<T>::max();
     }
+    DISABLE_WARNINGS_POP()
 
     std::string ExpressionFactory::evaluate(const std::string &expression) const noexcept {
 #ifdef _WIN32
@@ -270,7 +272,7 @@ namespace vnd {
         }
     }
     void ExpressionFactory::operatorsEmplace(const std::string_view &value, const std::string_view &txtVal) {
-        if(!_operators.has_value()) { _operators = _text.size() - 1; };
+        if(!_operators.has_value()) { _operators = _text.size() - 1; }
         _text.emplace(_text.begin() + C_LL(_operators.value()), txtVal);
         _text.emplace_back(",");
         _expressionText += value;
@@ -439,6 +441,9 @@ namespace vnd {
         return !isEnd(iterator) && iterator->isType(type);
     }
 
+    bool ExpressionFactory::oldTypeEquals(const TupType &oldType, const std::string_view newType) const noexcept {
+        return std::get<2>(oldType) == newType;
+    }
     // NOLINTNEXTLINE(*-function-cognitive-complexity)
     std::string ExpressionFactory::checkType(TupType &oldType, const std::string_view newType) noexcept {
         auto nxtIter = std::ranges::next(_iterator);
@@ -463,12 +468,12 @@ namespace vnd {
             std::get<2>(oldType) = newType;
             return {};
         }
-        if(std::get<2>(oldType) == nots && newType == bols) {
+        if(oldTypeEquals(oldType, nots) && newType == bols) {
             std::get<2>(oldType) = newType;
             return {};
         }
-        if(std::get<2>(oldType) == bols && newType == nots) { return {}; }
-        if(std::get<2>(oldType) == newType) { return {}; }
+        if(oldTypeEquals(oldType, bols) && newType == nots) { return {}; }
+        if(oldTypeEquals(oldType, newType)) { return {}; }
         if(Scope::isNumber(std::get<2>(oldType))) {
             if(newType == oprt) { return {}; }
             if(Scope::isNumber(std::string{newType})) {
@@ -480,7 +485,7 @@ namespace vnd {
                         if(oldAndNewCoincide(oldParts, newParts, 'i')) { return FORMAT("i{}", size); }
                         return FORMAT("u{}", size);
                     };
-                auto oldParts = std::pair<char, std::string>{std::get<2>(oldType).at(0), std::get<2>(oldType).substr(1)};
+                const auto oldParts = std::pair<char, std::string>{std::get<2>(oldType).at(0), std::get<2>(oldType).substr(1)};
                 const auto newParts = std::pair<char, std::string_view>{newType.at(0), newType.substr(1)};
                 std::get<2>(oldType) = getType(oldParts, newParts);
                 return {};

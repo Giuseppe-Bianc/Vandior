@@ -34,7 +34,8 @@ namespace vnd {
          * @param print Bool indicating if the function is print or println.
          * @return the transpiled text for the arguments.
          */
-        [[nodiscard]] static std::string transpileFun(const ExprVec &expressions, OptionalSizeT variadic, const bool print = false) noexcept;
+        [[nodiscard]] static std::string transpileFun(const ExprVec &expressions, OptionalSizeT variadic,
+                                                      const bool print = false) noexcept;
 
         /**
          * @brief Parses the token sequence until reaching the specified end tokens.
@@ -239,6 +240,7 @@ namespace vnd {
         void operatorsEmplace(const std::string_view &value, const std::string_view &txtVal);
         void checkConst(const std::string_view &type, const std::string_view &text) noexcept;
         void factorConst(std::string &constValue, std::string::iterator &iter) const;
+        [[nodiscard]] bool oldTypeEquals(const TupType &oldType, const std::string_view newType) const noexcept;
     };
 
 }  // namespace vnd

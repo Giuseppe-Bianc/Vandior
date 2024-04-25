@@ -21,6 +21,7 @@ namespace vnd {
 
     void FunType::addParam(const std::string &param) noexcept { _params.emplace_back(param); }
 
+    DISABLE_WARNINGS_PUSH(26447)
     void FunType::addReturn(const std::string &type) noexcept {
         if(_returnType.empty()) {
             _returnType = type;
@@ -28,6 +29,7 @@ namespace vnd {
         }
         _returnType += FORMAT(" {}", type);
     }
+    DISABLE_WARNINGS_POP()
 
 }  // namespace vnd
    // NOLINTEND(*-include-cleaner)
