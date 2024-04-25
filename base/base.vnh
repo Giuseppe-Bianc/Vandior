@@ -6,6 +6,13 @@
 		[ "Derived._derivedProperty", "bool", false ],
 		[ "Derived.obj", "Object", false]
 	],
-	"consts": [],
+	"consts": [
+		[ "PI", "f64", "3.141592653589793" ],
+		[ "TAU", "f64", "6.283185307179586" ],
+		[ "E", "f64", "2.718281828459045" ],
+		[ "INF", "f64", "inf" ],
+		[ "Object.c", "i32", "2"],
+		[ "Derived._derivedConst", "bool", "true" ]
+	],
 	"funcs": []
 }

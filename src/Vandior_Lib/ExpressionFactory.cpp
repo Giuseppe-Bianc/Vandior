@@ -121,14 +121,14 @@ namespace vnd {
             }
             if(auto nextIter = std::ranges::next(_iterator);
                iterType == IDENTIFIER && nextIter != _end && nextIter->isType(OPEN_PARENTESIS)) {
-                if(auto error = handleFun(type); !error.empty()) { return error; }
+                if(const auto &error = handleFun(type); !error.empty()) { return error; }
             } else if(iterType == OPEN_PARENTESIS) {
-                if(auto error = handleInnerExpression(type); !error.empty()) { return error; }
+                if(const auto &error = handleInnerExpression(type); !error.empty()) { return error; }
             } else if(iterType == OPEN_SQ_PARENTESIS) {
-                if(auto error = handleSquareExpression(type); !error.empty()) { return error; }
+                if(const auto &error = handleSquareExpression(type); !error.empty()) { return error; }
             } else if(iterType == OPEN_CUR_PARENTESIS) {
-                if(auto error = handleVectorInitialization(type); !error.empty()) { return error; }
-            } else if(auto error = handleToken(type); !error.empty()) {
+                if(const auto &error = handleVectorInitialization(type); !error.empty()) { return error; }
+            } else if(const auto &error = handleToken(type); !error.empty()) {
                 return error;
             }
         }
@@ -170,7 +170,7 @@ namespace vnd {
 
     std::string_view ExpressionFactory::getTokenType() const noexcept {
         using enum TokenType;
-        auto iterValue = _iterator->getValue();
+        const auto iterValue = _iterator->getValue();
         switch(_iterator->getType()) {
         case INTEGER:
             return ExpressionFactory::getIntType(iterValue);
@@ -316,7 +316,7 @@ namespace vnd {
         while(!_iterator->isType(TokenType::CLOSE_PARENTESIS)) {
             ++_iterator;
             if(!_iterator->isType(CLOSE_PARENTESIS)) {
-                if(auto error = factory.parse({COMMA, CLOSE_PARENTESIS}); !error.empty()) { return error; }
+                if(const auto &error = factory.parse({COMMA, CLOSE_PARENTESIS}); !error.empty()) { return error; }
             }
         }
         if(auto nxtIter = std::ranges::next(_iterator); isEnd(nxtIter) || !nxtIter->isType(DOT_OPERATOR)) { _const = false; }
@@ -330,7 +330,7 @@ namespace vnd {
             if(value.starts_with(".")) { value.erase(0, 1); }
             return FORMAT("Function {} not found", value);
         }
-        if(auto error = ExpressionFactory::checkType(type, newType); !error.empty()) { return error; }
+        if(const auto &error = ExpressionFactory::checkType(type, newType); !error.empty()) { return error; }
         params = ExpressionFactory::transpileFun(expressions, variadic, identifier == "print" || identifier == "println");
         auto value = FORMAT("{}({})", std::string{identifier}, params);
         if(_temp.empty()) {
@@ -351,10 +351,10 @@ namespace vnd {
         if(!Scope::checkVector(_type)) { return FORMAT("Indexing not allowed for {} type", _type); }
         auto factory = ExpressionFactory::create(_iterator, _end, _scope, _const, true);
         ++_iterator;
-        if(auto error = factory.parse({TokenType::CLOSE_SQ_PARENTESIS}); !error.empty()) { return error; }
+        if(const auto &error = factory.parse({TokenType::CLOSE_SQ_PARENTESIS}); !error.empty()) { return error; }
         auto expression = factory.getExpression();
         if(auto newType = expression.getType(); !Scope::isInteger(newType)) { return FORMAT("{} index not allowed", newType); }
-        if(auto error = ExpressionFactory::checkType(type, _type); !error.empty()) { return error; }
+        if(const auto &error = ExpressionFactory::checkType(type, _type); !error.empty()) { return error; }
         _const = false;
         write(FORMAT("at({})", expression.getText()), _type);
         return {};
@@ -371,7 +371,7 @@ namespace vnd {
             using enum vnd::TokenType;
             ++_iterator;
             if(!_iterator->isType(CLOSE_CUR_PARENTESIS)) {
-                if(auto error = factory.parse({COMMA, CLOSE_CUR_PARENTESIS}); !error.empty()) { return error; }
+                if(const auto &error = factory.parse({COMMA, CLOSE_CUR_PARENTESIS}); !error.empty()) { return error; }
             }
         }
         for(const auto &expression : factory.getExpressions()) {
@@ -399,7 +399,7 @@ namespace vnd {
         }
         if(!value.empty()) { value.erase(value.size() - 2, 2); }
         vectorType += "[]";
-        if(auto error = checkType(type, vectorType); !error.empty()) { return error; }
+        if(const auto &error = checkType(type, vectorType); !error.empty()) { return error; }
         if(_const) {
             if(!constValue.empty()) { constValue.pop_back(); }
             _expressionText += FORMAT("{{{}}}", value);
@@ -411,11 +411,11 @@ namespace vnd {
     std::string ExpressionFactory::handleInnerExpression(TupType &type) noexcept {  // NOLINT(*-no-recursion)
         auto factory = ExpressionFactory::create(_iterator, _end, _scope, _const);
         ++_iterator;
-        if(auto error = factory.parse({TokenType::CLOSE_PARENTESIS}); !error.empty()) { return error; }
+        if(const auto &error = factory.parse({TokenType::CLOSE_PARENTESIS}); !error.empty()) { return error; }
         auto expression = factory.getExpression();
         auto newType = expression.getType();
         if(newType.empty()) { return FORMAT("Identifier {}.{} not found", _type, expression.getType()); }
-        if(auto error = ExpressionFactory::checkType(type, newType); !error.empty()) { return error; }
+        if(const auto &error = ExpressionFactory::checkType(type, newType); !error.empty()) { return error; }
         if(expression.isConst()) {
             _expressionText += expression.getValue();
         } else {
@@ -430,7 +430,7 @@ namespace vnd {
         auto iterValue = _iterator->getValue();
         if(!checkUnaryOperator(newType)) { return FORMAT("Cannot apply unary operator for {}", iterValue); }
         if(newType.empty()) { return FORMAT("Identifier {}.{} not found", _type, iterValue); }
-        if(auto error = ExpressionFactory::checkType(type, newType); !error.empty()) { return error; }
+        if(const auto &error = ExpressionFactory::checkType(type, newType); !error.empty()) { return error; }
         emplaceToken(newType);
         return {};
     }
@@ -481,7 +481,7 @@ namespace vnd {
                         return FORMAT("u{}", size);
                     };
                 auto oldParts = std::pair<char, std::string>{std::get<2>(oldType).at(0), std::get<2>(oldType).substr(1)};
-                auto newParts = std::pair<char, std::string_view>{newType.at(0), newType.substr(1)};
+                const auto newParts = std::pair<char, std::string_view>{newType.at(0), newType.substr(1)};
                 std::get<2>(oldType) = getType(oldParts, newParts);
                 return {};
             }

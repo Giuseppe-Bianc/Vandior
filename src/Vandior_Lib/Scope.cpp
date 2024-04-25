@@ -48,25 +48,13 @@ namespace vnd {
         for(const auto &type : _primitiveTypes) { mainScope->addType(type); }
 
         std::ifstream file(std::string(std::getenv("VNHOME")) + "/base/base.vnh");
-        json data;
+        nlohmann::json data;
         file >> data;
         file.close();
-        for(const auto i : data["vars"]) {
-            mainScope->addVariable(i[0], i[1], i[2]);
-        }
+        for(const auto i : data["vars"]) { mainScope->addVariable(i[0], i[1], i[2]); }
+        for(const auto i : data["consts"]) { mainScope->addConstant(i[0], i[1], i[2]); }
         mainScope->addType(objs);
         mainScope->addType(drvds, {objs});
-        //mainScope->addVariable("Object.a", int32s, false);
-        //mainScope->addVariable("Object.test", flts, true);
-        //mainScope->addVariable("Object.s", "string", false);
-        //mainScope->addVariable("Derived._derivedProperty", "bool", false);
-        //mainScope->addVariable("Derived.obj", objs, false);
-        mainScope->addConstant("PI", "f64", std::to_string(std::numbers::pi));
-        mainScope->addConstant("TAU", "f64", std::to_string(std::numbers::pi * 2));
-        mainScope->addConstant("E", "f64", std::to_string(std::numbers::e));
-        mainScope->addConstant("INF", "f64", std::to_string(std::numeric_limits<double>::infinity()));
-        mainScope->addConstant("Object.c", int32s, "2");
-        mainScope->addConstant("Derived._derivedConst", "bool", "true");
         mainScope->addFun("exit", FunType::create("void", {"i32"}));
         mainScope->addFun("print", FunType::create("void", {"string", "any..."}));
         mainScope->addFun("println", FunType::create("void", {"string", "any..."}));
