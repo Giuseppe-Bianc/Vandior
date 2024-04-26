@@ -1,6 +1,7 @@
 #include "Vandior/Transpiler.hpp"
+// NOLINTBEGIN(*-include-cleaner, *-easily-swappable-parameters)
+DISABLE_WARNINGS_PUSH(26447)
 namespace vnd {
-    // NOLINTBEGIN(*-include-cleaner, *-easily-swappable-parameters)
 
     // Types aren't allowed in global scope
     static inline constexpr std::initializer_list<InstructionType> disallowedTypesInGlobalScope = {
@@ -165,7 +166,7 @@ namespace vnd {
             throw TRANSPILER_EXCEPTIONF(instruction, "Uninitialized constant: {} values for {} constants", factory.size(),
                                         variables.size());
         }
-        for(const auto &jvar : variables) {
+        for(auto jvar : variables) {
             std::string value;
             formatVariable(jvar);
             if(!factory.empty()) {
@@ -407,7 +408,7 @@ namespace vnd {
             auto [type, typevalue] = transpileType(iterator, endToken, {TokenType::COMMA, TokenType::CLOSE_PARENTESIS}, instruction);
             _scope->addVariable(param, std::string_view{type}, false);
             fun.addParam(type);
-            params.emplace_back(std::make_pair(param, typevalue));
+            params.emplace_back(param, typevalue);
         }
         iterator = std::next(iterator);
         while(iterator->getType() != TokenType::OPEN_CUR_PARENTESIS) {
@@ -434,9 +435,9 @@ namespace vnd {
         }
         formatVariable(identifier);
         _text += "(";
-        for(const auto &param : params) {
-            _text += FORMAT("{} ", param.second);
-            formatVariable(param.first);
+        for(const auto &[first, second] : params) {
+            _text += FORMAT("{} ", second);
+            formatVariable(first);
             _text += ", ";
         }
         if(!params.empty()) { _text.erase(_text.end() - 2, _text.end()); }
@@ -562,9 +563,9 @@ namespace vnd {
                 currentVariable = FORMAT("_{}", currentVariable);
             }
         } else if(next != end && next->isType(DOT_OPERATOR)) {
-            currentVariable += FORMAT("get{}{}()->", char(std::toupper(C_UC(value[0]))), value.substr(1));
+            currentVariable += FORMAT("get{}{}()->", char(std::toupper(C_UC(value.at(0)))), value.substr(1));
         } else {
-            currentVariable += FORMAT("set{}{}(", char(std::toupper(C_UC(value[0]))), value.substr(1));
+            currentVariable += FORMAT("set{}{}(", char(std::toupper(C_UC(value.at(0)))), value.substr(1));
         }
         return {};
     }
@@ -726,11 +727,10 @@ namespace vnd {
                                                                 const Token &equalToken, const Expression &expression) noexcept {
         const std::string_view equalValue = equalToken.getValue();
 #ifdef __llvm__
-        const bool exprContainsSpace = expression.getType().find(' ') != std::string::npos;
+        if(expression.getType().find(' ') != std::string::npos) { return {"Multiple return value functions must be used alone", false}; }
 #else
-        const bool exprContainsSpace = expression.getType().contains(' ');
+        if(expression.getType().contains(' ')) { return {"Multiple return value functions must be used alone", false}; }
 #endif
-        if(exprContainsSpace) { return {"Multiple return value functions must be used alone", false}; }
         if(equalToken.isType(TokenType::OPERATION_EQUAL) && !Scope::isNumber(type)) {
             if(variable == "_") { return {FORMAT("incompatible operator {} for blank identifier", equalToken.getValue()), false}; }
             return {FORMAT("incompatible operator {} for {} type", equalToken.getValue(), type), false};
@@ -835,5 +835,6 @@ namespace vnd {
         }
         _text += ", ";
     }
-    // NOLINTEND(*-include-cleaner, *-easily-swappable-parameters)
 }  // namespace vnd
+DISABLE_WARNINGS_POP()
+// NOLINTEND(*-include-cleaner, *-easily-swappable-parameters)
