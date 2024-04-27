@@ -56,7 +56,6 @@ function(Vandior_setup_dependencies)
     if (NOT TARGET CLI11::CLI11)
         CPMAddPackage("gh:CLIUtils/CLI11@2.3.2")
     endif ()
-
     if (NOT TARGET nlohmann_json::nlohmann_json)
         CPMAddPackage(
                 NAME nlohmann_json

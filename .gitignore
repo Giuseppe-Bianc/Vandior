@@ -37,6 +37,5 @@ Thumbs.db
 /ingnoref
 /.cache
 /input.cpp
-examples/*.cpp
-*.exe
+examples/vnbuild/src/
 /vnbuild/src/

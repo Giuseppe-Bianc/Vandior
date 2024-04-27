@@ -19,8 +19,8 @@ namespace vnd {
          * @param constructor Bool flag that indicates if it's a constructor.
          * @return FunType instance.
          */
-        [[nodiscard]] static FunType create(const std::string &returnType, const StringVec &params, const StringPairVec &typeGeneric = {},
-                                            const StringPairVec &funcGeneric = {}, const bool constructor = false) noexcept;
+        [[nodiscard]] static FunType create(const std::string &returnType, const StringVec &params, const StringPairVec &typeGeneric,
+                                            const StringPairVec &funcGeneric, const bool constructor) noexcept;
 
         /**
          * @brief Creates an empty FunType instance
