@@ -48,21 +48,32 @@ namespace vnd {
         mainScope->addType("void");
         for(const auto &type : _primitiveTypes) { mainScope->addType(type); }
         // NOLINTBEGIN(*-no-malloc,*-owning-memory)
+        std::string envPath;
+
+        // Conditional handling based on the platform
+#ifdef _WIN32
         char *envValue = nullptr;
         size_t requiredSize = 0;
         auto err = _dupenv_s(&envValue, &requiredSize, "VNHOME");
-        std::string envPath;
         if(err == 0 && envValue != nullptr) {
             envPath = std::string(envValue);
             free(envValue);
-            // Continue with your file handling logic...
         } else {
-            LERROR("faled to read VHOME");
+            LERROR("Failed to read VNHOME");
         }
-        // NOLINTEND(*-no-malloc,*-owning-memory)
+#else
+        char *envValue = getenv("VNHOME");
+        if(envValue != nullptr) {
+            envPath = std::string(envValue);
+        } else {
+            LERROR("Failed to read VNHOME");
+        }
+#endif
 
+        // File handling logic
         std::ifstream file(envPath + "/base/base.vnh");
         nlohmann::json data;
+        // NOLINTEND(*-no-malloc,*-owning-memory)
         file >> data;
         file.close();
         mainScope->addType(objs);
