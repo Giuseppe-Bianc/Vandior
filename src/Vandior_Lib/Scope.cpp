@@ -50,7 +50,7 @@ namespace vnd {
         // NOLINTBEGIN(*-no-malloc,*-owning-memory)
         char *envValue = nullptr;
         size_t requiredSize = 0;
-        errno_t err = _dupenv_s(&envValue, &requiredSize, "VNHOME");
+        auto err = _dupenv_s(&envValue, &requiredSize, "VNHOME");
         std::string envPath;
         if(err == 0 && envValue != nullptr) {
             envPath = std::string(envValue);
