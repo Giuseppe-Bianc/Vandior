@@ -6,7 +6,7 @@
 
 #include <Vandior/headers.hpp>
 
-class FileReadError : public std::runtime_error {
+class FileReadError final : public std::runtime_error {
 public:
     explicit FileReadError(const std::string_view &message)  // NOLINT(*-easily-swappable-parameters)
       : std::runtime_error(message.data()) {}

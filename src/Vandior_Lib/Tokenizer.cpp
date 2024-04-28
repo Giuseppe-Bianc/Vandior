@@ -13,28 +13,28 @@ namespace vnd {
                 tokens.emplace_back(handleDigits());
             } else if(currentChar == '_') [[likely]] {
                 tokens.emplace_back(handleUnderscoreAlpha());
-            } else if(vnd::TokenizerUtility::isHasterisc(currentChar)) [[likely]] {
+            } else if(TokenizerUtility::isHasterisc(currentChar)) [[likely]] {
                 tokens.emplace_back(handleHexadecimalOrOctal());
             } else if(std::isspace(currentChar)) [[likely]] {
                 handleWhiteSpace();
                 continue;  // Continue the loop to get the next token
-            } else if(vnd::TokenizerUtility::isComment(_input, position)) {
+            } else if(TokenizerUtility::isComment(_input, position)) {
                 tokens.emplace_back(handleComment());
-            } else if(vnd::TokenizerUtility::isOperator(currentChar)) [[likely]] {
+            } else if(TokenizerUtility::isOperator(currentChar)) [[likely]] {
                 auto opTokens = handleOperators();
                 tokens.insert(tokens.end(), begin(opTokens), end(opTokens));
-            } else if(vnd::TokenizerUtility::isDot(currentChar)) {
+            } else if(TokenizerUtility::isDot(currentChar)) {
                 tokens.emplace_back(handleDot());
-            } else if(vnd::TokenizerUtility::isBrackets(currentChar)) [[likely]] {
+            } else if(TokenizerUtility::isBrackets(currentChar)) [[likely]] {
                 tokens.emplace_back(handleBrackets());
-            } else if(vnd::TokenizerUtility::isApostrophe(currentChar)) [[likely]] {
+            } else if(TokenizerUtility::isApostrophe(currentChar)) [[likely]] {
                 tokens.emplace_back(handleChar());
-            } else if(vnd::TokenizerUtility::isQuotation(currentChar)) [[likely]] {
+            } else if(TokenizerUtility::isQuotation(currentChar)) [[likely]] {
                 tokens.emplace_back(handleString());
-            } else if(vnd::TokenizerUtility::isComma(currentChar)) {
+            } else if(TokenizerUtility::isComma(currentChar)) {
                 tokens.emplace_back(TokenType::COMMA, ","sv, CodeSourceLocation{_filename, line, column - 1});
                 incPosAndColumn();
-            } else if(vnd::TokenizerUtility::isColon(currentChar)) {
+            } else if(TokenizerUtility::isColon(currentChar)) {
                 tokens.emplace_back(TokenType::COLON, ":"sv, CodeSourceLocation{_filename, line, column - 1});
                 incPosAndColumn();
             } else [[unlikely]] {
@@ -82,7 +82,7 @@ namespace vnd {
     bool Tokenizer::inTextAndE() const noexcept { return positionIsInText() && std::toupper(_input.at(position)) == ECR; }
 
     Token Tokenizer::handleDigits() {
-        using enum vnd::TokenType;
+        using enum TokenType;
         TokenType tokenType = INTEGER;
         const auto start = position;
         extractDigits();

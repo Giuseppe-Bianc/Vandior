@@ -112,7 +112,7 @@ namespace vnd {
 
     // NOLINTNEXTLINE(*-function-cognitive-complexity)
     std::string ExpressionFactory::parse(const std::vector<TokenType> &endToken) noexcept {  // NOLINT(*-no-recursion)
-        using enum vnd::TokenType;
+        using enum TokenType;
         resetVariables();
         std::tuple<bool, bool, std::string> type;
         while(!isEnd(_iterator) && std::ranges::find(endToken, _iterator->getType()) == endToken.end()) {

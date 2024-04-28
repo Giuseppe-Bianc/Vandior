@@ -53,29 +53,37 @@ namespace vnd {
         file.close();
         mainScope->addType(objs);
         mainScope->addType(drvds, {objs});
-        for(const auto &var : data["vars"]) { mainScope->addVariable(var[0], var[1], var[2]); }
-        for(const auto &con : data["consts"]) { mainScope->addConstant(con[0], con[1], con[2]); }
-        for(const auto &fun : data["funcs"]) { mainScope->addFun(fun[0], FunType::create(fun[1], fun[2], fun[3], fun[4], fun[5])); }
+        // NOLINTBEGIN(*-avoid-magic-numbers,*-magic-numbers)
+        for(const auto &var : data["vars"]) {
+            mainScope->addVariable(var[0].get<std::string_view>(), var[1].get<std::string_view>(), var[2].get<bool>());
+        }
+        for(const auto &con : data["consts"]) {
+            mainScope->addConstant(con[0].get<std::string_view>(), con[1].get<std::string_view>(), con[2].get<std::string>());
+        }
+
+        for(const auto &fun : data["funcs"]) {
+            mainScope->addFun(fun[0].get<std::string_view>(),
+                              FunType::create(fun[1].get<std::string>(), fun[2].get<StringVec>(), fun[3].get<StringPairVec>(),
+                                              fun[4].get<StringPairVec>(), fun[5].get<bool>()));
+        }
+        // NOLINTEND(*-avoid-magic-numbers,*-magic-numbers)
         return mainScope;
     }
 
     bool Scope::isInteger(const std::string &type) noexcept {
-        return std::ranges::find(Scope::_signedTypes, type) != Scope::_signedTypes.end() ||
-               std::ranges::find(Scope::_unsignedTypes, type) != Scope::_unsignedTypes.end();
+        return std::ranges::find(_signedTypes, type) != _signedTypes.end() ||
+               std::ranges::find(_unsignedTypes, type) != _unsignedTypes.end();
     }
 
-    bool Scope::isComplex(const std::string &type) noexcept {
-        return std::ranges::find(Scope::_complexTypes, type) != Scope::_complexTypes.end();
-    }
+    bool Scope::isComplex(const std::string &type) noexcept { return std::ranges::find(_complexTypes, type) != _complexTypes.end(); }
 
     bool Scope::isNumber(const std::string &type) noexcept {
-        return Scope::isInteger(type) || Scope::isComplex(type) ||
-               std::ranges::find(Scope::_floatingTypes, type) != Scope::_floatingTypes.end();
+        return isInteger(type) || isComplex(type) || std::ranges::find(_floatingTypes, type) != _floatingTypes.end();
     }
 
-    bool Scope::isPrimitive(const std::string &type) noexcept {
-        return std::ranges::find(Scope::_primitiveTypes, type) != Scope::_primitiveTypes.end();
-    }
+    bool Scope::isPrimitive(const std::string &type) noexcept { return std::ranges::find(_primitiveTypes, type) != _primitiveTypes.end(); }
+
+    bool Scope::isType(const ScopeType &type) const noexcept { return _type == type; }
 
     bool Scope::checkVector(std::string &type) noexcept {
         if(type == "string") {
@@ -92,7 +100,7 @@ namespace vnd {
         auto pos = type.find('[');
         if(pos == std::string::npos) { pos = type.size(); }
         auto typeValue = type.substr(0, pos);
-        if(!Scope::isPrimitive(typeValue)) { typeValue = FORMAT("std::shared_ptr<{}>", typeValue); }
+        if(!isPrimitive(typeValue)) { typeValue = FORMAT("std::shared_ptr<{}>", typeValue); }
         if(pos != type.size()) {
             std::string size;
             std::ranges::for_each(type, [&](char c) {
@@ -183,14 +191,13 @@ namespace vnd {
 
     // NOLINTNEXTLINE(*-no-recursion)
     std::string_view Scope::getVariableType(const std::string &type, const std::string_view &identifier) const noexcept {
-        auto key = Scope::getKey(type, identifier);
+        auto key = getKey(type, identifier);
         if(_vars.contains(key)) { return _vars.at(key); }
         if(_vals.contains(key)) { return _vals.at(key); }
         if(_consts.contains(key)) { return _consts.at(key).first; }
         if(_types.contains(type)) {
             for(const auto &i : _types.at(type)) {
-                auto result = getVariableType(i, identifier);
-                if(!result.empty()) { return result; }
+                if(auto result = getVariableType(i, identifier); !result.empty()) { return result; }
             }
         }
         if(_parent) { return _parent->getVariableType(type, identifier); }
@@ -201,7 +208,7 @@ namespace vnd {
     std::tuple<std::string, bool, std::optional<size_t>> Scope::getFunType(const std::string &type, const std::string_view &identifier,
                                                                            const std::vector<Expression> &expressions) const noexcept {
         bool found = false;
-        for(const auto &i : getFuns(Scope::getType(type), identifier)) {
+        for(const auto &i : getFuns(getType(type), identifier)) {
             auto params = i.getParams();
             std::optional<size_t> variadic;
             found = true;
@@ -247,7 +254,7 @@ namespace vnd {
 
     // NOLINTNEXTLINE(*-no-recursion)
     std::string Scope::getConstValue(const std::string &type, const std::string_view &identifier) const noexcept {
-        if(auto key = Scope::getKey(type, identifier); _consts.contains(key)) { return _consts.at(key).second; }
+        if(auto key = getKey(type, identifier); _consts.contains(key)) { return _consts.at(key).second; }
         if(_types.contains(type)) {
             for(const auto &i : _types.at(type)) {
                 auto result = getConstValue(i, identifier);
@@ -260,7 +267,7 @@ namespace vnd {
 
     // NOLINTNEXTLINE(*-no-recursion)
     bool Scope::isConstant(const std::string &type, const std::string_view &identifier) const noexcept {
-        if(auto key = Scope::getKey(type, identifier); _consts.contains(key) || _vals.contains(key)) { return true; }
+        if(auto key = getKey(type, identifier); _consts.contains(key) || _vals.contains(key)) { return true; }
         if(_types.contains(type)) {
             for(const auto &i : _types.at(type)) {
                 if(auto result = isConstant(i, identifier)) { return result; }
@@ -273,17 +280,17 @@ namespace vnd {
     // NOLINTNEXTLINE(*-no-recursion)
     std::pair<bool, bool> Scope::canAssign(const std::string &left, const std::string &right) const noexcept {
         if(left == "any" || left == right) { return std::pair<bool, bool>{true, false}; }
-        if(Scope::isNumber(left) && Scope::isNumber(right)) {
+        if(isNumber(left) && isNumber(right)) {
             if(left.at(0) == right.at(0) && std::stoi(left.substr(1)) < std::stoi(right.substr(1))) {
-                return std::pair<bool, bool>{!Scope::isInteger(left), true};
+                return std::pair<bool, bool>{!isInteger(left), true};
             }
-            if(Scope::isComplex(right)) { return {Scope::isComplex(left), false}; }
+            if(isComplex(right)) { return {isComplex(left), false}; }
             return std::pair<bool, bool>{true, false};
         }
-        if(right == "nullptr") { return std::pair<bool, bool>{!Scope::isPrimitive(left), false}; }
+        if(right == "nullptr") { return std::pair<bool, bool>{!isPrimitive(left), false}; }
         if(right == "[]" && left.ends_with(']')) { return std::pair<bool, bool>{true, false}; }
-        if(StringPair types = {left, right}; (types.first.ends_with("[]") || types.second.ends_with("[]")) &&
-                                             Scope::checkVector(types.first) && Scope::checkVector(types.second)) {
+        if(StringPair types = {left, right};
+           (types.first.ends_with("[]") || types.second.ends_with("[]")) && checkVector(types.first) && checkVector(types.second)) {
             return canAssign(types.first, types.second);
         }
 

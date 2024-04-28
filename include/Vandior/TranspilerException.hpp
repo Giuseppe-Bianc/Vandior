@@ -8,7 +8,7 @@ namespace vnd {
      * @brief Custom exception class for transpiler errors.
      * This exception is thrown when a transpiler encounters an error during the conversion process.
      */
-    class TranspilerException : public std::runtime_error {
+    class TranspilerException final : public std::runtime_error {
     public:
         /**
          * @brief Constructor for TranspilerException.

@@ -102,6 +102,6 @@ main {
 	_, _ = funzione(arg)
 	var character: char = func()
 	character, _ = func(10)
-	var pi: f32 = PI
+	var pi: f64 = PI
 	println("{} {} {} {} {}", pi, PI, TAU, E, INF)
 }

@@ -8,7 +8,7 @@ namespace vnd {
      * This exception is derived from std::runtime_error and is used to indicate errors
      * related to instructions during the execution of a program.
      */
-    class InstructionException : public std::runtime_error {
+    class InstructionException final : public std::runtime_error {
     public:
         /**
          * @brief Constructs an InstructionException with information from a Token.

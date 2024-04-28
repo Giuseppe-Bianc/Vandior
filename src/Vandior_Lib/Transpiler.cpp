@@ -13,6 +13,9 @@ namespace vnd {
 
     StringVec Transpiler::tokenize(const std::string &str) noexcept {
         StringVec result;
+        // Reserve space in the vector for the estimated number of tokens
+        // to reduce reallocations.
+        result.reserve(str.length() / 2);
         std::istringstream iss(str);
         std::string strr;
         while(iss >> strr) { result.emplace_back(std::move(strr)); }
@@ -41,7 +44,7 @@ namespace vnd {
         try {
             for(const auto &instruction : _instructions) {
                 const auto type = instruction.getLastType();
-                if(_scope->isGlobalScope() && !Transpiler::checkGlobalScope(type)) {
+                if(_scope->isGlobalScope() && !checkGlobalScope(type)) {
                     throw TranspilerException("Cannot place this instruction in the global scope", instruction);
                 }
                 _text += std::string(_tabs, '\t');
@@ -120,7 +123,7 @@ namespace vnd {
 
     void Transpiler::checkTrailingBracket(const Instruction &instruction) {
         if(instruction.getTokens().back().isType(TokenType::CLOSE_CUR_PARENTESIS)) {
-            if(_scope->getType() == ScopeType::MAIN_SCOPE) {
+            if(_scope->isType(ScopeType::MAIN_SCOPE)) {
                 if(instruction.getLastType() == InstructionType::MAIN) { _text += "\n"; }
                 _text += FORMAT("{:\t^{}}return 0;\n{:\t^{}}", "", _tabs, "", _tabs - 1);
             }
@@ -321,12 +324,12 @@ namespace vnd {
         auto iterator = tokens.begin();
         const auto endToken = tokens.end();
         auto factory = ExpressionFactory::create(iterator, endToken, _scope, false);
-        if(_scope->getType() != ScopeType::IF_SCOPE) { throw TranspilerException("Unexpected instruction", instruction); }
+        if(!_scope->isType(ScopeType::IF_SCOPE)) { throw TranspilerException("Unexpected instruction", instruction); }
         if(_text.ends_with('\t')) { _text.pop_back(); }
         closeScope();
         _text += "} else ";
         iterator += 2;
-        if(iterator->getType() != TokenType::K_IF) {
+        if(!iterator->isType(TokenType::K_IF)) {
             _text += "{";
             openScope(ScopeType::ELSE_SCOPE);
             checkTrailingBracket(instruction);
@@ -381,7 +384,7 @@ namespace vnd {
     void Transpiler::transpileBreak(const Instruction &instruction) {
         auto identifier = instruction.getTokens().begin()->getValue();
         auto scope = _scope;
-        while(scope->getType() != ScopeType::LOOP_SCOPE) {
+        while(!scope->isType(ScopeType::LOOP_SCOPE)) {
             if(scope->isGlobalScope()) { throw TRANSPILER_EXCEPTIONF(instruction, "Cannot use {} outside a loop", identifier); }
             scope = scope->getParent();
         }
@@ -400,8 +403,8 @@ namespace vnd {
         const auto identifier = iterator->getValue();
         iterator = std::next(iterator);
         openScope(ScopeType::FUNCTION_SCOPE);
-        if(auto next = std::next(iterator); next->getType() == TokenType::CLOSE_PARENTESIS) { iterator = next; }
-        while(iterator->getType() != TokenType::CLOSE_PARENTESIS) {
+        if(auto next = std::next(iterator); next->isType(TokenType::CLOSE_PARENTESIS)) { iterator = next; }
+        while(!iterator->isType(TokenType::CLOSE_PARENTESIS)) {
             iterator = std::next(iterator);
             auto param = iterator->getValue();
             iterator = std::next(iterator);
@@ -411,7 +414,7 @@ namespace vnd {
             params.emplace_back(param, typevalue);
         }
         iterator = std::next(iterator);
-        while(iterator->getType() != TokenType::OPEN_CUR_PARENTESIS) {
+        while(!iterator->isType(TokenType::OPEN_CUR_PARENTESIS)) {
             auto [type, typevalue] = transpileType(iterator, endToken, {TokenType::COMMA, TokenType::OPEN_CUR_PARENTESIS}, instruction);
             _returnTypes.emplace_back(type);
             returnTypevalues.emplace_back(typevalue);
@@ -448,10 +451,8 @@ namespace vnd {
 
     void Transpiler::transpileReturn(const Instruction &instruction) {
         auto scope = _scope;
-        while(scope->getType() != ScopeType::FUNCTION_SCOPE) {
-            if(scope->getType() == ScopeType::GLOBAL_SCOPE) {
-                throw TranspilerException("Cannot use return outside a function", instruction);
-            }
+        while(!scope->isType(ScopeType::FUNCTION_SCOPE)) {
+            if(scope->isType(ScopeType::GLOBAL_SCOPE)) { throw TranspilerException("Cannot use return outside a function", instruction); }
             scope = scope->getParent();
         }
         auto tokens = instruction.getTokens();
@@ -505,7 +506,7 @@ namespace vnd {
         std::string currentVariable;
         std::string type;
         bool assignable = true;
-        while(iterator != end && iterator->getType() != EQUAL_OPERATOR && iterator->getType() != OPERATION_EQUAL) {
+        while(iterator != end && !iterator->isType(EQUAL_OPERATOR) && !iterator->isType(OPERATION_EQUAL)) {
             const auto next = std::ranges::next(iterator);
             if(iterator->isType(IDENTIFIER)) {
                 if(next != end && next->isType(OPEN_PARENTESIS)) {
@@ -572,14 +573,14 @@ namespace vnd {
 
     std::string Transpiler::extractFun(TokenVecIter &iterator, const TokenVecIter &end, std::string &currentVariable,
                                        std::string &type) const noexcept {
-        using enum vnd::TokenType;
+        using enum TokenType;
         auto identifier = iterator->getValue();
         auto factory = ExpressionFactory::create(iterator, end, _scope, false);
         std::vector<Expression> expressions;
         iterator = std::next(iterator);
-        while(iterator->getType() != TokenType::CLOSE_PARENTESIS) {
+        while(!iterator->isType(CLOSE_PARENTESIS)) {
             iterator = std::next(iterator);
-            if(iterator->getType() != CLOSE_PARENTESIS) {
+            if(!iterator->isType(CLOSE_PARENTESIS)) {
                 if(const auto &error = factory.parse({COMMA, CLOSE_PARENTESIS}); !error.empty()) { return error; }
             }
         }
@@ -630,7 +631,7 @@ namespace vnd {
     }
 
     StringPair Transpiler::transpileMultipleFun(const StringPairVec &variables, const Expression &expression) noexcept {
-        auto types = Transpiler::tokenize(expression.getType());
+        const auto types = tokenize(expression.getType());
         std::string values;
         std::string warnings;
         StringVec tmp;
@@ -676,7 +677,7 @@ namespace vnd {
             throw TranspilerException(FORMAT("Cannot declare {} variables", typeValue), instruction);
         }
         if(!_scope->checkType(type)) { throw TranspilerException(FORMAT("Type {} not valid", type), instruction); }
-        if(!vnd::Scope::isPrimitive(type)) { typeValue = FORMAT("std::shared_ptr<{}>", type); }
+        if(!Scope::isPrimitive(type)) { typeValue = FORMAT("std::shared_ptr<{}>", type); }
         while(iterator != end && std::ranges::find(endTokens, iterator->getType()) == endTokens.end()) {
             if(iterator->isType(OPEN_SQ_PARENTESIS)) {
                 if(std::ranges::next(iterator)->isType(CLOSE_SQ_PARENTESIS)) {
@@ -771,7 +772,7 @@ namespace vnd {
     std::string Transpiler::transpileCondition(TokenVecIter &iterator, const TokenVecIter &end) noexcept {
         auto factory = ExpressionFactory::create(iterator, end, _scope, false);
         if(const auto &error = factory.parse({TokenType::CLOSE_PARENTESIS}); !error.empty()) { return error; }
-        auto expression = factory.getExpression();
+        const auto expression = factory.getExpression();
         if(expression.getType() != "bool") { return "Invalid condition type"; }
         _text += FORMAT("({}) {{", expression.getText());
         return {};
@@ -824,7 +825,7 @@ namespace vnd {
         auto oldScope = _scope;
         _scope = _scope->getParent();
         oldScope->removeParent();
-        if(oldScope->getType() == ScopeType::FUNCTION_SCOPE) { _returnTypes.clear(); }
+        if(oldScope->isType(ScopeType::FUNCTION_SCOPE)) { _returnTypes.clear(); }
         _tabs--;
     }
 

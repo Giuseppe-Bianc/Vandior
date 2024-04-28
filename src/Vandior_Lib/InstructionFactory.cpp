@@ -452,7 +452,7 @@ namespace vnd {
     }
 
     inline void InstructionFactory::emplaceUnaryOperator(const TokenType &type) noexcept {
-        using enum vnd::TokenType;
+        using enum TokenType;
         if(type == IDENTIFIER) { _allowedTokens.insert(_allowedTokens.end(), {DOT_OPERATOR, OPEN_PARENTESIS, OPEN_SQ_PARENTESIS}); }
         if(type != UNARY_OPERATOR) { _allowedTokens.emplace_back(UNARY_OPERATOR); }
     }

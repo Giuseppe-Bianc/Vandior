@@ -183,6 +183,8 @@ namespace vnd {
          */
         [[nodiscard]] std::pair<bool, bool> canAssign(const std::string &left, const std::string &right) const noexcept;
 
+        [[nodiscard]] bool isType(const ScopeType &type) const noexcept;
+
     private:
         /**
          * @brief Constructor of a Scope.

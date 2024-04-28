@@ -913,7 +913,6 @@ TEST_CASE("Transpiler transpile assignation instruction", "[transpiler]") {
                     "\t_num = 1;\n"
                     "\treturn 0;\n"
                     "}\n");
-    ;
 }
 
 TEST_CASE("Transpiler transpile if instruction", "[transpiler]") {
