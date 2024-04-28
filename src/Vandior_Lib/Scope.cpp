@@ -1,5 +1,6 @@
 // NOLINTBEGIN(*-include-cleaner,*-identifier-length)
 #include "Vandior/Scope.hpp"
+
 #include <Vandior/Log.hpp>
 using namespace std::literals::string_view_literals;
 /**
@@ -46,8 +47,21 @@ namespace vnd {
         auto mainScope = std::make_shared<Scope>(Scope{nullptr, ScopeType::GLOBAL_SCOPE});
         mainScope->addType("void");
         for(const auto &type : _primitiveTypes) { mainScope->addType(type); }
+        // NOLINTBEGIN(*-no-malloc,*-owning-memory)
+        char *envValue = nullptr;
+        size_t requiredSize = 0;
+        errno_t err = _dupenv_s(&envValue, &requiredSize, "VNHOME");
+        std::string envPath;
+        if(err == 0 && envValue != nullptr) {
+            envPath = std::string(envValue);
+            free(envValue);
+            // Continue with your file handling logic...
+        } else {
+            LERROR("faled to read VHOME");
+        }
+        // NOLINTEND(*-no-malloc,*-owning-memory)
 
-        std::ifstream file(std::string(std::getenv("VNHOME")) + "/base/base.vnh");
+        std::ifstream file(envPath + "/base/base.vnh");
         nlohmann::json data;
         file >> data;
         file.close();

@@ -161,8 +161,7 @@ auto main(int argc, const char *const argv[]) -> int {
             if(std::system(command.data()) == 0) {
                 // Compile the code
 #ifdef _WIN32
-                auto augument = FORMAT(
-                    "g++ --std=c++20 {}.cpp -o {} -I \"%VNHOME%\" -lfmt", output, output);
+                auto augument = FORMAT("g++ --std=c++20 {}.cpp -o {} -I \"%VNHOME%\" -lfmt", output, output);
 #else
                 auto augument = FORMAT("g++ --std=c++20 {}.cpp -o {} -I \"$VNHOME\" -L \"$VNHOME/build/_deps/fmt-build\" -lfmt", output,
                                        output);

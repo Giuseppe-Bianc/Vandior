@@ -631,7 +631,7 @@ namespace vnd {
     }
 
     StringPair Transpiler::transpileMultipleFun(const StringPairVec &variables, const Expression &expression) noexcept {
-        const auto types = tokenize(expression.getType());
+        auto types = tokenize(expression.getType());
         std::string values;
         std::string warnings;
         StringVec tmp;
