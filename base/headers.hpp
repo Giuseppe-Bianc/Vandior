@@ -3,6 +3,7 @@
 #include <cmath>
 #include <array>
 #include <vector>
+#include <numbers>
 #include <memory>
 #include <variant>
 #include <unordered_map>
