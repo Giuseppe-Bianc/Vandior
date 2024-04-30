@@ -104,5 +104,7 @@ main {
 	character, _ = func(10)
 	var pi: f64 = PI
 	println("{} {} {} {} {}", pi, PI, TAU, E, INF)
-	println("{} {} {}", sqrt(4), sin(PI), cos(PI))
+	println("{} {} {} {}", sqrt(4), sin(PI), cos(PI), tan(PI))
+	println("{} {} {} {}", asin(0), acos(0), atan(PI), atan2(PI, TAU))
+	println("{} {} {}", sinh(PI), cosh(PI), tanh(PI))
 }
