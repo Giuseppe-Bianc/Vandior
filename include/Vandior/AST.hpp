@@ -4,8 +4,8 @@
 
 #pragma once
 
-#include "Log.hpp"
 #include "ASTNode.hpp"
+#include "Log.hpp"
 
 DISABLE_WARNINGS_PUSH(
     4005 4201 4459 4514 4625 4626 4820 6244 6285 6385 6386 26409 26415 26418 26429 26432 26437 26438 26440 26445 26446 26447 26450 26451 26455 26457 26459 26460 26461 26467 26472 26473 26474 26475 26481 26482 26485 26490 26491 26493 26494 26495 26496 26497 26498 26800 26814 26818 26826)
@@ -38,9 +38,11 @@ public:
     [[nodiscard]] const std::unique_ptr<vnd::ASTNode> &getRight() const noexcept { return right; }
     [[nodiscard]] const vnd::ASTNode &getLeftr() const noexcept { return *left.get(); }
     [[nodiscard]] const vnd::ASTNode &getRightr() const noexcept { return *right.get(); }
+
 private:
     std::string_view op;
-    std::unique_ptr<vnd::ASTNode> left, right;
+    std::unique_ptr<vnd::ASTNode> left;
+    std::unique_ptr<vnd::ASTNode> right;
 };
 
 /**
@@ -53,13 +55,10 @@ public:
      * @param _op Operator for the unary expression.
      * @param _operand Operand of the unary expression.
      */
-    UnaryExpressionNode(std::string_view _op, std::unique_ptr<vnd::ASTNode> _operand) noexcept
-      : op(_op), operand(std::move(_operand)) {}
+    UnaryExpressionNode(std::string_view _op, std::unique_ptr<vnd::ASTNode> _operand) noexcept : op(_op), operand(std::move(_operand)) {}
 
     [[nodiscard]] NodeType getType() const noexcept override { return NodeType::UnaryExpression; }
-    [[nodiscard]] std::string print() const override {
-        return FORMAT("{}(op:\"{}\" operand:{})", getType(), op, operand->print());
-    }
+    [[nodiscard]] std::string print() const override { return FORMAT("{}(op:\"{}\" operand:{})", getType(), op, operand->print()); }
     [[nodiscard]] std::string comp_print() const override { return FORMAT("UNE(op:\"{}\" opr:{})", op, operand->comp_print()); }
     [[nodiscard]] const std::string_view &getOp() const noexcept { return op; }
     [[nodiscard]] const std::unique_ptr<vnd::ASTNode> &getOperand() const noexcept { return operand; }
