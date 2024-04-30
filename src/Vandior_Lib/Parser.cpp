@@ -40,6 +40,37 @@ namespace vnd {
 
         return 0;
     }
+
+    int Parser::convertToIntformExa(std::string_view str) noexcept {
+        int result{};
+        // NOLINTNEXTLINE(*-avoid-magic-numbers, *-magic-numbers)
+        auto [ptr, ec] = std::from_chars(str.data(), str.data() + str.size(), result, 16);
+
+        if(ec == std::errc()) [[likely]] {
+            return result;
+        } else if(ec == std::errc::invalid_argument || ec == std::errc::result_out_of_range) [[likely]] {
+            // Handle error
+            return 0;
+        }
+
+        return 0;
+    }
+
+    int Parser::convertToIntformOct(std::string_view str) noexcept {
+        int result{};
+        // NOLINTNEXTLINE(*-avoid-magic-numbers, *-magic-numbers)
+        auto [ptr, ec] = std::from_chars(str.data(), str.data() + str.size(), result, 8);
+
+        if(ec == std::errc()) [[likely]] {
+            return result;
+        } else if(ec == std::errc::invalid_argument || ec == std::errc::result_out_of_range) [[likely]] {
+            // Handle error
+            return 0;
+        }
+
+        return 0;
+    }
+
     double Parser::convertToDouble(std::string_view str) noexcept {
         double result{};
         auto [ptr, ec] = std::from_chars(str.data(), str.data() + str.size(), result);
@@ -57,9 +88,18 @@ namespace vnd {
         const Token &currentToken = getCurrentToken();
         const auto &currentType = currentToken.getType();
         const auto &currentValue = currentToken.getValue();
+        auto cval = std::string{currentValue};
 
         if(currentType == TokenType::INTEGER) {
             consumeToken();
+            if(currentValue.starts_with("#o") || currentValue.starts_with("#O")) {
+                cval.erase(0, 2);
+                return std::make_unique<NumberNode>(convertToIntformOct(cval));
+            }
+            if(currentValue.starts_with("#")) {
+                cval.erase(0, 1);
+                return std::make_unique<NumberNode>(convertToIntformExa(cval));
+            }
             return std::make_unique<NumberNode>(convertToInt(currentValue));
         } else if(currentType == TokenType::DOUBLE) {
             consumeToken();

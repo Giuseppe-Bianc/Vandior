@@ -64,7 +64,7 @@ constexpr std::string_view filename = R"(..\..\..\input.vn)";
 // constexpr std::string_view filename = "../../../../input.vn";  // Linux and Unix  form editor
 constexpr std::string_view filename = "../../../input.vn";  // Linux and Unix
 #endif
-auto extractInstructions(const std::string &file, const std::vector<vnd::Token> &tokens) -> std::vector<vnd::Instruction> {
+/* auto extractInstructions(const std::string &file, const std::vector<vnd::Token> &tokens) -> std::vector<vnd::Instruction> {
     vnd::InstructionFactory factory = vnd::InstructionFactory::create(file);
     auto line = tokens.at(0).getLine();
     vnd::AutoTimer ictim("Instructions creation time");
@@ -82,13 +82,13 @@ auto extractInstructions(const std::string &file, const std::vector<vnd::Token> 
     }
     factory.addInstruction();
     return factory.getInstructions();
-}
+}*/
 
 // NOLINTNEXTLINE(*-function-cognitive-complexity)
 auto main(int argc, const char *const argv[]) -> int {
     // NOLINTNEXTLINE
     INIT_LOG()
-    std::string_view command;
+    /* std::string_view command;
 #ifdef HIDE_SYSTEM_OUTPUT
 #ifdef _WIN32
     command = "python --version > NUL";
@@ -105,7 +105,7 @@ auto main(int argc, const char *const argv[]) -> int {
     if(std::system(command.data()) != 0) {
         LERROR("Python not found");
         return EXIT_FAILURE;
-    }
+    }*/
     // LINFO("{}", code);
     // LINFO("code length {}", code.length());
     try {
@@ -141,6 +141,7 @@ auto main(int argc, const char *const argv[]) -> int {
         vnd::Tokenizer tokenizer{code, path.value_or(filename.data())};
         std::vector<vnd::Token> tokens;
         timeTokenizer(tokenizer, tokens);
+        /*
         auto instructions = extractInstructions(path.value_or(filename.data()), tokens);
         vnd::Timer tim("transpiling time");
         auto transpiler = vnd::Transpiler::create(instructions);
@@ -175,18 +176,15 @@ auto main(int argc, const char *const argv[]) -> int {
                 if(run) {
                     vnd::AutoTimer rctim("run code time");
 
-#ifdef _WIN32
                     int result = std::system(FORMAT("{}", output).c_str());
-#else
-                    int result = std::system(FORMAT("{}", output).c_str());
-#endif
+
                     if(result != 0) { LWARN("Error: Command failed with exit status {}", result); }
                 }
             } else {
                 LERROR("Failed to execute command: {}", command);
                 return EXIT_FAILURE;
             }
-        }
+        }*/
     } catch(const std::exception &e) { LERROR("Unhandled exception in main: {}", e.what()); }
     return EXIT_SUCCESS;  // Return appropriate exit code
 }
