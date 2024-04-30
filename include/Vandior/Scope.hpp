@@ -251,7 +251,7 @@ namespace vnd {
         template <typename KeyType, typename ValueType>
         [[nodiscard]] bool contains_key(const std::unordered_map<KeyType, ValueType> &map, std::string_view key) const noexcept;
         void processVariadicParams(StringVec &params, const ExprVec &expressions, OptionalSizeT &variadic) const noexcept;
-        void processParams(const ExprVec &expressions, StringVec &params, const FunType &item, bool &found) const noexcept;
+        void processParams(const ExprVec &expressions,const StringVec &params, const FunType &item, bool &found) const noexcept;
     };
 
 }  // namespace vnd

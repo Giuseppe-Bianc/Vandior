@@ -8,4 +8,5 @@
 #include "InstructionFactory.hpp"
 #include "Transpiler.hpp"
 #include "FolderCreationResult.hpp"
+#include "Parser.hpp"
 // clang-format on

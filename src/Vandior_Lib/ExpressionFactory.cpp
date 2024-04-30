@@ -36,7 +36,7 @@ namespace vnd {
     }
     // NOLINTEND(*-pass-by-value, *-identifier-length)
 
-    std::string ExpressionFactory::transpileFun(const std::vector<Expression> &expressions, std::optional<size_t> variadic,
+    std::string ExpressionFactory::transpileFun(const std::vector<Expression> &expressions, OptionalSizeT variadic,
                                                 const bool print) noexcept {
         std::string params;
         size_t pos = 0;
