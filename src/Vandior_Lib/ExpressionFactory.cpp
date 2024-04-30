@@ -36,7 +36,7 @@ namespace vnd {
     }
     // NOLINTEND(*-pass-by-value, *-identifier-length)
 
-    std::string ExpressionFactory::transpileFun(const std::vector<Expression> &expressions, std::optional<size_t> variadic,
+    std::string ExpressionFactory::transpileFun(const std::vector<Expression> &expressions, OptionalSizeT variadic,
                                                 const bool print) noexcept {
         std::string params;
         size_t pos = 0;
@@ -142,7 +142,7 @@ namespace vnd {
     void ExpressionFactory::handleFinalExpression(const TupType &type) noexcept {
         if(Scope::isNumber(std::get<2>(type))) {
             std::string value;
-            if(_const) { value = ExpressionFactory::evaluate(_expressionText); }
+            if(_const) { value = evaluate(_expressionText); }
             _expressions.emplace_back(Expression::create(_text, std::get<2>(type), _const, value));
         } else {
             _expressions.emplace_back(Expression::create(_text, std::get<2>(type), _const));
@@ -175,7 +175,7 @@ namespace vnd {
         const auto iterValue = _iterator->getValue();
         switch(_iterator->getType()) {
         case INTEGER:
-            return ExpressionFactory::getIntType(iterValue);
+            return getIntType(iterValue);
         case DOUBLE:
             if(iterValue.ends_with("if")) { return "c32"; }
             if(iterValue.ends_with('i')) { return "c64"; }
@@ -308,14 +308,14 @@ namespace vnd {
     }
 
     std::string ExpressionFactory::handleFun(TupType &type) noexcept {  // NOLINT(*-no-recursion)
-        using enum vnd::TokenType;
+        using enum TokenType;
         auto identifier = _iterator->getValue();
-        auto factory = ExpressionFactory::create(_iterator, _end, _scope, false);
+        auto factory = create(_iterator, _end, _scope, false);
         std::vector<Expression> expressions;
         std::string params;
         if(_const && !_temp.empty()) { return "Cannot call methods on const value"; }
         ++_iterator;
-        while(!_iterator->isType(TokenType::CLOSE_PARENTESIS)) {
+        while(!_iterator->isType(CLOSE_PARENTESIS)) {
             ++_iterator;
             if(!_iterator->isType(CLOSE_PARENTESIS)) {
                 if(const auto &error = factory.parse({COMMA, CLOSE_PARENTESIS}); !error.empty()) { return error; }
@@ -332,8 +332,8 @@ namespace vnd {
             if(value.starts_with(".")) { value.erase(0, 1); }
             return FORMAT("Function {} not found", value);
         }
-        if(const auto &error = ExpressionFactory::checkType(type, newType); !error.empty()) { return error; }
-        params = ExpressionFactory::transpileFun(expressions, variadic, identifier == "print" || identifier == "println");
+        if(const auto &error = checkType(type, newType); !error.empty()) { return error; }
+        params = transpileFun(expressions, variadic, identifier == "print" || identifier == "println");
         auto value = FORMAT("{}({})", std::string{identifier}, params);
         if(_temp.empty()) {
             if(constructor) {
@@ -351,7 +351,7 @@ namespace vnd {
     // NOLINTNEXTLINE(*-no-recursion)
     std::string ExpressionFactory::handleSquareExpression(TupType &type) noexcept {
         if(!Scope::checkVector(_type)) { return FORMAT("Indexing not allowed for {} type", _type); }
-        auto factory = ExpressionFactory::create(_iterator, _end, _scope, _const, true);
+        auto factory = create(_iterator, _end, _scope, _const, true);
         ++_iterator;
         if(const auto &error = factory.parse({TokenType::CLOSE_SQ_PARENTESIS}); !error.empty()) { return error; }
         auto expression = factory.getExpression();
@@ -368,7 +368,7 @@ namespace vnd {
         std::string value;
         std::string constValue;
         std::vector<Expression> expressions;
-        auto factory = ExpressionFactory::create(_iterator, _end, _scope, _const);
+        auto factory = create(_iterator, _end, _scope, _const);
         while(!_iterator->isType(TokenType::CLOSE_CUR_PARENTESIS)) {
             using enum vnd::TokenType;
             ++_iterator;
@@ -411,7 +411,7 @@ namespace vnd {
     }
 
     std::string ExpressionFactory::handleInnerExpression(TupType &type) noexcept {  // NOLINT(*-no-recursion)
-        auto factory = ExpressionFactory::create(_iterator, _end, _scope, _const);
+        auto factory = create(_iterator, _end, _scope, _const);
         ++_iterator;
         if(const auto &error = factory.parse({TokenType::CLOSE_PARENTESIS}); !error.empty()) { return error; }
         auto expression = factory.getExpression();
@@ -428,11 +428,11 @@ namespace vnd {
     }
 
     std::string ExpressionFactory::handleToken(TupType &type) noexcept {
-        const auto newType = ExpressionFactory::getTokenType();
+        const auto newType = getTokenType();
         auto iterValue = _iterator->getValue();
         if(!checkUnaryOperator(newType)) { return FORMAT("Cannot apply unary operator for {}", iterValue); }
         if(newType.empty()) { return FORMAT("Identifier {}.{} not found", _type, iterValue); }
-        if(const auto &error = ExpressionFactory::checkType(type, newType); !error.empty()) { return error; }
+        if(const auto &error = checkType(type, newType); !error.empty()) { return error; }
         emplaceToken(newType);
         return {};
     }
@@ -560,7 +560,7 @@ namespace vnd {
             _temp.clear();
         }
     }
-    std::string ExpressionFactory::handleLogicalType(ExpressionFactory::TupType &oldType) const noexcept {
+    std::string ExpressionFactory::handleLogicalType(TupType &oldType) const noexcept {
         if(std::get<2>(oldType) == bols || std::get<0>(oldType) == true) {
             std::get<0>(oldType) = false;
             std::get<1>(oldType) = true;
@@ -569,7 +569,7 @@ namespace vnd {
         }
         return FORMAT("Cannot apply operator for {} type", std::get<2>(oldType));
     }
-    std::string ExpressionFactory::handleBooleanType(ExpressionFactory::TupType &oldType) const noexcept {
+    std::string ExpressionFactory::handleBooleanType(TupType &oldType) const noexcept {
         if(!Scope::isPrimitive(std::get<2>(oldType))) { return FORMAT("Cannot compare {} type", std::get<2>(oldType)); }
         std::get<0>(oldType) = true;
         return {};

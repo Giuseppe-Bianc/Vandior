@@ -229,28 +229,28 @@ namespace vnd {
         return ""sv;
     }
 
-    // NOLINTNEXTLINE(*-no-recursion,readability-function-cognitive-complexity)
-    std::tuple<std::string, bool, std::optional<size_t>> Scope::getFunType(const std::string &type, const std::string_view &identifier,
-                                                                           const std::vector<Expression> &expressions) const noexcept {
+    // NOLINTNEXTLINE(*-no-recursion)
+    std::tuple<std::string, bool, OptionalSizeT> Scope::getFunType(const std::string &type, const std::string_view &identifier,
+                                                                   const std::vector<Expression> &expressions) const noexcept {
         bool found = false;
         for(const auto &i : getFuns(getType(type), identifier)) {
             auto params = i.getParams();
-            std::optional<size_t> variadic;
+            OptionalSizeT variadic;
             found = true;
             processVariadicParams(params, expressions, variadic);
             processParams(expressions, params, i, found);
-            if(found) { return std::tuple<std::string, bool, std::optional<size_t>>{i.getReturnType(), i.isConstructor(), variadic}; }
+            if(found) { return std::tuple<std::string, bool, OptionalSizeT>{i.getReturnType(), i.isConstructor(), variadic}; }
         }
         if(_types.contains(type)) {
             for(const auto &i : _types.at(type)) {
                 auto [result, constructor, variadic] = getFunType(i, identifier, expressions);
-                if(!result.empty()) { return std::tuple<std::string, bool, std::optional<size_t>>{result, constructor, variadic}; }
+                if(!result.empty()) { return std::tuple<std::string, bool, OptionalSizeT>{result, constructor, variadic}; }
             }
         }
         if(_parent) { return _parent->getFunType(type, identifier, expressions); }
-        return std::tuple<std::string, bool, std::optional<size_t>>{"", false, std::optional<size_t>{}};
+        return std::tuple<std::string, bool, OptionalSizeT>{"", false, OptionalSizeT{}};
     }
-    void Scope::processParams(const std::vector<Expression> &expressions, std::vector<std::string> &params, const FunType &item,
+    void Scope::processParams(const std::vector<Expression> &expressions, const StringVec &params, const FunType &item,
                               bool &found) const noexcept {
         if(params.size() != expressions.size()) [[likely]] {
             found = false;
@@ -262,10 +262,10 @@ namespace vnd {
         }
     }
 
-    void Scope::processVariadicParams(std::vector<std::string> &params, const std::vector<Expression> &expressions,
-                                      std::optional<size_t> &variadic) const noexcept {
+    void Scope::processVariadicParams(StringVec &params, const std::vector<Expression> &expressions,
+                                      OptionalSizeT &variadic) const noexcept {
         if(!params.empty() && params.back().ends_with("...")) {
-            variadic = std::optional<size_t>(params.size() - 1);
+            variadic = OptionalSizeT(params.size() - 1);
             if(expressions.size() == variadic) {
                 params.pop_back();
             } else if(expressions.size() >= params.size()) {
@@ -338,7 +338,7 @@ namespace vnd {
         const bool typContainsMin = type.contains('<');
 #endif
         if(typContainsMin) {
-            auto pos = type.find('<');
+            const auto pos = type.find('<');
             std::string currentParam;
             for(const char c : type.substr(pos + 1, type.find_last_of('>') - 1)) {
                 switch(c) {
@@ -352,17 +352,15 @@ namespace vnd {
                     continue;
                 default:
                     currentParam += c;
-                    continue;
                 }
             }
             typeSpecialized.emplace_back(currentParam);
             typePrefix = type.substr(0, pos);
         }
-        std::string key = getKey(typePrefix, identifier);
+        const std::string key = getKey(typePrefix, identifier);
         if(!_funs.contains(key)) { return {}; }
         for(const auto &fun : _funs.at(key)) {
-            auto [resultFun, ok] = specializeFun(fun, typeSpecialized);
-            if(ok) { result.emplace_back(resultFun); }
+            if(auto [resultFun, ok] = specializeFun(fun, typeSpecialized); ok) { result.emplace_back(resultFun); }
         }
         return result;
     }

@@ -13,6 +13,8 @@ add_library(vandior_lib vandior.cpp
         ExpressionFactory.cpp
         Expression.cpp
         Transpiler.cpp
+        Parser.cpp
+        ASTNode.cpp
 )
 
 add_library(Vandior::vandior_lib ALIAS vandior_lib)
