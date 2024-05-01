@@ -24,7 +24,7 @@ DISABLE_WARNINGS_PUSH(
  * @param label Label for the printed information.
  * @param value Value to be printed.
  */
-// NOLINTNEXTLINE(*-no-recursion)
+// NOLINTNEXTLINE
 static inline void print_indent(int indent, const auto &label, const auto &value) { LINFO("{: ^{}}{}: {}", "", indent, label, value); }
 /**
  * @brief Utility function for printing with indentation, followed by a new line.
@@ -33,18 +33,17 @@ static inline void print_indent(int indent, const auto &label, const auto &value
  * @param value Value to be printed.
  * @param labelnl Label for the new line.
  */
-// NOLINTNEXTLINE(*-no-recursion)
+// NOLINTNEXTLINE
 static inline void print_indent_dl(int indent, const auto &label, const auto &value, const auto &labelnl) {
     print_indent(indent, label, value);
     LINFO("{: ^{}}{}:", "", indent, labelnl);
 }
-
 /**
  * @brief Pretty prints the AST starting from the given node with optional indentation.
  * @param node The root of the AST to be pretty printed.
  * @param indent Number of spaces for indentation.
  */
-// NOLINTNEXTLINE(*-no-recursion)
+// NOLINTNEXTLINE(misc-no-recursion)
 static inline void prettyPrint(const vnd::ASTNode &node, int indent = 0) {
     // Recursively print children for Binary and Unary expression nodes
     if(const auto *binaryNode = node.as<vnd::BinaryExpressionNode>()) {
