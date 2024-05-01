@@ -24,7 +24,7 @@ DISABLE_WARNINGS_PUSH(
  * @param label Label for the printed information.
  * @param value Value to be printed.
  */
-// NOLINTNBEGIN(misc-no-recursion)
+// NOLINTNEXTLINE(*-no-recursion)
 static inline void print_indent(int indent, const auto &label, const auto &value) { LINFO("{: ^{}}{}: {}", "", indent, label, value); }
 /**
  * @brief Utility function for printing with indentation, followed by a new line.
@@ -33,6 +33,7 @@ static inline void print_indent(int indent, const auto &label, const auto &value
  * @param value Value to be printed.
  * @param labelnl Label for the new line.
  */
+// NOLINTNEXTLINE(*-no-recursion)
 static inline void print_indent_dl(int indent, const auto &label, const auto &value, const auto &labelnl) {
     print_indent(indent, label, value);
     LINFO("{: ^{}}{}:", "", indent, labelnl);
@@ -43,6 +44,7 @@ static inline void print_indent_dl(int indent, const auto &label, const auto &va
  * @param node The root of the AST to be pretty printed.
  * @param indent Number of spaces for indentation.
  */
+// NOLINTNEXTLINE(*-no-recursion)
 static inline void prettyPrint(const vnd::ASTNode &node, int indent = 0) {
     // Recursively print children for Binary and Unary expression nodes
     if(const auto *binaryNode = node.as<vnd::BinaryExpressionNode>()) {
@@ -59,7 +61,6 @@ static inline void prettyPrint(const vnd::ASTNode &node, int indent = 0) {
         print_indent(indent, "Node", FORMAT("(Type: {}, value:{})", node.getType(), variableNode->getName()));
     }
 }
-// NOLINTEND(*-no-recursion)
 /**
  * This macro disable some msvc warnigs.
  * \cond
