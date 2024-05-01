@@ -5,16 +5,20 @@ add_library(vandior_lib vandior.cpp
         Token.cpp
         Tokenizer.cpp
         TokenizerUtility.cpp
-        InstructionException.cpp
-        InstructionFactory.cpp
-        Instruction.cpp
-        FunType.cpp
-        Scope.cpp
-        ExpressionFactory.cpp
-        Expression.cpp
-        Transpiler.cpp
+        #        InstructionException.cpp
+        #        InstructionFactory.cpp
+        #        Instruction.cpp
+        #        FunType.cpp
+        #        Scope.cpp
+        #        ExpressionFactory.cpp
+        #        Expression.cpp
+        #        Transpiler.cpp
         Parser.cpp
         ASTNode.cpp
+        BinaryExpressionNode.cpp
+        UnaryExpressionNode.cpp
+        NumberNode.cpp
+        VariableNode.cpp
 )
 
 add_library(Vandior::vandior_lib ALIAS vandior_lib)
