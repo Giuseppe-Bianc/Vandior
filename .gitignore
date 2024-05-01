@@ -41,3 +41,4 @@ Thumbs.db
 /input.cpp
 examples/vnbuild/src/
 /vnbuild/src/
+ingnoref/gcovr.cfg
