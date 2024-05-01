@@ -24,7 +24,7 @@ DISABLE_WARNINGS_PUSH(
  * @param label Label for the printed information.
  * @param value Value to be printed.
  */
-// NOLINTNBEGIN(misc-no-recursion)
+// NOLINTNBEGIN(*-no-recursion)
 static inline void print_indent(int indent, const auto &label, const auto &value) { LINFO("{: ^{}}{}: {}", "", indent, label, value); }
 /**
  * @brief Utility function for printing with indentation, followed by a new line.
