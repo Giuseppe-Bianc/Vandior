@@ -1,0 +1,33 @@
+# Root directory for the Codecov search path
+root: .
+
+# Search path for the code coverage data files
+search-path: out
+
+# Filter options to include only specific directories for coverage analysis
+filter:
+  - src/*
+  - include/*
+
+# Exclude directories from coverage analysis
+exclude-directories:
+  - install
+  - out/*/*/_deps
+  - test
+  - fuzz_test
+
+# Ignore GCOV parse errors
+gcov-ignore-parse-errors: yes
+
+# Print a summary of the coverage report
+print-summary: yes
+
+# HTML details for the coverage report output
+html-details: ./out/coverage/index.html
+
+# Cobertura output options
+cobertura-pretty: yes
+cobertura: out/cobertura.xml
+
+# Commented out, TBD option to delete GCOV files
+#delete-gcov-files: yes
