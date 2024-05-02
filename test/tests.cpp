@@ -1008,7 +1008,7 @@ TEST_CASE("Transpiler transpile function instructions", "[transpiler]") {
                     "}\n");
 }
 */
-TEST_CASE("Parser emit number node", "[parser]") {
+TEST_CASE("Parser emit integer number node", "[parser]") {
     vnd::Parser parser("1", filename);
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
@@ -1018,7 +1018,59 @@ TEST_CASE("Parser emit number node", "[parser]") {
     REQUIRE(number->get_value() == 1);
 }
 
-TEST_CASE("Parser emit number node form exadecimal", "[parser]") {
+TEST_CASE("integer number node swap", "[parser]") {
+    vnd::IntegerNumberNode inta{2};
+    vnd::IntegerNumberNode intb{3};
+    REQUIRE(inta.get_value() == 2);
+    REQUIRE(intb.get_value() == 3);
+    std::swap(inta, intb);
+    REQUIRE(inta.get_value() == 3);
+    REQUIRE(intb.get_value() == 2);
+}
+
+TEST_CASE("double number node swap", "[parser]") {
+    vnd::DoubleNumberNode douba{2.3};
+    vnd::DoubleNumberNode doubb{3.3};
+    REQUIRE(douba.get_value() == 2.3);
+    REQUIRE(doubb.get_value() == 3.3);
+    std::swap(douba, doubb);
+    REQUIRE(douba.get_value() == 3.3);
+    REQUIRE(doubb.get_value() == 2.3);
+}
+
+TEST_CASE("unary node swap", "[parser]") {
+    vnd::UnaryExpressionNode unara{"-", std::make_unique<vnd::VariableNode>("d")};
+    vnd::UnaryExpressionNode unarb{"*", std::make_unique<vnd::VariableNode>("s")};
+    REQUIRE(unara.getOp() == "-");
+    REQUIRE(unara.getOperand()->as<vnd::VariableNode>()->getName() == "d");
+    REQUIRE(unarb.getOp() == "*");
+    REQUIRE(unarb.getOperand()->as<vnd::VariableNode>()->getName() == "s");
+    std::swap(unara, unarb);
+    REQUIRE(unara.getOp() == "*");
+    REQUIRE(unara.getOperand()->as<vnd::VariableNode>()->getName() == "s");
+    REQUIRE(unarb.getOp() == "-");
+    REQUIRE(unarb.getOperand()->as<vnd::VariableNode>()->getName() == "d");
+}
+
+TEST_CASE("binary node swap", "[parser]") {
+    vnd::BinaryExpressionNode unara{"-", std::make_unique<vnd::VariableNode>("d"), std::make_unique<vnd::VariableNode>("a")};
+    vnd::BinaryExpressionNode unarb{"*", std::make_unique<vnd::VariableNode>("s"), std::make_unique<vnd::VariableNode>("b")};
+    REQUIRE(unara.getOp() == "-");
+    REQUIRE(unara.getLeft()->as<vnd::VariableNode>()->getName() == "d");
+    REQUIRE(unara.getRight()->as<vnd::VariableNode>()->getName() == "a");
+    REQUIRE(unarb.getOp() == "*");
+    REQUIRE(unarb.getLeft()->as<vnd::VariableNode>()->getName() == "s");
+    REQUIRE(unarb.getRight()->as<vnd::VariableNode>()->getName() == "b");
+    std::swap(unara, unarb);
+    REQUIRE(unara.getOp() == "*");
+    REQUIRE(unara.getLeft()->as<vnd::VariableNode>()->getName() == "s");
+    REQUIRE(unara.getRight()->as<vnd::VariableNode>()->getName() == "b");
+    REQUIRE(unarb.getOp() == "-");
+    REQUIRE(unarb.getLeft()->as<vnd::VariableNode>()->getName() == "d");
+    REQUIRE(unarb.getRight()->as<vnd::VariableNode>()->getName() == "a");
+}
+
+TEST_CASE("Parser emit integer number node form exadecimal", "[parser]") {
     vnd::Parser parser("#23", filename);
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
@@ -1028,7 +1080,7 @@ TEST_CASE("Parser emit number node form exadecimal", "[parser]") {
     REQUIRE(number->get_value() == 35);
 }
 
-TEST_CASE("Parser emit number node form exadecimal max int -1", "[parser]") {
+TEST_CASE("Parser emit integer number node form exadecimal max int -1", "[parser]") {
     vnd::Parser parser("#7ffffffe", filename);
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
@@ -1038,7 +1090,7 @@ TEST_CASE("Parser emit number node form exadecimal max int -1", "[parser]") {
     REQUIRE(number->get_value() == 2147483646);
 }
 
-TEST_CASE("Parser emit number node form octal", "[parser]") {
+TEST_CASE("Parser emit integer number node form octal", "[parser]") {
     vnd::Parser parser("#o23", filename);
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
@@ -1048,7 +1100,7 @@ TEST_CASE("Parser emit number node form octal", "[parser]") {
     REQUIRE(number->get_value() == 19);
 }
 
-TEST_CASE("Parser emit number node form octal max int -1", "[parser]") {
+TEST_CASE("Parser emit integer number node form octal max int -1", "[parser]") {
     vnd::Parser parser("#o17777777776", filename);
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
@@ -1058,7 +1110,7 @@ TEST_CASE("Parser emit number node form octal max int -1", "[parser]") {
     REQUIRE(number->get_value() == 2147483646);
 }
 
-TEST_CASE("Parser emit number node print", "[parser]") {
+TEST_CASE("Parser emit integenumber node print", "[parser]") {
     vnd::Parser parser("1", filename);
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
@@ -1069,7 +1121,7 @@ TEST_CASE("Parser emit number node print", "[parser]") {
     REQUIRE(number->print() == "NUMBER_INTEGER(1)");
 }
 
-TEST_CASE("Parser emit number node compat print", "[parser]") {
+TEST_CASE("Parser emit integer number node compat print", "[parser]") {
     vnd::Parser parser("1", filename);
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
@@ -1090,7 +1142,7 @@ TEST_CASE("Parser emit variable node", "[parser]") {
     REQUIRE(variable->getName() == "y");
 }
 
-TEST_CASE("Parser emit number node double", "[parser]") {
+TEST_CASE("Parser emit double number node double", "[parser]") {
     vnd::Parser parser("1.5", filename);
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
@@ -1100,7 +1152,7 @@ TEST_CASE("Parser emit number node double", "[parser]") {
     REQUIRE(number->get_value() == 1.5);
 }
 
-TEST_CASE("Parser emit number node double print", "[parser]") {
+TEST_CASE("Parser emit double number node double print", "[parser]") {
     vnd::Parser parser("1.5", filename);
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
@@ -1111,7 +1163,7 @@ TEST_CASE("Parser emit number node double print", "[parser]") {
     REQUIRE(number->print() == "NUMBER_DOUBLE(1.5)");
 }
 
-TEST_CASE("Parser emit number node double compat print", "[parser]") {
+TEST_CASE("Parser emit double number node double compat print", "[parser]") {
     vnd::Parser parser("1.5", filename);
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
