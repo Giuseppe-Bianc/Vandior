@@ -10,7 +10,7 @@ namespace vnd {
     /**
      * @brief Variable node class representing variable names in the AST.
      */
-    class VariableNode : public vnd::ASTNode {
+    class VariableNode : public ASTNode {
     public:
         /**
          * @brief Constructor for VariableNode.
@@ -23,6 +23,8 @@ namespace vnd {
         [[nodiscard]] std::string print() const override { return FORMAT("{} ({})", getType(), name); }
         [[nodiscard]] std::string comp_print() const override { return FORMAT("VAR({})", name); }
         [[nodiscard]] const std::string_view &getName() const noexcept { return name; }
+
+        friend void swap(VariableNode &lhs, VariableNode &rhs) noexcept { std::swap(lhs.name, rhs.name); }
 
     private:
         std::string_view name;

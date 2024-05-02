@@ -36,6 +36,13 @@ namespace vnd {
         [[nodiscard]] const ASTNode &getLeftr() const noexcept { return *left.get(); }
         [[nodiscard]] const ASTNode &getRightr() const noexcept { return *right.get(); }
 
+        friend void swap(BinaryExpressionNode &lhs, BinaryExpressionNode &rhs) noexcept {
+            using std::swap;
+            swap(lhs.op, rhs.op);
+            swap(lhs.left, rhs.left);
+            swap(lhs.right, rhs.right);
+        }
+
     private:
         std::string_view op;
         std::unique_ptr<ASTNode> left;
