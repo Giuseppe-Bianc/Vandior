@@ -21,6 +21,7 @@ on:
     - cron: '38 0 * * 5'
 
 
+
 jobs:
   analyze:
     name: Analyze
