@@ -94,16 +94,16 @@ namespace vnd {
             consumeToken();
             if(currentValue.starts_with("#o") || currentValue.starts_with("#O")) {
                 cval.erase(0, 2);
-                return std::make_unique<NumberNode>(convertToIntformOct(cval));
+                return std::make_unique<IntegerNumberNode>(convertToIntformOct(cval));
             }
             if(currentValue.starts_with("#")) {
                 cval.erase(0, 1);
-                return std::make_unique<NumberNode>(convertToIntformExa(cval));
+                return std::make_unique<IntegerNumberNode>(convertToIntformExa(cval));
             }
-            return std::make_unique<NumberNode>(convertToInt(currentValue));
+            return std::make_unique<IntegerNumberNode>(convertToInt(currentValue));
         } else if(currentType == TokenType::DOUBLE) {
             consumeToken();
-            return std::make_unique<NumberNode>(convertToDouble(currentValue));
+            return std::make_unique<DoubleNumberNode>(convertToDouble(currentValue));
         } else if(currentType == TokenType::IDENTIFIER) {
             consumeToken();
             return std::make_unique<VariableNode>(currentValue);

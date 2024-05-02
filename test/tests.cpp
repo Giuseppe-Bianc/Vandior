@@ -1013,9 +1013,9 @@ TEST_CASE("Parser emit number node", "[parser]") {
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Number);
-    const auto *number = ast->as<vnd::NumberNode>();
+    const auto *number = ast->as<vnd::IntegerNumberNode>();
     REQUIRE(number != nullptr);
-    REQUIRE(number->getValue() == 1);
+    REQUIRE(number->get_value() == 1);
 }
 
 TEST_CASE("Parser emit number node form exadecimal", "[parser]") {
@@ -1023,9 +1023,9 @@ TEST_CASE("Parser emit number node form exadecimal", "[parser]") {
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Number);
-    const auto *number = ast->as<vnd::NumberNode>();
+    const auto *number = ast->as<vnd::IntegerNumberNode>();
     REQUIRE(number != nullptr);
-    REQUIRE(number->getValue() == 35);
+    REQUIRE(number->get_value() == 35);
 }
 
 TEST_CASE("Parser emit number node form exadecimal max int -1", "[parser]") {
@@ -1033,9 +1033,9 @@ TEST_CASE("Parser emit number node form exadecimal max int -1", "[parser]") {
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Number);
-    const auto *number = ast->as<vnd::NumberNode>();
+    const auto *number = ast->as<vnd::IntegerNumberNode>();
     REQUIRE(number != nullptr);
-    REQUIRE(number->getValue() == 2147483646);
+    REQUIRE(number->get_value() == 2147483646);
 }
 
 TEST_CASE("Parser emit number node form octal", "[parser]") {
@@ -1043,9 +1043,9 @@ TEST_CASE("Parser emit number node form octal", "[parser]") {
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Number);
-    const auto *number = ast->as<vnd::NumberNode>();
+    const auto *number = ast->as<vnd::IntegerNumberNode>();
     REQUIRE(number != nullptr);
-    REQUIRE(number->getValue() == 19);
+    REQUIRE(number->get_value() == 19);
 }
 
 TEST_CASE("Parser emit number node form octal max int -1", "[parser]") {
@@ -1053,9 +1053,9 @@ TEST_CASE("Parser emit number node form octal max int -1", "[parser]") {
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Number);
-    const auto *number = ast->as<vnd::NumberNode>();
+    const auto *number = ast->as<vnd::IntegerNumberNode>();
     REQUIRE(number != nullptr);
-    REQUIRE(number->getValue() == 2147483646);
+    REQUIRE(number->get_value() == 2147483646);
 }
 
 TEST_CASE("Parser emit number node print", "[parser]") {
@@ -1063,10 +1063,10 @@ TEST_CASE("Parser emit number node print", "[parser]") {
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Number);
-    const auto *number = ast->as<vnd::NumberNode>();
+    const auto *number = ast->as<vnd::IntegerNumberNode>();
     REQUIRE(number != nullptr);
-    REQUIRE(number->getValue() == 1);
-    REQUIRE(number->print() == "NUMBER(1)");
+    REQUIRE(number->get_value() == 1);
+    REQUIRE(number->print() == "NUMBER_INTEGER(1)");
 }
 
 TEST_CASE("Parser emit number node compat print", "[parser]") {
@@ -1074,10 +1074,10 @@ TEST_CASE("Parser emit number node compat print", "[parser]") {
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Number);
-    const auto *number = ast->as<vnd::NumberNode>();
+    const auto *number = ast->as<vnd::IntegerNumberNode>();
     REQUIRE(number != nullptr);
-    REQUIRE(number->getValue() == 1);
-    REQUIRE(number->comp_print() == "NUM(1)");
+    REQUIRE(number->get_value() == 1);
+    REQUIRE(number->comp_print() == "NUM_INTEGER(1)");
 }
 
 TEST_CASE("Parser emit variable node", "[parser]") {
@@ -1095,9 +1095,9 @@ TEST_CASE("Parser emit number node double", "[parser]") {
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Number);
-    const auto *number = ast->as<vnd::NumberNode>();
+    const auto *number = ast->as<vnd::DoubleNumberNode>();
     REQUIRE(number != nullptr);
-    REQUIRE(number->getValue() == 1.5);
+    REQUIRE(number->get_value() == 1.5);
 }
 
 TEST_CASE("Parser emit number node double print", "[parser]") {
@@ -1105,10 +1105,10 @@ TEST_CASE("Parser emit number node double print", "[parser]") {
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Number);
-    const auto *number = ast->as<vnd::NumberNode>();
+    const auto *number = ast->as<vnd::DoubleNumberNode>();
     REQUIRE(number != nullptr);
-    REQUIRE(number->getValue() == 1.5);
-    REQUIRE(number->print() == "NUMBER(1.5)");
+    REQUIRE(number->get_value() == 1.5);
+    REQUIRE(number->print() == "NUMBER_DOUBLE(1.5)");
 }
 
 TEST_CASE("Parser emit number node double compat print", "[parser]") {
@@ -1116,10 +1116,10 @@ TEST_CASE("Parser emit number node double compat print", "[parser]") {
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Number);
-    const auto *number = ast->as<vnd::NumberNode>();
+    const auto *number = ast->as<vnd::DoubleNumberNode>();
     REQUIRE(number != nullptr);
-    REQUIRE(number->getValue() == 1.5);
-    REQUIRE(number->comp_print() == "NUM(1.5)");
+    REQUIRE(number->get_value() == 1.5);
+    REQUIRE(number->comp_print() == "NUM_DOUBLE(1.5)");
 }
 
 TEST_CASE("Parser emit variable node print", "[parser]") {
@@ -1222,15 +1222,15 @@ TEST_CASE("Parser emit binary expression node", "[parser]") {
     REQUIRE(binaryNode->getOp() == "+");
 
     // Check the left and right operands
-    const auto *leftNumber = binaryNode->getLeft()->as<vnd::NumberNode>();
-    const auto *rightNumber = binaryNode->getRight()->as<vnd::NumberNode>();
+    const auto *leftNumber = binaryNode->getLeft()->as<vnd::IntegerNumberNode>();
+    const auto *rightNumber = binaryNode->getRight()->as<vnd::IntegerNumberNode>();
 
     REQUIRE(leftNumber != nullptr);
     REQUIRE(rightNumber != nullptr);
 
     // Check the values of left and right operands
-    REQUIRE(leftNumber->getValue() == 1);
-    REQUIRE(rightNumber->getValue() == 2);
+    REQUIRE(leftNumber->get_value() == 1);
+    REQUIRE(rightNumber->get_value() == 2);
 }
 
 TEST_CASE("Parser emit binary expression node print", "[parser]") {
@@ -1245,16 +1245,16 @@ TEST_CASE("Parser emit binary expression node print", "[parser]") {
     REQUIRE(binaryNode->getOp() == "+");
 
     // Check the left and right operands
-    const auto *leftNumber = binaryNode->getLeft()->as<vnd::NumberNode>();
-    const auto *rightNumber = binaryNode->getRight()->as<vnd::NumberNode>();
+    const auto *leftNumber = binaryNode->getLeft()->as<vnd::IntegerNumberNode>();
+    const auto *rightNumber = binaryNode->getRight()->as<vnd::IntegerNumberNode>();
 
     REQUIRE(leftNumber != nullptr);
     REQUIRE(rightNumber != nullptr);
 
     // Check the values of left and right operands
-    REQUIRE(leftNumber->getValue() == 1);
-    REQUIRE(rightNumber->getValue() == 2);
-    REQUIRE(binaryNode->print() == "BINARY_EXPRESION(op:\"+\" left:NUMBER(1), right:NUMBER(2))");
+    REQUIRE(leftNumber->get_value() == 1);
+    REQUIRE(rightNumber->get_value() == 2);
+    REQUIRE(binaryNode->print() == "BINARY_EXPRESION(op:\"+\" left:NUMBER_INTEGER(1), right:NUMBER_INTEGER(2))");
 }
 
 TEST_CASE("Parser emit binary expression node compact print", "[parser]") {
@@ -1269,16 +1269,16 @@ TEST_CASE("Parser emit binary expression node compact print", "[parser]") {
     REQUIRE(binaryNode->getOp() == "+");
 
     // Check the left and right operands
-    const auto *leftNumber = binaryNode->getLeft()->as<vnd::NumberNode>();
-    const auto *rightNumber = binaryNode->getRight()->as<vnd::NumberNode>();
+    const auto *leftNumber = binaryNode->getLeft()->as<vnd::IntegerNumberNode>();
+    const auto *rightNumber = binaryNode->getRight()->as<vnd::IntegerNumberNode>();
 
     REQUIRE(leftNumber != nullptr);
     REQUIRE(rightNumber != nullptr);
 
     // Check the values of left and right operands
-    REQUIRE(leftNumber->getValue() == 1);
-    REQUIRE(rightNumber->getValue() == 2);
-    REQUIRE(binaryNode->comp_print() == "BINE(op:\"+\" l:NUM(1), r:NUM(2))");
+    REQUIRE(leftNumber->get_value() == 1);
+    REQUIRE(rightNumber->get_value() == 2);
+    REQUIRE(binaryNode->comp_print() == "BINE(op:\"+\" l:NUM_INTEGER(1), r:NUM_INTEGER(2))");
 }
 
 // NOLINTEND(*-include-cleaner, *-avoid-magic-numbers, *-magic-numbers)

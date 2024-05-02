@@ -5,8 +5,9 @@
 #pragma once
 
 #include "BinaryExpressionNode.hpp"
+#include "DoubleNumberNode.hpp"
+#include "IntegerNumberNode.hpp"
 #include "Log.hpp"
-#include "NumberNode.hpp"
 #include "UnaryExpressionNode.hpp"
 #include "VariableNode.hpp"
 
@@ -54,8 +55,14 @@ static inline void prettyPrint(const vnd::ASTNode &node, int indent = 0) {
     } else if(const auto *unaryNode = node.as<vnd::UnaryExpressionNode>()) {
         print_indent_dl(indent, "Node", FORMAT("(Type: {}, operation:\"{}\")", node.getType(), unaryNode->getOp()), "Operand");
         prettyPrint(*unaryNode->getOperand(), indent + 2);
-    } else if(const auto *numberNode = node.as<vnd::NumberNode>()) {
-        print_indent(indent, "Node", FORMAT("(Type: {}, value:{})", node.getType(), numberNode->getValue()));
+    } else if(const auto *integerNumberNode = node.as<vnd::IntegerNumberNode>()) {
+        print_indent(indent, "Node",
+                     FORMAT("(Type: {}, Numeric Type: {}, value:{})", node.getType(), integerNumberNode->getNumberType(),
+                            integerNumberNode->get_value()));
+    } else if(const auto *doubleNumberNode = node.as<vnd::DoubleNumberNode>()) {
+        print_indent(indent, "Node",
+                     FORMAT("(Type: {}, Numeric Type: {}, value:{})", node.getType(), doubleNumberNode->getNumberType(),
+                            doubleNumberNode->get_value()));
     } else if(const auto *variableNode = node.as<vnd::VariableNode>()) {
         print_indent(indent, "Node", FORMAT("(Type: {}, value:{})", node.getType(), variableNode->getName()));
     }
