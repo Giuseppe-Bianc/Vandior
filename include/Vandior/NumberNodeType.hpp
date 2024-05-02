@@ -10,7 +10,6 @@
  */
 enum class NumberNodeType { Integer, Double };
 
-
 /**
  * This function is a formatter for NodeType using fmt.
  * \cond
@@ -26,12 +25,13 @@ template <> struct fmt::formatter<NumberNodeType> : fmt::formatter<std::string_v
      * @return The formatted string.
      */
     template <typename FormatContext> auto format(NumberNodeType nodeType, FormatContext &ctx) {
+        using enum NumberNodeType;
         std::string_view name;
         switch(nodeType) {
-        case NumberNodeType::Integer:
+        case Integer:
             name = "INTEGER";
             break;
-        case NumberNodeType::Double:
+        case Double:
             name = "DOUBLE";
             break;
         default:

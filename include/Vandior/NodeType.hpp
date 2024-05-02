@@ -24,18 +24,19 @@ template <> struct fmt::formatter<NodeType> : fmt::formatter<std::string_view> {
      * @return The formatted string.
      */
     template <typename FormatContext> auto format(NodeType nodeType, FormatContext &ctx) {
+        using enum NodeType;
         std::string_view name;
         switch(nodeType) {
-        case NodeType::BinaryExpression:
+        case BinaryExpression:
             name = "BINARY_EXPRESION";
             break;
-        case NodeType::UnaryExpression:
+        case UnaryExpression:
             name = "UNARY_EXPRESION";
             break;
-        case NodeType::Number:
+        case Number:
             name = "NUMBER";
             break;
-        case NodeType::Variable:
+        case Variable:
             name = "VARIABLE";
             break;
         default:
