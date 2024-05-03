@@ -18,7 +18,8 @@ namespace vnd {
          * @param _op Operator for the unary expression.
          * @param _operand Operand of the unary expression.
          */
-        UnaryExpressionNode(std::string_view _op, std::unique_ptr<ASTNode> _operand) noexcept : op(_op), operand(std::move(_operand)) {}
+        UnaryExpressionNode(std::string_view _op, std::unique_ptr<ASTNode> _operand) noexcept
+          : op(_op), operand(vnd_move_always_even_const(_operand)) {}
 
         [[nodiscard]] NodeType getType() const noexcept override { return NodeType::UnaryExpression; }
         [[nodiscard]] std::string print() const override { return FORMAT("{}(op:\"{}\" operand:{})", getType(), op, operand->print()); }

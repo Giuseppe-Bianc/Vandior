@@ -19,7 +19,7 @@ namespace vnd {
          * @param _right Right operand.
          */
         BinaryExpressionNode(std::string_view _op, std::unique_ptr<ASTNode> _left, std::unique_ptr<ASTNode> _right) noexcept
-          : op(_op), left(std::move(_left)), right(std::move(_right)) {}
+          : op(_op), left(vnd_move_always_even_const(_left)), right(vnd_move_always_even_const(_right)) {}
 
         [[nodiscard]] NodeType getType() const noexcept override { return NodeType::BinaryExpression; }
 

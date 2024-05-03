@@ -1182,7 +1182,7 @@ TEST_CASE("Parser emit variable node print", "[parser]") {
     const auto *variable = ast->as<vnd::VariableNode>();
     REQUIRE(variable != nullptr);
     REQUIRE(variable->getName() == "y");
-    REQUIRE(variable->print() == "VARIABLE (y)");
+    REQUIRE(variable->print() == "VARIABLE(y)");
 }
 
 TEST_CASE("Parser emit variable node compat print", "[parser]") {

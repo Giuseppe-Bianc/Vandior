@@ -185,6 +185,13 @@ auto main(int argc, const char *const argv[]) -> int {
                 return EXIT_FAILURE;
             }
         }*/
+
+        vnd::Parser parser{"2 + 3 + (4.2 / 2) * 3 + y", "input.vn"};
+        auto ast = parser.parse();
+        LINFO("print interlal function");
+        LINFO("{}", ast->print());
+        LINFO("pretyPrint external function");
+        prettyPrint(*ast);
     } catch(const std::exception &e) { LERROR("Unhandled exception in main: {}", e.what()); }
     return EXIT_SUCCESS;  // Return appropriate exit code
 }

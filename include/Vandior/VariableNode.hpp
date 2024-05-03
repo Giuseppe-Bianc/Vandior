@@ -20,7 +20,7 @@ namespace vnd {
 
         [[nodiscard]] NodeType getType() const noexcept override { return NodeType::Variable; }
 
-        [[nodiscard]] std::string print() const override { return FORMAT("{} ({})", getType(), name); }
+        [[nodiscard]] std::string print() const override { return FORMAT("{}({})", getType(), name); }
         [[nodiscard]] std::string comp_print() const override { return FORMAT("VAR({})", name); }
         [[nodiscard]] const std::string_view &getName() const noexcept { return name; }
 
