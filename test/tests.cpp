@@ -1236,7 +1236,7 @@ TEST_CASE("Parser emit unary expression node print", "[parser]") {
     const auto *variableNode = operand->as<vnd::VariableNode>();
     REQUIRE(variableNode != nullptr);
     REQUIRE(variableNode->getName() == "x");
-    REQUIRE(unaryNode->print() == "UNARY_EXPRESION(op:\"-\" operand:VARIABLE (x))");
+    REQUIRE(unaryNode->print() == "UNARY_EXPRESION(op:\"-\" operand:VARIABLE(x))");
 }
 
 TEST_CASE("Parser emit unary expression node compat print", "[parser]") {
