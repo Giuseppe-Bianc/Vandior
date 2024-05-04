@@ -1019,8 +1019,8 @@ TEST_CASE("Parser emit integer number node", "[parser]") {
 }
 
 TEST_CASE("integer number node swap", "[parser]") {
-    vnd::IntegerNumberNode inta{2};
-    vnd::IntegerNumberNode intb{3};
+    vnd::IntegerNumberNode inta{2, vnd::Token{vnd::TokenType::INTEGER, "2", vnd::CodeSourceLocation{filename, t_line, t_colum}}};
+    vnd::IntegerNumberNode intb{3, vnd::Token{vnd::TokenType::INTEGER, "3", vnd::CodeSourceLocation{filename, t_line, t_colum2}}};
     REQUIRE(inta.get_value() == 2);
     REQUIRE(intb.get_value() == 3);
     std::swap(inta, intb);
@@ -1029,8 +1029,8 @@ TEST_CASE("integer number node swap", "[parser]") {
 }
 
 TEST_CASE("double number node swap", "[parser]") {
-    vnd::DoubleNumberNode douba{2.3};
-    vnd::DoubleNumberNode doubb{3.3};
+    vnd::DoubleNumberNode douba{2.3, vnd::Token{vnd::TokenType::DOUBLE, "2.3", vnd::CodeSourceLocation{filename, t_line, t_colum}}};
+    vnd::DoubleNumberNode doubb{3.3, vnd::Token{vnd::TokenType::DOUBLE, "3.3", vnd::CodeSourceLocation{filename, t_line, t_colum2}}};
     REQUIRE(douba.get_value() == 2.3);
     REQUIRE(doubb.get_value() == 3.3);
     std::swap(douba, doubb);
@@ -1039,8 +1039,14 @@ TEST_CASE("double number node swap", "[parser]") {
 }
 
 TEST_CASE("unary node swap", "[parser]") {
-    vnd::UnaryExpressionNode unara{"-", std::make_unique<vnd::VariableNode>("d")};
-    vnd::UnaryExpressionNode unarb{"*", std::make_unique<vnd::VariableNode>("s")};
+    vnd::UnaryExpressionNode unara{
+        "-", vnd::Token{vnd::TokenType::MINUS_OPERATOR, "-", vnd::CodeSourceLocation{filename, t_line, t_colum}},
+        std::make_unique<vnd::VariableNode>(
+            "d", vnd::Token{vnd::TokenType::IDENTIFIER, "d", vnd::CodeSourceLocation{filename, t_line, t_colum6}})};
+    vnd::UnaryExpressionNode unarb{
+        "*", vnd::Token{vnd::TokenType::OPERATOR, "*", vnd::CodeSourceLocation{filename, t_line4, t_colum}},
+        std::make_unique<vnd::VariableNode>(
+            "s", vnd::Token{vnd::TokenType::OPERATOR, "*", vnd::CodeSourceLocation{filename, t_line4, t_colum4}})};
     REQUIRE(unara.getOp() == "-");
     REQUIRE(unara.getOperand()->as<vnd::VariableNode>()->getName() == "d");
     REQUIRE(unarb.getOp() == "*");
@@ -1053,8 +1059,18 @@ TEST_CASE("unary node swap", "[parser]") {
 }
 
 TEST_CASE("binary node swap", "[parser]") {
-    vnd::BinaryExpressionNode unara{"-", std::make_unique<vnd::VariableNode>("d"), std::make_unique<vnd::VariableNode>("a")};
-    vnd::BinaryExpressionNode unarb{"*", std::make_unique<vnd::VariableNode>("s"), std::make_unique<vnd::VariableNode>("b")};
+    vnd::BinaryExpressionNode unara{
+        "-", vnd::Token{vnd::TokenType::MINUS_OPERATOR, "-", vnd::CodeSourceLocation{filename, t_line, t_colum5}},
+        std::make_unique<vnd::VariableNode>(
+            "d", vnd::Token{vnd::TokenType::IDENTIFIER, "d", vnd::CodeSourceLocation{filename, t_line, t_colum6}}),
+        std::make_unique<vnd::VariableNode>(
+            "a", vnd::Token{vnd::TokenType::IDENTIFIER, "a", vnd::CodeSourceLocation{filename, t_line, t_colum4}})};
+    vnd::BinaryExpressionNode unarb{
+        "*", vnd::Token{vnd::TokenType::OPERATOR, "-", vnd::CodeSourceLocation{filename, t_line, t_colum5}},
+        std::make_unique<vnd::VariableNode>(
+            "s", vnd::Token{vnd::TokenType::IDENTIFIER, "s", vnd::CodeSourceLocation{filename, t_line, t_colum6}}),
+        std::make_unique<vnd::VariableNode>(
+            "b", vnd::Token{vnd::TokenType::IDENTIFIER, "b", vnd::CodeSourceLocation{filename, t_line, t_colum5}})};
     REQUIRE(unara.getOp() == "-");
     REQUIRE(unara.getLeft()->as<vnd::VariableNode>()->getName() == "d");
     REQUIRE(unara.getRight()->as<vnd::VariableNode>()->getName() == "a");
