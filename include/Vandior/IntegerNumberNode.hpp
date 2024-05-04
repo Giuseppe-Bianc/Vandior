@@ -13,8 +13,9 @@ namespace vnd {
         /**
          * @brief Constructor for IntegerNumberNode.
          * @param value Integer value of the number.
+         * @param value_Token token of the value.
          */
-        explicit IntegerNumberNode(int value) noexcept : m_value(value) {}
+        explicit IntegerNumberNode(int value, const Token &value_Token) noexcept : NumberNode(value_Token), m_value(value) {}
 
         [[nodiscard]] NumberNodeType getNumberType() const override { return NumberNodeType::Integer; }
         [[nodiscard]] std::string print() const override { return FORMAT("{}_{}({})", getType(), getNumberType(), m_value); }

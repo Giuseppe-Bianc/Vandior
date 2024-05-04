@@ -16,7 +16,7 @@ namespace vnd {
          * @brief Constructor for VariableNode.
          * @param _name Name of the variable.
          */
-        explicit VariableNode(std::string_view _name) noexcept : name(_name) {}
+        explicit VariableNode(std::string_view _name, const Token &name_Token) noexcept : ASTNode(name_Token), name(_name) {}
 
         [[nodiscard]] NodeType getType() const noexcept override { return NodeType::Variable; }
 

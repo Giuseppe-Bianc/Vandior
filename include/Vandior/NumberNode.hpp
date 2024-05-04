@@ -12,6 +12,7 @@ namespace vnd {
      */
     class NumberNode : public ASTNode {
     public:
+        [[nodiscard]] explicit NumberNode(const Token &m_token) : ASTNode(m_token) {}
         [[nodiscard]] NodeType getType() const noexcept override { return NodeType::Number; }
         [[nodiscard]] virtual NumberNodeType getNumberType() const = 0;
     };

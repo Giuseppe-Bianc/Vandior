@@ -48,23 +48,28 @@ static inline void print_indent_dl(int indent, const auto &label, const auto &va
 static inline void prettyPrint(const vnd::ASTNode &node, int indent = 0) {
     // Recursively print children for Binary and Unary expression nodes
     if(const auto *binaryNode = node.as<vnd::BinaryExpressionNode>()) {
-        print_indent_dl(indent, "Node", FORMAT("(Type: {}, operation:\"{}\")", node.getType(), binaryNode->getOp()), "Left");
+        print_indent_dl(indent, "Node",
+                        FORMAT("(Type: {}, operation:\"{}\"){}", node.getType(), binaryNode->getOp(), node.get_token().compat_to_string()),
+                        "Left");
         prettyPrint(*binaryNode->getLeft(), indent + 2);
         print_indent(indent, "Right", "");
         prettyPrint(*binaryNode->getRight(), indent + 2);
     } else if(const auto *unaryNode = node.as<vnd::UnaryExpressionNode>()) {
-        print_indent_dl(indent, "Node", FORMAT("(Type: {}, operation:\"{}\")", node.getType(), unaryNode->getOp()), "Operand");
+        print_indent_dl(indent, "Node",
+                        FORMAT("(Type: {}, operation:\"{}\"){}", node.getType(), unaryNode->getOp(), node.get_token().compat_to_string()),
+                        "Operand");
         prettyPrint(*unaryNode->getOperand(), indent + 2);
     } else if(const auto *integerNumberNode = node.as<vnd::IntegerNumberNode>()) {
         print_indent(indent, "Node",
-                     FORMAT("(Type: {}, Numeric Type: {}, value:{})", node.getType(), integerNumberNode->getNumberType(),
-                            integerNumberNode->get_value()));
+                     FORMAT("(Type: {}, Numeric Type: {}, value:{}){}", node.getType(), integerNumberNode->getNumberType(),
+                            integerNumberNode->get_value(), node.get_token().compat_to_string()));
     } else if(const auto *doubleNumberNode = node.as<vnd::DoubleNumberNode>()) {
         print_indent(indent, "Node",
-                     FORMAT("(Type: {}, Numeric Type: {}, value:{})", node.getType(), doubleNumberNode->getNumberType(),
-                            doubleNumberNode->get_value()));
+                     FORMAT("(Type: {}, Numeric Type: {}, value:{}){}", node.getType(), doubleNumberNode->getNumberType(),
+                            doubleNumberNode->get_value(), node.get_token().compat_to_string()));
     } else if(const auto *variableNode = node.as<vnd::VariableNode>()) {
-        print_indent(indent, "Node", FORMAT("(Type: {}, value:{})", node.getType(), variableNode->getName()));
+        print_indent(indent, "Node",
+                     FORMAT("(Type: {}, value:{}){}", node.getType(), variableNode->getName(), node.get_token().compat_to_string()));
     }
 }
 /**

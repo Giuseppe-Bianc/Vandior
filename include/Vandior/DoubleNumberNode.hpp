@@ -12,8 +12,9 @@ namespace vnd {
         /**
          * @brief Constructor for DoubleNumberNode.
          * @param value Double value of the number.
+         * @param value_Token token of the value.
          */
-        explicit DoubleNumberNode(double value) noexcept : m_value(value) {}
+        explicit DoubleNumberNode(double value, const Token &value_Token) noexcept : NumberNode(value_Token), m_value(value) {}
 
         [[nodiscard]] NumberNodeType getNumberType() const override { return NumberNodeType::Double; }
         [[nodiscard]] std::string print() const override { return FORMAT("{}_{}({})", getType(), getNumberType(), m_value); }
