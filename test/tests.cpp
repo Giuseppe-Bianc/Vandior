@@ -1008,6 +1008,35 @@ TEST_CASE("Transpiler transpile function instructions", "[transpiler]") {
                     "}\n");
 }
 */
+
+TEST_CASE("ASTNode type conversion using as<T>()", "[ast]") {
+    vnd::Token token{vnd::TokenType::IDENTIFIER, "id", vnd::CodeSourceLocation{filename, t_line, t_colum}};
+    vnd::VariableNode dummyNode("id", token);
+
+    // Test conversion to base type (should work)
+    vnd::ASTNode *basePtr = &dummyNode;
+    auto *dummyPtr = basePtr->as<vnd::VariableNode>();
+    REQUIRE(dummyPtr != nullptr);
+
+    // Test conversion to derived type (should fail)
+    auto *anotherPtr = basePtr->as<vnd::Token>();
+    REQUIRE(anotherPtr == nullptr);
+
+    // Test const conversion
+    const vnd::ASTNode *constBasePtr = &dummyNode;
+    const auto *constDummyPtr = constBasePtr->as<vnd::VariableNode>();
+    REQUIRE(constDummyPtr != nullptr);
+
+    const auto *constAnotherPtr = constBasePtr->as<vnd::Token>();
+    REQUIRE(constAnotherPtr == nullptr);
+}
+
+TEST_CASE("ASTNode get token", "[ast]") {
+    vnd::Token token{vnd::TokenType::IDENTIFIER, "id", vnd::CodeSourceLocation{filename, t_line, t_colum}};
+    vnd::VariableNode dummyNode("id", token);
+    REQUIRE(dummyNode.get_token() ==token);
+}
+
 TEST_CASE("Parser emit integer number node", "[parser]") {
     vnd::Parser parser("1", filename);
     auto ast = parser.parse();
