@@ -104,6 +104,12 @@ namespace vnd {
         [[nodiscard]] std::string to_string() const;  // NOLINT(*-include-cleaner)
 
         /**
+         * @brief Convert the token to a string representation.
+         * @return A string representation of the token.
+         */
+        [[nodiscard]] std::string compat_to_string() const;  // NOLINT(*-include-cleaner)
+
+        /**
          * @brief Set the type of the token.
          * @param type The type to set.
          */

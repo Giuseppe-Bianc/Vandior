@@ -139,6 +139,7 @@ namespace vnd {
         auto operator<=>(const CodeSourceLocation &other) const noexcept = default;
 
         std::string toString() const noexcept { return FORMAT("(file:{}, line:{}, column:{})", _fileName, _line, _column); }
+        std::string compat_to_string() const noexcept { return FORMAT("(f:{}, l:{}, c:{})", _fileName, _line, _column); }
 
     private:
         std::string_view _fileName;  ///< The name of the source file.
