@@ -338,19 +338,35 @@ TEST_CASE("default constructed token set propriety tostring", "[token]") {
 }
 
 TEST_CASE("FolderCreationResult Constructor") {
-    vnd::FolderCreationResult result(true, fs::path("/test/path"));
-    REQUIRE(result.success() == true);
-    REQUIRE(result.path() == fs::path("/test/path"));
+    SECTION("Default constructor") {
+        vnd::FolderCreationResult result;
+        REQUIRE(result.success() == false);
+        REQUIRE(result.path().empty());
+    }
+
+    SECTION("Parameterized constructor") {
+        vnd::FolderCreationResult result(true, fs::path("/test/path"));
+        REQUIRE(result.success() == true);
+        REQUIRE(result.path() == fs::path("/test/path"));
+    }
 }
 
 TEST_CASE("FolderCreationResult Setters") {
     vnd::FolderCreationResult result;
 
-    result.set_success(true);
-    REQUIRE(result.success() == true);
+    SECTION("Set success") {
+        result.set_success(true);
+        REQUIRE(result.success() == true);
+    }
 
-    result.set_path(fs::path("/test/path"));
-    REQUIRE(result.path() == fs::path("/test/path"));
+    SECTION("Set path") {
+        fs::path testPath("/test/path");
+        REQUIRE(result.path().empty());
+        result.set_path(testPath);
+        REQUIRE(result.path() == testPath);
+    }
+
+    SECTION("Set path with empty string") { REQUIRE_THROWS_AS(result.set_path(fs::path()), std::invalid_argument); }
 }
 
 TEST_CASE("FolderCreationResult Folder Creation Functions") {
@@ -358,17 +374,39 @@ TEST_CASE("FolderCreationResult Folder Creation Functions") {
     fs::path tempDir = fs::temp_directory_path() / "vnd_test";
     fs::create_directories(tempDir);
 
-    SECTION("Create folder") {
+    SECTION("Create folder with valid parameters") {
         std::string folderName = "test_folder";
         vnd::FolderCreationResult result = vnd::FolderCreationResult::createFolder(folderName, tempDir);
         REQUIRE(result.success() == true);
         REQUIRE(result.path() == tempDir / folderName);
-
         // Clean up
         fs::remove_all(tempDir / folderName);
     }
 
-    SECTION("Create folder next to file") {
+    SECTION("Create folder with empty folder name") {
+        std::string emptyFolderName;
+        vnd::FolderCreationResult result = vnd::FolderCreationResult::createFolder(emptyFolderName, tempDir);
+        REQUIRE(result.success() == false);
+        REQUIRE(result.path().empty());
+    }
+
+    SECTION("Create folder in non-existent parent directory") {
+        fs::path nonExistentParentDir = tempDir / "non_existent_dir";
+        std::string folderName = "test_folder";
+        vnd::FolderCreationResult result = vnd::FolderCreationResult::createFolder(folderName, nonExistentParentDir);
+        REQUIRE(result.success() == true);
+        REQUIRE(!result.path().empty());
+    }
+
+    SECTION("Create folder next to non-existent file") {
+        fs::path nonExistentFilePath = tempDir / "non_existent_file.txt";
+        std::string folderName = "test_folder";
+        vnd::FolderCreationResult result = vnd::FolderCreationResult::createFolderNextToFile(nonExistentFilePath, folderName);
+        REQUIRE(result.success() == true);
+        REQUIRE(!result.path().empty());
+    }
+
+    SECTION("Create folder next to existing file") {
         // Create a file in the temporary directory
         fs::path filePath = tempDir / "test_file.txt";
         std::ofstream ofs(filePath);
