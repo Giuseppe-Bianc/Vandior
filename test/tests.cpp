@@ -371,7 +371,7 @@ TEST_CASE("FolderCreationResult Setters") {
 
 TEST_CASE("FolderCreationResult Folder Creation Functions") {
     // Create a temporary directory for testing
-    fs::path tempDir = fs::temp_directory_path() / "vnd_test";
+    auto tempDir = fs::temp_directory_path() / "vnd_test";
     fs::create_directories(tempDir);
 
     SECTION("Create folder with valid parameters") {
