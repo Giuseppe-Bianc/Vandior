@@ -46,33 +46,33 @@ static inline constexpr std::size_t timerCicles = 1000000;
 static inline constexpr long double timerResolution = 5.0L;
 #define REQ_FORMAT(type, string) REQUIRE(FORMAT("{}", type) == (string));  // NOLINT(*-macro-usage)
 
-TEST_CASE("std::filesystem::path formater", "[FMT]") { REQUIRE(FORMAT("{}", std::filesystem::path("../ssss")) == "../ssss"); }
+TEST_CASE("std::filesystem::path formater", "[FMT]") { REQ_FORMAT(std::filesystem::path("../ssss"), "../ssss"); }
 TEST_CASE("glm::vec formater", "[FMT]") {
-    REQUIRE(FORMAT("{}", glm::vec2{0.0F, 0.0F}) == "vec2(0, 0)");
-    REQUIRE(FORMAT("{}", glm::dvec2{0.0, 0.0}) == "dvec2(0, 0)");
-    REQUIRE(FORMAT("{}", glm::ldvec2{0.0, 0.0}) == "ldvec2(0, 0)");
-    REQUIRE(FORMAT("{}", glm::vec3{0.0F, 0.0F, 0.0F}) == "vec3(0, 0, 0)");
-    REQUIRE(FORMAT("{}", glm::dvec3{0.0, 0.0, 0.0}) == "dvec3(0, 0, 0)");
-    REQUIRE(FORMAT("{}", glm::ldvec3{0.0, 0.0, 0.0F}) == "ldvec3(0, 0, 0)");
-    REQUIRE(FORMAT("{}", glm::vec4{0.0F, 0.0, 0.0, 0.0}) == "vec4(0, 0, 0, 0)");
-    REQUIRE(FORMAT("{}", glm::dvec4{0.0, 0.0, 0.0, 0.0}) == "dvec4(0, 0, 0, 0)");
-    REQUIRE(FORMAT("{}", glm::ldvec4{0.0, 0.0, 0.0F, 0.0}) == "ldvec4(0, 0, 0, 0)");
+    REQ_FORMAT(glm::vec2(0.0F, 0.0F), "vec2(0, 0)");
+    REQ_FORMAT(glm::dvec2(0.0, 0.0), "dvec2(0, 0)");
+    REQ_FORMAT(glm::ldvec2(0.0, 0.0), "ldvec2(0, 0)");
+    REQ_FORMAT(glm::vec3(0.0F, 0.0F, 0.0F), "vec3(0, 0, 0)");
+    REQ_FORMAT(glm::dvec3(0.0, 0.0, 0.0), "dvec3(0, 0, 0)");
+    REQ_FORMAT(glm::ldvec3(0.0, 0.0, 0.0F), "ldvec3(0, 0, 0)");
+    REQ_FORMAT(glm::vec4(0.0F, 0.0, 0.0, 0.0), "vec4(0, 0, 0, 0)");
+    REQ_FORMAT(glm::dvec4(0.0, 0.0, 0.0, 0.0), "dvec4(0, 0, 0, 0)");
+    REQ_FORMAT(glm::ldvec4(0.0, 0.0, 0.0F, 0.0), "ldvec4(0, 0, 0, 0)");
 }
 
+// clang-format off
 TEST_CASE("glm::mat formater", "[FMT]") {
-    REQUIRE(FORMAT("{}", glm::mat2{0.0F, 0.0F, 0.0F, 0.0F}) == "mat2x2((0,0), (0,0))");
-    REQUIRE(FORMAT("{}", glm::dmat2{0.0, 0.0, 0.0, 0.0}) == "dmat2x2((0,0), (0,0))");
-    REQUIRE(FORMAT("{}", glm::ldmat2{0.0, 0.0, 0.0, 0.0}) == "ldmat2x2((0,0), (0,0))");
-    REQUIRE(FORMAT("{}", glm::mat3{0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F}) == "mat3x3((0, 0, 0), (0, 0, 0), (0, 0, 0))");
-    REQUIRE(FORMAT("{}", glm::dmat3{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}) == "dmat3x3((0, 0, 0), (0, 0, 0), (0, 0, 0))");
-    REQUIRE(FORMAT("{}", glm::ldmat3{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}) == "ldmat3x3((0, 0, 0), (0, 0, 0), (0, 0, 0))");
-    REQUIRE(FORMAT("{}", glm::mat4{0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F}) ==
-            "mat4x4((0, 0, 0, 0), (0, 0, 0, 0), (0, 0, 0, 0), (0, 0, 0, 0))");
-    REQUIRE(FORMAT("{}", glm::dmat4{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}) ==
-            "dmat4x4((0, 0, 0, 0), (0, 0, 0, 0), (0, 0, 0, 0), (0, 0, 0, 0))");
-    REQUIRE(FORMAT("{}", glm::ldmat4{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}) ==
-            "ldmat4x4((0, 0, 0, 0), (0, 0, 0, 0), (0, 0, 0, 0), (0, 0, 0, 0))");
+    REQ_FORMAT(glm::mat2(0.0F, 0.0F, 0.0F, 0.0F), "mat2x2((0,0), (0,0))");
+    REQ_FORMAT(glm::dmat2(0.0, 0.0, 0.0, 0.0), "dmat2x2((0,0), (0,0))");
+    REQ_FORMAT(glm::ldmat2(0.0, 0.0, 0.0, 0.0), "ldmat2x2((0,0), (0,0))");
+    REQ_FORMAT(glm::mat3(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F), "mat3x3((0, 0, 0), (0, 0, 0), (0, 0, 0))");
+    REQ_FORMAT(glm::dmat3(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0), "dmat3x3((0, 0, 0), (0, 0, 0), (0, 0, 0))");
+    REQ_FORMAT(glm::ldmat3(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0), "ldmat3x3((0, 0, 0), (0, 0, 0), (0, 0, 0))");
+    REQ_FORMAT(glm::mat4(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F), "mat4x4((0, 0, 0, 0), (0, 0, 0, 0), (0, 0, 0, 0), (0, 0, 0, 0))");
+    REQ_FORMAT(glm::dmat4(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0), "dmat4x4((0, 0, 0, 0), (0, 0, 0, 0), (0, 0, 0, 0), (0, 0, 0, 0))");
+    REQ_FORMAT(glm::ldmat4(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0), "ldmat4x4((0, 0, 0, 0), (0, 0, 0, 0), (0, 0, 0, 0), (0, 0, 0, 0))");
 }
+// clang-format on
+
 TEST_CASE("Timer: MSTimes", "[timer]") {
     vnd::Timer timer{timerName.data()};
     std::this_thread::sleep_for(std::chrono::milliseconds(timerSleap));
