@@ -280,7 +280,8 @@ TEST_CASE("default constructed token format", "[token]") {
     REQUIRE(token.getFileName() == filename4);
     REQUIRE(token.getLine() == 0);
     REQUIRE(token.getColumn() == 0);
-    REQUIRE(FORMAT("{}", token) == "(type: UNKNOWN, value: '', source location:(file:unknown, line:0, column:0))");
+    REQ_FORMAT(token, "(type: UNKNOWN, value: '', source location:(file:unknown, line:0, column:0))");
+    REQUIRE(token.compat_to_string() == "(typ: UNKNOWN, val: '', sl:(f:unknown, l:0, c:0))");
 }
 
 TEST_CASE("default constructed token set propriety", "[token]") {
@@ -332,8 +333,10 @@ TEST_CASE("default constructed token set propriety tostring", "[token]") {
     REQUIRE(token.getColumn() == 1);
 #ifdef _WIN32  // Windows
     REQUIRE(token.to_string() == R"((type: INTEGER, value: 'assss', source location:(file:.\unknown.vn, line:1, column:1)))");
+    REQUIRE(token.compat_to_string() == R"((typ: INTEGER, val: 'assss', sl:(f:.\unknown.vn, l:1, c:1)))");
 #else
     REQUIRE(token.to_string() == R"((type: INTEGER, value: 'assss', source location:(file:./unknown.vn, line:1, column:1)))");
+    REQUIRE(token.compat_to_string( == R"((typ: INTEGER, val: 'assss', sl:(f:./unknown.vn, l:1, c:1)))");
 #endif
 }
 
@@ -453,9 +456,9 @@ TEST_CASE("default constructed token set propriety format", "[token]") {
     REQUIRE(token.getLine() == 1);
     REQUIRE(token.getColumn() == 1);
 #ifdef _WIN32  // Windows
-    REQUIRE(FORMAT("{}", token) == R"((type: INTEGER, value: 'assss', source location:(file:.\unknown.vn, line:1, column:1)))");
+    REQ_FORMAT(token, R"((type: INTEGER, value: 'assss', source location:(file:.\unknown.vn, line:1, column:1)))");
 #else
-    REQUIRE(FORMAT("{}", token) == R"((type: INTEGER, value: 'assss', source location:(file:./unknown.vn, line:1, column:1)))");
+    REQ_FORMAT(token, R"((type: INTEGER, value: 'assss', source location:(file:./unknown.vn, line:1, column:1)))");
 #endif
 }
 
