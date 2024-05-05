@@ -337,6 +337,69 @@ TEST_CASE("default constructed token set propriety tostring", "[token]") {
 #endif
 }
 
+TEST_CASE("FolderCreationResult Constructor") {
+    vnd::FolderCreationResult result(true, fs::path("/test/path"));
+    REQUIRE(result.success() == true);
+    REQUIRE(result.path() == fs::path("/test/path"));
+}
+
+TEST_CASE("FolderCreationResult Setters") {
+    vnd::FolderCreationResult result;
+
+    result.set_success(true);
+    REQUIRE(result.success() == true);
+
+    result.set_path(fs::path("/test/path"));
+    REQUIRE(result.path() == fs::path("/test/path"));
+}
+
+TEST_CASE("FolderCreationResult Folder Creation Functions") {
+    // Create a temporary directory for testing
+    fs::path tempDir = fs::temp_directory_path() / "vnd_test";
+    fs::create_directories(tempDir);
+
+    SECTION("Create folder") {
+        std::string folderName = "test_folder";
+        vnd::FolderCreationResult result = vnd::FolderCreationResult::createFolder(folderName, tempDir);
+        REQUIRE(result.success() == true);
+        REQUIRE(result.path() == tempDir / folderName);
+
+        // Clean up
+        fs::remove_all(tempDir / folderName);
+    }
+
+    SECTION("Create folder next to file") {
+        // Create a file in the temporary directory
+        fs::path filePath = tempDir / "test_file.txt";
+        std::ofstream ofs(filePath);
+        ofs.close();
+
+        std::string folderName = "test_folder";
+        vnd::FolderCreationResult result = vnd::FolderCreationResult::createFolderNextToFile(filePath, folderName);
+        REQUIRE(result.success() == true);
+        REQUIRE(result.path() == tempDir / folderName);
+
+        // Clean up
+        fs::remove(filePath);
+        fs::remove_all(tempDir / folderName);
+    }
+
+    // Clean up the temporary directory
+    fs::remove_all(tempDir);
+}
+
+TEST_CASE("FolderCreationResult Serialization") {
+    vnd::FolderCreationResult result(true, fs::path("/test/path"));
+    nlohmann::json jsn = result;
+    REQUIRE(jsn["success"] == true);
+    REQUIRE(jsn["path"] == "/test/path");
+
+    vnd::FolderCreationResult deserializedResult;
+    jsn.get_to(deserializedResult);
+    REQUIRE(deserializedResult.success() == true);
+    REQUIRE(deserializedResult.path() == fs::path("/test/path"));
+}
+
 TEST_CASE("default constructed token set propriety format", "[token]") {
     using enum vnd::TokenType;
     vnd::Token token{};
@@ -1034,7 +1097,7 @@ TEST_CASE("ASTNode type conversion using as<T>()", "[ast]") {
 TEST_CASE("ASTNode get token", "[ast]") {
     vnd::Token token{vnd::TokenType::IDENTIFIER, "id", vnd::CodeSourceLocation{filename, t_line, t_colum}};
     vnd::VariableNode dummyNode("id", token);
-    REQUIRE(dummyNode.get_token() ==token);
+    REQUIRE(dummyNode.get_token() == token);
 }
 
 TEST_CASE("Parser emit integer number node", "[parser]") {
