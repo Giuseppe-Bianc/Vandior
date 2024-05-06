@@ -21,7 +21,6 @@ namespace vnd {
         [[nodiscard]] std::string comp_print() const override { return FORMAT("NUM_{}({})", getNumberType(), m_value); }
         [[nodiscard]] double get_value() const noexcept { return m_value; }
 
-        // friend void swap(DoubleNumberNode &lhs, DoubleNumberNode &rhs) noexcept { std::swap(lhs.m_value, rhs.m_value); }
         friend void swap(DoubleNumberNode &lhs, DoubleNumberNode &rhs) noexcept {
             using std::swap;
             swap(static_cast<NumberNode &>(lhs), static_cast<NumberNode &>(rhs));
