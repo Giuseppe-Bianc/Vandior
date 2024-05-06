@@ -1,13 +1,14 @@
 //
-// Created by gbian on 29/04/2024.
+// Created by gbian on 02/05/2024.
 //
 
 #pragma once
+
 #include "headers.hpp"
 /**
  * @brief Enum representing different types of AST nodes.
  */
-enum class NodeType { BinaryExpression, UnaryExpression, Number, Variable };
+enum class NumberNodeType { Integer, Double };
 
 /**
  * This function is a formatter for NodeType using fmt.
@@ -16,28 +17,22 @@ enum class NodeType { BinaryExpression, UnaryExpression, Number, Variable };
 /**
  * @brief Specialization of fmt::formatter for NodeType enumeration.
  */
-template <> struct fmt::formatter<NodeType> : fmt::formatter<std::string_view> {
+template <> struct fmt::formatter<NumberNodeType> : fmt::formatter<std::string_view> {
     /**
      * @brief Formats the NodeType for printing.
      * @param nodeType The node type to be formatted.
      * @param ctx The formatting context.
      * @return The formatted string.
      */
-    template <typename FormatContext> auto format(NodeType nodeType, FormatContext &ctx) {
-        using enum NodeType;
+    template <typename FormatContext> auto format(NumberNodeType nodeType, FormatContext &ctx) {
+        using enum NumberNodeType;
         std::string_view name;
         switch(nodeType) {
-        case BinaryExpression:
-            name = "BINARY_EXPRESION";
+        case Integer:
+            name = "INTEGER";
             break;
-        case UnaryExpression:
-            name = "UNARY_EXPRESION";
-            break;
-        case Number:
-            name = "NUMBER";
-            break;
-        case Variable:
-            name = "VARIABLE";
+        case Double:
+            name = "DOUBLE";
             break;
         default:
             name = "UNKOWN";

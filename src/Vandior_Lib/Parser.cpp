@@ -9,14 +9,8 @@ namespace vnd {
     void Parser::consumeToken() noexcept {
         if(position < tokenSize) { position++; }
     }
-    /*const Token &Parser::getNextToken() {  // NOLINT(*-include-cleaner)
-        if(position < tokenSize) {
-            consumeToken();
-            return tokens.at(position);
-        }
-        return tokens.back();
-    }*/
-    const Token &Parser::getCurrentToken() { return tokens.at(position); }
+
+    const Token &Parser::getCurrentToken() const { return tokens.at(position); }
     bool Parser::isUnaryOperator(std::string_view view) noexcept { return view == "+" || view == "-"; }
     int Parser::getOperatorPrecedence(const Token &token) noexcept {
         const auto &tokenValue = token.getValue();
@@ -94,19 +88,19 @@ namespace vnd {
             consumeToken();
             if(currentValue.starts_with("#o") || currentValue.starts_with("#O")) {
                 cval.erase(0, 2);
-                return std::make_unique<NumberNode>(convertToIntformOct(cval));
+                return std::make_unique<IntegerNumberNode>(convertToIntformOct(cval), currentToken);
             }
             if(currentValue.starts_with("#")) {
                 cval.erase(0, 1);
-                return std::make_unique<NumberNode>(convertToIntformExa(cval));
+                return std::make_unique<IntegerNumberNode>(convertToIntformExa(cval), currentToken);
             }
-            return std::make_unique<NumberNode>(convertToInt(currentValue));
+            return std::make_unique<IntegerNumberNode>(convertToInt(currentValue), currentToken);
         } else if(currentType == TokenType::DOUBLE) {
             consumeToken();
-            return std::make_unique<NumberNode>(convertToDouble(currentValue));
+            return std::make_unique<DoubleNumberNode>(convertToDouble(currentValue), currentToken);
         } else if(currentType == TokenType::IDENTIFIER) {
             consumeToken();
-            return std::make_unique<VariableNode>(currentValue);
+            return std::make_unique<VariableNode>(currentValue, currentToken);
         } else if(currentToken.getValue() == "(") {
             consumeToken();
             auto expression = parseExpression();
@@ -128,7 +122,7 @@ namespace vnd {
         if(isUnaryOperator(currentToken.getValue())) {
             consumeToken();
             auto operand = parseUnary();
-            return std::make_unique<UnaryExpressionNode>(currentToken.getValue(), std::move(operand));
+            return std::make_unique<UnaryExpressionNode>(currentToken.getValue(), currentToken, std::move(operand));
         } else {
             return parsePrimary();
         }
@@ -139,7 +133,7 @@ namespace vnd {
             const Token &opToken = getCurrentToken();
             consumeToken();
             auto right = parseUnary();
-            left = std::make_unique<BinaryExpressionNode>(opToken.getValue(), std::move(left), std::move(right));
+            left = std::make_unique<BinaryExpressionNode>(opToken.getValue(), opToken, std::move(left), std::move(right));
         }
 
         return left;

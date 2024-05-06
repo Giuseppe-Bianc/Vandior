@@ -5,6 +5,7 @@
 #pragma once
 
 #include "NodeType.hpp"
+#include "Token.hpp"
 
 namespace vnd {
 
@@ -15,6 +16,8 @@ namespace vnd {
      */
     class ASTNode {
     public:
+        explicit ASTNode(const Token &token) : m_token(token) {}
+
         virtual ~ASTNode() = default;
         /**
          * @brief Gets the type of the AST node.
@@ -52,5 +55,11 @@ namespace vnd {
             if(std::is_base_of_v<ASTNode, T>) { return dynamic_cast<const T *>(this); }
             return nullptr;
         }
+
+        [[nodiscard]] const Token &get_token() const noexcept { return m_token; }
+        friend void swap(ASTNode &lhs, ASTNode &rhs) noexcept { std::swap(lhs.m_token, rhs.m_token); }
+
+    private:
+        Token m_token;
     };
 }  // namespace vnd

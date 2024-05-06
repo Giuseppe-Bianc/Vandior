@@ -15,11 +15,13 @@ namespace vnd {
         /**
          * @brief Constructor for BinaryExpressionNode.
          * @param _op Operator for the binary expression.
+         * @param op_Token token of operator for the binary expression.
          * @param _left Left operand.
          * @param _right Right operand.
          */
-        BinaryExpressionNode(std::string_view _op, std::unique_ptr<ASTNode> _left, std::unique_ptr<ASTNode> _right) noexcept
-          : op(_op), left(std::move(_left)), right(std::move(_right)) {}
+        BinaryExpressionNode(std::string_view _op, const Token &op_Token, std::unique_ptr<ASTNode> _left,
+                             std::unique_ptr<ASTNode> _right) noexcept
+          : ASTNode(op_Token), op(_op), left(vnd_move_always_even_const(_left)), right(vnd_move_always_even_const(_right)) {}
 
         [[nodiscard]] NodeType getType() const noexcept override { return NodeType::BinaryExpression; }
 
@@ -35,6 +37,14 @@ namespace vnd {
         [[nodiscard]] const std::unique_ptr<ASTNode> &getRight() const noexcept { return right; }
         [[nodiscard]] const ASTNode &getLeftr() const noexcept { return *left.get(); }
         [[nodiscard]] const ASTNode &getRightr() const noexcept { return *right.get(); }
+
+        friend void swap(BinaryExpressionNode &lhs, BinaryExpressionNode &rhs) noexcept {
+            using std::swap;
+            swap(static_cast<ASTNode &>(lhs), static_cast<ASTNode &>(rhs));
+            swap(lhs.op, rhs.op);
+            swap(lhs.left, rhs.left);
+            swap(lhs.right, rhs.right);
+        }
 
     private:
         std::string_view op;

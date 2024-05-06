@@ -183,7 +183,7 @@ namespace vnd {
         }
 
     private:
-        bool success_;                ///< The success status of the folder creation.
+        bool success_ = false;        ///< The success status of the folder creation.
         std::filesystem::path path_;  ///< The path of the created folder.
     };
 

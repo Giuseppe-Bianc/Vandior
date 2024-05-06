@@ -19,6 +19,8 @@ add_library(vandior_lib vandior.cpp
         UnaryExpressionNode.cpp
         NumberNode.cpp
         VariableNode.cpp
+        IntegerNumberNode.cpp
+        DoubleNumberNode.cpp
 )
 
 add_library(Vandior::vandior_lib ALIAS vandior_lib)
