@@ -25,7 +25,11 @@ namespace vnd {
         [[nodiscard]] std::string comp_print() const override { return FORMAT("VAR({})", name); }
         [[nodiscard]] const std::string_view &getName() const noexcept { return name; }
 
-        friend void swap(VariableNode &lhs, VariableNode &rhs) noexcept { std::swap(lhs.name, rhs.name); }
+        friend void swap(VariableNode &lhs, VariableNode &rhs) noexcept {
+            using std::swap;
+            swap(static_cast<ASTNode &>(lhs), static_cast<ASTNode &>(rhs));
+            swap(lhs.name, rhs.name);
+        }
 
     private:
         std::string_view name;

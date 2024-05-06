@@ -88,26 +88,6 @@ constexpr std::string_view filename = "../../../input.vn";  // Linux and Unix
 auto main(int argc, const char *const argv[]) -> int {
     // NOLINTNEXTLINE
     INIT_LOG()
-    /* std::string_view command;
-#ifdef HIDE_SYSTEM_OUTPUT
-#ifdef _WIN32
-    command = "python --version > NUL";
-#else
-    command = "python3 --version > /dev/null";
-#endif
-#else
-#ifdef _WIN32
-    command = "python --version";
-#else
-    command = "python3 --version";
-#endif
-#endif
-    if(std::system(command.data()) != 0) {
-        LERROR("Python not found");
-        return EXIT_FAILURE;
-    }*/
-    // LINFO("{}", code);
-    // LINFO("code length {}", code.length());
     try {
         CLI::App app{FORMAT("{} version {}", Vandior::cmake::project_name, Vandior::cmake::project_version)};  // NOLINT(*-include-cleaner)
         // std::optional<std::string> message;  // NOLINT(*-include-cleaner)

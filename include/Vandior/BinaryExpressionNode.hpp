@@ -40,6 +40,7 @@ namespace vnd {
 
         friend void swap(BinaryExpressionNode &lhs, BinaryExpressionNode &rhs) noexcept {
             using std::swap;
+            swap(static_cast<ASTNode &>(lhs), static_cast<ASTNode &>(rhs));
             swap(lhs.op, rhs.op);
             swap(lhs.left, rhs.left);
             swap(lhs.right, rhs.right);

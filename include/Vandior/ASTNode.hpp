@@ -57,6 +57,7 @@ namespace vnd {
         }
 
         [[nodiscard]] const Token &get_token() const noexcept { return m_token; }
+        friend void swap(ASTNode &lhs, ASTNode &rhs) noexcept { std::swap(lhs.m_token, rhs.m_token); }
 
     private:
         Token m_token;
