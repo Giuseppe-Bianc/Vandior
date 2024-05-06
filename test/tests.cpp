@@ -691,427 +691,6 @@ TEST_CASE("tokenizer emit multiline comment token", "[tokenizer]") {
     REQUIRE(tokens.size() == 2);
     REQUIRE(tokens[0] == vnd::Token(vnd::TokenType::COMMENT, R"(/*multi\nline\ncomment*/)", vnd::CodeSourceLocation(filename, 1, 1)));
 }  // namespace
-/*
-TEST_CASE("corrected format for InstructionType", "[Instruction_type]") {
-    using enum vnd::InstructionType;
-    REQ_FORMAT(PARAMETER_EXPRESSION, "PARAMETER_EXPRESSION")
-    REQ_FORMAT(OPERATION, "OPERATION")
-    REQ_FORMAT(ASSIGNATION, "ASSIGNATION")
-    REQ_FORMAT(EXPRESSION, "EXPRESSION")
-    REQ_FORMAT(SQUARE_EXPRESSION, "SQUARE_EXPRESSION")
-    REQ_FORMAT(RETURN_EXPRESSION, "RETURN_EXPRESSION")
-    REQ_FORMAT(DECLARATION, "DECLARATION")
-    REQ_FORMAT(INITIALIZATION, "INITIALIZATION")
-    REQ_FORMAT(ARRAY_INIZIALIZATION, "ARRAY_INIZIALIZATION")
-    REQ_FORMAT(MAIN, "MAIN")
-    REQ_FORMAT(STRUCTURE, "STRUCTURE")
-    REQ_FORMAT(ELSE, "ELSE")
-    REQ_FORMAT(FOR_STRUCTURE, "FOR_STRUCTURE")
-    REQ_FORMAT(BREAK, "BREAK")
-    REQ_FORMAT(FOR_INITIALIZATION, "FOR_INITIALIZATION")
-    REQ_FORMAT(FOR_CONDITION, "FOR_CONDITION")
-    REQ_FORMAT(FOR_STEP, "FOR_STEP")
-    REQ_FORMAT(DEFINITION, "DEFINITION")
-    REQ_FORMAT(PARAMETER_DEFINITION, "PARAMETER_DEFINITION")
-    REQ_FORMAT(RETURN_DEFINITION, "RETURN_DEFINITION")
-    REQ_FORMAT(OPEN_SCOPE, "OPEN_SCOPE")
-    REQ_FORMAT(CLOSE_SCOPE, "CLOSE_SCOPE")
-    REQ_FORMAT(BLANK, "BLANK")
-}
-
-TEST_CASE("Instruction typeToString function", "[Instruction]") {
-    vnd::Instruction instruction = vnd::Instruction::create(filename);
-    std::vector<std::string> result = instruction.typeToString();
-    REQUIRE(result.size() == 1);
-    REQUIRE(result[0] == "BLANK");
-}
-
-TEST_CASE("Instruction checkToken function for valid tokens", "[Instruction]") {
-    vnd::InstructionFactory factory = vnd::InstructionFactory::create(filename);
-    vnd::Token identifierToken(vnd::TokenType::IDENTIFIER, "variable", vnd::CodeSourceLocation(filename, 1, 2));
-    factory.checkToken(identifierToken);
-    REQUIRE(factory.canTerminate() == true);
-}
-
-TEST_CASE("Instruction checkToken function for invalid tokens", "[Instruction]") {
-    vnd::InstructionFactory factory = vnd::InstructionFactory::create(filename);
-    vnd::Token invalidToken(vnd::TokenType::UNKNOWN, "invalid", vnd::CodeSourceLocation(filename, 1, 2));
-    REQUIRE_THROWS_AS(factory.checkToken(invalidToken), vnd::InstructionException);
-}
-
-TEST_CASE("Corrected type of assignation instruction", "[Instruction]") {
-    using enum vnd::TokenType;
-    vnd::InstructionFactory factory = vnd::InstructionFactory::create(filename);
-    REQUIRE(factory.getInstruction().getLastType() == vnd::InstructionType::BLANK);
-    factory.checkToken(vnd::Token{IDENTIFIER, "a", vnd::CodeSourceLocation(filename, 1, 0)});
-    REQUIRE(factory.getInstruction().getLastType() == vnd::InstructionType::OPERATION);
-    factory.checkToken(vnd::Token{EQUAL_OPERATOR, "", vnd::CodeSourceLocation(filename, 1, 1)});
-    REQUIRE(factory.getInstruction().getLastType() == vnd::InstructionType::ASSIGNATION);
-    factory.checkToken(vnd::Token{OPEN_PARENTESIS, "", vnd::CodeSourceLocation(filename, 1, 2)});
-    REQUIRE(factory.getInstruction().getLastType() == vnd::InstructionType::EXPRESSION);
-}
-
-TEST_CASE("Corrected type of multy assignation instruction", "[Instruction]") {
-    using enum vnd::TokenType;
-    vnd::InstructionFactory factory = vnd::InstructionFactory::create(filename);
-    factory.checkToken(vnd::Token{K_VAR, "", vnd::CodeSourceLocation(filename, 0, 0)});
-    factory.checkToken(vnd::Token{IDENTIFIER, "", vnd::CodeSourceLocation(filename, 0, 1)});
-    REQUIRE(factory.getInstruction().getLastType() == vnd::InstructionType::DECLARATION);
-    factory.checkToken(vnd::Token{COLON, "", vnd::CodeSourceLocation(filename, 0, 2)});
-    factory.checkToken(vnd::Token{IDENTIFIER, "", vnd::CodeSourceLocation(filename, 0, 3)});
-    factory.checkToken(vnd::Token{OPEN_SQ_PARENTESIS, "", vnd::CodeSourceLocation(filename, 0, 4)});
-    REQUIRE(factory.getInstruction().getLastType() == vnd::InstructionType::SQUARE_EXPRESSION);
-    factory.checkToken(vnd::Token{CLOSE_SQ_PARENTESIS, "", vnd::CodeSourceLocation(filename, 0, t_colum2)});
-    factory.checkToken(vnd::Token{EQUAL_OPERATOR, "", vnd::CodeSourceLocation(filename, 0, t_colum)});
-    REQUIRE(factory.getInstruction().getLastType() == vnd::InstructionType::INITIALIZATION);
-    factory.checkToken(vnd::Token{IDENTIFIER, "", vnd::CodeSourceLocation(filename, 0, t_colum3)});
-    factory.checkToken(vnd::Token{OPEN_SQ_PARENTESIS, "", vnd::CodeSourceLocation(filename, 0, t_colum4)});
-    factory.checkToken(vnd::Token{INTEGER, "", vnd::CodeSourceLocation(filename, 0, t_colum5)});
-    REQUIRE(factory.getInstruction().getLastType() == vnd::InstructionType::SQUARE_EXPRESSION);
-    factory.checkToken(vnd::Token{CLOSE_SQ_PARENTESIS, "", vnd::CodeSourceLocation(filename, 0, t_colum6)});
-}
-
-TEST_CASE("Corrected type of parameter expression instruction", "[Instruction]") {
-    using enum vnd::TokenType;
-    vnd::InstructionFactory factory = vnd::InstructionFactory::create(filename);
-    factory.checkToken(vnd::Token{IDENTIFIER, "", vnd::CodeSourceLocation(filename, 0, 0)});
-    factory.checkToken(vnd::Token{OPEN_PARENTESIS, "", vnd::CodeSourceLocation(filename, 0, 1)});
-    REQUIRE(factory.getInstruction().getLastType() == vnd::InstructionType::PARAMETER_EXPRESSION);
-}
-
-TEST_CASE("Corrected type of parameter definition instruction", "[Instruction]") {
-    using enum vnd::TokenType;
-    vnd::InstructionFactory factory = vnd::InstructionFactory::create(filename);
-    factory.checkToken(vnd::Token{K_FUN, "", vnd::CodeSourceLocation(filename, 0, 0)});
-    factory.checkToken(vnd::Token{IDENTIFIER, "", vnd::CodeSourceLocation(filename, 0, 1)});
-    factory.checkToken(vnd::Token{OPEN_PARENTESIS, "", vnd::CodeSourceLocation(filename, 0, 2)});
-    REQUIRE(factory.getInstruction().getLastType() == vnd::InstructionType::PARAMETER_DEFINITION);
-    factory.checkToken(vnd::Token{CLOSE_PARENTESIS, "", vnd::CodeSourceLocation(filename, 0, 3)});
-}
-
-TEST_CASE("Corrected type of return expression instruction", "[Instruction]") {
-    vnd::InstructionFactory factory = vnd::InstructionFactory::create(filename);
-    factory.checkToken(vnd::Token{vnd::TokenType::K_RETURN, "", vnd::CodeSourceLocation(filename, 0, 0)});
-    factory.checkToken(vnd::Token{vnd::TokenType::BOOLEAN, "", vnd::CodeSourceLocation(filename, 0, 1)});
-    REQUIRE(factory.getInstruction().getLastType() == vnd::InstructionType::RETURN_EXPRESSION);
-}
-
-TEST_CASE("Corrected type of main instruction", "[Instruction]") {
-    vnd::InstructionFactory factory = vnd::InstructionFactory::create(filename);
-    factory.checkToken(vnd::Token{vnd::TokenType::K_MAIN, "", vnd::CodeSourceLocation(filename, 0, 0)});
-    factory.checkToken(vnd::Token{vnd::TokenType::OPEN_CUR_PARENTESIS, "", vnd::CodeSourceLocation(filename, 0, 1)});
-    REQUIRE(factory.getInstruction().getLastType() == vnd::InstructionType::MAIN);
-}
-
-TEST_CASE("Corrected type of for instruction", "[Instruction]") {
-    using enum vnd::TokenType;
-    vnd::InstructionFactory factory = vnd::InstructionFactory::create(filename);
-    factory.checkToken(vnd::Token{K_FOR, "", vnd::CodeSourceLocation(filename, 0, 0)});
-    REQUIRE(factory.getInstruction().getLastType() == vnd::InstructionType::FOR_STRUCTURE);
-    factory.checkToken(vnd::Token{IDENTIFIER, "", vnd::CodeSourceLocation(filename, 0, 1)});
-    factory.checkToken(vnd::Token{EQUAL_OPERATOR, "", vnd::CodeSourceLocation(filename, 0, 2)});
-    REQUIRE(factory.getInstruction().getLastType() == vnd::InstructionType::FOR_INITIALIZATION);
-    factory.checkToken(vnd::Token{DOUBLE, "", vnd::CodeSourceLocation(filename, 0, 3)});
-    factory.checkToken(vnd::Token{COMMA, "", vnd::CodeSourceLocation(filename, 0, 4)});
-    REQUIRE(factory.getInstruction().getLastType() == vnd::InstructionType::FOR_CONDITION);
-    factory.checkToken(vnd::Token{DOUBLE, "", vnd::CodeSourceLocation(filename, 0, t_colum2)});
-    factory.checkToken(vnd::Token{COMMA, "", vnd::CodeSourceLocation(filename, 0, t_colum)});
-    REQUIRE(factory.getInstruction().getLastType() == vnd::InstructionType::FOR_STEP);
-}
-TEST_CASE("Instruction toString() Empty tokens", "[Instruction]") {
-    vnd::Instruction instruction = vnd::Instruction::create(filename);
-    REQUIRE(instruction.toString() == "");  // NOLINT(*-container-size-empty)
-}
-
-TEST_CASE("Instruction toString() Empty tokens FMT", "[Instruction]") {
-    vnd::Instruction instruction = vnd::Instruction::create(filename);
-    REQ_FORMAT(instruction, "")
-}
-
-TEST_CASE("Instruction toString()", "[Instruction]") {
-    vnd::InstructionFactory factory = vnd::InstructionFactory::create(filename);
-    factory.checkToken(vnd::Token{vnd::TokenType::K_MAIN, "", vnd::CodeSourceLocation(filename, 0, 0)});
-    factory.checkToken(vnd::Token{vnd::TokenType::OPEN_CUR_PARENTESIS, "", vnd::CodeSourceLocation(filename, 0, 1)});
-    REQUIRE(factory.getInstruction().toString() == "0\t  ");
-}
-
-TEST_CASE("Instruction getTokens()", "[Instruction]") {
-    vnd::InstructionFactory factory = vnd::InstructionFactory::create(filename);
-    factory.checkToken(vnd::Token{vnd::TokenType::K_MAIN, "", vnd::CodeSourceLocation(filename, 0, 0)});
-    factory.checkToken(vnd::Token{vnd::TokenType::OPEN_CUR_PARENTESIS, "", vnd::CodeSourceLocation(filename, 0, 1)});
-    REQUIRE(factory.getInstruction().getTokens().size() == 2);
-}
-
-TEST_CASE("Instruction toString() FMT", "[Instruction]") {
-    vnd::InstructionFactory factory = vnd::InstructionFactory::create(filename);
-    factory.checkToken(vnd::Token{vnd::TokenType::K_MAIN, "", vnd::CodeSourceLocation(filename, 0, 0)});
-    factory.checkToken(vnd::Token{vnd::TokenType::OPEN_CUR_PARENTESIS, "", vnd::CodeSourceLocation(filename, 0, 1)});
-    REQ_FORMAT(factory.getInstruction(), "0\t  ")
-}
-
-TEST_CASE("ExpressionFactory emit int type", "[factory]") {
-    std::vector<vnd::Token> tokens = {{inte, "1", vnd::CodeSourceLocation(filename, 1, 0)},
-                                      {oper, "+", vnd::CodeSourceLocation(filename, 1, 1)},
-                                      {inte, "2", vnd::CodeSourceLocation(filename, 1, 2)}};
-    std::shared_ptr<vnd::Scope> scope = vnd::Scope::createMain();
-    auto iterator = tokens.begin();
-    vnd::ExpressionFactory factory = vnd::ExpressionFactory::create(iterator, tokens.end(), scope, false, false);
-    auto fpr = factory.parse({});
-    REQUIRE(factory.size() == 1);
-    REQUIRE(factory.getExpression().getType() == "u8");
-}
-
-TEST_CASE("ExpressionFactory emit float type", "[factory]") {
-    std::vector<vnd::Token> tokens = {{doub, "1", vnd::CodeSourceLocation(filename, 1, 0)},
-                                      {oper, "+", vnd::CodeSourceLocation(filename, 1, 1)},
-                                      {inte, "2", vnd::CodeSourceLocation(filename, 1, 2)}};
-    std::shared_ptr<vnd::Scope> scope = vnd::Scope::createMain();
-    auto iterator = tokens.begin();
-    vnd::ExpressionFactory factory = vnd::ExpressionFactory::create(iterator, tokens.end(), scope, false, false);
-    auto fpr = factory.parse({});
-    REQUIRE(factory.size() == 1);
-    REQUIRE(factory.getExpression().getType() == "f64");
-}
-
-TEST_CASE("ExpressionFactory emit bool type", "[factory]") {
-    using enum vnd::TokenType;
-    std::vector<vnd::Token> tokens = {{OPEN_PARENTESIS, "(", vnd::CodeSourceLocation(filename, 1, 0)},
-                                      {BOOLEAN, "true", vnd::CodeSourceLocation(filename, 1, 1)},
-                                      {LOGICAL_OPERATOR, "||", vnd::CodeSourceLocation(filename, 1, 2)},
-                                      {BOOLEAN, "false", vnd::CodeSourceLocation(filename, 1, t_colum2)},
-                                      {CLOSE_PARENTESIS, ")", vnd::CodeSourceLocation(filename, 1, t_colum)}};
-    std::shared_ptr<vnd::Scope> scope = vnd::Scope::createMain();
-    auto iterator = tokens.begin();
-    vnd::ExpressionFactory factory = vnd::ExpressionFactory::create(iterator, tokens.end(), scope, false, false);
-    auto fpr = factory.parse({CLOSE_PARENTESIS});
-    REQUIRE(factory.size() == 1);
-    REQUIRE(factory.getExpression().getType() == "bool");
-}
-
-TEST_CASE("ExpressionFactory emit function type", "[factory]") {
-    using enum vnd::TokenType;
-    std::vector<vnd::Token> tokens = {{IDENTIFIER, "testPar", vnd::CodeSourceLocation(filename, 1, 0)},
-                                      {OPEN_PARENTESIS, "(", vnd::CodeSourceLocation(filename, 1, 1)},
-                                      {STRING, "Hello", vnd::CodeSourceLocation(filename, 1, 3)},
-                                      {CLOSE_PARENTESIS, ")", vnd::CodeSourceLocation(filename, 1, t_colum4)}};
-    std::shared_ptr<vnd::Scope> scope = vnd::Scope::createMain();
-    auto iterator = tokens.begin();
-    vnd::ExpressionFactory factory = vnd::ExpressionFactory::create(iterator, tokens.end(), scope, false, false);
-    auto fpr = factory.parse({CLOSE_PARENTESIS});
-    REQUIRE(factory.size() == 1);
-    REQUIRE(factory.getExpression().getType() == "i64");
-}
-namespace {
-    void createBuildSrcFolder(std::string_view fname) {
-        auto fpath = fs::path(fname);
-        fpath = fpath.parent_path();
-        auto buildfres = vnd::FolderCreationResult::createFolder("vnbuild", fpath);
-        if(buildfres.success()) {
-            auto srcfres = vnd::FolderCreationResult::createFolder("src", buildfres.pathcref());
-            // auto srcf = srcfres.pathcref();
-        }
-    }
-}  // namespace
-TEST_CASE("Transpiler transpile main instruction", "[transpiler]") {
-    using enum vnd::TokenType;
-    vnd::Tokenizer tokenizer{"main{}", filename};
-    auto transpiler = createSimpleTranspiler(tokenizer.tokenize());
-    createBuildSrcFolder(filename);
-    transpiler.transpile(std::string{filename});
-    REQUIRE(std::filesystem::exists(outFilename));
-    std::string code = fileContent();
-    REQUIRE(code == "#include <base/base.hpp>\n\n"
-                    "int main(int argc, char **argv) {\n"
-                    "\tconst vnd::vector<string> _args = vnd::createArgs(argc, argv);\n"
-                    "\treturn 0;\n"
-                    "}\n");
-}  // namespace TEST_CASE("Transpiler transpile main instruction","[transpiler]")
-
-TEST_CASE("Transpiler transpile declaration instruction", "[transpiler]") {
-    using enum vnd::TokenType;
-    vnd::Tokenizer tokenizer{"var num, num1 : i32", filename};
-    auto transpiler = createSimpleTranspiler(tokenizer.tokenize());
-    createBuildSrcFolder(filename);
-    transpiler.transpile(std::string{filename});
-    REQUIRE(std::filesystem::exists(outFilename));
-    std::string code = fileContent();
-    REQUIRE(code == "#include <base/base.hpp>\n\n"
-                    "i32 _num{}, _num1{};\n");
-}
-
-TEST_CASE("Transpiler transpile declaration underscore instruction", "[transpiler]") {
-    using enum vnd::TokenType;
-    vnd::Tokenizer tokenizer{"var _num, _num1 : u32", filename};
-    auto transpiler = createSimpleTranspiler(tokenizer.tokenize());
-    createBuildSrcFolder(filename);
-    transpiler.transpile(std::string{filename});
-    REQUIRE(std::filesystem::exists(outFilename));
-    std::string code = fileContent();
-    REQUIRE(code == "#include <base/base.hpp>\n\n"
-                    "u32 v_num{}, v_num1{};\n");
-}
-
-TEST_CASE("Transpiler transpile initialization instruction", "[transpiler]") {
-    using enum vnd::TokenType;
-    vnd::Tokenizer tokenizer{"var num, num1 : i8 = 1", filename};
-    auto transpiler = createSimpleTranspiler(tokenizer.tokenize());
-    createBuildSrcFolder(filename);
-    transpiler.transpile(std::string{filename});
-    REQUIRE(std::filesystem::exists(outFilename));
-    std::string code = fileContent();
-    REQUIRE(code == "#include <base/base.hpp>\n\n"
-                    "i8 _num = 1, _num1{};\n");
-}
-
-TEST_CASE("Transpiler transpile initialization underscore instruction", "[transpiler]") {
-    using enum vnd::TokenType;
-    vnd::Tokenizer tokenizer{"var _num, _num1 : u64 = 1", filename};
-    auto transpiler = createSimpleTranspiler(tokenizer.tokenize());
-    createBuildSrcFolder(filename);
-    transpiler.transpile(std::string{filename});
-    REQUIRE(std::filesystem::exists(outFilename));
-    std::string code = fileContent();
-    REQUIRE(code == "#include <base/base.hpp>\n\n"
-                    "u64 v_num = 1, v_num1{};\n");
-}
-
-TEST_CASE("Transpiler transpile const instruction", "[transpiler]") {
-    using enum vnd::TokenType;
-    vnd::Tokenizer tokenizer{"const num : u16 = 1 + 333", filename};
-    auto transpiler = createSimpleTranspiler(tokenizer.tokenize());
-    createBuildSrcFolder(filename);
-    transpiler.transpile(std::string{filename});
-    REQUIRE(std::filesystem::exists(outFilename));
-    std::string code = fileContent();
-    REQUIRE(code == "#include <base/base.hpp>\n\n"
-                    "const u16 _num = 334;\n\n");
-}
-
-TEST_CASE("Transpiler transpile operation instruction", "[transpiler]") {
-    using enum vnd::TokenType;
-    vnd::Tokenizer tokenizer{"main {\nprint(\"Test {}\", args[0])\n}", filename};
-    auto transpiler = createComplexTranspiler(tokenizer.tokenize());
-    createBuildSrcFolder(filename);
-    transpiler.transpile(std::string{filename});
-    REQUIRE(std::filesystem::exists(outFilename));
-    std::string code = fileContent();
-    REQUIRE(code == "#include <base/base.hpp>\n\n"
-                    "int main(int argc, char **argv) {\n"
-                    "\tconst vnd::vector<string> _args = vnd::createArgs(argc, argv);\n"
-                    "\t_print(string(\"Test {}\"), _args.at(0));\n"
-                    "\treturn 0;\n"
-                    "}\n");
-}
-
-TEST_CASE("Transpiler transpile assignation instruction", "[transpiler]") {
-    using enum vnd::TokenType;
-    vnd::Tokenizer tokenizer{"main{\nvar num : i8\nnum = 1\n}", filename};
-    auto transpiler = createComplexTranspiler(tokenizer.tokenize());
-    createBuildSrcFolder(filename);
-    transpiler.transpile(std::string{filename});
-    REQUIRE(std::filesystem::exists(outFilename));
-    std::string code = fileContent();
-    REQUIRE(code == "#include <base/base.hpp>\n\n"
-                    "int main(int argc, char **argv) {\n"
-                    "\tconst vnd::vector<string> _args = vnd::createArgs(argc, argv);\n"
-                    "\ti8 _num{};\n"
-                    "\t_num = 1;\n"
-                    "\treturn 0;\n"
-                    "}\n");
-}
-
-TEST_CASE("Transpiler transpile if instruction", "[transpiler]") {
-    using enum vnd::TokenType;
-    vnd::Tokenizer tokenizer{"main{\nif(true){\n} else if(false){\n} else{}\n\n}", filename};
-    auto transpiler = createComplexTranspiler(tokenizer.tokenize());
-    createBuildSrcFolder(filename);
-    transpiler.transpile(std::string{filename});
-    REQUIRE(std::filesystem::exists(outFilename));
-    std::string code = fileContent();
-    REQUIRE(code == "#include <base/base.hpp>\n\n"
-                    "int main(int argc, char **argv) {\n"
-                    "\tconst vnd::vector<string> _args = vnd::createArgs(argc, argv);\n"
-                    "\tif(true) {\n"
-                    "\t} else if(false) {\n"
-                    "\t} else {}\n"
-                    "\treturn 0;\n"
-                    "}\n");
-}
-
-TEST_CASE("Transpiler transpile while and break instructions", "[transpiler]") {
-    using enum vnd::TokenType;
-    vnd::Tokenizer tokenizer{"main{\nwhile(true){\nbreak\n}\n}", filename};
-    auto transpiler = createComplexTranspiler(tokenizer.tokenize());
-    createBuildSrcFolder(filename);
-    transpiler.transpile(std::string{filename});
-    REQUIRE(std::filesystem::exists(outFilename));
-    std::string code = fileContent();
-    REQUIRE(code == "#include <base/base.hpp>\n\n"
-                    "int main(int argc, char **argv) {\n"
-                    "\tconst vnd::vector<string> _args = vnd::createArgs(argc, argv);\n"
-                    "\twhile(true) {\n"
-                    "\t\tbreak;\n"
-                    "\t}\n"
-                    "\treturn 0;\n"
-                    "}\n");
-}
-
-TEST_CASE("Transpiler transpile for instruction", "[transpiler]") {
-    using enum vnd::TokenType;
-    vnd::Tokenizer tokenizer{"main{\nfor var i : i8 = 0, 10, 1 {}\n}", filename};
-    auto transpiler = createComplexTranspiler(tokenizer.tokenize());
-    createBuildSrcFolder(filename);
-    transpiler.transpile(std::string{filename});
-    REQUIRE(std::filesystem::exists(outFilename));
-    std::string code = fileContent();
-    REQUIRE(code == "#include <base/base.hpp>\n\n"
-                    "int main(int argc, char **argv) {\n"
-                    "\tconst vnd::vector<string> _args = vnd::createArgs(argc, argv);\n"
-                    "\tFOR_LOOP(i8, _i, 0, 10, 1) {}\n"
-                    "\treturn 0;\n"
-                    "}\n");
-}
-
-TEST_CASE("Transpiler transpile open and close scope instructions", "[transpiler]") {
-    using enum vnd::TokenType;
-    vnd::Tokenizer tokenizer{"main{\n{\n}\n\n}", filename};
-    auto transpiler = createComplexTranspiler(tokenizer.tokenize());
-    createBuildSrcFolder(filename);
-    transpiler.transpile(std::string{filename});
-    REQUIRE(std::filesystem::exists(outFilename));
-    std::string code = fileContent();
-    REQUIRE(code == "#include <base/base.hpp>\n\n"
-                    "int main(int argc, char **argv) {\n"
-                    "\tconst vnd::vector<string> _args = vnd::createArgs(argc, argv);\n"
-                    "\t{\n"
-                    "\t}\n"
-                    "\treturn 0;\n"
-                    "}\n");
-}
-
-TEST_CASE("Transpiler transpile function instructions", "[transpiler]") {
-    using enum vnd::TokenType;
-    vnd::Tokenizer tokenizer{"fun funzione(num: u8): u8, bool {\n"
-                             "\treturn num * 2, num % 2 == 0\n"
-                             "}\n"
-                             "fun procedura() {\n"
-                             "\tprint(\"Procedura\")\n"
-                             "}\n",
-                             filename};
-    auto transpiler = createComplexTranspiler(tokenizer.tokenize());
-    transpiler.transpile(std::string{filename});
-    createBuildSrcFolder(filename);
-    REQUIRE(std::filesystem::exists(outFilename));
-    std::string code = fileContent();
-    REQUIRE(code == "#include <base/base.hpp>\n\n"
-                    "std::tuple<u8, bool> _funzione(u8 _num) {\n"
-                    "\treturn { _num * 2,  vnd::mod(_num, 2) == 0};\n"
-                    "}\n"
-                    "void _procedura() {\n"
-                    "\t_print(string(\"Procedura\"));\n"
-                    "}\n");
-}
-*/
 
 TEST_CASE("ASTNode type conversion using as<T>()", "[ast]") {
     vnd::Token token{vnd::TokenType::IDENTIFIER, "id", vnd::CodeSourceLocation{filename, t_line, t_colum}};
@@ -1152,13 +731,19 @@ TEST_CASE("Parser emit integer number node", "[parser]") {
 }
 
 TEST_CASE("integer number node swap", "[parser]") {
-    vnd::IntegerNumberNode inta{2, vnd::Token{vnd::TokenType::INTEGER, "2", vnd::CodeSourceLocation{filename, t_line, t_colum}}};
-    vnd::IntegerNumberNode intb{3, vnd::Token{vnd::TokenType::INTEGER, "3", vnd::CodeSourceLocation{filename, t_line, t_colum2}}};
+    auto token1 = vnd::Token{vnd::TokenType::INTEGER, "2", vnd::CodeSourceLocation{filename, t_line, t_colum}};
+    auto token2 = vnd::Token{vnd::TokenType::INTEGER, "3", vnd::CodeSourceLocation{filename, t_line, t_colum2}};
+    vnd::IntegerNumberNode inta{2, token1};
+    vnd::IntegerNumberNode intb{3, token2};
     REQUIRE(inta.get_value() == 2);
     REQUIRE(intb.get_value() == 3);
+    REQUIRE(inta.get_token() == token1);
+    REQUIRE(intb.get_token() == token2);
     std::swap(inta, intb);
     REQUIRE(inta.get_value() == 3);
     REQUIRE(intb.get_value() == 2);
+    REQUIRE(inta.get_token() == token2);
+    REQUIRE(intb.get_token() == token1);
 }
 
 TEST_CASE("double number node swap", "[parser]") {
@@ -1172,51 +757,69 @@ TEST_CASE("double number node swap", "[parser]") {
 }
 
 TEST_CASE("unary node swap", "[parser]") {
-    vnd::UnaryExpressionNode unara{
-        "-", vnd::Token{vnd::TokenType::MINUS_OPERATOR, "-", vnd::CodeSourceLocation{filename, t_line, t_colum}},
-        std::make_unique<vnd::VariableNode>(
-            "d", vnd::Token{vnd::TokenType::IDENTIFIER, "d", vnd::CodeSourceLocation{filename, t_line, t_colum6}})};
-    vnd::UnaryExpressionNode unarb{
-        "*", vnd::Token{vnd::TokenType::OPERATOR, "*", vnd::CodeSourceLocation{filename, t_line4, t_colum}},
-        std::make_unique<vnd::VariableNode>(
-            "s", vnd::Token{vnd::TokenType::OPERATOR, "*", vnd::CodeSourceLocation{filename, t_line4, t_colum4}})};
+    using enum vnd::TokenType;
+    auto token1 = vnd::Token{MINUS_OPERATOR, "-", vnd::CodeSourceLocation{filename, t_line, t_colum}};
+    auto token2 = vnd::Token{IDENTIFIER, "d", vnd::CodeSourceLocation{filename, t_line, t_colum6}};
+    auto token3 = vnd::Token{OPERATOR, "*", vnd::CodeSourceLocation{filename, t_line4, t_colum}};
+    auto token4 = vnd::Token{OPERATOR, "s", vnd::CodeSourceLocation{filename, t_line4, t_colum4}};
+    vnd::UnaryExpressionNode unara{"-", token1, std::make_unique<vnd::VariableNode>("d", token2)};
+    vnd::UnaryExpressionNode unarb{"*", token3, std::make_unique<vnd::VariableNode>("s", token4)};
     REQUIRE(unara.getOp() == "-");
     REQUIRE(unara.getOperand()->as<vnd::VariableNode>()->getName() == "d");
+    REQUIRE(unara.get_token() == token1);
+    REQUIRE(unara.getOperand()->as<vnd::VariableNode>()->get_token() == token2);
     REQUIRE(unarb.getOp() == "*");
     REQUIRE(unarb.getOperand()->as<vnd::VariableNode>()->getName() == "s");
+    REQUIRE(unarb.get_token() == token3);
+    REQUIRE(unarb.getOperand()->as<vnd::VariableNode>()->get_token() == token4);
     std::swap(unara, unarb);
     REQUIRE(unara.getOp() == "*");
     REQUIRE(unara.getOperand()->as<vnd::VariableNode>()->getName() == "s");
+    REQUIRE(unara.get_token() == token3);
+    REQUIRE(unara.getOperand()->as<vnd::VariableNode>()->get_token() == token4);
     REQUIRE(unarb.getOp() == "-");
     REQUIRE(unarb.getOperand()->as<vnd::VariableNode>()->getName() == "d");
+    REQUIRE(unarb.get_token() == token1);
+    REQUIRE(unarb.getOperand()->as<vnd::VariableNode>()->get_token() == token2);
 }
 
 TEST_CASE("binary node swap", "[parser]") {
-    vnd::BinaryExpressionNode unara{
-        "-", vnd::Token{vnd::TokenType::MINUS_OPERATOR, "-", vnd::CodeSourceLocation{filename, t_line, t_colum5}},
-        std::make_unique<vnd::VariableNode>(
-            "d", vnd::Token{vnd::TokenType::IDENTIFIER, "d", vnd::CodeSourceLocation{filename, t_line, t_colum6}}),
-        std::make_unique<vnd::VariableNode>(
-            "a", vnd::Token{vnd::TokenType::IDENTIFIER, "a", vnd::CodeSourceLocation{filename, t_line, t_colum4}})};
-    vnd::BinaryExpressionNode unarb{
-        "*", vnd::Token{vnd::TokenType::OPERATOR, "-", vnd::CodeSourceLocation{filename, t_line, t_colum5}},
-        std::make_unique<vnd::VariableNode>(
-            "s", vnd::Token{vnd::TokenType::IDENTIFIER, "s", vnd::CodeSourceLocation{filename, t_line, t_colum6}}),
-        std::make_unique<vnd::VariableNode>(
-            "b", vnd::Token{vnd::TokenType::IDENTIFIER, "b", vnd::CodeSourceLocation{filename, t_line, t_colum5}})};
+    using enum vnd::TokenType;
+    auto token1 = vnd::Token{MINUS_OPERATOR, "-", vnd::CodeSourceLocation{filename, t_line, t_colum5}};
+    auto token2 = vnd::Token{IDENTIFIER, "d", vnd::CodeSourceLocation{filename, t_line, t_colum6}};
+    auto token3 = vnd::Token{IDENTIFIER, "a", vnd::CodeSourceLocation{filename, t_line, t_colum4}};
+    auto token4 = vnd::Token{OPERATOR, "*", vnd::CodeSourceLocation{filename, t_line, t_colum5}};
+    auto token5 = vnd::Token{IDENTIFIER, "s", vnd::CodeSourceLocation{filename, t_line, t_colum6}};
+    auto token6 = vnd::Token{IDENTIFIER, "b", vnd::CodeSourceLocation{filename, t_line, t_colum5}};
+    vnd::BinaryExpressionNode unara{"-", token1, std::make_unique<vnd::VariableNode>("d", token2),
+                                    std::make_unique<vnd::VariableNode>("a", token3)};
+    vnd::BinaryExpressionNode unarb{"*", token4, std::make_unique<vnd::VariableNode>("s", token5),
+                                    std::make_unique<vnd::VariableNode>("b", token6)};
     REQUIRE(unara.getOp() == "-");
     REQUIRE(unara.getLeft()->as<vnd::VariableNode>()->getName() == "d");
     REQUIRE(unara.getRight()->as<vnd::VariableNode>()->getName() == "a");
+    REQUIRE(unara.get_token() == token1);
+    REQUIRE(unara.getLeft()->as<vnd::VariableNode>()->get_token() == token2);
+    REQUIRE(unara.getRight()->as<vnd::VariableNode>()->get_token() == token3);
     REQUIRE(unarb.getOp() == "*");
     REQUIRE(unarb.getLeft()->as<vnd::VariableNode>()->getName() == "s");
     REQUIRE(unarb.getRight()->as<vnd::VariableNode>()->getName() == "b");
+    REQUIRE(unarb.get_token() == token4);
+    REQUIRE(unarb.getLeft()->as<vnd::VariableNode>()->get_token() == token5);
+    REQUIRE(unarb.getRight()->as<vnd::VariableNode>()->get_token() == token6);
     std::swap(unara, unarb);
     REQUIRE(unara.getOp() == "*");
     REQUIRE(unara.getLeft()->as<vnd::VariableNode>()->getName() == "s");
     REQUIRE(unara.getRight()->as<vnd::VariableNode>()->getName() == "b");
+    REQUIRE(unara.get_token() == token4);
+    REQUIRE(unara.getLeft()->as<vnd::VariableNode>()->get_token() == token5);
+    REQUIRE(unara.getRight()->as<vnd::VariableNode>()->get_token() == token6);
     REQUIRE(unarb.getOp() == "-");
     REQUIRE(unarb.getLeft()->as<vnd::VariableNode>()->getName() == "d");
     REQUIRE(unarb.getRight()->as<vnd::VariableNode>()->getName() == "a");
+    REQUIRE(unarb.get_token() == token1);
+    REQUIRE(unarb.getLeft()->as<vnd::VariableNode>()->get_token() == token2);
+    REQUIRE(unarb.getRight()->as<vnd::VariableNode>()->get_token() == token3);
 }
 
 TEST_CASE("Parser emit integer number node form exadecimal", "[parser]") {

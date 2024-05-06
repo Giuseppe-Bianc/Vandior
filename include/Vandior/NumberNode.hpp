@@ -17,6 +17,10 @@ namespace vnd {
 
         [[nodiscard]] NodeType getType() const noexcept override { return NodeType::Number; }
         [[nodiscard]] virtual NumberNodeType getNumberType() const = 0;
+        friend void swap(NumberNode &lhs, NumberNode &rhs) noexcept {
+            using std::swap;
+            swap(static_cast<ASTNode &>(lhs), static_cast<ASTNode &>(rhs));
+        }
     };
 
 }  // namespace vnd

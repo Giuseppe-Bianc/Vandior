@@ -31,6 +31,7 @@ namespace vnd {
 
         friend void swap(UnaryExpressionNode &lhs, UnaryExpressionNode &rhs) noexcept {
             using std::swap;
+            swap(static_cast<ASTNode &>(lhs), static_cast<ASTNode &>(rhs));
             swap(lhs.op, rhs.op);
             swap(lhs.operand, rhs.operand);
         }

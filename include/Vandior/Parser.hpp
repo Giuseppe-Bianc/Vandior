@@ -17,7 +17,7 @@ namespace vnd {
     private:
         void consumeToken() noexcept;
         // const Token &getNextToken();
-        const Token &getCurrentToken();
+        const Token &getCurrentToken() const;
         static bool isUnaryOperator(std::string_view view) noexcept;
         static int getOperatorPrecedence(const Token &token) noexcept;
         static int convertToInt(std::string_view str) noexcept;
