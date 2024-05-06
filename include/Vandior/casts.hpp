@@ -3,6 +3,7 @@
  * @file
  * @brief Macros and utilities for type casting
  */
+// NOLINTBEGIN
 #include <bit>
 /**
  * @defgroup TypeCastingMacros Type Casting Macros
@@ -580,4 +581,5 @@ namespace TypeSizes {
     /// Size of a UTF-32 encoded string view.
     static inline constexpr std::size_t sizeOfU32StringView = sizeof(std::u32string_view);
 }  // namespace TypeSizes
+// NOLINTEND
 /** @} */  // end of TypeSizes namespace
