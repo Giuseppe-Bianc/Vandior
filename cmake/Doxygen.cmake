@@ -21,7 +21,7 @@ function(Vandior_enable_doxygen DOXYGEN_THEME)
 
     # If not specified, exclude the vcpkg files and the files CMake downloads under _deps (like project_options)
     if (NOT DOXYGEN_EXCLUDE_PATTERNS)
-        set(DOXYGEN_EXCLUDE_PATTERNS "${CMAKE_CURRENT_BINARY_DIR}/vcpkg_installed/*" "${CMAKE_CURRENT_BINARY_DIR}/_deps/*" "${PROJECT_SOURCE_DIR}/include/Vandior/exprtk.hpp")
+        set(DOXYGEN_EXCLUDE_PATTERNS "${CMAKE_CURRENT_BINARY_DIR}/vcpkg_installed/*" "${CMAKE_CURRENT_BINARY_DIR}/_deps/*|")
     endif ()
 
     # Set Doxygen theme
