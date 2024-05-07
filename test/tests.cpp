@@ -333,10 +333,10 @@ TEST_CASE("default constructed token set propriety tostring", "[token]") {
     REQUIRE(token.getColumn() == 1);
 #ifdef _WIN32  // Windows
     REQUIRE(token.to_string() == R"((type: INTEGER, value: 'assss', source location:(file:.\unknown.vn, line:1, column:1)))");
-    REQUIRE(token.compat_to_string() == R"((typ: INTEGER, val: 'assss', sl:(f:.\unknown.vn, l:1, c:1)))");
+    REQUIRE(token.compat_to_string() == R"((typ: INT, val: 'assss', sl:(f:.\unknown.vn, l:1, c:1)))");
 #else
     REQUIRE(token.to_string() == R"((type: INTEGER, value: 'assss', source location:(file:./unknown.vn, line:1, column:1)))");
-    REQUIRE(token.compat_to_string() == R"((typ: INTEGER, val: 'assss', sl:(f:./unknown.vn, l:1, c:1)))");
+    REQUIRE(token.compat_to_string() == R"((typ: INT, val: 'assss', sl:(f:./unknown.vn, l:1, c:1)))");
 #endif
 }
 
@@ -881,7 +881,7 @@ TEST_CASE("Parser emit integer number node compat print", "[parser]") {
     const auto *number = ast->as<vnd::IntegerNumberNode>();
     REQUIRE(number != nullptr);
     REQUIRE(number->get_value() == 1);
-    REQUIRE(number->comp_print() == "NUM_INTEGER(1)");
+    REQUIRE(number->comp_print() == "NUM_INT(1)");
 }
 
 TEST_CASE("Parser emit variable node", "[parser]") {
@@ -923,7 +923,7 @@ TEST_CASE("Parser emit double number node double compat print", "[parser]") {
     const auto *number = ast->as<vnd::DoubleNumberNode>();
     REQUIRE(number != nullptr);
     REQUIRE(number->get_value() == 1.5);
-    REQUIRE(number->comp_print() == "NUM_DOUBLE(1.5)");
+    REQUIRE(number->comp_print() == "NUM_DBL(1.5)");
 }
 
 TEST_CASE("Parser emit variable node print", "[parser]") {
@@ -1082,7 +1082,7 @@ TEST_CASE("Parser emit binary expression node compact print", "[parser]") {
     // Check the values of left and right operands
     REQUIRE(leftNumber->get_value() == 1);
     REQUIRE(rightNumber->get_value() == 2);
-    REQUIRE(binaryNode->comp_print() == "BINE(op:\"+\" l:NUM_INTEGER(1), r:NUM_INTEGER(2))");
+    REQUIRE(binaryNode->comp_print() == "BINE(op:\"+\" l:NUM_INT(1), r:NUM_INT(2))");
 }
 
 // NOLINTEND(*-include-cleaner, *-avoid-magic-numbers, *-magic-numbers)
