@@ -98,6 +98,11 @@ namespace vnd {
         } else if(currentType == TokenType::DOUBLE) {
             consumeToken();
             return std::make_unique<DoubleNumberNode>(convertToDouble(currentValue), currentToken);
+        } else if(currentType == TokenType::BOOLEAN) {
+            consumeToken();
+            auto value = true;
+            if(currentValue == "false") { value = false; }
+            return std::make_unique<LiteralNode<bool>>(value, currentToken);
         } else if(currentType == TokenType::IDENTIFIER) {
             consumeToken();
             return std::make_unique<VariableNode>(currentValue, currentToken);

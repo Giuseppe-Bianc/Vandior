@@ -7,7 +7,7 @@
 /**
  * @brief Enum representing different types of AST nodes.
  */
-enum class NodeType { BinaryExpression, UnaryExpression, Number, Variable };
+enum class NodeType { BinaryExpression, UnaryExpression, Number, Literal, Variable };
 
 /**
  * This function is a formatter for NodeType using fmt.

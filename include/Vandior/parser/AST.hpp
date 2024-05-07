@@ -5,6 +5,7 @@
 #pragma once
 
 #include "../Log.hpp"
+#include "LiteralNode.hpp"
 #include "BinaryExpressionNode.hpp"
 #include "DoubleNumberNode.hpp"
 #include "IntegerNumberNode.hpp"
@@ -67,6 +68,8 @@ static inline void prettyPrint(const vnd::ASTNode &node, int indent = 0) {
         print_indent(indent, "Node",
                      FORMAT("(Type: {}, Numeric Type: {}, value:{}){}", node.getType(), doubleNumberNode->getNumberType(),
                             doubleNumberNode->get_value(), node.get_token().compat_to_string()));
+    } else if(const auto *literalNode = node.as<vnd::LiteralNode<bool>>()) {
+        print_indent(indent, "Node", "(literal)");
     } else if(const auto *variableNode = node.as<vnd::VariableNode>()) {
         print_indent(indent, "Node",
                      FORMAT("(Type: {}, value:{}){}", node.getType(), variableNode->getName(), node.get_token().compat_to_string()));
