@@ -103,6 +103,12 @@ namespace vnd {
             auto value = true;
             if(currentValue == "false") { value = false; }
             return std::make_unique<LiteralNode<bool>>(value, currentToken);
+        } else if(currentType == TokenType::CHAR) {
+            consumeToken();
+            return std::make_unique<LiteralNode<char>>(currentValue.at(0), currentToken);
+        } else if(currentType == TokenType::STRING) {
+            consumeToken();
+            return std::make_unique<LiteralNode<std::string_view>>(currentValue, currentToken);
         } else if(currentType == TokenType::IDENTIFIER) {
             consumeToken();
             return std::make_unique<VariableNode>(currentValue, currentToken);
