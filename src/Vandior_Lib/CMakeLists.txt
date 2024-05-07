@@ -2,25 +2,17 @@ include(GenerateExportHeader)
 
 find_package(glm REQUIRED)
 add_library(vandior_lib vandior.cpp
-        Token.cpp
-        Tokenizer.cpp
-        TokenizerUtility.cpp
-        #        InstructionException.cpp
-        #        InstructionFactory.cpp
-        #        Instruction.cpp
-        #        FunType.cpp
-        #        Scope.cpp
-        #        ExpressionFactory.cpp
-        #        Expression.cpp
-        #        Transpiler.cpp
-        Parser.cpp
-        ASTNode.cpp
-        BinaryExpressionNode.cpp
-        UnaryExpressionNode.cpp
-        NumberNode.cpp
-        VariableNode.cpp
-        IntegerNumberNode.cpp
-        DoubleNumberNode.cpp
+        lexer/Token.cpp
+        lexer/Tokenizer.cpp
+        lexer/TokenizerUtility.cpp
+        parser/Parser.cpp
+        parser/ASTNode.cpp
+        parser/BinaryExpressionNode.cpp
+        parser/UnaryExpressionNode.cpp
+        parser/NumberNode.cpp
+        parser/VariableNode.cpp
+        parser/IntegerNumberNode.cpp
+        parser/DoubleNumberNode.cpp
 )
 
 add_library(Vandior::vandior_lib ALIAS vandior_lib)

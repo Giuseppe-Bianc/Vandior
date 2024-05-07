@@ -3,11 +3,8 @@
  * @file
  * @brief Macros and utilities for type casting
  */
-
-// NOLINTNEXTLINE
-#include <bit>
-// #include <gsl/gsl>
 // NOLINTBEGIN
+#include <bit>
 /**
  * @defgroup TypeCastingMacros Type Casting Macros
  * @{
