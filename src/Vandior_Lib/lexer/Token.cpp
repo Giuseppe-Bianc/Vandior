@@ -6,7 +6,7 @@ std::string vnd::Token::to_string() const {
 }
 
 std::string vnd::Token::compat_to_string() const {
-    if(_type == eofTokenType) { return FORMAT("(typ: {}, sl:{})", _type, _sourceLocation.compat_to_string()); }
-    return FORMAT("(typ: {}, val: '{}', sl:{})", _type, _value, _sourceLocation.compat_to_string());
+    if(_type == eofTokenType) { return FORMAT("(typ: {}, sl:{})", comp_tokType_to_string(_type), _sourceLocation.compat_to_string()); }
+    return FORMAT("(typ: {}, val: '{}', sl:{})", comp_tokType_to_string(_type), _value, _sourceLocation.compat_to_string());
 }
 // NOLINTEND(*-include-cleaner)

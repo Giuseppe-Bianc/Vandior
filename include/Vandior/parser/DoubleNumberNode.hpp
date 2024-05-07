@@ -18,7 +18,9 @@ namespace vnd {
 
         [[nodiscard]] NumberNodeType getNumberType() const override { return NumberNodeType::Double; }
         [[nodiscard]] std::string print() const override { return FORMAT("{}_{}({})", getType(), getNumberType(), m_value); }
-        [[nodiscard]] std::string comp_print() const override { return FORMAT("NUM_{}({})", getNumberType(), m_value); }
+        [[nodiscard]] std::string comp_print() const override {
+            return FORMAT("NUM_{}({})", NumNodeType_comp_to_string(getNumberType()), m_value);
+        }
         [[nodiscard]] double get_value() const noexcept { return m_value; }
 
         friend void swap(DoubleNumberNode &lhs, DoubleNumberNode &rhs) noexcept {
