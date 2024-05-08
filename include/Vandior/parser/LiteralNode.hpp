@@ -12,21 +12,7 @@ namespace vnd {
     template <typename T>
     class LiteralNode : public ASTNode {
     public:
-        // Inherit all constructors from the base class ASTNode
-        LiteralNode(T value, const Token &token) noexcept : ASTNode(token), m_value(value) {
-            if(std::is_same_v<T, bool>) {
-                m_type = NodeType::Boolean;
-                return;
-            }
-            if(std::is_same_v<T, char>) {
-                m_type = NodeType::Char;
-                return;
-            }
-            if(std::is_same_v<T, std::string_view>) {
-                m_type = NodeType::String;
-                return;
-            }
-        }
+        LiteralNode(T value, const Token &token, NodeType type) noexcept : ASTNode(token), m_value(value), m_type(type) {}
 
         [[nodiscard]] NodeType getType() const noexcept override { return m_type; }
         [[nodiscard]] std::string print() const override { return FORMAT("{}({})", getType(), m_value); }
@@ -36,6 +22,7 @@ namespace vnd {
             using std::swap;
             swap(static_cast<LiteralNode<T> &>(lhs), static_cast<LiteralNode<T> &>(rhs));
             swap(lhs.m_value, rhs.m_value);
+            swap(lhs.m_type, rhs.m_type);
         }
 
     private:

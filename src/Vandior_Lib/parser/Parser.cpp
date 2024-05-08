@@ -88,27 +88,27 @@ namespace vnd {
             consumeToken();
             if(currentValue.starts_with("#o") || currentValue.starts_with("#O")) {
                 cval.erase(0, 2);
-                return std::make_unique<IntegerNumberNode>(convertToIntformOct(cval), currentToken);
+                return std::make_unique<NumberNode<int>>(convertToIntformOct(cval), currentToken, NumberNodeType::Integer);
             }
             if(currentValue.starts_with("#")) {
                 cval.erase(0, 1);
-                return std::make_unique<IntegerNumberNode>(convertToIntformExa(cval), currentToken);
+                return std::make_unique<NumberNode<int>>(convertToIntformExa(cval), currentToken, NumberNodeType::Integer);
             }
-            return std::make_unique<IntegerNumberNode>(convertToInt(currentValue), currentToken);
+            return std::make_unique<NumberNode<int>>(convertToInt(currentValue), currentToken, NumberNodeType::Integer);
         } else if(currentType == TokenType::DOUBLE) {
             consumeToken();
-            return std::make_unique<DoubleNumberNode>(convertToDouble(currentValue), currentToken);
+            return std::make_unique<NumberNode<double>>(convertToDouble(currentValue), currentToken, NumberNodeType::Double);
         } else if(currentType == TokenType::BOOLEAN) {
             consumeToken();
             auto value = true;
             if(currentValue == "false") { value = false; }
-            return std::make_unique<LiteralNode<bool>>(value, currentToken);
+            return std::make_unique<LiteralNode<bool>>(value, currentToken, NodeType::Boolean);
         } else if(currentType == TokenType::CHAR) {
             consumeToken();
-            return std::make_unique<LiteralNode<char>>(currentValue.at(0), currentToken);
+            return std::make_unique<LiteralNode<char>>(currentValue.at(0), currentToken, NodeType::Char);
         } else if(currentType == TokenType::STRING) {
             consumeToken();
-            return std::make_unique<LiteralNode<std::string_view>>(currentValue, currentToken);
+            return std::make_unique<LiteralNode<std::string_view>>(currentValue, currentToken, NodeType::String);
         } else if(currentType == TokenType::IDENTIFIER) {
             consumeToken();
             return std::make_unique<VariableNode>(currentValue, currentToken);

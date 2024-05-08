@@ -3,8 +3,8 @@
  */
 #pragma once
 
-#include "TokenType.hpp"
 #include "CodeSourceLocation.hpp"
+#include "CompTokenType.hpp"
 namespace vnd {
 
     /**

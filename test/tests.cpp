@@ -219,6 +219,47 @@ TEST_CASE("corrected format for Tokentype", "[token_type]") {
     REQ_FORMAT(UNKNOWN, "UNKNOWN")
 }
 
+TEST_CASE("corrected format for Tokentype compat to string", "[token_type]") {
+    using enum vnd::TokenType;
+    REQ_FORMAT(comp_tokType_to_string(INTEGER), "INT")
+    REQ_FORMAT(comp_tokType_to_string(DOUBLE), "DBL")
+    REQ_FORMAT(comp_tokType_to_string(BOOLEAN), "BOOL")
+    REQ_FORMAT(comp_tokType_to_string(OPERATOR), "OPER")
+    REQ_FORMAT(comp_tokType_to_string(MINUS_OPERATOR), "MINUS_OP")
+    REQ_FORMAT(comp_tokType_to_string(EQUAL_OPERATOR), "EQUAL_OP")
+    REQ_FORMAT(comp_tokType_to_string(DOT_OPERATOR), "DOT_OP")
+    REQ_FORMAT(comp_tokType_to_string(IDENTIFIER), "IDENT")
+    REQ_FORMAT(comp_tokType_to_string(CHAR), "CH")
+    REQ_FORMAT(comp_tokType_to_string(STRING), "STR")
+    REQ_FORMAT(comp_tokType_to_string(K_MAIN), "K_MAIN")
+    REQ_FORMAT(comp_tokType_to_string(K_VAR), "K_VAR")
+    REQ_FORMAT(comp_tokType_to_string(K_FOR), "K_FOR")
+    REQ_FORMAT(comp_tokType_to_string(K_IF), "K_IF")
+    REQ_FORMAT(comp_tokType_to_string(K_WHILE), "K_WHILE")
+    REQ_FORMAT(comp_tokType_to_string(K_ELSE), "K_ELSE")
+    REQ_FORMAT(comp_tokType_to_string(K_FOR), "K_FOR")
+    REQ_FORMAT(comp_tokType_to_string(K_BREAK), "BREAK")
+    REQ_FORMAT(comp_tokType_to_string(K_FUN), "K_FUN")
+    REQ_FORMAT(comp_tokType_to_string(K_RETURN), "K_RETURN")
+    REQ_FORMAT(comp_tokType_to_string(K_NULLPTR), "K_NULLPTR")
+    REQ_FORMAT(comp_tokType_to_string(OPEN_PARENTESIS), "OPEN_PAR")
+    REQ_FORMAT(comp_tokType_to_string(OPEN_SQ_PARENTESIS), "OPEN_SQ_PAR")
+    REQ_FORMAT(comp_tokType_to_string(OPEN_CUR_PARENTESIS), "OPEN_CUR_PAR")
+    REQ_FORMAT(comp_tokType_to_string(CLOSE_PARENTESIS), "CLOSE_PAR")
+    REQ_FORMAT(comp_tokType_to_string(CLOSE_SQ_PARENTESIS), "CLOSE_SQ_PAR")
+    REQ_FORMAT(comp_tokType_to_string(CLOSE_CUR_PARENTESIS), "CLOSE_CUR_PAR")
+    REQ_FORMAT(comp_tokType_to_string(OPERATION_EQUAL), "OP_EQUAL")
+    REQ_FORMAT(comp_tokType_to_string(BOOLEAN_OPERATOR), "BOOLEAN_OP")
+    REQ_FORMAT(comp_tokType_to_string(NOT_OPERATOR), "NOT_OP")
+    REQ_FORMAT(comp_tokType_to_string(LOGICAL_OPERATOR), "LOGICAL_OP")
+    REQ_FORMAT(comp_tokType_to_string(UNARY_OPERATOR), "UNARY_OP")
+    REQ_FORMAT(comp_tokType_to_string(COMMA), "COMMA")
+    REQ_FORMAT(comp_tokType_to_string(COLON), "COLON")
+    REQ_FORMAT(comp_tokType_to_string(COMMENT), "COMMENT")
+    REQ_FORMAT(comp_tokType_to_string(EOFT), "EOF")
+    REQ_FORMAT(comp_tokType_to_string(UNKNOWN), "UNKNOWN")
+}
+
 namespace {
     /*vnd::Transpiler createSimpleTranspiler(const std::vector<vnd::Token> &tokens) {
         vnd::InstructionFactory factory = vnd::InstructionFactory::create(filename);
@@ -333,10 +374,10 @@ TEST_CASE("default constructed token set propriety tostring", "[token]") {
     REQUIRE(token.getColumn() == 1);
 #ifdef _WIN32  // Windows
     REQUIRE(token.to_string() == R"((type: INTEGER, value: 'assss', source location:(file:.\unknown.vn, line:1, column:1)))");
-    REQUIRE(token.compat_to_string() == R"((typ: INTEGER, val: 'assss', sl:(f:.\unknown.vn, l:1, c:1)))");
+    REQUIRE(token.compat_to_string() == R"((typ: INT, val: 'assss', sl:(f:.\unknown.vn, l:1, c:1)))");
 #else
     REQUIRE(token.to_string() == R"((type: INTEGER, value: 'assss', source location:(file:./unknown.vn, line:1, column:1)))");
-    REQUIRE(token.compat_to_string() == R"((typ: INTEGER, val: 'assss', sl:(f:./unknown.vn, l:1, c:1)))");
+    REQUIRE(token.compat_to_string() == R"((typ: INT, val: 'assss', sl:(f:./unknown.vn, l:1, c:1)))");
 #endif
 }
 
@@ -881,7 +922,7 @@ TEST_CASE("Parser emit integer number node compat print", "[parser]") {
     const auto *number = ast->as<vnd::IntegerNumberNode>();
     REQUIRE(number != nullptr);
     REQUIRE(number->get_value() == 1);
-    REQUIRE(number->comp_print() == "NUM_INTEGER(1)");
+    REQUIRE(number->comp_print() == "NUM_INT(1)");
 }
 
 TEST_CASE("Parser emit variable node", "[parser]") {
@@ -923,7 +964,7 @@ TEST_CASE("Parser emit double number node double compat print", "[parser]") {
     const auto *number = ast->as<vnd::DoubleNumberNode>();
     REQUIRE(number != nullptr);
     REQUIRE(number->get_value() == 1.5);
-    REQUIRE(number->comp_print() == "NUM_DOUBLE(1.5)");
+    REQUIRE(number->comp_print() == "NUM_DBL(1.5)");
 }
 
 TEST_CASE("Parser emit variable node print", "[parser]") {
@@ -1082,7 +1123,7 @@ TEST_CASE("Parser emit binary expression node compact print", "[parser]") {
     // Check the values of left and right operands
     REQUIRE(leftNumber->get_value() == 1);
     REQUIRE(rightNumber->get_value() == 2);
-    REQUIRE(binaryNode->comp_print() == "BINE(op:\"+\" l:NUM_INTEGER(1), r:NUM_INTEGER(2))");
+    REQUIRE(binaryNode->comp_print() == "BINE(op:\"+\" l:NUM_INT(1), r:NUM_INT(2))");
 }
 
 // NOLINTEND(*-include-cleaner, *-avoid-magic-numbers, *-magic-numbers)
