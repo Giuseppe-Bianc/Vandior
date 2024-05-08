@@ -5,9 +5,9 @@
 #pragma once
 
 #include "../Log.hpp"
+#include "LiteralNode.hpp"
+#include "NumberNode.hpp"
 #include "BinaryExpressionNode.hpp"
-#include "DoubleNumberNode.hpp"
-#include "IntegerNumberNode.hpp"
 #include "UnaryExpressionNode.hpp"
 #include "VariableNode.hpp"
 
@@ -18,6 +18,56 @@
 DISABLE_WARNINGS_PUSH(
     4005 4201 4459 4514 4625 4626 4820 6244 6285 6385 6386 26409 26415 26418 26429 26432 26437 26438 26440 26445 26446 26447 26450 26451 26455 26457 26459 26460 26461 26467 26472 26473 26474 26475 26481 26482 26485 26490 26491 26493 26494 26495 26496 26497 26498 26800 26814 26818 26826)
 /** \endcond */
+
+/**
+ * @brief Utility function for printing with indentation.
+ * @param indent Number of spaces for indentation.
+ * @param label Label for the printed information.
+ * @param value Value to be printed.
+ */
+// NOLINTNEXTLINE
+static inline void print_indent(int indent, const auto &label, const auto &value) { LINFO("{: ^{}}{}: {}", "", indent, label, value); }
+/**
+ * @brief Utility function for printing with indentation, followed by a new line.
+ * @param indent Number of spaces for indentation.
+ * @param label Label for the printed information.
+ * @param value Value to be printed.
+ * @param labelnl Label for the new line.
+ */
+// NOLINTNEXTLINE
+static inline void print_indent_dl(int indent, const auto &label, const auto &value, const auto &labelnl) {
+    print_indent(indent, label, value);
+    LINFO("{: ^{}}{}:", "", indent, labelnl);
+}
+
+/**
+* @brief Utility for printing a literal node indentation, followed by a new line.
+* @param indentmark String for indent the print.
+* @param node The ASTNode to print.
+* @return Bool indicating if the print succeeds.
+*/
+template <typename T> bool printLiteralNode(const std::string indentmark, const vnd::ASTNode &node) {
+    if(const auto *literalNode = node.as<vnd::LiteralNode<T>>()) {
+        LINFO("{}(Type: {}, val: {}){}", indentmark, node.getType(), literalNode->get_value(), node.get_token().compat_to_string());
+        return true;
+    }
+    return false;
+}
+
+/**
+ * @brief Utility for printing a number node indentation, followed by a new line.
+ * @param indentmark String for indent the print.
+ * @param node The ASTNode to print.
+ * @return Bool indicating if the print succeeds.
+ */
+template <typename T> bool printNumberNode(const std::string indentmark, const vnd::ASTNode &node) {
+    if(const auto *numberNode = node.as<vnd::NumberNode<T>>()) {
+        LINFO("{}(Type: {}, NumType: {}, val: {}){}", indentmark, node.getType(), NumNodeType_comp_to_string(numberNode->getNumberType()),
+              numberNode->get_value(), node.get_token().compat_to_string());
+        return true;
+    }
+    return false;
+}
 
 /**
  * @brief Recursively prints the structure of an AST (Abstract Syntax Tree).
@@ -51,18 +101,22 @@ static void prettyPrint(const vnd::ASTNode &node, const std::string &indent = ""
         LINFO("{}(Type: BIN_EXPR, op:\"{}\"){}", indentmark, binaryNode->getOp(), node.get_token().compat_to_string());
         prettyPrint(*binaryNode->getLeft(), newindent, false, "LEFT");
         prettyPrint(*binaryNode->getRight(), newindent, true, "RIGHT");
-    } else if(const auto *unaryNode = node.as<vnd::UnaryExpressionNode>()) {
+        return;
+    }
+    if(const auto *unaryNode = node.as<vnd::UnaryExpressionNode>()) {
         LINFO("{}(Type: UNA_EXPR, op:\"{}\"){}", indentmark, unaryNode->getOp(), node.get_token().compat_to_string());
         prettyPrint(*unaryNode->getOperand(), newindent, true, "OPERAND");
-    } else if(const auto *integerNumberNode = node.as<vnd::IntegerNumberNode>()) {
-        LINFO("{}(Type: NUM, NumType: {}, val:{}){}", indentmark, NumNodeType_comp_to_string(integerNumberNode->getNumberType()),
-              integerNumberNode->get_value(), node.get_token().compat_to_string());
-    } else if(const auto *doubleNumberNode = node.as<vnd::DoubleNumberNode>()) {
-        LINFO("{}(Type: NUM, NumType: {}, val:{}){}", indentmark, NumNodeType_comp_to_string(doubleNumberNode->getNumberType()),
-              doubleNumberNode->get_value(), node.get_token().compat_to_string());
-    } else if(const auto *variableNode = node.as<vnd::VariableNode>()) {
-        LINFO("{}(Type: VAR, val:{}){}", indentmark, variableNode->getName(), node.get_token().compat_to_string());
+        return;
     }
+    if(const auto *variableNode = node.as<vnd::VariableNode>()) {
+        LINFO("{}(Type: VAR, val: {}){}", indentmark, variableNode->getName(), node.get_token().compat_to_string());
+        return;
+    }
+    if(printNumberNode<int>(indentmark, node)) { return; }
+    if(printNumberNode<double>(indentmark, node)) { return; }
+    if(printLiteralNode<bool>(indentmark, node)) { return; }
+    if(printLiteralNode<char>(indentmark, node)) { return; }
+    if(printLiteralNode<std::string_view>(indentmark, node)) { return; }
 }
 /**
  * This macro disable some msvc warnigs.

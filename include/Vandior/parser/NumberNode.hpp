@@ -3,24 +3,46 @@
 //
 
 #pragma once
-#include "ASTNode.hpp"
+#include "LiteralNode.hpp"
 #include "NumberNodeType.hpp"
+
 namespace vnd {
 
     /**
-     * @brief Number node class representing numeric values in the AST.
+     * @brief generic Number node class representing numeric values in the AST.
      */
-    class NumberNode : public ASTNode {
+    template <typename T>
+    class NumberNode : public LiteralNode<T> {
     public:
-        // Inherit all constructors from the base class ASTNode
-        using ASTNode::ASTNode;
+        /**
+         * @brief Creates a NumberNode.
+         * @param value The value of the node.
+         * @param token The token correspondent to the node.
+         * @param type NumberNodeType of the node.
+         */
+        NumberNode(T value, const Token &token, NumberNodeType number_type)
+          : LiteralNode<T>(value, token, NodeType::Number), m_number_type(number_type) {}
 
-        [[nodiscard]] NodeType getType() const noexcept override { return NodeType::Number; }
-        [[nodiscard]] virtual NumberNodeType getNumberType() const = 0;
+        /**
+        * @brief Gets the number type of the AST node.
+        * @return NumberNodeType enumeration value.
+        */
+        [[nodiscard]] virtual NumberNodeType getNumberType() const { return m_number_type; };
+        /**
+         * @brief Returns a string representation of the AST node.
+         * @return String representation of the AST node.
+         */
+        [[nodiscard]] std::string print() const override {
+            return FORMAT("{}_{}({})", LiteralNode<T>::getType(), getNumberType(), LiteralNode<T>::get_value());
+        }
         friend void swap(NumberNode &lhs, NumberNode &rhs) noexcept {
             using std::swap;
-            swap(static_cast<ASTNode &>(lhs), static_cast<ASTNode &>(rhs));
+            swap(static_cast<LiteralNode<T> &>(lhs), static_cast<LiteralNode<T> &>(rhs));
+            swap(lhs.m_number_type, rhs.m_number_type);
         }
+
+    private:
+        NumberNodeType m_number_type;
     };
 
 }  // namespace vnd

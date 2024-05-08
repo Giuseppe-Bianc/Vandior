@@ -166,7 +166,7 @@ auto main(int argc, const char *const argv[]) -> int {
             }
         }*/
 
-        vnd::Parser parser{"2 + 3 + (4.2 / 2) * 3 + y", "input.vn"};
+        vnd::Parser parser{"2 + 3 + (4.2 / 2) * 3 + y + (true / false) - 'd' * \"ciao\"", "input.vn"};
         auto ast = parser.parse();
         LINFO("print interlal function");
         LINFO("{}", ast->print());

@@ -1,5 +1,5 @@
 #pragma once
-#include <numbers>
+#include "headers.hpp"
 
 constexpr double _PI = std::numbers::pi_v<double>;
 constexpr double _TAU = std::numbers::pi * 2;
@@ -20,4 +20,38 @@ namespace vnd {
 	std::common_type_t<T1, T2> pow(T1 a, T2 b)  {
 		return static_cast<std::common_type_t<T1, T2>>(std::pow(a, b));
 	}
+}
+
+inline f64 _sqrt(f64 x) {
+	return std::sqrt(x);
+}
+inline f64 _sin(f64 x) {
+    return std::sin(x);
+}
+inline f64 _cos(f64 x) {
+	return std::cos(x);
+}
+inline f64 _tan(f64 x) {
+	return std::tan(x);
+}
+inline f64 _asin(f64 x) {
+	return std::asin(x);
+}
+inline f64 _acos(f64 x) {
+	return std::acos(x);
+}
+inline f64 _atan(f64 x) {
+	return std::atan(x);
+}
+inline f64 _atan2(f64 y, f64 x) {
+	return std::atan2(y, x);
+}
+inline f64 _sinh(f64 x) {
+	return std::sinh(x);
+}
+inline f64 _cosh(f64 x) {
+	return std::cosh(x);
+}
+inline f64 _tanh(f64 x) {
+	return std::tanh(x);
 }
