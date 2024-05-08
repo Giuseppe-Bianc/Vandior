@@ -20,7 +20,6 @@ DISABLE_WARNINGS_PUSH(
 /** \endcond */
 
 /**
-<<<<<<< HEAD
  * @brief Utility function for printing with indentation.
  * @param indent Number of spaces for indentation.
  * @param label Label for the printed information.
@@ -41,6 +40,12 @@ static inline void print_indent_dl(int indent, const auto &label, const auto &va
     LINFO("{: ^{}}{}:", "", indent, labelnl);
 }
 
+/**
+* @brief Utility for printing a literal node indentation, followed by a new line.
+* @param indentmark String for indent the print.
+* @param node The ASTNode to print.
+* @return Bool indicating if the print succeeds.
+*/
 template <typename T> bool printLiteralNode(const std::string indentmark, const vnd::ASTNode &node) {
     if(const auto *literalNode = node.as<vnd::LiteralNode<T>>()) {
         LINFO("{}(Type: {}, val: {}){}", indentmark, node.getType(), literalNode->get_value(), node.get_token().compat_to_string());
@@ -49,6 +54,12 @@ template <typename T> bool printLiteralNode(const std::string indentmark, const 
     return false;
 }
 
+/**
+ * @brief Utility for printing a number node indentation, followed by a new line.
+ * @param indentmark String for indent the print.
+ * @param node The ASTNode to print.
+ * @return Bool indicating if the print succeeds.
+ */
 template <typename T> bool printNumberNode(const std::string indentmark, const vnd::ASTNode &node) {
     if(const auto *numberNode = node.as<vnd::NumberNode<T>>()) {
         LINFO("{}(Type: {}, NumType: {}, val: {}){}", indentmark, node.getType(), NumNodeType_comp_to_string(numberNode->getNumberType()),
@@ -59,10 +70,6 @@ template <typename T> bool printNumberNode(const std::string indentmark, const v
 }
 
 /**
- * @brief Pretty prints the AST starting from the given node with optional indentation.
- * @param node The root of the AST to be pretty printed.
- * @param indent Number of spaces for indentation.
-=======
  * @brief Recursively prints the structure of an AST (Abstract Syntax Tree).
  *
  * This function is designed to traverse and print the structure of an AST, represented by instances
@@ -83,7 +90,6 @@ template <typename T> bool printNumberNode(const std::string indentmark, const v
  * @note The function uses a series of conditional statements to determine the type of the AST node
  * and prints the appropriate information depending on the node type. It also uses recursion to
  * traverse the entire AST structure.
->>>>>>> upstream/main
  */
 // NOLINTNEXTLINE(misc-no-recursion)
 static void prettyPrint(const vnd::ASTNode &node, const std::string &indent = "", bool isLast = true, const std::string &lorf = "") {

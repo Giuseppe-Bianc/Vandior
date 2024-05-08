@@ -45,6 +45,9 @@ template <> struct fmt::formatter<NodeType> : fmt::formatter<std::string_view> {
         case String:
             name = "STRING";
             break;
+        case Variable:
+            name = "VARIABLE";
+            break;
         default:
             name = "UNKOWN";
             break;
