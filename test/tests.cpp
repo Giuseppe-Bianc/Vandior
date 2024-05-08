@@ -1152,7 +1152,7 @@ TEST_CASE("Parser emit binary expression node compact print", "[parser]") {
     REQUIRE(binaryNode->comp_print() == "BINE(op:\"+\" l:1, r:2)");
 }
 
-TEST_CASE("Parser pars complex expresione", "[parser]") {
+TEST_CASE("Parser pars complex expression", "[parser]") {
     // clang-format off
     vnd::Parser parser{"2 + 3 + (4.2 / 2) * 3 + y", "input.vn"};
     auto ast = parser.parse();
@@ -1160,7 +1160,7 @@ TEST_CASE("Parser pars complex expresione", "[parser]") {
             "BINARY_EXPRESION(op:\"+\" left:BINARY_EXPRESION(op:\"*\" left:BINARY_EXPRESION(op:\"+\" left:BINARY_EXPRESION(op:\"+\" "
             "left:NUMBER_INTEGER(2), right:NUMBER_INTEGER(3)), right:BINARY_EXPRESION(op:\"/\" left:NUMBER_DOUBLE(4.2), "
             "right:NUMBER_INTEGER(2))), right:NUMBER_INTEGER(3)), right:VARIABLE(y))");
-    REQUIRE(ast->comp_print() == "BINE(op:\"+\" l:BINE(op:\"*\" l:BINE(op:\"+\" l:BINE(op:\"+\" l:NUM_INT(2), r:NUM_INT(3)), r:BINE(op:\"/\" l:NUM_DBL(4.2), r:NUM_INT(2))), r:NUM_INT(3)), r:VAR(y))");
+    REQUIRE(ast->comp_print() == "BINE(op:\"+\" l:BINE(op:\"*\" l:BINE(op:\"+\" l:BINE(op:\"+\" l:2, r:3), r:BINE(op:\"/\" l:4.2, r:2)), r:3), r:VAR(y))");
     // clang-format on
 }
 // NOLINTEND(*-include-cleaner, *-avoid-magic-numbers, *-magic-numbers)
