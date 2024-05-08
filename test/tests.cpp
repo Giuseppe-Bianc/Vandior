@@ -813,9 +813,11 @@ TEST_CASE("integer number node swap", "[parser]") {
     REQUIRE(intb.get_token() == token1);
 }
 
-TEST_CASE("double number node swap", "[parser]") {vnd::NumberNode<double> douba{
-    2.3, vnd::Token{vnd::TokenType::DOUBLE, "2.3", vnd::CodeSourceLocation{filename, t_line, t_colum}}, NumberNodeType::Double};
-    vnd::NumberNode<double> doubb{3.3, vnd::Token{vnd::TokenType::DOUBLE, "3.3", vnd::CodeSourceLocation{filename, t_line, t_colum2}}, NumberNodeType::Double};
+TEST_CASE("double number node swap", "[parser]") {
+    vnd::NumberNode<double> douba{2.3, vnd::Token{vnd::TokenType::DOUBLE, "2.3", vnd::CodeSourceLocation{filename, t_line, t_colum}},
+                                  NumberNodeType::Double};
+    vnd::NumberNode<double> doubb{3.3, vnd::Token{vnd::TokenType::DOUBLE, "3.3", vnd::CodeSourceLocation{filename, t_line, t_colum2}},
+                                  NumberNodeType::Double};
     REQUIRE(douba.get_value() == 2.3);
     REQUIRE(doubb.get_value() == 3.3);
     std::swap(douba, doubb);
@@ -889,7 +891,7 @@ TEST_CASE("binary node swap", "[parser]") {
     REQUIRE(unarb.getRight()->as<vnd::VariableNode>()->get_token() == token3);
 }
 
- TEST_CASE("Parser emit integer number node form exadecimal", "[parser]") {
+TEST_CASE("Parser emit integer number node form exadecimal", "[parser]") {
     vnd::Parser parser("#23", filename);
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
@@ -948,7 +950,7 @@ TEST_CASE("Parser emit integer number node compat print", "[parser]") {
     const auto *number = ast->as<vnd::NumberNode<int>>();
     REQUIRE(number != nullptr);
     REQUIRE(number->get_value() == 1);
-    REQUIRE(number->comp_print() == "1");
+    REQUIRE(number->comp_print() == "NUM_INT(1)");
 }
 
 TEST_CASE("Parser emit variable node", "[parser]") {
@@ -990,7 +992,7 @@ TEST_CASE("Parser emit double number node double compat print", "[parser]") {
     const auto *number = ast->as<vnd::NumberNode<double>>();
     REQUIRE(number != nullptr);
     REQUIRE(number->get_value() == 1.5);
-    REQUIRE(number->comp_print() == "1.5");
+    REQUIRE(number->comp_print() == "NUM_DBL(1.5)");
 }
 
 TEST_CASE("Parser emit variable node print", "[parser]") {
@@ -1149,7 +1151,7 @@ TEST_CASE("Parser emit binary expression node compact print", "[parser]") {
     // Check the values of left and right operands
     REQUIRE(leftNumber->get_value() == 1);
     REQUIRE(rightNumber->get_value() == 2);
-    REQUIRE(binaryNode->comp_print() == "BINE(op:\"+\" l:1, r:2)");
+    REQUIRE(binaryNode->comp_print() == "BINE(op:\"+\" l:NUM_INT(1), r:NUM_INT(2))");
 }
 
 TEST_CASE("Parser pars complex expression", "[parser]") {
@@ -1160,7 +1162,7 @@ TEST_CASE("Parser pars complex expression", "[parser]") {
             "BINARY_EXPRESION(op:\"+\" left:BINARY_EXPRESION(op:\"*\" left:BINARY_EXPRESION(op:\"+\" left:BINARY_EXPRESION(op:\"+\" "
             "left:NUMBER_INTEGER(2), right:NUMBER_INTEGER(3)), right:BINARY_EXPRESION(op:\"/\" left:NUMBER_DOUBLE(4.2), "
             "right:NUMBER_INTEGER(2))), right:NUMBER_INTEGER(3)), right:VARIABLE(y))");
-    REQUIRE(ast->comp_print() == "BINE(op:\"+\" l:BINE(op:\"*\" l:BINE(op:\"+\" l:BINE(op:\"+\" l:2, r:3), r:BINE(op:\"/\" l:4.2, r:2)), r:3), r:VAR(y))");
+    REQUIRE(ast->comp_print() == "BINE(op:\"+\" l:BINE(op:\"*\" l:BINE(op:\"+\" l:BINE(op:\"+\" l:NUM_INT(2), r:NUM_INT(3)), r:BINE(op:\"/\" l:NUM_DBL(4.2), r:NUM_INT(2))), r:NUM_INT(3)), r:VAR(y))");
     // clang-format on
 }
 // NOLINTEND(*-include-cleaner, *-avoid-magic-numbers, *-magic-numbers)

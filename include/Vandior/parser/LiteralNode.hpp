@@ -9,8 +9,7 @@ namespace vnd {
     /**
      * @brief generic Node class representing a literal values in the AST.
      */
-    template <typename T>
-    class LiteralNode : public ASTNode {
+    template <typename T> class LiteralNode : public ASTNode {
     public:
         /**
          * @brief Creates a LiteralNode.
@@ -29,12 +28,12 @@ namespace vnd {
          * @brief Returns a string representation of the AST node.
          * @return String representation of the AST node.
          */
-        [[nodiscard]] std::string print() const override { return FORMAT("{}({})", m_type, m_value); }
+        [[nodiscard]] std::string print() const override { return FORMAT("{}_LIT({})", m_type, m_value); }
         /**
          * @brief Returns a compact string representation of the AST node for compilation purposes.
          * @return Compact string representation of the AST node.
          */
-        [[nodiscard]] std::string comp_print() const override { return FORMAT("{}", m_value); }
+        [[nodiscard]] std::string comp_print() const override { return FORMAT("{}({})", m_type, m_value); }
         /**
          * @brief Gets the value of the node.
          * @return The value of the node.
