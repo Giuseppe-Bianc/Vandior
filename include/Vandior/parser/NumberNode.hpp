@@ -17,7 +17,7 @@ namespace vnd {
          * @brief Creates a NumberNode.
          * @param value The value of the node.
          * @param token The token correspondent to the node.
-         * @param type NumberNodeType of the node.
+         * @param number_type NumberNodeType of the node.
          */
         NumberNode(T value, const Token &token, NumberNodeType number_type)
           : LiteralNode<T>(value, token, NodeType::Number), m_number_type(number_type) {}
