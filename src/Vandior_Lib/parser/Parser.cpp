@@ -79,6 +79,7 @@ namespace vnd {
         return 0.0;
     }
     std::unique_ptr<ASTNode> Parser::parsePrimary() {
+        using enum NumberNodeType;
         const Token &currentToken = getCurrentToken();
         const auto &currentType = currentToken.getType();
         const auto &currentValue = currentToken.getValue();
@@ -88,16 +89,16 @@ namespace vnd {
             consumeToken();
             if(currentValue.starts_with("#o") || currentValue.starts_with("#O")) {
                 cval.erase(0, 2);
-                return std::make_unique<NumberNode<int>>(convertToIntformOct(cval), currentToken, NumberNodeType::Integer);
+                return std::make_unique<NumberNode<int>>(convertToIntformOct(cval), currentToken, Integer);
             }
             if(currentValue.starts_with("#")) {
                 cval.erase(0, 1);
-                return std::make_unique<NumberNode<int>>(convertToIntformExa(cval), currentToken, NumberNodeType::Integer);
+                return std::make_unique<NumberNode<int>>(convertToIntformExa(cval), currentToken, Integer);
             }
-            return std::make_unique<NumberNode<int>>(convertToInt(currentValue), currentToken, NumberNodeType::Integer);
+            return std::make_unique<NumberNode<int>>(convertToInt(currentValue), currentToken, Integer);
         } else if(currentType == TokenType::DOUBLE) {
             consumeToken();
-            return std::make_unique<NumberNode<double>>(convertToDouble(currentValue), currentToken, NumberNodeType::Double);
+            return std::make_unique<NumberNode<double>>(convertToDouble(currentValue), currentToken, Double);
         } else if(currentType == TokenType::BOOLEAN) {
             consumeToken();
             auto value = true;
