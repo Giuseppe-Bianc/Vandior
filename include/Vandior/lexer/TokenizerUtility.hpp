@@ -120,6 +120,13 @@ namespace vnd {
          * @return True if the character is a Hasterisc, false otherwise.
          */
         [[nodiscard]] static bool isHasterisc(const char cha) noexcept;
+
+        /**
+         * @brief Check if the character is a Underscore.
+         * @param cha The input character.
+         * @return True if the character is a  Underscore, false otherwise.
+         */
+        [[nodiscard]] static bool isUnderscore(const char cha) noexcept;
     };
 
 }  // namespace vnd

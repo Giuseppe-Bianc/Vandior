@@ -11,7 +11,7 @@ namespace vnd {
                 tokens.emplace_back(handleAlpha());
             } else if(std::isdigit(currentChar)) [[likely]] {
                 tokens.emplace_back(handleDigits());
-            } else if(currentChar == '_') [[likely]] {
+            } else if(TokenizerUtility::isUnderscore(currentChar)) [[likely]] {
                 tokens.emplace_back(handleUnderscoreAlpha());
             } else if(TokenizerUtility::isHasterisc(currentChar)) [[likely]] {
                 tokens.emplace_back(handleHexadecimalOrOctal());
@@ -49,7 +49,7 @@ namespace vnd {
 
     Token Tokenizer::handleAlpha() {
         const auto start = position;
-        TokenType type = TokenType::IDENTIFIER;
+        auto type = TokenType::IDENTIFIER;
         while(positionIsInText() && (TokenizerUtility::isalnumUnderscore(_input.at(position)))) { incPosAndColumn(); }
         const auto value = _input.substr(start, position - start);
         kewordType(value, type);
@@ -80,13 +80,14 @@ namespace vnd {
     }
 
     bool Tokenizer::inTextAndE() const noexcept { return positionIsInText() && std::toupper(_input.at(position)) == ECR; }
+    bool Tokenizer::inTextAnd(char chr) const noexcept { return positionIsInText() && _input.at(position) == chr; }
 
     Token Tokenizer::handleDigits() {
         using enum TokenType;
         TokenType tokenType = INTEGER;
         const auto start = position;
         extractDigits();
-        if(positionIsInText() && _input[position] == PNT) {
+        if(inTextAnd(PNT)) {
             incPosAndColumn();
             extractDigits();
             if(inTextAndE()) {
@@ -100,11 +101,11 @@ namespace vnd {
             extractExponent();
             tokenType = DOUBLE;
         }
-        if(positionIsInText() && _input[position] == 'i') {
+        if(inTextAnd('i')) {
             incPosAndColumn();
             tokenType = DOUBLE;
         }
-        if(positionIsInText() && _input[position] == 'f') {
+        if(inTextAnd('f')) {
             incPosAndColumn();
             tokenType = DOUBLE;
         }
@@ -152,15 +153,15 @@ namespace vnd {
                 incPosAndColumn();
                 extractExponent();
             }
-            if(positionIsInText() && _input[position] == 'i') { incPosAndColumn(); }
-            if(positionIsInText() && _input[position] == 'f') { incPosAndColumn(); }
+            if(inTextAnd('i')) { incPosAndColumn(); }
+            if(inTextAnd('f')) { incPosAndColumn(); }
         }
         const auto value = _input.substr(start, position - start);
         return {type, value, {_filename, line, column - value.size()}};
     }
 
     void Tokenizer::extractExponent() noexcept {
-        if(positionIsInText() && vnd::TokenizerUtility::isPlusOrMinus(_input[position])) { incPosAndColumn(); }
+        if(positionIsInText() && TokenizerUtility::isPlusOrMinus(_input[position])) { incPosAndColumn(); }
         extractDigits();
     }
 
@@ -215,7 +216,7 @@ namespace vnd {
         incPosAndColumn();
         const auto start = position;
         std::string_view value{};
-        while(!vnd::TokenizerUtility::isApostrophe(_input[position])) {
+        while(!TokenizerUtility::isApostrophe(_input[position])) {
             if(position + 1 == _inputSize) {
                 incPosAndColumn();
                 value = _input.substr(start, position - start);
@@ -234,7 +235,7 @@ namespace vnd {
         incPosAndColumn();
         const auto start = position;
         std::string_view value{};
-        while(!vnd::TokenizerUtility::isQuotation(_input.at(position))) {
+        while(!TokenizerUtility::isQuotation(_input.at(position))) {
             if(position + 1 == _inputSize) {
                 incPosAndColumn();
                 value = _input.substr(start, position - start);
@@ -248,7 +249,7 @@ namespace vnd {
     }
 
     void Tokenizer::extractVarLenOperator() {
-        while(positionIsInText() && vnd::TokenizerUtility::isOperator(_input.at(position))) { incPosAndColumn(); }
+        while(positionIsInText() && TokenizerUtility::isOperator(_input.at(position))) { incPosAndColumn(); }
     }
 
     TokenType Tokenizer::singoleCharOp(const char view) noexcept {
@@ -280,10 +281,10 @@ namespace vnd {
 
     TokenType Tokenizer::multyCharOp(const std::string_view &view) noexcept {
         using enum TokenType;
-        if(vnd::TokenizerUtility::isOperationEqual(view)) { return OPERATION_EQUAL; }
-        if(vnd::TokenizerUtility::isBooleanOperator(view)) { return BOOLEAN_OPERATOR; }
-        if(vnd::TokenizerUtility::isLogicalOperator(view)) { return LOGICAL_OPERATOR; }
-        if(vnd::TokenizerUtility::isUnaryOperator(view)) { return UNARY_OPERATOR; }
+        if(TokenizerUtility::isOperationEqual(view)) { return OPERATION_EQUAL; }
+        if(TokenizerUtility::isBooleanOperator(view)) { return BOOLEAN_OPERATOR; }
+        if(TokenizerUtility::isLogicalOperator(view)) { return LOGICAL_OPERATOR; }
+        if(TokenizerUtility::isUnaryOperator(view)) { return UNARY_OPERATOR; }
         return UNKNOWN;
     }
 

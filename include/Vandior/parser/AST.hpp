@@ -20,13 +20,6 @@ DISABLE_WARNINGS_PUSH(
 /** \endcond */
 
 /**
- * @brief Utility function for printing with indentation.
- * @param indent Number of spaces for indentation.
- * @param label Label for the printed information.
- * @param value Value to be printed.
- */
-// NOLINTNEXTLINE
-/**
  * @brief Recursively prints the structure of an AST (Abstract Syntax Tree).
  *
  * This function is designed to traverse and print the structure of an AST, represented by instances
@@ -49,7 +42,7 @@ DISABLE_WARNINGS_PUSH(
  * traverse the entire AST structure.
  */
 // NOLINTNEXTLINE(misc-no-recursion)
-static void prettyPrint(const vnd::ASTNode &node, const std::string &indent = "", bool isLast = true, const std::string &lorf = "") {
+static inline void prettyPrint(const vnd::ASTNode &node, const std::string &indent = "", bool isLast = true, const std::string &lorf = "") {
     const auto &indentmark = FORMAT("{}{}{}{}", indent, isLast ? "+-" : "|-", lorf, lorf.empty() ? "" : " ");
     const auto &newindent = FORMAT("{}{}", indent, isLast ? "  " : "| ");
     const auto &imarknode = FORMAT("{}(Type: {}", indentmark, node.getType());

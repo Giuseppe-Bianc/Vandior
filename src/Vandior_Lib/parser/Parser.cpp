@@ -3,8 +3,10 @@
 #include <system_error>
 #include <utility>
 
+// NOLINTBEGIN(*-include-cleaner, *-no-recursion)
+DISABLE_WARNINGS_PUSH(26445 26481)
+
 namespace vnd {
-    // NOLINTBEGIN(*-include-cleaner, *-no-recursion)
     std::unique_ptr<vnd::ASTNode> Parser::parse() { return parseExpression(); }
     void Parser::consumeToken() noexcept {
         if(position < tokenSize) { position++; }
@@ -151,5 +153,6 @@ namespace vnd {
         return left;
     }
     std::unique_ptr<ASTNode> Parser::parseExpression() { return parseBinary(0); }
-    // NOLINTEND(*-include-cleaner,*-no-recursion)
 }  // namespace vnd
+DISABLE_WARNINGS_POP()
+// NOLINTEND(*-include-cleaner,*-no-recursion)

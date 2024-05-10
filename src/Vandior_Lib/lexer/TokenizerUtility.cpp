@@ -33,6 +33,7 @@ namespace vnd {
     bool TokenizerUtility::isalnumUnderscore(const char cha) noexcept { return std::isalnum(C_UC(cha)) || cha == '_'; }
     bool TokenizerUtility::isOctalDigit(const char cha) noexcept { return std::isdigit(C_UC(cha)) && cha >= '0' && cha <= '7'; }
     bool TokenizerUtility::isHasterisc(const char cha) noexcept { return cha == '#'; }
+    bool TokenizerUtility::isUnderscore(const char cha) noexcept { return cha == '_'; }
 }  // namespace vnd
 DISABLE_WARNINGS_POP()
 // NOLINTEND(*-include-cleaner)

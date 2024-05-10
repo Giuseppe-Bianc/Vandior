@@ -6,6 +6,8 @@
 
 #include "ASTNode.hpp"
 
+DISABLE_WARNINGS_PUSH(26445)
+
 namespace vnd {
     /**
      * @brief Binary expression node class representing nodes with two operands and an operator.
@@ -52,3 +54,4 @@ namespace vnd {
         std::unique_ptr<ASTNode> right;
     };  // namespace vnd::ASTNode
 }  // namespace vnd
+DISABLE_WARNINGS_POP()

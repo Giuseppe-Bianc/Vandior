@@ -204,6 +204,12 @@ namespace vnd {
          * @return True if within text and next character is 'e', false otherwise.
          */
         [[nodiscard]] bool inTextAndE() const noexcept;
+        /**
+         * @brief Checks if the current position is within the text and the next character.
+         * @param chr the caracter to check.
+         * @return True if within text and next character is 'e', false otherwise.
+         */
+        [[nodiscard]] bool inTextAnd(char chr) const noexcept;
 
         /**
          * @brief Handles strings.

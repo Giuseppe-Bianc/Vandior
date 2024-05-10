@@ -6,6 +6,8 @@
 
 #include "ASTNode.hpp"
 
+DISABLE_WARNINGS_PUSH(26445)
+
 namespace vnd {
 
     /**
@@ -42,3 +44,5 @@ namespace vnd {
     };
 
 }  // namespace vnd
+
+DISABLE_WARNINGS_POP()
