@@ -19,7 +19,7 @@ namespace vnd {
          * @param token The token correspondent to the node.
          * @param number_type NumberNodeType of the node.
          */
-        NumberNode(T value, const Token &token, NumberNodeType number_type)
+        [[nodiscard]] NumberNode(T value, const Token &token, NumberNodeType number_type)
           : LiteralNode<T>(value, token, NodeType::Number), m_number_type(number_type) {}
 
         /**

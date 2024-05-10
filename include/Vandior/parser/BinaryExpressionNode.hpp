@@ -21,9 +21,19 @@ namespace vnd {
          * @param _left Left operand.
          * @param _right Right operand.
          */
-        BinaryExpressionNode(std::string_view _op, const Token &op_Token, std::unique_ptr<ASTNode> _left,
-                             std::unique_ptr<ASTNode> _right) noexcept
+        [[nodiscard]] BinaryExpressionNode(std::string_view _op, const Token &op_Token, std::unique_ptr<ASTNode> _left,
+                                           std::unique_ptr<ASTNode> _right) noexcept
           : ASTNode(op_Token), op(_op), left(vnd_move_always_even_const(_left)), right(vnd_move_always_even_const(_right)) {}
+
+        /**
+         * @brief Constructor for BinaryExpressionNode.
+         * @param op_Token token of operator for the binary expression.
+         * @param _left Left operand.
+         * @param _right Right operand.
+         */
+        [[nodiscard]] BinaryExpressionNode(const Token &op_Token, std::unique_ptr<ASTNode> _left, std::unique_ptr<ASTNode> _right) noexcept
+          : ASTNode(op_Token), op(op_Token.getValue()), left(vnd_move_always_even_const(_left)), right(vnd_move_always_even_const(_right)) {
+        }
 
         [[nodiscard]] NodeType getType() const noexcept override { return NodeType::BinaryExpression; }
 

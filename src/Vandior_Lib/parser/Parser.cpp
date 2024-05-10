@@ -136,7 +136,7 @@ namespace vnd {
         if(isUnaryOperator(currentToken.getValue())) {
             consumeToken();
             auto operand = parseUnary();
-            return std::make_unique<UnaryExpressionNode>(currentToken.getValue(), currentToken, std::move(operand));
+            return std::make_unique<UnaryExpressionNode>(currentToken, std::move(operand));
         } else {
             return parsePrimary();
         }
@@ -147,7 +147,7 @@ namespace vnd {
             const Token &opToken = getCurrentToken();
             consumeToken();
             auto right = parseUnary();
-            left = std::make_unique<BinaryExpressionNode>(opToken.getValue(), opToken, std::move(left), std::move(right));
+            left = std::make_unique<BinaryExpressionNode>(opToken, std::move(left), std::move(right));
         }
 
         return left;

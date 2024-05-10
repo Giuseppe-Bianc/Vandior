@@ -17,7 +17,7 @@ namespace vnd {
          * @param token The token correspondent to the node.
          * @param type NodeType of the node.
          */
-        LiteralNode(T value, const Token &token, NodeType type) noexcept : ASTNode(token), m_value(value), m_type(type) {}
+        [[nodiscard]] LiteralNode(T value, const Token &token, NodeType type) noexcept : ASTNode(token), m_value(value), m_type(type) {}
 
         /**
          * @brief Gets the type of the AST node.
@@ -39,9 +39,9 @@ namespace vnd {
          * @return The value of the node.
          */
         [[nodiscard]] T get_value() const noexcept { return m_value; }
-        friend void swap(LiteralNode<T> &lhs, LiteralNode<T> &rhs) noexcept {
+        friend void swap(LiteralNode &lhs, LiteralNode &rhs) noexcept {
             using std::swap;
-            swap(static_cast<LiteralNode<T> &>(lhs), static_cast<LiteralNode<T> &>(rhs));
+            swap(static_cast<LiteralNode &>(lhs), static_cast<LiteralNode &>(rhs));
             swap(lhs.m_value, rhs.m_value);
             swap(lhs.m_type, rhs.m_type);
         }

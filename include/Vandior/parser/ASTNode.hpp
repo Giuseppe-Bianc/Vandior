@@ -16,7 +16,7 @@ namespace vnd {
      */
     class ASTNode {
     public:
-        explicit ASTNode(const Token &token) noexcept : m_token(token) {}
+        [[nodiscard]] explicit ASTNode(const Token &token) noexcept : m_token(token) {}
 
         virtual ~ASTNode() = default;
         /**
