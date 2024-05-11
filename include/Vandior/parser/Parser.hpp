@@ -18,16 +18,16 @@ namespace vnd {
         void consumeToken() noexcept;
         // const Token &getNextToken();
         const Token &getCurrentToken() const;
-        static bool isUnaryOperator(std::string_view view) noexcept;
-        static int getOperatorPrecedence(const Token &token) noexcept;
+        static std::size_t getUnaryOperatorPrecedence(const Token &token) noexcept;
+        static std::size_t getOperatorPrecedence(const Token &token) noexcept;
         static int convertToInt(std::string_view str) noexcept;
         static int convertToIntformExa(std::string_view str) noexcept;
         static int convertToIntformOct(std::string_view str) noexcept;
         static double convertToDouble(std::string_view str) noexcept;
         std::unique_ptr<ASTNode> parsePrimary();
-        std::unique_ptr<ASTNode> parseUnary();
-        std::unique_ptr<ASTNode> parseBinary(int precedence);
-        std::unique_ptr<ASTNode> parseExpression();
+        std::unique_ptr<ASTNode> parseUnary(std::size_t parentPrecendence);
+        std::unique_ptr<ASTNode> parseBinary(std::size_t parentPrecendence);
+        std::unique_ptr<ASTNode> parseExpression(std::size_t parentPrecendence = 0);
 
         Tokenizer tokenizer;
         std::vector<Token> tokens{};
