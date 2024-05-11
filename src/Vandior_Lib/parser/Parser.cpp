@@ -138,7 +138,7 @@ namespace vnd {
             return nullptr;
         }
     }
-    std::unique_ptr<ASTNode> Parser::parseUnary(int parentPrecendence) {
+    std::unique_ptr<ASTNode> Parser::parseUnary(std::size_t parentPrecendence) {
         const Token &currentToken = getCurrentToken();
 
         auto unaryOperatorPrecedence = getUnaryOperatorPrecedence(currentToken);
@@ -150,7 +150,7 @@ namespace vnd {
             return parsePrimary();
         }
     }
-    std::unique_ptr<ASTNode> Parser::parseBinary(int parentPrecendence) {
+    std::unique_ptr<ASTNode> Parser::parseBinary(std::size_t parentPrecendence) {
         auto left = parseUnary(parentPrecendence);
         while(true) {
             auto precedence = getOperatorPrecedence(getCurrentToken());
