@@ -13,8 +13,16 @@ namespace vnd {
     }
 
     const Token &Parser::getCurrentToken() const { return tokens.at(position); }
-    bool Parser::isUnaryOperator(std::string_view view) noexcept { return view == "+" || view == "-"; }
-    int Parser::getOperatorPrecedence(const Token &token) noexcept {
+    std::size_t Parser::getUnaryOperatorPrecedence(const Token &token) noexcept {
+        const auto &tokenValue = token.getValue();
+        if(tokenValue == "+" || tokenValue == "-") { return 3; }
+        /*else if(tokenValue == "*" || tokenValue == "/") {
+            return 2;
+        }*/
+        return 0;
+    }
+
+    std::size_t Parser::getOperatorPrecedence(const Token &token) noexcept {
         const auto &tokenValue = token.getValue();
         if(tokenValue == "+" || tokenValue == "-") {
             return 1;
@@ -130,29 +138,32 @@ namespace vnd {
             return nullptr;
         }
     }
-    std::unique_ptr<ASTNode> Parser::parseUnary() {
+    std::unique_ptr<ASTNode> Parser::parseUnary(int parentPrecendence) {
         const Token &currentToken = getCurrentToken();
 
-        if(isUnaryOperator(currentToken.getValue())) {
+        auto unaryOperatorPrecedence = getUnaryOperatorPrecedence(currentToken);
+        if(unaryOperatorPrecedence != 0 && unaryOperatorPrecedence >= parentPrecendence) {
             consumeToken();
-            auto operand = parseUnary();
+            auto operand = parseExpression(unaryOperatorPrecedence);
             return std::make_unique<UnaryExpressionNode>(currentToken, std::move(operand));
         } else {
             return parsePrimary();
         }
     }
-    std::unique_ptr<ASTNode> Parser::parseBinary(int precedence) {
-        auto left = parseUnary();
-        while(getOperatorPrecedence(getCurrentToken()) > precedence) {
+    std::unique_ptr<ASTNode> Parser::parseBinary(int parentPrecendence) {
+        auto left = parseUnary(parentPrecendence);
+        while(true) {
+            auto precedence = getOperatorPrecedence(getCurrentToken());
+            if(precedence == 0 || precedence <= parentPrecendence) { break; }
             const Token &opToken = getCurrentToken();
             consumeToken();
-            auto right = parseUnary();
+            auto right = parseExpression(precedence);
             left = std::make_unique<BinaryExpressionNode>(opToken, std::move(left), std::move(right));
         }
-
         return left;
     }
-    std::unique_ptr<ASTNode> Parser::parseExpression() { return parseBinary(0); }
+
+    std::unique_ptr<ASTNode> Parser::parseExpression(int parentPrecendence) { return parseBinary(parentPrecendence); }
 }  // namespace vnd
 DISABLE_WARNINGS_POP()
 // NOLINTEND(*-include-cleaner,*-no-recursion)
