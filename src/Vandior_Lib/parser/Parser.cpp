@@ -126,11 +126,11 @@ namespace vnd {
                 return expression;
             } else {
                 // Handle error: mismatched parentheses
-                return nullptr;
+                throw ParserException(currentToken);
             }
         } else [[unlikely]] {
             // Handle error: unexpected token
-            return nullptr;
+            throw ParserException(currentToken);
         }
     }
     std::unique_ptr<ASTNode> Parser::parseUnary(std::size_t parentPrecendence) {
