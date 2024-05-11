@@ -163,7 +163,7 @@ namespace vnd {
         return left;
     }
 
-    std::unique_ptr<ASTNode> Parser::parseExpression(int parentPrecendence) { return parseBinary(parentPrecendence); }
+    std::unique_ptr<ASTNode> Parser::parseExpression(std::size_t parentPrecendence) { return parseBinary(parentPrecendence); }
 }  // namespace vnd
 DISABLE_WARNINGS_POP()
 // NOLINTEND(*-include-cleaner,*-no-recursion)
