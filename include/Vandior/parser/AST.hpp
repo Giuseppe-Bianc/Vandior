@@ -49,26 +49,26 @@ static inline void prettyPrint(const vnd::ASTNode &node, const std::string &inde
     const auto &imarknnum = FORMAT("{}(Type: NUM", indentmark);
 
     // Determine the type of node and print information
-    if(const auto *binaryNode = node.as<vnd::BinaryExpressionNode>()) {
+    if(const auto *binaryNode = node.safe_as<vnd::BinaryExpressionNode>()) {
         LINFO("{}(Type: BIN_EXPR, op:\"{}\"){}", indentmark, binaryNode->getOp(), node.get_token().compat_to_string());
         prettyPrint(*binaryNode->getLeft(), newindent, false, "LEFT");
         prettyPrint(*binaryNode->getRight(), newindent, true, "RIGHT");
-    } else if(const auto *unaryNode = node.as<vnd::UnaryExpressionNode>()) {
+    } else if(const auto *unaryNode = node.safe_as<vnd::UnaryExpressionNode>()) {
         LINFO("{}(Type: UNA_EXPR, op:\"{}\"){}", indentmark, unaryNode->getOp(), node.get_token().compat_to_string());
         prettyPrint(*unaryNode->getOperand(), newindent, true, "OPERAND");
-    } else if(const auto *variableNode = node.as<vnd::VariableNode>()) {
+    } else if(const auto *variableNode = node.safe_as<vnd::VariableNode>()) {
         LINFO("{}(Type: VAR, val: {}){}", indentmark, variableNode->getName(), node.get_token().compat_to_string());
-    } else if(const auto *intnumberNode = node.as<vnd::NumberNode<int>>()) {
+    } else if(const auto *intnumberNode = node.safe_as<vnd::NumberNode<int>>()) {
         LINFO("{}_{}, val: {}){}", imarknnum, NumNodeType_comp_to_string(intnumberNode->getNumberType()), intnumberNode->get_value(),
               node.get_token().compat_to_string());
-    } else if(const auto *dblnumberNode = node.as<vnd::NumberNode<double>>()) {
+    } else if(const auto *dblnumberNode = node.safe_as<vnd::NumberNode<double>>()) {
         LINFO("{}_{}, val: {}){}", imarknnum, NumNodeType_comp_to_string(dblnumberNode->getNumberType()), dblnumberNode->get_value(),
               node.get_token().compat_to_string());
-    } else if(const auto *blliteralNode = node.as<vnd::LiteralNode<bool>>()) {
+    } else if(const auto *blliteralNode = node.safe_as<vnd::LiteralNode<bool>>()) {
         LINFO("{}, val: {}){}", imarknode, blliteralNode->get_value(), node.get_token().compat_to_string());
-    } else if(const auto *chliteralNode = node.as<vnd::LiteralNode<char>>()) {
+    } else if(const auto *chliteralNode = node.safe_as<vnd::LiteralNode<char>>()) {
         LINFO("{}, val: {}){}", imarknode, chliteralNode->get_value(), node.get_token().compat_to_string());
-    } else if(const auto *svliteralNode = node.as<vnd::LiteralNode<std::string_view>>()) {
+    } else if(const auto *svliteralNode = node.safe_as<vnd::LiteralNode<std::string_view>>()) {
         LINFO("{}, val: {}){}", imarknode, svliteralNode->get_value(), node.get_token().compat_to_string());
     } else {
         LERROR("Unknown or not handled node type: {}", node.getType());

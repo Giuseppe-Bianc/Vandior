@@ -787,6 +787,57 @@ TEST_CASE("boolean node swap", "[parser]") {
     REQUIRE(boolb.get_token() == token1);
 }
 
+TEST_CASE("Parser emit string literal node", "[parser]") {
+    vnd::Parser parser("\"tr\"", filename);
+    auto ast = parser.parse();
+    REQUIRE(ast != nullptr);
+    REQUIRE(ast->getType() == NodeType::String);
+    const auto *number = ast->as<vnd::LiteralNode<std::string_view>>();
+    REQUIRE(number != nullptr);
+    REQUIRE(number->get_value() == "tr");
+}
+
+TEST_CASE("string node swap", "[parser]") {
+    auto token1 = vnd::Token{vnd::TokenType::STRING, "tr", vnd::CodeSourceLocation{filename, t_line, t_colum4}};
+    auto token2 = vnd::Token{vnd::TokenType::STRING, "sr", vnd::CodeSourceLocation{filename, t_line, t_colum2}};
+    vnd::LiteralNode<std::string_view> boola{"tr", token1, NodeType::String};
+    vnd::LiteralNode<std::string_view> boolb{"sr", token2, NodeType::String};
+    REQUIRE(boola.get_value() == "tr");
+    REQUIRE(boolb.get_value() == "sr");
+    REQUIRE(boola.get_token() == token1);
+    REQUIRE(boolb.get_token() == token2);
+    std::swap(boola, boolb);
+    REQUIRE(boola.get_value() == "sr");
+    REQUIRE(boolb.get_value() == "tr");
+    REQUIRE(boola.get_token() == token2);
+    REQUIRE(boolb.get_token() == token1);
+}
+
+TEST_CASE("Parser emit char literal node", "[parser]") {
+    vnd::Parser parser("'c'", filename);
+    auto ast = parser.parse();
+    REQUIRE(ast != nullptr);
+    REQUIRE(ast->getType() == NodeType::Char);
+    const auto *number = ast->as<vnd::LiteralNode<char>>();
+    REQUIRE(number != nullptr);
+    REQUIRE(number->get_value() == 'c');
+}
+
+TEST_CASE("char node swap", "[parser]") {
+    auto token1 = vnd::Token{vnd::TokenType::CHAR, "c", vnd::CodeSourceLocation{filename, t_line, t_colum4}};
+    auto token2 = vnd::Token{vnd::TokenType::CHAR, "d", vnd::CodeSourceLocation{filename, t_line, t_colum2}};
+    vnd::LiteralNode<char> boola{'c', token1, NodeType::Char};
+    vnd::LiteralNode<char> boolb{'d', token2, NodeType::Char};
+    REQUIRE(boola.get_value() == 'c');
+    REQUIRE(boolb.get_value() == 'd');
+    REQUIRE(boola.get_token() == token1);
+    REQUIRE(boolb.get_token() == token2);
+    std::swap(boola, boolb);
+    REQUIRE(boola.get_value() == 'd');
+    REQUIRE(boolb.get_value() == 'c');
+    REQUIRE(boola.get_token() == token2);
+    REQUIRE(boolb.get_token() == token1);
+}
 TEST_CASE("Parser emit integer number node", "[parser]") {
     vnd::Parser parser("1", filename);
     auto ast = parser.parse();
@@ -1127,7 +1178,7 @@ TEST_CASE("Parser emit binary expression node print", "[parser]") {
     // Check the values of left and right operands
     REQUIRE(leftNumber->get_value() == 1);
     REQUIRE(rightNumber->get_value() == 2);
-    REQUIRE(binaryNode->print() == "BINARY_EXPRESION(op:\"+\" left:NUMBER_INTEGER(1), right:NUMBER_INTEGER(2))");
+    REQUIRE(binaryNode->print() == R"(BINARY_EXPRESION(op:"+" left:NUMBER_INTEGER(1), right:NUMBER_INTEGER(2)))");
 }
 
 TEST_CASE("Parser emit binary expression node compact print", "[parser]") {
@@ -1151,7 +1202,7 @@ TEST_CASE("Parser emit binary expression node compact print", "[parser]") {
     // Check the values of left and right operands
     REQUIRE(leftNumber->get_value() == 1);
     REQUIRE(rightNumber->get_value() == 2);
-    REQUIRE(binaryNode->comp_print() == "BINE(op:\"+\" l:NUM_INT(1), r:NUM_INT(2))");
+    REQUIRE(binaryNode->comp_print() == R"(BINE(op:"+" l:NUM_INT(1), r:NUM_INT(2)))");
 }
 
 TEST_CASE("Parser pars complex expression", "[parser]") {
@@ -1162,7 +1213,7 @@ TEST_CASE("Parser pars complex expression", "[parser]") {
             "BINARY_EXPRESION(op:\"+\" left:BINARY_EXPRESION(op:\"+\" left:BINARY_EXPRESION(op:\"+\" "
             "left:NUMBER_INTEGER(2), right:NUMBER_INTEGER(3)), right:BINARY_EXPRESION(op:\"*\" left:BINARY_EXPRESION(op:\"/\" "
             "left:NUMBER_DOUBLE(4.2), right:NUMBER_INTEGER(2)), right:NUMBER_INTEGER(3))), right:VARIABLE(y))");
-    REQUIRE(ast->comp_print() == "BINE(op:\"+\" l:BINE(op:\"+\" l:BINE(op:\"+\" l:NUM_INT(2), r:NUM_INT(3)), r:BINE(op:\"*\" l:BINE(op:\"/\" l:NUM_DBL(4.2), r:NUM_INT(2)), r:NUM_INT(3))), r:VAR(y))");
+    REQUIRE(ast->comp_print() == R"(BINE(op:"+" l:BINE(op:"+" l:BINE(op:"+" l:NUM_INT(2), r:NUM_INT(3)), r:BINE(op:"*" l:BINE(op:"/" l:NUM_DBL(4.2), r:NUM_INT(2)), r:NUM_INT(3))), r:VAR(y)))");
     // clang-format on
 }
 // NOLINTEND(*-include-cleaner, *-avoid-magic-numbers, *-magic-numbers)

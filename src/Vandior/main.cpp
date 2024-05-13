@@ -166,6 +166,7 @@ auto main(int argc, const char *const argv[]) -> int {
             }
         }*/
 
+        // 2 + 3 + (4.2 / 2) * 3 + y + (true / false) - 'd' * "ciao"
         std::string input;
         std::getline(std::cin, input);
         LINFO("Input: {}", input);

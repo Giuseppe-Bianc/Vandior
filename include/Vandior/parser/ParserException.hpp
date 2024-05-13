@@ -3,11 +3,11 @@
 //
 
 #pragma once
-#include "stdexcept"
+#include "../headers.hpp"
 
 namespace vnd {
     /**
-     * @brief A class representing an exception of the parser. 
+     * @brief A class representing an exception of the parser.
      */
     class ParserException : public std::runtime_error {
     public:
@@ -15,6 +15,6 @@ namespace vnd {
          * @brief Creates a ParserException from an unexpexted token.
          * @param token the unexpected token found during the parsing.
          */
-        ParserException(const Token &token) : std::runtime_error(FORMAT("Unexpected token: {}", token)) {};
+        explicit ParserException(const Token &token) : std::runtime_error(FORMAT("Unexpected token: {}", token)){};
     };
 }  // namespace vnd

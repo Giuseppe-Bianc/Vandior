@@ -7,6 +7,8 @@
 #include "../lexer/Token.hpp"
 #include "NodeType.hpp"
 
+#include <Vandior/Log.hpp>
+
 namespace vnd {
 
     /**
@@ -53,6 +55,36 @@ namespace vnd {
         template <typename T> [[nodiscard]] const T *as() const noexcept {
             // Check if the type T is a derived type of ASTNode
             if(std::is_base_of_v<ASTNode, T>) { return dynamic_cast<const T *>(this); }
+            return nullptr;
+        }
+
+        /**
+         * @brief Safely converts this ASTNode to the specified type.
+         * @tparam T The type to convert the ASTNode to.
+         * @return A pointer to the specified type if conversion is possible; otherwise, returns nullptr.
+         */
+        template <typename T> [[nodiscard]] T *safe_as() noexcept {
+            // Check if the type T is a derived type of ASTNode
+            if(std::is_base_of_v<ASTNode, T>) {
+                return dynamic_cast<T *>(this);
+            } else {
+                LERROR("Type {} is not derived from ASTNode.", typeid(T).name());
+            }
+            return nullptr;
+        }
+
+        /**
+         * @brief Safely converts this ASTNode to the specified type.
+         * @tparam T The type to convert the ASTNode to.
+         * @return A constant pointer to the specified type if conversion is possible; otherwise, returns nullptr.
+         */
+        template <typename T> [[nodiscard]] const T *safe_as() const noexcept {
+            // Check if the type T is a derived type of ASTNode
+            if(std::is_base_of_v<ASTNode, T>) {
+                return dynamic_cast<const T *>(this);
+            } else {
+                LERROR("Type {} is not derived from ASTNode.", typeid(T).name());
+            }
             return nullptr;
         }
 

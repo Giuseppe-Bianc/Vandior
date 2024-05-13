@@ -3,7 +3,7 @@
 #include <system_error>
 #include <utility>
 
-// NOLINTBEGIN(*-include-cleaner, *-no-recursion)
+// NOLINTBEGIN(*-include-cleaner, *-no-recursion,*-avoid-magic-numbers, *-magic-numbers)
 DISABLE_WARNINGS_PUSH(26445 26481)
 
 namespace vnd {
@@ -165,4 +165,4 @@ namespace vnd {
     std::unique_ptr<ASTNode> Parser::parseExpression(std::size_t parentPrecendence) { return parseBinary(parentPrecendence); }
 }  // namespace vnd
 DISABLE_WARNINGS_POP()
-// NOLINTEND(*-include-cleaner,*-no-recursion)
+// NOLINTEND(*-include-cleaner,*-no-recursion, *-avoid-magic-numbers,*-magic-numbers)
