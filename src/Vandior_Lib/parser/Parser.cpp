@@ -15,20 +15,19 @@ namespace vnd {
     const Token &Parser::getCurrentToken() const { return tokens.at(position); }
     std::size_t Parser::getUnaryOperatorPrecedence(const Token &token) noexcept {
         const auto &tokenValue = token.getValue();
-        if(tokenValue == "+" || tokenValue == "-") { return 3; }
-        /*else if(tokenValue == "*" || tokenValue == "/") {
-            return 2;
-        }*/
+        if(tokenValue == "+" || tokenValue == "-" || tokenValue == "!") { return 8; }
         return 0;
     }
 
     std::size_t Parser::getOperatorPrecedence(const Token &token) noexcept {
         const auto &tokenValue = token.getValue();
-        if(tokenValue == "+" || tokenValue == "-") {
-            return 1;
-        } else if(tokenValue == "*" || tokenValue == "/") {
-            return 2;
-        }
+        if(tokenValue == "||") { return 1; }
+        if(tokenValue == "&&") { return 2; }
+        if(tokenValue == "==" || tokenValue == "!=") { return 3; }
+        if(tokenValue == "<" || tokenValue == "<=" || tokenValue == ">" || tokenValue == ">=") { return 4; }
+        if(tokenValue == "+" || tokenValue == "-") { return 5; }
+        if(tokenValue == "*" || tokenValue == "/") { return 6; }
+        if(tokenValue == "^" || tokenValue == "%") { return 7; }
         return 0;
     }
     int Parser::convertToInt(std::string_view str) noexcept {
@@ -131,11 +130,11 @@ namespace vnd {
                 return expression;
             } else {
                 // Handle error: mismatched parentheses
-                return nullptr;
+                throw ParserException(currentToken);
             }
         } else [[unlikely]] {
             // Handle error: unexpected token
-            return nullptr;
+            throw ParserException(currentToken);
         }
     }
     std::unique_ptr<ASTNode> Parser::parseUnary(std::size_t parentPrecendence) {

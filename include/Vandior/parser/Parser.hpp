@@ -4,6 +4,7 @@
 
 #pragma once
 #include "AST.hpp"
+#include "ParserException.hpp"
 #include "Vandior/lexer/Tokenizer.hpp"
 
 namespace vnd {
