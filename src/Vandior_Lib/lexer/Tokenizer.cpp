@@ -22,7 +22,7 @@ namespace vnd {
                 tokens.emplace_back(handleComment());
             } else if(TokenizerUtility::isOperator(currentChar)) [[likely]] {
                 auto opTokens = handleOperators();
-                tokens.insert(tokens.end(), begin(opTokens), end(opTokens));
+                tokens.insert(tokens.end(), std::begin(opTokens), std::end(opTokens));
             } else if(TokenizerUtility::isDot(currentChar)) {
                 tokens.emplace_back(handleDot());
             } else if(TokenizerUtility::isBrackets(currentChar)) [[likely]] {
@@ -41,7 +41,7 @@ namespace vnd {
                 handleError(std::string(1, currentChar), "Unknown Character");
             }
         }
-        tokens.emplace_back(TokenType::EOFT, "", CodeSourceLocation{_filename, line, column});
+        tokens.emplace_back(TokenType::EOFT, CodeSourceLocation{_filename, line, column});
         return tokens;
     }
 
@@ -84,7 +84,7 @@ namespace vnd {
 
     Token Tokenizer::handleDigits() {
         using enum TokenType;
-        TokenType tokenType = INTEGER;
+        auto tokenType = INTEGER;
         const auto start = position;
         extractDigits();
         if(inTextAnd(PNT)) {
@@ -116,7 +116,7 @@ namespace vnd {
     Token Tokenizer::handleComment() {
         if(_input[position + 1] == '/') { return handleSingleLineComment(); }
         if(_input[position + 1] == '*') { return handleMultiLineComment(); }
-        return {TokenType::UNKNOWN, ""sv, {_filename, line, column}};
+        return {TokenType::UNKNOWN, {_filename, line, column}};
     }
 
     Token Tokenizer::handleSingleLineComment() {

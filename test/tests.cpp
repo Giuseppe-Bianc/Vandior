@@ -381,6 +381,18 @@ TEST_CASE("default constructed token set propriety tostring", "[token]") {
 #endif
 }
 
+TEST_CASE("construct a empty value token", "[token]") {
+    using enum vnd::TokenType;
+    vnd::Token token{UNKNOWN, vnd::CodeSourceLocation{}};
+    REQUIRE(token.getType() == UNKNOWN);
+    REQUIRE(token.getValue().empty() == true);
+    REQUIRE(token.getLine() == 0);
+    REQUIRE(token.getColumn() == 0);
+    REQUIRE(token.getFileName().empty() == true);
+    REQUIRE(token.to_string() == "(type: UNKNOWN, value: '', source location:(file:, line:0, column:0))");
+    REQUIRE(token.compat_to_string() == "(typ: UNKNOWN, val: '', sl:(f:, l:0, c:0))");
+}
+
 TEST_CASE("FolderCreationResult Constructor") {
     SECTION("Default constructor") {
         vnd::FolderCreationResult result;
