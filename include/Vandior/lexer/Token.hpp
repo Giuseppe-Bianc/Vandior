@@ -29,6 +29,15 @@ namespace vnd {
           : _type(type), _value(value), _sourceLocation{sourceLocation} {}
 
         /**
+         * @brief Parameterized constructor for Token whit a empty value.
+         * Initializes the token with the specified values.
+         * @param type The type of the token..
+         * @param sourceLocation The source location where the token appears.
+         */
+        Token(TokenType type, const CodeSourceLocation &sourceLocation) noexcept
+          : _type(type), _value(""), _sourceLocation{sourceLocation} {}
+
+        /**
          * @brief Copy constructor for Token.
          * Initializes the token by copying values from another token.
          * @param other The token to copy.

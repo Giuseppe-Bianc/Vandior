@@ -121,13 +121,8 @@ auto main(int argc, const char *const argv[]) -> int {
         vnd::Tokenizer tokenizer{code, path.value_or(filename.data())};
         std::vector<vnd::Token> tokens;
         timeTokenizer(tokenizer, tokens);
+        LINFO("num tokens {}", tokens.size());
         /*
-        auto instructions = extractInstructions(path.value_or(filename.data()), tokens);
-        vnd::Timer tim("transpiling time");
-        auto transpiler = vnd::Transpiler::create(instructions);
-        auto [success, output] = transpiler.transpile(path.value_or(filename.data()));
-        if(!success) { return EXIT_FAILURE; }
-        LINFO("{}", tim);
         if(compile || run) {
 #ifdef HIDE_SYSTEM_OUTPUT
 #ifdef _WIN32
