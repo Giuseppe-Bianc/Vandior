@@ -6,7 +6,7 @@ include(cmake/CPM.cmake)
 function(Vandior_setup_dependencies)
 
     if (NOT TARGET glm::glm)
-        CPMAddPackage("gh:g-truc/glm#0.9.9.8")
+        CPMAddPackage("gh:g-truc/glm#1.0.1")
     endif ()
 
     # For each dependency, see if it's
@@ -22,7 +22,7 @@ function(Vandior_setup_dependencies)
                     NAME
                     spdlog
                     VERSION
-                    1.13.0
+                    1.14.1
                     GITHUB_REPOSITORY
                     "gabime/spdlog"
                     OPTIONS
@@ -37,7 +37,7 @@ function(Vandior_setup_dependencies)
                     NAME
                     spdlog
                     VERSION
-                    1.13.0
+                    1.14.1
                     GITHUB_REPOSITORY
                     "gabime/spdlog"
                     OPTIONS
@@ -50,7 +50,7 @@ function(Vandior_setup_dependencies)
     endif ()
 
     if (NOT TARGET Catch2::Catch2WithMain)
-        CPMAddPackage("gh:catchorg/Catch2@3.5.4")
+        CPMAddPackage("gh:catchorg/Catch2@3.6.0")
     endif ()
 
     if (NOT TARGET CLI11::CLI11)

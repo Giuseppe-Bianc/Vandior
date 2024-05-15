@@ -1,4 +1,6 @@
 // NOLINTBEGIN(*-include-cleaner, *-avoid-magic-numbers, *-magic-numbers)
+#include "catch2/benchmark/catch_benchmark.hpp"
+
 #include <catch2/catch_test_macros.hpp>
 
 #include <Vandior/vandior.hpp>
@@ -35,10 +37,17 @@ static inline constexpr std::string_view timerBigs = "-----------";
 static inline constexpr std::string_view timerTime1 = "ms";
 static inline constexpr std::string_view timerTime2 = "ns";
 /*#ifdef _WIN32  // Windows
-static inline constexpr std::string_view outFilename = R"(.\vnbuild\src\unknown.cpp)";
+#ifdef __MINGW32__
+constexpr std::string_view tfile = R"(..\..\..\test\test_imp.vn)";  // windows mingw form editor, use this when building for mingw
+#elifdef __clang__
+constexpr std::string_view tfile = R"(..\..\..\test\test_imp.vn)";  // windows mingw form editor, use this when building for clang
 #else
-static inline constexpr std::string_view outFilename = R"(./vnbuild/src/unknown.cpp)";
-#endif*/
+constexpr std::string_view tfile = R"(..\..\test\test_imp.vn)";
+#endif
+#elif defined __unix__  // Linux and Unix-like systems
+// constexpr std::string_view tfile = "../../../test/test_imp.vn";  // Linux and Unix  form editor
+constexpr std::string_view tfile = "../../test/test_imp.vn";  // Linux and Unix
+#endif */
 
 static inline constexpr long long int timerSleap = 12;
 static inline constexpr long long int timerSleap2 = 5;
@@ -745,6 +754,14 @@ TEST_CASE("tokenizer emit multiline comment token", "[tokenizer]") {
     REQUIRE(tokens[0] == vnd::Token(vnd::TokenType::COMMENT, R"(/*multi\nline\ncomment*/)", vnd::CodeSourceLocation(filename, 1, 1)));
 }  // namespace
 
+/*TEST_CASE("Benchmark vnd::Tokenizer::tokenize()", "[tokenizer]") {
+    const std::string input = vnd::readFromFile(tfile.data());
+    vnd::Tokenizer tokenizer(input);
+
+    BENCHMARK("Tokenize input string") { return tokenizer.tokenize(); };
+}
+*/
+
 TEST_CASE("ASTNode type conversion using as<T>()", "[ast]") {
     vnd::Token token{vnd::TokenType::IDENTIFIER, "id", vnd::CodeSourceLocation{filename, t_line, t_colum}};
     vnd::VariableNode dummyNode("id", token);
@@ -1228,4 +1245,5 @@ TEST_CASE("Parser pars complex expression", "[parser]") {
     REQUIRE(ast->comp_print() == R"(BINE(op:"+" l:BINE(op:"+" l:BINE(op:"+" l:NUM_INT(2), r:NUM_INT(3)), r:BINE(op:"*" l:BINE(op:"/" l:NUM_DBL(4.2), r:NUM_INT(2)), r:NUM_INT(3))), r:VAR(y)))");
     // clang-format on
 }
+
 // NOLINTEND(*-include-cleaner, *-avoid-magic-numbers, *-magic-numbers)

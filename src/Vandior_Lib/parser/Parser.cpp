@@ -1,4 +1,5 @@
 #include "Vandior/parser/Parser.hpp"
+#include "Vandior/parser/ParserException.hpp"
 #include <charconv>
 #include <system_error>
 #include <utility>
@@ -138,9 +139,9 @@ namespace vnd {
         }
     }
     std::unique_ptr<ASTNode> Parser::parseUnary(std::size_t parentPrecendence) {
-        const Token &currentToken = getCurrentToken();
+        const auto &currentToken = getCurrentToken();
 
-        auto unaryOperatorPrecedence = getUnaryOperatorPrecedence(currentToken);
+        const auto unaryOperatorPrecedence = getUnaryOperatorPrecedence(currentToken);
         if(unaryOperatorPrecedence != 0 && unaryOperatorPrecedence >= parentPrecendence) {
             consumeToken();
             auto operand = parseExpression(unaryOperatorPrecedence);
@@ -152,7 +153,7 @@ namespace vnd {
     std::unique_ptr<ASTNode> Parser::parseBinary(std::size_t parentPrecendence) {
         auto left = parseUnary(parentPrecendence);
         while(true) {
-            auto precedence = getOperatorPrecedence(getCurrentToken());
+            const auto precedence = getOperatorPrecedence(getCurrentToken());
             if(precedence == 0 || precedence <= parentPrecendence) { break; }
             const Token &opToken = getCurrentToken();
             consumeToken();
