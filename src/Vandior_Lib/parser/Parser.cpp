@@ -20,12 +20,15 @@ namespace vnd {
                                                                               {"<", "<=", ">", ">="},
                                                                               {"+", "-"},
                                                                               {"*", "/"},
-                                                                              {"^", "%"}};
+                                                                              {"^", "%"},
+                                                                              {"."}};
 
     const Token &Parser::getCurrentToken() const { return tokens.at(position); }
     std::size_t Parser::getUnaryOperatorPrecedence(const Token &token) noexcept {
         const auto &tokenValue = token.getValue();
-        if(tokenValue == "+" || tokenValue == "-" || tokenValue == "!") { return operatorPrecedence.size() + 1; }
+        if(tokenValue == "+" || tokenValue == "-" || tokenValue == "!" || tokenValue == "++" || tokenValue == "--") {
+            return operatorPrecedence.size() + 1;
+        }
         return 0;
     }
 
