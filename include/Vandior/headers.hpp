@@ -1,20 +1,5 @@
 #pragma once
 // NOLINTBEGIN
-// #define GLM_FORCE_INTRINSICS
-// #define GLM_ENABLE_EXPERIMENTAL
-// #define GLM_FORCE_SILENT_WARNINGS
-// #define GLM_FORCE_RADIANS
-// #define GLM_FORCE_DEPTH_ZERO_TO_ONE
-// #define GLM_FORCE_WIN32
-// #define GLM_FORCE_SIZE_T_LENGTH
-// #define GLM_FORCE_PURE
-// #define GLM_FORCE_EXPLICIT_CTOR
-// #define GLM_FORCE_CXX20
-// #define GLM_FORCE_UNRESTRICTED_GENTYPE
-// #define GLM_FORCE_PRECISION_HIGHP_DOUBLE
-// #define GLM_FORCE_PRECISION_HIGHP_FLOAT
-// #define GLM_FORCE_PRECISION_HIGHP_INT
-// #define GLM_FORCE_PRECISION_HIGHP_UINT
 
 #include "disableWarn.hpp"
 // clang-format off
@@ -95,6 +80,7 @@ static inline constexpr char CCR = '\r';
 static inline constexpr char PNT = '.';
 static inline constexpr char ECR = 'E';
 static inline constexpr const char *CRNL = "\r\n";
+static inline constexpr char ctab = '\t';
 
 #ifdef _WIN32                              // Windows
 static inline constexpr auto NEWL = CRNL;  // Windows

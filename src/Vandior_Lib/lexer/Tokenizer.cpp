@@ -1,6 +1,8 @@
 #include "Vandior/lexer/Tokenizer.hpp"
+
+#include <Vandior/Log.hpp>
 using namespace std::literals::string_view_literals;
-// NOLINTBEGIN(*-include-cleaner)
+// NOLINTBEGIN(*-include-cleaner, *-easily-swappable-parameters, *-avoid-magic-numbers, *-magic-numbers)
 DISABLE_WARNINGS_PUSH(26446)
 namespace vnd {
     std::vector<Token> Tokenizer::tokenize() {
@@ -178,12 +180,14 @@ namespace vnd {
         if(_input[position] == '\n') {
             ++line;
             column = 1;
+            positionInLine = 0;
         } else {
             ++column;
+            ++positionInLine;
         }
         ++position;
     }
-
+    //        a
     Token Tokenizer::handleBrackets() {
         const auto start = position;
         incPosAndColumn();
@@ -309,33 +313,47 @@ namespace vnd {
         const auto &lineStart = findLineStart();
         const auto &lineEnd = findLineEnd();
 
+        LINFO("value length {}", value.length());
         std::string contextLine = getContextLine(lineStart, lineEnd);
-        std::string highlighting = getHighlighting(lineStart, value.length());
+        std::string highlighting = getHighlighting(lineStart, lineEnd, value);
         std::string errorMessage = getErrorMessage(value, errorMsg, contextLine, highlighting);
 
         throw std::runtime_error(errorMessage);
     }
 
     std::size_t Tokenizer::findLineStart() const noexcept {
-        std::size_t lineStart = position;
+        auto lineStart = position;
         while(lineStart > 0 && _input[lineStart - 1] != CNL) { --lineStart; }
         return lineStart;
     }
 
     std::size_t Tokenizer::findLineEnd() const noexcept {
-        std::size_t lineEnd = position;
+        auto lineEnd = position;
         while(lineEnd < _inputSize && _input[lineEnd] != CNL) { ++lineEnd; }
         return lineEnd;
     }
 
     std::string Tokenizer::getContextLine(const std::size_t &lineStart, const std::size_t &lineEnd) const {
-        return std::string(_input.begin() + C_L(lineStart), _input.begin() + C_L(lineEnd)).append(NEWL);
+        return std::string(_input.substr(lineStart, (lineEnd - lineStart))).append(NEWL);
     }
 
-    std::string Tokenizer::getHighlighting(const std::size_t &start, const std::size_t &length) const {
-        return FORMAT("{: ^{}}{:^{}}{}", "", position - start, "^", length, CNL);
+    std::string extractTabs(const std::string &input) {
+        const auto start = input.find(ctab);
+        if(start == std::string::npos) {
+            return "";  // no tabs found
+        }
+        const auto end = input.find_last_of(ctab);
+        return input.substr(start, end - start + 1);
     }
 
+    std::string Tokenizer::getHighlighting(const std::size_t &lineStart, const std::size_t &lineEnd, const std::string &value) const {
+        const auto temtp_val = std::string(_input.substr(lineStart, (lineEnd - lineStart)));
+        auto tabs_section = extractTabs(temtp_val);
+        const auto pos = temtp_val.find(value);
+        if(pos != std::string::npos) { return FORMAT("{}{: ^{}}{:^{}}{}", tabs_section, "", pos - 1, "^", value.length(), CNL); }
+        return FORMAT("{:^{}}{}", "^", (lineEnd - lineStart), CNL);
+    }
+    //        return {1, 2}, d;
     std::string Tokenizer::getErrorMessage(const std::string &value, const std::string_view &errMsg, const std::string &contextLine,
                                            const std::string &highlighting) {
         std::ostringstream errorMessageStream;
@@ -361,4 +379,4 @@ namespace vnd {
     }
 }  // namespace vnd
 DISABLE_WARNINGS_POP()
-// NOLINTEND(*-include-cleaner)
+// NOLINTEND(*-include-cleaner, *-easily-swappable-parameters, *-avoid-magic-numbers, *-magic-numbers)

@@ -1238,10 +1238,7 @@ TEST_CASE("Parser pars complex expression", "[parser]") {
     // clang-format off
     vnd::Parser parser{"2 + 3 + (4.2 / 2) * 3 + y", "input.vn"};
     auto ast = parser.parse();
-    REQUIRE(ast->print() ==
-            "BINARY_EXPRESION(op:\"+\" left:BINARY_EXPRESION(op:\"+\" left:BINARY_EXPRESION(op:\"+\" "
-            "left:NUMBER_INTEGER(2), right:NUMBER_INTEGER(3)), right:BINARY_EXPRESION(op:\"*\" left:BINARY_EXPRESION(op:\"/\" "
-            "left:NUMBER_DOUBLE(4.2), right:NUMBER_INTEGER(2)), right:NUMBER_INTEGER(3))), right:VARIABLE(y))");
+    REQUIRE(ast->print() == R"(BINARY_EXPRESION(op:"+" left:BINARY_EXPRESION(op:"+" left:BINARY_EXPRESION(op:"+" left:NUMBER_INTEGER(2), right:NUMBER_INTEGER(3)), right:BINARY_EXPRESION(op:"*" left:BINARY_EXPRESION(op:"/" left:NUMBER_DOUBLE(4.2), right:NUMBER_INTEGER(2)), right:NUMBER_INTEGER(3))), right:VARIABLE(y)))");
     REQUIRE(ast->comp_print() == R"(BINE(op:"+" l:BINE(op:"+" l:BINE(op:"+" l:NUM_INT(2), r:NUM_INT(3)), r:BINE(op:"*" l:BINE(op:"/" l:NUM_DBL(4.2), r:NUM_INT(2)), r:NUM_INT(3))), r:VAR(y)))");
     // clang-format on
 }
