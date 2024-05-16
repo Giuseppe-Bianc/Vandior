@@ -27,12 +27,13 @@ namespace vnd {
         [[nodiscard]] TokenVec tokenize();  // NOLINT(*-include-cleaner)
 
     private:
-        std::string_view _input;     ///< The input string to tokenize.
-        std::string_view _filename;  ///< The name of the file being tokenized.
-        std::size_t _inputSize;      ///< The size of the input string
-        std::size_t position = 0;    ///< Current position in the input string.
-        std::size_t line = 1;        ///< Current line number.
-        std::size_t column = 1;      ///< Current column number.
+        std::string_view _input;         ///< The input string to tokenize.
+        std::string_view _filename;      ///< The name of the file being tokenized.
+        std::size_t _inputSize;          ///< The size of the input string
+        std::size_t position = 0;        ///< Current position in the input string.
+        std::size_t line = 1;            ///< Current line number.
+        std::size_t positionInLine = 1;  ///< Current position in line number.
+        std::size_t column = 1;          ///< Current column number.
 
         /**
          * @brief Check if the current position is within the text.
@@ -127,7 +128,7 @@ namespace vnd {
          * @param length Length of the highlight.
          * @return Highlighted string.
          */
-        [[nodiscard]] std::string getHighlighting(const std::size_t &start, const std::size_t &length) const;
+        [[nodiscard]] std::string getHighlighting(const std::size_t &lineStart, const std::size_t &lineEnd, const std::string &value) const;
 
         /**
          * @brief Generates an error message.
