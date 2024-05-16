@@ -6,7 +6,13 @@ include(cmake/CPM.cmake)
 function(Vandior_setup_dependencies)
 
     if (NOT TARGET glm::glm)
-        CPMAddPackage("gh:g-truc/glm#1.0.1")
+        CPMAddPackage(
+                NAME glm
+                GIT_REPOSITORY https://github.com/g-truc/glm.git
+                GIT_TAG master # Use "master" for the latest version
+                OPTIONS # Add options if needed
+                "GLM_TEST_ENABLE OFF" # Disable tests if needed
+        )
     endif ()
 
     # For each dependency, see if it's
