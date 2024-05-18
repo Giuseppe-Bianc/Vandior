@@ -23,6 +23,12 @@ DISABLE_WARNINGS_PUSH(
         26485 26490 26491 26493 26494 26495 26496
         26497 26498 26800 26814 26818 26826)
 
+#if defined(__GNUC__) && (__GNUC__ >= 11)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wduplicated-branches"
+#pragma GCC diagnostic ignored "-Wuseless-cast"
+#endif
+
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -113,3 +119,6 @@ namespace glm {
     using ldmat3x4 = mat<3, 4, long double, defaultp>;
     using ldmat4x4 = mat<4, 4, long double, defaultp>;
 }  // namespace glm
+#if defined(__GNUC__) && (__GNUC__ >= 11)
+#pragma GCC diagnostic pop
+#endif
