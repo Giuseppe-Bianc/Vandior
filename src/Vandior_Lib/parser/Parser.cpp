@@ -36,7 +36,7 @@ namespace vnd {
     std::size_t Parser::getOperatorPrecedence(const Token &token) noexcept {
         const auto &tokenValue = token.getValue();
         std::size_t precedence = 0;
-        for(auto &itm : operatorPrecedence) {
+        for(const auto &itm : operatorPrecedence) {
             precedence++;
 #ifndef _MSC_VER
             if(std::find(std::ranges::begin(itm), std::ranges::end(itm), tokenValue) != std::ranges::end(itm)) { return precedence; }
