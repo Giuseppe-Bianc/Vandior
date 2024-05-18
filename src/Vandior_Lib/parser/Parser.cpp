@@ -8,21 +8,21 @@
 DISABLE_WARNINGS_PUSH(26445 26481)
 
 namespace vnd {
-    std::unique_ptr<vnd::ASTNode> Parser::parse() { return parseExpression(); }
+    std::unique_ptr<ASTNode> Parser::parse() { return parseExpression(); }
     void Parser::consumeToken() noexcept {
         if(position < tokenSize) { position++; }
     }
 
-    const std::vector<std::vector<std::string>> Parser::operatorPrecedence = {{"=", "+=", "-=", "*=", "/=", "^=", "%="},
-                                                                              {","},
-                                                                              {"||"},
-                                                                              {"&&"},
-                                                                              {"==", "!="},
-                                                                              {"<", "<=", ">", ">="},
-                                                                              {"+", "-"},
-                                                                              {"*", "/"},
-                                                                              {"^", "%"},
-                                                                              {"."}};
+    const std::vector<StrViewVec> Parser::operatorPrecedence = {{"=", "+=", "-=", "*=", "/=", "^=", "%="},
+                                                                {","},
+                                                                {"||"},
+                                                                {"&&"},
+                                                                {"==", "!="},
+                                                                {"<", "<=", ">", ">="},
+                                                                {"+", "-"},
+                                                                {"*", "/"},
+                                                                {"^", "%"},
+                                                                {"."}};
 
     const Token &Parser::getCurrentToken() const { return tokens.at(position); }
     std::size_t Parser::getUnaryOperatorPrecedence(const Token &token) noexcept {
@@ -35,10 +35,14 @@ namespace vnd {
 
     std::size_t Parser::getOperatorPrecedence(const Token &token) noexcept {
         const auto &tokenValue = token.getValue();
-        auto precedence = 0;
-        for(auto &i : operatorPrecedence) {
+        std::size_t precedence = 0;
+        for(const auto &itm : operatorPrecedence) {
             precedence++;
-            if(std::ranges::contains(i, tokenValue)) { return precedence; }
+#ifndef _MSC_VER
+            if(std::find(std::ranges::begin(itm), std::ranges::end(itm), tokenValue) != std::ranges::end(itm)) { return precedence; }
+#else
+            if(std::ranges::contains(itm, tokenValue)) { return precedence; }
+#endif
         }
         return 0;
     }
@@ -54,6 +58,10 @@ namespace vnd {
         }
 
         return 0;
+    }
+
+    template <typename T> std::from_chars_result parseNumber(std::string_view str, T &result, int base = 10) {
+        return std::from_chars(str.data(), str.data() + str.size(), result, base);
     }
 
     int Parser::convertToIntformExa(std::string_view str) noexcept {

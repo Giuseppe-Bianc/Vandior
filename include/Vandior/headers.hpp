@@ -192,5 +192,6 @@ template <> struct fmt::formatter<nlohmann::basic_json<>> : formatter<std::strin
 using StringPair = std::pair<std::string, std::string>;
 using StringPairVec = std::vector<StringPair>;
 using StringVec = std::vector<std::string>;
+using StrViewVec = std::vector<std::string_view>;
 using OptionalSizeT = std::optional<size_t>;
 // NOLINTEND
