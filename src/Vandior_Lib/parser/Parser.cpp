@@ -38,10 +38,10 @@ namespace vnd {
         std::size_t precedence = 0;
         for(const auto &itm : operatorPrecedence) {
             precedence++;
-#ifndef _MSC_VER
-            if(std::find(std::ranges::begin(itm), std::ranges::end(itm), tokenValue) != std::ranges::end(itm)) { return precedence; }
-#else
+#ifdef _MSC_VER
             if(std::ranges::contains(itm, tokenValue)) { return precedence; }
+#else
+            if(std::find(std::ranges::begin(itm), std::ranges::end(itm), tokenValue) != std::ranges::end(itm)) { return precedence; }
 #endif
         }
         return 0;
