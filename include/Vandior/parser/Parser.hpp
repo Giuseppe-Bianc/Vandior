@@ -15,6 +15,7 @@ namespace vnd {
         std::unique_ptr<ASTNode> parse();
 
     private:
+        static const std::vector<std::vector<std::string>> operatorPrecedence;
         void consumeToken() noexcept;
         // const Token &getNextToken();
         const Token &getCurrentToken() const;

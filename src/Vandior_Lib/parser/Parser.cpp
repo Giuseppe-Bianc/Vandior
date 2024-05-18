@@ -13,22 +13,33 @@ namespace vnd {
         if(position < tokenSize) { position++; }
     }
 
+    const std::vector<std::vector<std::string>> Parser::operatorPrecedence = {{"=", "+=", "-=", "*=", "/=", "^=", "%="},
+                                                                              {","},
+                                                                              {"||"},
+                                                                              {"&&"},
+                                                                              {"==", "!="},
+                                                                              {"<", "<=", ">", ">="},
+                                                                              {"+", "-"},
+                                                                              {"*", "/"},
+                                                                              {"^", "%"},
+                                                                              {"."}};
+
     const Token &Parser::getCurrentToken() const { return tokens.at(position); }
     std::size_t Parser::getUnaryOperatorPrecedence(const Token &token) noexcept {
         const auto &tokenValue = token.getValue();
-        if(tokenValue == "+" || tokenValue == "-" || tokenValue == "!") { return 8; }
+        if(tokenValue == "+" || tokenValue == "-" || tokenValue == "!" || tokenValue == "++" || tokenValue == "--") {
+            return operatorPrecedence.size() + 1;
+        }
         return 0;
     }
 
     std::size_t Parser::getOperatorPrecedence(const Token &token) noexcept {
         const auto &tokenValue = token.getValue();
-        if(tokenValue == "||") { return 1; }
-        if(tokenValue == "&&") { return 2; }
-        if(tokenValue == "==" || tokenValue == "!=") { return 3; }
-        if(tokenValue == "<" || tokenValue == "<=" || tokenValue == ">" || tokenValue == ">=") { return 4; }
-        if(tokenValue == "+" || tokenValue == "-") { return 5; }
-        if(tokenValue == "*" || tokenValue == "/") { return 6; }
-        if(tokenValue == "^" || tokenValue == "%") { return 7; }
+        auto precedence = 0;
+        for(auto &i : operatorPrecedence) {
+            precedence++;
+            if(std::ranges::contains(i, tokenValue)) { return precedence; }
+        }
         return 0;
     }
     int Parser::convertToInt(std::string_view str) noexcept {
