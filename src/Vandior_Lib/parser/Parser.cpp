@@ -35,8 +35,8 @@ namespace vnd {
 
     std::size_t Parser::getOperatorPrecedence(const Token &token) noexcept {
         const auto &tokenValue = token.getValue();
-        std::size_t precedence = 0;
-        for(const auto &itm : operatorPrecedence) {
+        auto precedence = 0;
+        for(auto &itm : operatorPrecedence) {
             precedence++;
 #ifndef _MSC_VER
             if(std::find(std::ranges::begin(itm), std::ranges::end(itm), tokenValue) != std::ranges::end(itm)) { return precedence; }
@@ -58,10 +58,6 @@ namespace vnd {
         }
 
         return 0;
-    }
-
-    template <typename T> std::from_chars_result parseNumber(std::string_view str, T &result, int base = 10) {
-        return std::from_chars(str.data(), str.data() + str.size(), result, base);
     }
 
     int Parser::convertToIntformExa(std::string_view str) noexcept {
