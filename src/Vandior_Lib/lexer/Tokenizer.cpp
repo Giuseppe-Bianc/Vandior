@@ -1,6 +1,5 @@
 #include "Vandior/lexer/Tokenizer.hpp"
 
-#include <Vandior/Log.hpp>
 using namespace std::literals::string_view_literals;
 // NOLINTBEGIN(*-include-cleaner, *-easily-swappable-parameters, *-avoid-magic-numbers, *-magic-numbers)
 DISABLE_WARNINGS_PUSH(26446)
@@ -180,10 +179,8 @@ namespace vnd {
         if(_input[position] == '\n') {
             ++line;
             column = 1;
-            positionInLine = 0;
         } else {
             ++column;
-            ++positionInLine;
         }
         ++position;
     }
@@ -313,7 +310,6 @@ namespace vnd {
         const auto &lineStart = findLineStart();
         const auto &lineEnd = findLineEnd();
 
-        LINFO("value length {}", value.length());
         std::string contextLine = getContextLine(lineStart, lineEnd);
         std::string highlighting = getHighlighting(lineStart, lineEnd, value);
         std::string errorMessage = getErrorMessage(value, errorMsg, contextLine, highlighting);
@@ -333,8 +329,12 @@ namespace vnd {
         return lineEnd;
     }
 
+    std::string Tokenizer::extract_context(const std::size_t &lineStart, const std::size_t &lineEnd) const {
+        return std::string(_input.substr(lineStart, (lineEnd - lineStart)));
+    }
+
     std::string Tokenizer::getContextLine(const std::size_t &lineStart, const std::size_t &lineEnd) const {
-        return std::string(_input.substr(lineStart, (lineEnd - lineStart))).append(NEWL);
+        return extract_context(lineStart, lineEnd).append(NEWL);
     }
 
     std::string extractTabs(const std::string &input) {
@@ -347,7 +347,7 @@ namespace vnd {
     }
 
     std::string Tokenizer::getHighlighting(const std::size_t &lineStart, const std::size_t &lineEnd, const std::string &value) const {
-        const auto temtp_val = std::string(_input.substr(lineStart, (lineEnd - lineStart)));
+        const auto temtp_val = extract_context(lineStart, lineEnd);
         auto tabs_section = extractTabs(temtp_val);
         const auto pos = temtp_val.find(value);
         if(pos != std::string::npos) { return FORMAT("{}{: ^{}}{:^{}}{}", tabs_section, "", pos - 1, "^", value.length(), CNL); }
