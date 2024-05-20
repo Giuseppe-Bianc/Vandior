@@ -1245,7 +1245,12 @@ TEST_CASE("Parser pars complex expression", "[parser]") {
 
 TEST_CASE("Parser emit exception for mismacted  paren", "[parser]") {
     vnd::Parser tokenizer{"1 + 2 +( 2+3*3", filename};
-    REQUIRE_THROWS_AS(tokenizer.parse(), std::runtime_error);
+    REQUIRE_THROWS_AS(tokenizer.parse(), vnd::ParserException);
+}
+
+TEST_CASE("Parser emit exception for uncomplete expression", "[parser]") {
+    vnd::Parser tokenizer{"1 + 2 *", filename};
+    REQUIRE_THROWS_AS(tokenizer.parse(), vnd::ParserException);
 }
 // ParserException(currentToken);
 
