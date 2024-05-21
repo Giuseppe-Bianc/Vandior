@@ -1252,6 +1252,11 @@ TEST_CASE("Parser emit exception for uncomplete expression", "[parser]") {
     vnd::Parser tokenizer{"1 + 2 *", filename};
     REQUIRE_THROWS_AS(tokenizer.parse(), vnd::ParserException);
 }
+
+TEST_CASE("Parser emit exception for nonexistent unary operator", "[parser]") {
+    vnd::Parser tokenizer{"*2", filename};
+    REQUIRE_THROWS_AS(tokenizer.parse(), vnd::ParserException);
+}
 // ParserException(currentToken);
 
 // NOLINTEND(*-include-cleaner, *-avoid-magic-numbers, *-magic-numbers)
