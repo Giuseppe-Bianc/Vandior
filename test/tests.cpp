@@ -1247,6 +1247,5 @@ TEST_CASE("Parser emit exception for mismacted  paren", "[parser]") {
     vnd::Parser tokenizer{"1 + 2 +( 2+3*3", filename};
     REQUIRE_THROWS_AS(tokenizer.parse(), std::runtime_error);
 }
-// ParserException(currentToken);
 
 // NOLINTEND(*-include-cleaner, *-avoid-magic-numbers, *-magic-numbers)
