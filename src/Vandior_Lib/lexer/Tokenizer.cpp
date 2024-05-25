@@ -310,9 +310,9 @@ namespace vnd {
         const auto &lineStart = findLineStart();
         const auto &lineEnd = findLineEnd();
 
-        std::string contextLine = getContextLine(lineStart, lineEnd);
-        std::string highlighting = getHighlighting(lineStart, lineEnd, value);
-        std::string errorMessage = getErrorMessage(value, errorMsg, contextLine, highlighting);
+        const auto contextLine = getContextLine(lineStart, lineEnd);
+        const auto highlighting = getHighlighting(lineStart, lineEnd, value);
+        const auto errorMessage = getErrorMessage(value, errorMsg, contextLine, highlighting);
 
         throw std::runtime_error(errorMessage);
     }
