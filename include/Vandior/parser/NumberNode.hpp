@@ -40,7 +40,7 @@ namespace vnd {
          * @return Compact string representation of the AST node.
          */
         [[nodiscard]] std::string comp_print() const override {
-            return FORMAT("NUM_{}({})", NumNodeType_comp_to_string(getNumberType()), LiteralNode<T>::get_value());
+            return FORMAT("NUM_{}({})", NumNodeType_comp(getNumberType()), LiteralNode<T>::get_value());
         }
 
         friend void swap(NumberNode &lhs, NumberNode &rhs) noexcept {

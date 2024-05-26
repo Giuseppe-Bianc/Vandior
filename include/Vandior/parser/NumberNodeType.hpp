@@ -9,7 +9,7 @@
  * @brief Enum representing different types of AST nodes.
  */
 enum class NumberNodeType { Integer, Double };
-inline std::string NumNodeType_comp_to_string(NumberNodeType type) {
+[[nodiscard]] inline std::string NumNodeType_comp(NumberNodeType type) {
     using enum NumberNodeType;
     switch(type) {
     case Integer:

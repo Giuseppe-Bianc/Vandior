@@ -59,10 +59,10 @@ static inline void prettyPrint(const vnd::ASTNode &node, const std::string &inde
     } else if(const auto *variableNode = node.safe_as<vnd::VariableNode>()) {
         LINFO("{}(Type: VAR, val: {}){}", indentmark, variableNode->getName(), node.get_token().compat_to_string());
     } else if(const auto *intnumberNode = node.safe_as<vnd::NumberNode<int>>()) {
-        LINFO("{}_{}, val: {}){}", imarknnum, NumNodeType_comp_to_string(intnumberNode->getNumberType()), intnumberNode->get_value(),
+        LINFO("{}_{}, val: {}){}", imarknnum, NumNodeType_comp(intnumberNode->getNumberType()), intnumberNode->get_value(),
               node.get_token().compat_to_string());
     } else if(const auto *dblnumberNode = node.safe_as<vnd::NumberNode<double>>()) {
-        LINFO("{}_{}, val: {}){}", imarknnum, NumNodeType_comp_to_string(dblnumberNode->getNumberType()), dblnumberNode->get_value(),
+        LINFO("{}_{}, val: {}){}", imarknnum, NumNodeType_comp(dblnumberNode->getNumberType()), dblnumberNode->get_value(),
               node.get_token().compat_to_string());
     } else if(const auto *blliteralNode = node.safe_as<vnd::LiteralNode<bool>>()) {
         LINFO("{}, val: {}){}", imarknode, blliteralNode->get_value(), node.get_token().compat_to_string());

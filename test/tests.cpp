@@ -230,67 +230,46 @@ TEST_CASE("corrected format for Tokentype", "[token_type]") {
 
 TEST_CASE("corrected format for Tokentype compat to string", "[token_type]") {
     using enum vnd::TokenType;
-    REQ_FORMAT(comp_tokType_to_string(INTEGER), "INT")
-    REQ_FORMAT(comp_tokType_to_string(DOUBLE), "DBL")
-    REQ_FORMAT(comp_tokType_to_string(BOOLEAN), "BOOL")
-    REQ_FORMAT(comp_tokType_to_string(OPERATOR), "OPER")
-    REQ_FORMAT(comp_tokType_to_string(MINUS_OPERATOR), "MINUS_OP")
-    REQ_FORMAT(comp_tokType_to_string(EQUAL_OPERATOR), "EQUAL_OP")
-    REQ_FORMAT(comp_tokType_to_string(DOT_OPERATOR), "DOT_OP")
-    REQ_FORMAT(comp_tokType_to_string(IDENTIFIER), "IDENT")
-    REQ_FORMAT(comp_tokType_to_string(CHAR), "CH")
-    REQ_FORMAT(comp_tokType_to_string(STRING), "STR")
-    REQ_FORMAT(comp_tokType_to_string(K_MAIN), "K_MAIN")
-    REQ_FORMAT(comp_tokType_to_string(K_VAR), "K_VAR")
-    REQ_FORMAT(comp_tokType_to_string(K_FOR), "K_FOR")
-    REQ_FORMAT(comp_tokType_to_string(K_IF), "K_IF")
-    REQ_FORMAT(comp_tokType_to_string(K_WHILE), "K_WHILE")
-    REQ_FORMAT(comp_tokType_to_string(K_ELSE), "K_ELSE")
-    REQ_FORMAT(comp_tokType_to_string(K_FOR), "K_FOR")
-    REQ_FORMAT(comp_tokType_to_string(K_BREAK), "BREAK")
-    REQ_FORMAT(comp_tokType_to_string(K_FUN), "K_FUN")
-    REQ_FORMAT(comp_tokType_to_string(K_RETURN), "K_RETURN")
-    REQ_FORMAT(comp_tokType_to_string(K_NULLPTR), "K_NULLPTR")
-    REQ_FORMAT(comp_tokType_to_string(OPEN_PARENTESIS), "OPEN_PAR")
-    REQ_FORMAT(comp_tokType_to_string(OPEN_SQ_PARENTESIS), "OPEN_SQ_PAR")
-    REQ_FORMAT(comp_tokType_to_string(OPEN_CUR_PARENTESIS), "OPEN_CUR_PAR")
-    REQ_FORMAT(comp_tokType_to_string(CLOSE_PARENTESIS), "CLOSE_PAR")
-    REQ_FORMAT(comp_tokType_to_string(CLOSE_SQ_PARENTESIS), "CLOSE_SQ_PAR")
-    REQ_FORMAT(comp_tokType_to_string(CLOSE_CUR_PARENTESIS), "CLOSE_CUR_PAR")
-    REQ_FORMAT(comp_tokType_to_string(OPERATION_EQUAL), "OP_EQUAL")
-    REQ_FORMAT(comp_tokType_to_string(BOOLEAN_OPERATOR), "BOOLEAN_OP")
-    REQ_FORMAT(comp_tokType_to_string(NOT_OPERATOR), "NOT_OP")
-    REQ_FORMAT(comp_tokType_to_string(LOGICAL_OPERATOR), "LOGICAL_OP")
-    REQ_FORMAT(comp_tokType_to_string(UNARY_OPERATOR), "UNARY_OP")
-    REQ_FORMAT(comp_tokType_to_string(COMMA), "COMMA")
-    REQ_FORMAT(comp_tokType_to_string(COLON), "COLON")
-    REQ_FORMAT(comp_tokType_to_string(COMMENT), "COMMENT")
-    REQ_FORMAT(comp_tokType_to_string(EOFT), "EOF")
-    REQ_FORMAT(comp_tokType_to_string(UNKNOWN), "UNKNOWN")
+    REQ_FORMAT(comp_tokType(INTEGER), "INT")
+    REQ_FORMAT(comp_tokType(DOUBLE), "DBL")
+    REQ_FORMAT(comp_tokType(BOOLEAN), "BOOL")
+    REQ_FORMAT(comp_tokType(OPERATOR), "OPER")
+    REQ_FORMAT(comp_tokType(MINUS_OPERATOR), "MINUS_OP")
+    REQ_FORMAT(comp_tokType(EQUAL_OPERATOR), "EQUAL_OP")
+    REQ_FORMAT(comp_tokType(DOT_OPERATOR), "DOT_OP")
+    REQ_FORMAT(comp_tokType(IDENTIFIER), "IDENT")
+    REQ_FORMAT(comp_tokType(CHAR), "CH")
+    REQ_FORMAT(comp_tokType(STRING), "STR")
+    REQ_FORMAT(comp_tokType(K_MAIN), "K_MAIN")
+    REQ_FORMAT(comp_tokType(K_VAR), "K_VAR")
+    REQ_FORMAT(comp_tokType(K_FOR), "K_FOR")
+    REQ_FORMAT(comp_tokType(K_IF), "K_IF")
+    REQ_FORMAT(comp_tokType(K_WHILE), "K_WHILE")
+    REQ_FORMAT(comp_tokType(K_ELSE), "K_ELSE")
+    REQ_FORMAT(comp_tokType(K_FOR), "K_FOR")
+    REQ_FORMAT(comp_tokType(K_BREAK), "BREAK")
+    REQ_FORMAT(comp_tokType(K_FUN), "K_FUN")
+    REQ_FORMAT(comp_tokType(K_RETURN), "K_RETURN")
+    REQ_FORMAT(comp_tokType(K_NULLPTR), "K_NULLPTR")
+    REQ_FORMAT(comp_tokType(OPEN_PARENTESIS), "OPEN_PAR")
+    REQ_FORMAT(comp_tokType(OPEN_SQ_PARENTESIS), "OPEN_SQ_PAR")
+    REQ_FORMAT(comp_tokType(OPEN_CUR_PARENTESIS), "OPEN_CUR_PAR")
+    REQ_FORMAT(comp_tokType(CLOSE_PARENTESIS), "CLOSE_PAR")
+    REQ_FORMAT(comp_tokType(CLOSE_SQ_PARENTESIS), "CLOSE_SQ_PAR")
+    REQ_FORMAT(comp_tokType(CLOSE_CUR_PARENTESIS), "CLOSE_CUR_PAR")
+    REQ_FORMAT(comp_tokType(OPERATION_EQUAL), "OP_EQUAL")
+    REQ_FORMAT(comp_tokType(BOOLEAN_OPERATOR), "BOOLEAN_OP")
+    REQ_FORMAT(comp_tokType(NOT_OPERATOR), "NOT_OP")
+    REQ_FORMAT(comp_tokType(LOGICAL_OPERATOR), "LOGICAL_OP")
+    REQ_FORMAT(comp_tokType(UNARY_OPERATOR), "UNARY_OP")
+    REQ_FORMAT(comp_tokType(COMMA), "COMMA")
+    REQ_FORMAT(comp_tokType(COLON), "COLON")
+    REQ_FORMAT(comp_tokType(COMMENT), "COMMENT")
+    REQ_FORMAT(comp_tokType(EOFT), "EOF")
+    REQ_FORMAT(comp_tokType(UNKNOWN), "UNKNOWN")
 }
 
 namespace {
-    /*vnd::Transpiler createSimpleTranspiler(const std::vector<vnd::Token> &tokens) {
-        vnd::InstructionFactory factory = vnd::InstructionFactory::create(filename);
-        for(const auto &token : tokens) { factory.checkToken(token); }
-        factory.addInstruction();
-        return vnd::Transpiler::create(factory.getInstructions());
-    }
-
-    vnd::Transpiler createComplexTranspiler(const std::vector<vnd::Token> &tokens) {
-        vnd::InstructionFactory factory = vnd::InstructionFactory::create(filename);
-        auto line = tokens.at(0).getLine();
-        for(const auto &token : tokens) {
-            if(token.getLine() > line) {
-                factory.addInstruction();
-                line = token.getLine();
-            }
-            factory.checkToken(token);
-        }
-        factory.addInstruction();
-        return vnd::Transpiler::create(factory.getInstructions());
-    }
-    */
     void modifyToken(vnd::Token &token) {
         token.setType(vnd::TokenType::INTEGER);
         token.setValue("assss");
@@ -298,10 +277,6 @@ namespace {
         token.setLine(1);
         token.setColumn(1);
     }
-    /*std::string fileContent() {
-        std::ifstream stream(outFilename.data());
-        return {std::istreambuf_iterator{stream}, {}};
-    }*/
 }  // namespace
 
 TEST_CASE("default constructed token", "[token]") {
