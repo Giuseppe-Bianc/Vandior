@@ -198,7 +198,7 @@ namespace vnd {
          * @param value The value.
          * @return TokenType of the value.
          */
-        [[nodiscard]] TokenType getType(const std::string_view &value) const noexcept;
+        [[nodiscard]] TokenType getBracketsType(const std::string_view &value) const noexcept;
 
         /**
          * @brief Handles characters.

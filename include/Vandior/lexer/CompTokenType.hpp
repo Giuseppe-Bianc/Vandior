@@ -7,7 +7,7 @@
 #include "TokenType.hpp"
 
 namespace vnd {
-    inline std::string comp_tokType_to_string(TokenType type) {
+    [[nodiscard]] inline std::string comp_tokType(TokenType type) {
         using enum TokenType;
         switch(type) {
             using enum TokenType;

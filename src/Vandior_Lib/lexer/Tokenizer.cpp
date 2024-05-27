@@ -184,16 +184,16 @@ namespace vnd {
         }
         ++position;
     }
-    //        a
+
     Token Tokenizer::handleBrackets() {
         const auto start = position;
         incPosAndColumn();
         const auto value = _input.substr(start, position - start);
-        const auto type = getType(value);
+        const auto type = getBracketsType(value);
         return {type, value, {_filename, line, column - value.size()}};
     }
 
-    TokenType Tokenizer::getType(const std::string_view &value) const noexcept {
+    TokenType Tokenizer::getBracketsType(const std::string_view &value) const noexcept {
         switch(value[0]) {
             using enum TokenType;
         case '(':
@@ -310,9 +310,9 @@ namespace vnd {
         const auto &lineStart = findLineStart();
         const auto &lineEnd = findLineEnd();
 
-        std::string contextLine = getContextLine(lineStart, lineEnd);
-        std::string highlighting = getHighlighting(lineStart, lineEnd, value);
-        std::string errorMessage = getErrorMessage(value, errorMsg, contextLine, highlighting);
+        const auto contextLine = getContextLine(lineStart, lineEnd);
+        const auto highlighting = getHighlighting(lineStart, lineEnd, value);
+        const auto errorMessage = getErrorMessage(value, errorMsg, contextLine, highlighting);
 
         throw std::runtime_error(errorMessage);
     }
@@ -353,7 +353,6 @@ namespace vnd {
         if(pos != std::string::npos) { return FORMAT("{}{: ^{}}{:^{}}{}", tabs_section, "", pos - 1, "^", value.length(), CNL); }
         return FORMAT("{:^{}}{}", "^", (lineEnd - lineStart), CNL);
     }
-    //        return {1, 2}, d;
     std::string Tokenizer::getErrorMessage(const std::string &value, const std::string_view &errMsg, const std::string &contextLine,
                                            const std::string &highlighting) {
         std::ostringstream errorMessageStream;

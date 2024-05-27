@@ -98,7 +98,7 @@ namespace vnd {
          * @param position The starting position for checking the comment.
          * @return True if a comment is found, false otherwise.
          */
-        [[nodiscard]] static bool isComment(const std::string_view &inputSpan, size_t position) noexcept;
+        [[nodiscard]] static bool isComment(const std::string_view &inputSpan,const size_t position) noexcept;
 
         /**
          * @brief Check if the character is alphanumeric or underscore.
