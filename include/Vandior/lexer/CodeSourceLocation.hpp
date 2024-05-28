@@ -6,7 +6,6 @@
 #include "../headers.hpp"  // NOLINT(*-include-cleaner)
 
 /**
- * This macro disable some msvc warnigs.
  * \cond
  */
 DISABLE_WARNINGS_PUSH(

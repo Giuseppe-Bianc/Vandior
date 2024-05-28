@@ -306,7 +306,7 @@ namespace vnd {
         return tokens;
     }
 
-    void Tokenizer::handleError(const std::string &value, const std::string_view &errorMsg) {
+    template <StringOrStringView T> void Tokenizer::handleError(const T &value, const std::string_view &errorMsg) {
         const auto &lineStart = findLineStart();
         const auto &lineEnd = findLineEnd();
 
@@ -337,7 +337,20 @@ namespace vnd {
         return extract_context(lineStart, lineEnd).append(NEWL);
     }
 
-    std::string extractTabs(const std::string &input) {
+    /**
+     * @brief Extracts a substring that starts with the first tab character and ends with the last tab character.
+     *
+     * This function searches the input string for tab characters (`\t`). If no tab characters are found, it returns
+     * an empty string. If tab characters are found, it returns a substring starting from the first occurrence of a
+     * tab character to the last occurrence of a tab character.
+     *
+     * @param input The input string to be searched for tab characters.
+     * @return A substring view of the input string starting from the first tab character to the last tab character.
+     *         If no tab characters are found, an empty string view is returned.
+     *
+     * @note This function is marked as `noexcept` because it does not throw any exceptions.
+     */
+    [[nodiscard]] std::string_view extractTabs(const std::string_view &input) noexcept {
         const auto start = input.find(ctab);
         if(start == std::string::npos) {
             return "";  // no tabs found
@@ -346,14 +359,22 @@ namespace vnd {
         return input.substr(start, end - start + 1);
     }
 
-    std::string Tokenizer::getHighlighting(const std::size_t &lineStart, const std::size_t &lineEnd, const std::string &value) const {
+    std::string Tokenizer::getHighlighting(const std::size_t &lineStart, const std::size_t &lineEnd, const std::string_view value) const {
         const auto temtp_val = extract_context(lineStart, lineEnd);
         auto tabs_section = extractTabs(temtp_val);
-        const auto pos = temtp_val.find(value);
-        if(pos != std::string::npos) { return FORMAT("{}{: ^{}}{:^{}}{}", tabs_section, "", pos - 1, "^", value.length(), CNL); }
-        return FORMAT("{:^{}}{}", "^", (lineEnd - lineStart), CNL);
+        if(const auto pos = temtp_val.find(value); pos != std::string::npos) {
+            const auto val_len = value.length();
+            if(pos == 0) [[unlikely]] {
+                return FORMAT("{}{: ^{}}{:^{}}{}", tabs_section, "", pos, "^", val_len, NEWL);
+            } else {
+                return FORMAT("{}{: ^{}}{:^{}}{}", tabs_section, "", pos - 1, "^", val_len, NEWL);
+            }
+        }
+        return FORMAT("{:^{}}{}", "^", (lineEnd - lineStart), NEWL);
     }
-    std::string Tokenizer::getErrorMessage(const std::string &value, const std::string_view &errMsg, const std::string &contextLine,
+
+    template <StringOrStringView T>
+    std::string Tokenizer::getErrorMessage(const T &value, const std::string_view &errMsg, const std::string &contextLine,
                                            const std::string &highlighting) {
         std::ostringstream errorMessageStream;
         errorMessageStream << FORMAT("{} '{}' (line {}, column {}):{}", errMsg, value, line, column, NEWL);
@@ -366,11 +387,16 @@ namespace vnd {
     Token Tokenizer::handleHexadecimalOrOctal() {
         const auto start = position;
         incPosAndColumn();
-        if(std::tolower(_input[position]) != 'o') {
-            while(positionIsInText() && std::isxdigit(C_UC(_input[position]))) { incPosAndColumn(); }
-        } else {
+        if(positionIsInText() && std::tolower(_input[position]) == 'o') {
+            // Gestione dei numeri ottali
             incPosAndColumn();
             while(positionIsInText() && TokenizerUtility::isOctalDigit(_input[position])) { incPosAndColumn(); }
+        } else if(positionIsInText() && std::isxdigit(_input[position])) {
+            // Gestione dei numeri esadecimali
+            while(positionIsInText() && std::isxdigit(_input[position])) { incPosAndColumn(); }
+        } else [[unlikely]] {
+            const auto error_value = _input.substr(start, position);
+            handleError(error_value, "malformed exadecimal number or octal number");
         }
 
         const auto value = _input.substr(start, position - start);

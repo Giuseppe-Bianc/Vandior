@@ -63,44 +63,6 @@ auto main(int argc, const char *const argv[]) -> int {
         std::vector<vnd::Token> tokens;
         timeTokenizer(tokenizer, tokens);
         LINFO("num tokens {}", tokens.size());
-        /*
-        if(compile || run) {
-#ifdef HIDE_SYSTEM_OUTPUT
-#ifdef _WIN32
-            command = "g++ --version > NUL";
-#else
-            command = "g++ --version > /dev/null";
-#endif
-#else
-            command = "g++ --version";
-#endif
-
-            if(std::system(command.data()) == 0) {
-                // Compile the code
-#ifdef _WIN32
-                auto augument = FORMAT("g++ --std=c++20 {}.cpp -o {} -I \"%VNHOME%\" -lfmt", output, output);
-#else
-                auto augument = FORMAT("g++ --std=c++20 {}.cpp -o {} -I \"$VNHOME\" -L \"$VNHOME/build/_deps/fmt-build\" -lfmt", output,
-                                       output);
-#endif
-                const auto compileResult = std::system(augument.c_str());
-
-                if(compileResult != 0) {
-                    LERROR("Compilation failed");
-                    return EXIT_FAILURE;
-                }
-                if(run) {
-                    vnd::AutoTimer rctim("run code time");
-
-                    int result = std::system(FORMAT("{}", output).c_str());
-
-                    if(result != 0) { LWARN("Error: Command failed with exit status {}", result); }
-                }
-            } else {
-                LERROR("Failed to execute command: {}", command);
-                return EXIT_FAILURE;
-            }
-        }*/
 
         // 2 + 3 + (4.2 / 2) * 3 + y + (true / false) - 'd' * "ciao"
         std::string input;

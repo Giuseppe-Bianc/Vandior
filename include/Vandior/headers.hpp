@@ -69,6 +69,7 @@ DISABLE_WARNINGS_POP()
 DISABLE_WARNINGS_PUSH(26476 26446 26482 26497 26472 26440 26447 26490 26481 26429 26493 26438 26455 26432 26496 26485 26819)
 #include <nlohmann/json.hpp>
 DISABLE_WARNINGS_POP()
+
 namespace fs = std::filesystem;
 
 static inline constexpr long double NINFINITY = std::numeric_limits<long double>::infinity();
@@ -109,7 +110,6 @@ static inline constexpr const char *NEWL = &CNL;  // Default case
     } while(0);
 
 /**
- * This functions is are varius fmt formater used in the code.
  * \cond
  */
 /**
@@ -189,9 +189,44 @@ template <> struct fmt::formatter<nlohmann::basic_json<>> : formatter<std::strin
 };
 /** \endcond */
 
+/**
+ * @typedef StringPair
+ * @brief A pair of strings.
+ */
 using StringPair = std::pair<std::string, std::string>;
+
+/**
+ * @typedef StringPairVec
+ * @brief A vector of string pairs.
+ */
 using StringPairVec = std::vector<StringPair>;
+
+/**
+ * @typedef StringVec
+ * @brief A vector of strings.
+ */
 using StringVec = std::vector<std::string>;
+
+/**
+ * @typedef StrViewVec
+ * @brief A vector of string views.
+ */
 using StrViewVec = std::vector<std::string_view>;
+
+/**
+ * @typedef OptionalSizeT
+ * @brief An optional size_t value.
+ */
 using OptionalSizeT = std::optional<size_t>;
+
+/**
+ * @concept StringOrStringView
+ * @brief Concept that checks if a type is either std::string or std::string_view.
+ *
+ * This concept can be used to constrain template parameters to ensure that
+ * only `std::string` or `std::string_view` types are accepted.
+ * @tparam T The type to check.
+ */
+template <typename T>
+concept StringOrStringView = std::same_as<T, std::string> || std::same_as<T, std::string_view>;
 // NOLINTEND

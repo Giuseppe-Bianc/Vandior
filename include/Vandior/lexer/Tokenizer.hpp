@@ -91,14 +91,6 @@ namespace vnd {
          * @brief Handles white space characters.
          */
         void handleWhiteSpace() noexcept;
-
-        /**
-         * @brief Handles errors.
-         * @param value The error value.
-         * @param errorMsg Error message.
-         */
-        [[noreturn]] void handleError(const std::string &value, const std::string_view &errorMsg);
-
         /**
          * @brief Finds the start of the current line.
          * @return Position of the start of the current line.
@@ -110,6 +102,13 @@ namespace vnd {
          * @return Position of the end of the current line.
          */
         [[nodiscard]] std::size_t findLineEnd() const noexcept;
+
+        /**
+         * @brief Handles errors.
+         * @param value The error value.
+         * @param errorMsg Error message.
+         */
+        template <StringOrStringView T> [[noreturn]] void handleError(const T &value, const std::string_view &errorMsg);
 
         /**
          * @brief Retrieves the context.
@@ -134,7 +133,8 @@ namespace vnd {
          * @param value the value to highlight.
          * @return Highlighted string.
          */
-        [[nodiscard]] std::string getHighlighting(const std::size_t &lineStart, const std::size_t &lineEnd, const std::string &value) const;
+        [[nodiscard]] std::string getHighlighting(const std::size_t &lineStart, const std::size_t &lineEnd,
+                                                  const std::string_view value) const;
 
         /**
          * @brief Generates an error message.
@@ -144,9 +144,9 @@ namespace vnd {
          * @param highlighting Highlighted string.
          * @return Error message.
          */
-        std::string getErrorMessage(const std::string &value, const std::string_view &errMsg, const std::string &contextLine,
+        template <StringOrStringView T>
+        std::string getErrorMessage(const T &value, const std::string_view &errMsg, const std::string &contextLine,
                                     const std::string &highlighting);
-
         /**
          * @brief Extracts digits from the input.
          */

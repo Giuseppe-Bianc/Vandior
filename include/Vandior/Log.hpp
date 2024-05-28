@@ -15,7 +15,6 @@
 // clang-format on
 
 /**
- * This macro disable some msvc warnigs.
  * \cond
  */
 DISABLE_WARNINGS_PUSH(

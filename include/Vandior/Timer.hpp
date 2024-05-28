@@ -221,10 +221,7 @@ namespace vnd {
     };
 }  // namespace vnd
 
-/**
- * This function is a formatter for Timer using fmt.
- * \cond
- */
+/** \cond */
 /**
  * @brief Specialization of the fmt::formatter for the Timer class.
  */

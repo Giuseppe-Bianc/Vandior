@@ -1,6 +1,3 @@
-/**
- * @brief Defines TokenType and Token classes for lexical analysis in a programming language.
- */
 #pragma once
 
 #include "CodeSourceLocation.hpp"
