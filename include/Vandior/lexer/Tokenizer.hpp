@@ -214,7 +214,7 @@ namespace vnd {
         /**
          * @brief Checks if the current position is within the text and the next character.
          * @param chr the caracter to check.
-         * @return True if within text and next character is 'e', false otherwise.
+         * @return True if within text and next character is chr, false otherwise.
          */
         [[nodiscard]] bool inTextAnd(char chr) const noexcept;
 

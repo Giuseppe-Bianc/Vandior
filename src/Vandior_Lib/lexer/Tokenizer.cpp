@@ -338,25 +338,26 @@ namespace vnd {
     }
 
     /**
-     * @brief Extracts a substring that starts with the first tab character and ends with the last tab character.
+     * @brief Extracts leading tabs from the given string view.
      *
-     * This function searches the input string for tab characters (`\t`). If no tab characters are found, it returns
-     * an empty string. If tab characters are found, it returns a substring starting from the first occurrence of a
-     * tab character to the last occurrence of a tab character.
+     * This function removes leading tab characters ('\t') from the beginning of the
+     * provided string view and returns the modified string view without those tabs.
      *
-     * @param input The input string to be searched for tab characters.
-     * @return A substring view of the input string starting from the first tab character to the last tab character.
-     *         If no tab characters are found, an empty string view is returned.
-     *
-     * @note This function is marked as `noexcept` because it does not throw any exceptions.
+     * @param input The input string view from which tabs are to be extracted.
+     * @return A string view containing the input string without leading tabs.
+     * @note The function is marked as [[nodiscard]] to ensure that the return value
+     * is not discarded unintentionally.
+     * @note The function is marked as noexcept to indicate that it does not throw
+     * any exceptions.
      */
     [[nodiscard]] std::string_view extractTabs(const std::string_view &input) noexcept {
-        const auto start = input.find(ctab);
-        if(start == std::string::npos) {
-            return "";  // no tabs found
-        }
-        const auto end = input.find_last_of(ctab);
-        return input.substr(start, end - start + 1);
+        // Find the position of the first character that is not a tab ('\t')
+        const auto pos = input.find_first_not_of(ctab);
+
+        // Return a substring starting from the beginning of the input string view
+        // up to the position of the first non-tab character found.
+        // If no non-tab character is found, return an empty string view.
+        return input.substr(0, pos == std::string_view::npos ? 0 : pos);
     }
 
     std::string Tokenizer::getHighlighting(const std::size_t &lineStart, const std::size_t &lineEnd, const std::string_view value) const {
