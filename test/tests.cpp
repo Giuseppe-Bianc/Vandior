@@ -545,6 +545,12 @@ TEST_CASE("tokenizer emit integer token for hexadecimals numbers", "[tokenizer]"
     REQUIRE(tokens[4] == vnd::Token(inte, "#7f", vnd::CodeSourceLocation(filename, 1, t_colum10)));
 }
 
+TEST_CASE("tokenizer emit exception on  malformed exadecimal number or octal number", "[tokenizer]") {
+    // hexadecimals 0xhexnum a-f A-F 0-9
+    vnd::Tokenizer tokenizer{"#", filename};
+    REQUIRE_THROWS_AS(tokenizer.tokenize(), std::runtime_error);
+}
+
 TEST_CASE("tokenizer emit integer token for octal numbers", "[tokenizer]") {
     // octal 0oOctnum 0-7
     vnd::Tokenizer tokenizer{"#o0 #o23 #o24", filename};
