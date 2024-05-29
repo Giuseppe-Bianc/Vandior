@@ -21,8 +21,8 @@ DISABLE_WARNINGS_PUSH(
     4005 4201 4459 4514 4625 4626 4820 6244 6285 6385 6386 26409 26415 26418 26429 26432 26437 26438 26440 26446 26447 26450 26451 26455 26457 26459 26460 26461 26467 26472 26473 26474 26475 26481 26482 26485 26490 26491 26493 26494 26495 26496 26497 26498 26800 26814 26818 26826)
 /** \endcond */
 
-#include "spdlog/sinks/stdout_color_sinks.h"
-#include "spdlog/spdlog.h"
+#include <spdlog/sinks/stdout_color_sinks.h>
+#include <spdlog/spdlog.h>
 
 DISABLE_WARNINGS_POP()
 
@@ -90,11 +90,11 @@ DISABLE_WARNINGS_POP()
  * @details This macro initializes the logging system with a default pattern and creates a console logger.
  * If the initialization fails, it outputs an error message to stderr.
  */
-#define INIT_LOG()                                                                                                               \
-    try {                                                                                                                        \
-        spdlog::set_pattern(R"(%^[%T] [%l] %v%$)");                                                                              \
-        const auto console = spdlog::stdout_color_mt(R"(console)");                                                              \
-        spdlog::set_default_logger(console);                                                                                     \
+#define INIT_LOG()                                                                                                                         \
+    try {                                                                                                                                  \
+        spdlog::set_pattern(R"(%^[%T] [%l] %v%$)");                                                                                        \
+        const auto console = spdlog::stdout_color_mt(R"(console)");                                                                        \
+        spdlog::set_default_logger(console);                                                                                               \
     } catch(const spdlog::spdlog_ex &ex) { std::cerr << "Logger initialization failed: " << ex.what() << std::endl; }
 
 /// @}

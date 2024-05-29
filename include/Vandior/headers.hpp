@@ -112,20 +112,6 @@ static inline constexpr const char *NEWL = &CNL;  // Default case
 /**
  * \cond
  */
-/**
- * @brief Specialization of fmt::formatter for std::filesystem::path.
- */
-template <> struct fmt::formatter<std::filesystem::path> : formatter<std::string_view> {
-    /**
-     * @brief Format function for std::filesystem::path.
-     * @param path The path to be formatted.
-     * @param ctx The format context.
-     * @return The formatted string.
-     */
-    template <typename FormatContext> auto format(const std::filesystem::path &path, FormatContext &ctx) {
-        return formatter<std::string_view>::format(path.string(), ctx);
-    }
-};
 
 /**
  * @brief Specialization of fmt::formatter for glm::vec.

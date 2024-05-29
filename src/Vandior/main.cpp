@@ -11,7 +11,6 @@ DISABLE_WARNINGS_POP()
 // configuration step. It creates a namespace called `Vandior`. You can modify
 // the source template at `configured_files/config.hpp.in`.
 #include <internal_use_only/config.hpp>
-#include <system_error>
 
 #define HIDE_SYSTEM_OUTPUT
 
