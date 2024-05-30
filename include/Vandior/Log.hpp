@@ -92,7 +92,7 @@ DISABLE_WARNINGS_POP()
  */
 #define INIT_LOG()                                                                                                                         \
     try {                                                                                                                                  \
-        spdlog::set_pattern(R"(%^[%T] [%l] %v%$)");                                                                                        \
+        spdlog::set_pattern(R"(%^[%T %l] %v%$)");                                                                                          \
         const auto console = spdlog::stdout_color_mt(R"(console)");                                                                        \
         spdlog::set_default_logger(console);                                                                                               \
     } catch(const spdlog::spdlog_ex &ex) { std::cerr << "Logger initialization failed: " << ex.what() << std::endl; }
