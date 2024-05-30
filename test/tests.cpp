@@ -1,5 +1,4 @@
 // NOLINTBEGIN(*-include-cleaner, *-avoid-magic-numbers, *-magic-numbers)
-#include "catch2/benchmark/catch_benchmark.hpp"
 
 #include <catch2/catch_test_macros.hpp>
 
@@ -36,18 +35,6 @@ static inline constexpr std::string_view timerName = "My Timer";
 static inline constexpr std::string_view timerBigs = "-----------";
 static inline constexpr std::string_view timerTime1 = "ms";
 static inline constexpr std::string_view timerTime2 = "ns";
-/*#ifdef _WIN32  // Windows
-#ifdef __MINGW32__
-constexpr std::string_view tfile = R"(..\..\..\test\test_imp.vn)";  // windows mingw form editor, use this when building for mingw
-#elifdef __clang__
-constexpr std::string_view tfile = R"(..\..\..\test\test_imp.vn)";  // windows mingw form editor, use this when building for clang
-#else
-constexpr std::string_view tfile = R"(..\..\test\test_imp.vn)";
-#endif
-#elif defined __unix__  // Linux and Unix-like systems
-// constexpr std::string_view tfile = "../../../test/test_imp.vn";  // Linux and Unix  form editor
-constexpr std::string_view tfile = "../../test/test_imp.vn";  // Linux and Unix
-#endif */
 
 static inline constexpr long long int timerSleap = 12;
 static inline constexpr long long int timerSleap2 = 5;
@@ -546,7 +533,6 @@ TEST_CASE("tokenizer emit integer token for hexadecimals numbers", "[tokenizer]"
 }
 
 TEST_CASE("tokenizer emit exception on  malformed exadecimal number or octal number", "[tokenizer]") {
-    // hexadecimals 0xhexnum a-f A-F 0-9
     vnd::Tokenizer tokenizer{"#", filename};
     REQUIRE_THROWS_AS(tokenizer.tokenize(), std::runtime_error);
 }
@@ -734,14 +720,6 @@ TEST_CASE("tokenizer emit multiline comment token", "[tokenizer]") {
     REQUIRE(tokens.size() == 2);
     REQUIRE(tokens[0] == vnd::Token(vnd::TokenType::COMMENT, R"(/*multi\nline\ncomment*/)", vnd::CodeSourceLocation(filename, 1, 1)));
 }  // namespace
-
-/*TEST_CASE("Benchmark vnd::Tokenizer::tokenize()", "[tokenizer]") {
-    const std::string input = vnd::readFromFile(tfile.data());
-    vnd::Tokenizer tokenizer(input);
-
-    BENCHMARK("Tokenize input string") { return tokenizer.tokenize(); };
-}
-*/
 
 TEST_CASE("ASTNode type conversion using as<T>()", "[ast]") {
     vnd::Token token{vnd::TokenType::IDENTIFIER, "id", vnd::CodeSourceLocation{filename, t_line, t_colum}};
