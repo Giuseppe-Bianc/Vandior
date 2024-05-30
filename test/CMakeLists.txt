@@ -112,6 +112,7 @@ catch_discover_tests(
         OUTPUT_SUFFIX
         .xml)
 
+#[[
 add_executable(benchmarks benchmarks.cpp)
 target_link_libraries(
         benchmarks
@@ -141,4 +142,4 @@ catch_discover_tests(
         OUTPUT_PREFIX
         "benchmarks"
         OUTPUT_SUFFIX
-        .xml)
+        .xml)]]
