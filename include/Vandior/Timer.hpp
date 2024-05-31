@@ -18,18 +18,37 @@ namespace vnd {
 
     /**
      * @brief A factor for converting microseconds to seconds.
+     *
+     * This constant represents the conversion factor from microseconds to seconds.
+     * It is used to convert time values from microseconds to seconds by multiplying
+     * the time value with this factor.
      */
-    inline static constexpr long double MICROSENCONDSFACTOR = 1000.0L;
+    inline static constexpr long double MICROSECONDSFACTOR = 1000.0L;
+
     /**
      * @brief A factor for converting milliseconds to seconds.
+     *
+     * This constant represents the conversion factor from milliseconds to seconds.
+     * It is used to convert time values from milliseconds to seconds by multiplying
+     * the time value with this factor.
      */
-    inline static constexpr long double MILLISENCONDSFACTOR = 1'000'000.0L;
+    inline static constexpr long double MILLISECONDSFACTOR = 1'000'000.0L;
+
     /**
      * @brief A factor for converting seconds to seconds (1 billion nanoseconds).
+     *
+     * This constant represents the conversion factor from seconds to seconds, specifically
+     * in the unit of nanoseconds. It is used to convert time values from seconds to
+     * nanoseconds by multiplying the time value with this factor.
      */
-    inline static constexpr long double SENCONDSFACTOR = 1'000'000'000.0L;
+    inline static constexpr long double SECONDSFACTOR = 1'000'000'000.0L;
+
     /**
      * @brief A multiplier factor used in the Timer class.
+     *
+     * This constant represents a multiplier factor used internally in the Timer class
+     * for certain calculations or operations related to time. Its specific purpose
+     * may vary depending on the implementation within the Timer class.
      */
     inline static constexpr long MFACTOR = 100;
 
@@ -132,9 +151,9 @@ namespace vnd {
          * @return A tuple containing named times.
          */
         [[nodiscard]] static times make_named_times(long double time) {  // NOLINT(*-identifier-length)
-            const auto &secondsTime = time / SENCONDSFACTOR;
-            const auto &millisTime = time / MILLISENCONDSFACTOR;
-            const auto &microTime = time / MICROSENCONDSFACTOR;
+            const auto &secondsTime = time / SECONDSFACTOR;
+            const auto &millisTime = time / MILLISECONDSFACTOR;
+            const auto &microTime = time / MICROSECONDSFACTOR;
             return {secondsTime, millisTime, microTime, time, "s", "ms", "us", "ns"};
         }
         // NOLINTEND

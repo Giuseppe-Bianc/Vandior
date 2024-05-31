@@ -18,7 +18,6 @@
  * Usage example: @code{.cpp} bool b = C_BOOL(1); @endcode
  */
 #define C_BOOL(x) static_cast<bool>(x)
-#define NC_BOOL(x) gsl::narrow_cast<bool>(x)
 #define BC_BOOL(x) std::bit_cast<bool>(x)
 /**
  * @brief Macro to cast to std::byte.
@@ -28,7 +27,6 @@
  * Usage example: @code{.cpp} std::byte b = C_B(255); @endcode
  */
 #define C_B(x) static_cast<std::byte>(x)
-#define NC_B(x) gsl::narrow_cast<std::byte>(x)
 #define BC_B(x) std::bit_cast<std::byte>(x)
 /**
  * @brief Macro to cast to std::intptr_t.
@@ -38,7 +36,6 @@
  * Usage example: @code{.cpp} std::intptr_t ptr = C_IPTR(somePointer);@endcode
  */
 #define C_IPTR(x) static_cast<std::intptr_t>(x)
-#define NC_IPTR(x) gsl::narrow_cast<std::intptr_t>(x)
 #define BC_IPTR(x) std::bit_cast<std::intptr_t>(x)
 /**
  * @brief Macro to cast to std::uintptr_t
@@ -48,7 +45,6 @@
  * Usage example: @code{.cpp} std::intptr_t ptr = C_UIPTR(somePointer);@endcode
  */
 #define C_UIPTR(x) static_cast<std::uintptr_t>(x)
-#define NC_UIPTR(x) gsl::narrow_cast<std::uintptr_t>(x)
 #define BC_UIPTR(x) std::bit_cast<std::uintptr_t>(x)
 /**
  * @brief Macro to cast to std::int8_t.
@@ -58,7 +54,6 @@
  * Usage example: @code{.cpp}  std::int8_t value = C_I8T(42);@endcode
  */
 #define C_I8T(x) static_cast<std::int8_t>(x)
-#define NC_I8T(x) gsl::narrow_cast<std::int8_t>(x)
 #define BC_I8T(x) std::bit_cast<std::int8_t>(x)
 /**
  * @brief Macro to cast to std::int16_t.
@@ -68,7 +63,6 @@
  * Usage example: @code{.cpp} std::int16_t value = C_I16T(42);;@endcode
  */
 #define C_I16T(x) static_cast<std::int16_t>(x)
-#define NC_I16T(x) gsl::narrow_cast<std::int16_t>(x)
 #define BC_I16T(x) std::bit_cast<std::int16_t>(x)
 /**
  * @brief Macro to cast to std::int32_t.
@@ -78,7 +72,6 @@
  * Usage example: @code{.cpp} std::int32_t value = C_I32T(42);@endcode
  */
 #define C_I32T(x) static_cast<std::int32_t>(x)
-#define NC_I32T(x) gsl::narrow_cast<std::int32_t>(x)
 #define BC_I32T(x) std::bit_cast<std::int32_t>(x)
 /**
  * @brief Macro to cast to std::int64_t.
@@ -88,7 +81,6 @@
  * Usage example: @code{.cpp} std::int64_t value = C_I64T(42);@endcode
  */
 #define C_I64T(x) static_cast<std::int64_t>(x)
-#define NC_I64T(x) gsl::narrow_cast<std::int64_t>(x)
 #define BC_I64T(x) std::bit_cast<std::int64_t>(x)
 /**
  * @brief Macro to cast to  std::uint8_t.
@@ -98,7 +90,6 @@
  * Usage example: @code{.cpp}  std::uint8_t value = C_UI8T(42);@endcode
  */
 #define C_UI8T(x) static_cast<std::uint8_t>(x)
-#define NC_UI8T(x) gsl::narrow_cast<std::uint8_t>(x)
 #define BC_UI8T(x) std::bit_cast<std::uint8_t>(x)
 /**
  * @brief Macro to cast to std::uint16_t.
@@ -108,7 +99,6 @@
  * Usage example: @code{.cpp}std::uint16_t value = C_UI16T(42);@endcode
  */
 #define C_UI16T(x) static_cast<std::uint16_t>(x)
-#define NC_UI16T(x) gsl::narrow_cast<std::uint16_t>(x)
 #define BC_UI16T(x) std::bit_cast<std::unit16_t>(x)
 /**
  * @brief Macro to cast to std::uint32_t.
@@ -118,7 +108,6 @@
  * Usage example: @code{.cpp} std::uint32_t value = C_UI32T(42);@endcode
  */
 #define C_UI32T(x) static_cast<std::uint32_t>(x)
-#define NC_UI32T(x) gsl::narrow_cast<std::uint32_t>(x)
 #define BC_UI32T(x) std::bit_cast<std::uint32_t>(x)
 /**
  * @brief Macro to cast to std::uint64_t.
@@ -128,7 +117,6 @@
  * Usage example: @code{.cpp} std::uint64_t value = C_UI64T(42);@endcode
  */
 #define C_UI64T(x) static_cast<std::uint64_t>(x)
-#define NC_UI64T(x) gsl::narrow_cast<std::uint64_t>(x)
 #define BC_UI64T(x) std::bit_cast<std::ui64_t>(x)
 /**
  * @brief Macro to cast to std::ptrdiff_t.
@@ -138,7 +126,6 @@
  * Usage example: @code{.cpp} std::ptrdiff_t diff = C_PTRDIFT(10)@endcode
  */
 #define C_PTRDIFT(x) static_cast<std::ptrdiff_t>(x)
-#define NC_PTRDIFT(x) gsl::narrow_cast<std::ptrdiff_t>(x)
 #define BC_PTRDIFT(x) std::bit_cast<std::ptrdiff_t>(x)
 /**
  * @brief Macro to cast to std::div_t.
@@ -148,7 +135,6 @@
  * Usage example: @code{.cpp} std::div_t result = C_DIVT(10);@endcode
  */
 #define C_DIVT(x) static_cast<std::div_t>(x)
-#define NC_DIVT(x) gsl::narrow_cast<std::div_t>(x)
 #define BC_DIVT(x) std::bit_cast<std::div_t>(x)
 /**
  * @brief Macro to cast to std::ldiv_t.
@@ -158,7 +144,6 @@
  * Usage example: @code{.cpp} std::ldiv_t result = C_LDIVT(10);@endcode
  */
 #define C_LDIVT(x) static_cast<std::ldiv_t>(x)
-#define NC_LDIVT(x) gsl::narrow_cast<std::ldiv_t>(x)
 #define BC_LDIVT(x) std::bit_cast<std::ldiv_t>(x)
 /**
  * @brief Macro to cast to char.
@@ -168,7 +153,6 @@
  * Usage example: @code{.cpp} char c = C_C(65);@endcode
  */
 #define C_C(x) static_cast<char>(x)
-#define NC_C(x) gsl::narrow_cast<char>(x)
 #define BC_C(x) std::bit_cast<char>(x)
 /**
  * @brief Macro to cast to char16_t.
@@ -178,7 +162,6 @@
  * Usage example: @code{.cpp} char16_t c = C_C16(65);@endcode
  */
 #define C_C16(x) static_cast<char16_t>(x)
-#define NC_C16(x) gsl::narrow_cast<char16_t>(x)
 #define BC_C16(x) std::bit_cast<char16_t>(x)
 /**
  * @brief Macro to cast to char132_t.
@@ -188,7 +171,6 @@
  * Usage example: @code{.cpp} char32_t c = C_C32(65);@endcode
  */
 #define C_C32(x) static_cast<char32_t>(x)
-#define NC_C32(x) gsl::narrow_cast<char32_t>(x)
 #define BC_C32(x) std::bit_cast<char32_t>(x)
 /**
  * @brief Macro to cast to char8_t.
@@ -198,7 +180,6 @@
  * Usage example: @code{.cpp} char8_t c = C_C8(65);@endcode
  */
 #define C_C8(x) static_cast<char8_t>(x)
-#define NC_C8(x) gsl::narrow_cast<char8_t>(x)
 #define BC_C8(x) std::bit_cast<char8_t>(x)
 /**
  * @brief Macro to cast to double.
@@ -208,7 +189,6 @@
  * Usage example: @code{.cpp} double d = C_D(3.14f);@endcode
  */
 #define C_D(x) static_cast<double>(x)
-#define NC_D(x) gsl::narrow_cast<double>(x)
 #define BC_D(x) std::bit_cast<double>(x)
 /**
  * @brief Macro to cast to float.
@@ -218,7 +198,6 @@
  * Usage example: @code{.cpp} float f = C_F(3.14);@endcode
  */
 #define C_F(x) static_cast<float>(x)
-#define NC_F(x) gsl::narrow_cast<float>(x)
 #define BC_F(x) std::bit_cast<float>(x)
 /**
  * @brief Macro to cast to int.
@@ -228,7 +207,6 @@
  * Usage example: @code{.cpp} int i = C_I(3.14f);@endcode
  */
 #define C_I(x) static_cast<int>(x)
-#define NC_I(x) gsl::narrow_cast<int>(x)
 #define BC_I(x) std::bit_cast<int>(x)
 /**
  * @brief Macro to cast to long.
@@ -238,7 +216,6 @@
  * Usage example: @code{.cpp} long l = C_L(42);@endcode
  */
 #define C_L(x) static_cast<long>(x)
-#define NC_L(x) gsl::narrow_cast<long>(x)
 #define BC_L(x) std::bit_cast<long>(x)
 /**
  * @brief Macro to cast to long double.
@@ -248,7 +225,6 @@
  * Usage example: @code{.cpp} long double ld = C_LD(3.14f);@endcode
  */
 #define C_LD(x) static_cast<long double>(x)
-#define NC_LD(x) gsl::narrow_cast<long double>(x)
 #define BC_LD(x) std::bit_cast<long double>(x)
 /**
  * @brief Macro to cast to long int.
@@ -258,7 +234,6 @@
  * Usage example: @code{.cpp} long int li = C_LI(42);@endcode
  */
 #define C_LI(x) static_cast<long int>(x)
-#define NC_LI(x) gsl::narrow_cast<long int>(x)
 #define BC_LI(x) std::bit_cast<long int>(x)
 /**
  * @brief Macro to cast to long long.
@@ -268,7 +243,6 @@
  * Usage example: @code{.cpp} long long ll = C_LL(42);@endcode
  */
 #define C_LL(x) static_cast<long long>(x)
-#define NC_LL(x) gsl::narrow_cast<long long>(x)
 #define BC_LL(x) std::bit_cast<long long>(x)
 /**
  * @brief Macro to cast to long long int.
@@ -278,7 +252,6 @@
  * Usage example: @code{.cpp} long long int lli = C_LLI(42);@endcode
  */
 #define C_LLI(x) static_cast<long long int>(x)
-#define NC_LLI(x) gsl::narrow_cast<long long int>(x)
 #define BC_LLI(x) std::bit_cast<long long int>(x)
 /**
  * @brief Macro to cast to short.
@@ -288,7 +261,6 @@
  * Usage example: @code{.cpp} short s = C_S(42);@endcode
  */
 #define C_S(x) static_cast<short>(x)
-#define NC_S(x) gsl::narrow_cast<short>(x)
 #define BC_S(x) std::bit_cast<short>(x)
 /**
  * @brief Macro to cast to short int.
@@ -298,7 +270,6 @@
  * Usage example: @code{.cpp} short si = C_SI(42);@endcode
  */
 #define C_SI(x) static_cast<short int>(x)
-#define NC_SI(x) gsl::narrow_cast<short int>(x)
 #define BC_SI(x) std::bit_cast<short int>(x)
 /**
  * @brief Macro to cast to unsigned char.
@@ -308,7 +279,6 @@
  * Usage example: @code{.cpp} unsigned char uc = C_UC(65);@endcode
  */
 #define C_UC(x) static_cast<unsigned char>(x)
-#define NC_UC(x) gsl::narrow_cast<unsigned char>(x)
 #define BC_UC(x) std::bit_cast<unsigned char>(x)
 /**
  * @brief Macro to cast to unsigned int.
@@ -318,7 +288,6 @@
  * Usage example: @code{.cpp} unsigned int ui = C_UI(42);@endcode
  */
 #define C_UI(x) static_cast<unsigned int>(x)
-#define NC_UI(x) gsl::narrow_cast<unsigned int>(x)
 #define BC_UI(x) std::bit_cast<unsigned int>(x)
 /**
  * @brief Macro to cast to unsigned long.
@@ -328,7 +297,6 @@
  * Usage example: @code{.cpp} unsigned long ul = C_UL(42);@endcode
  */
 #define C_UL(x) static_cast<unsigned long>(x)
-#define NC_UL(x) gsl::narrow_cast<unsigned long>(x)
 #define BC_UL(x) std::bit_cast<unsigned long>(x)
 /**
  * @brief Macro to cast to unsigned long int.
@@ -338,7 +306,6 @@
  * Usage example: @code{.cpp} unsigned long int uli = C_ULI(65);@endcode
  */
 #define C_ULI(x) static_cast<unsigned long int>(x)
-#define NC_ULI(x) gsl::narrow_cast<unsigned long int>(x)
 #define BC_ULI(x) std::bit_cast<std::byte>(x)
 /**
  * @brief Macro to cast to unsigned long long.
@@ -348,7 +315,6 @@
  * Usage example: @code{.cpp} unsigned long long ull = C_ULL(42);@endcode
  */
 #define C_ULL(x) static_cast<unsigned long long>(x)
-#define NC_ULL(x) gsl::narrow_cast<unsigned long long>(x)
 #define BC_ULL(x) std::bit_cast<std::byte>(x)
 /**
  * @brief Macro to cast to unsigned long long int.
@@ -358,7 +324,6 @@
  * Usage example: @code{.cpp} unsigned char ulli = C_ULLI(42);@endcode
  */
 #define C_ULLI(x) static_cast<unsigned long long int>(x)
-#define NC_ULLI(x) gsl::narrow_cast<unsigned long long int>(x)
 #define BC_ULLI(x) std::bit_cast<std::byte>(x)
 /**
  * @brief Macro to cast to std::string.
@@ -368,7 +333,6 @@
  * Usage example: @code{.cpp} std::string str = C_STR("Hello");@endcode
  */
 #define C_STR(x) static_cast<std::string>(x)
-#define NC_STR(x) gsl::narrow_cast<std::string>(x)
 #define BC_STR(x) std::bit_cast<std::byte>(x)
 /**
  * @brief Macro to cast to std::wstring.
@@ -378,7 +342,6 @@
  * Usage example: @code{.cpp} std::wstring wstr = C_WSTR("Hello");@endcode
  */
 #define C_WSTR(x) static_cast<std::wstring>(x)
-#define NC_WSTR(x) gsl::narrow_cast<std::wstring>(x)
 #define BC_WSTR(x) std::bit_cast<std::byte>(x)
 /**
  * @brief Macro to cast to std::u8string.
@@ -388,7 +351,6 @@
  * Usage example: @code{.cpp} std::u8string u8str = C_U8STR(u8"Hello");@endcode
  */
 #define C_U8STR(x) static_cast<std::u8string>(x)
-#define NC_U8STR(x) gsl::narrow_cast<std::u8string>(x)
 #define BC_U8STR(x) std::bit_cast<std::byte>(x)
 /**
  * @brief Macro to cast to std::u16string.
@@ -398,7 +360,6 @@
  * Usage example: @code{.cpp} std::u16string u16str = C_U16STR(u"Hello");@endcode
  */
 #define C_U16STR(x) static_cast<std::u16string>(x)
-#define NC_U16STR(x) gsl::narrow_cast<std::u16string>(x)
 #define BC_U16STR(x) std::bit_cast<std::byte>(x)
 /**
  * @brief Macro to cast to std::u32string.
@@ -408,7 +369,6 @@
  * Usage example: @code{.cpp} std::u32string u32str = C_U32STR(U"Hello");@endcode
  */
 #define C_U32STR(x) static_cast<std::u32string>(x)
-#define NC_U32STR(x) gsl::narrow_cast<std::u32string>(x)
 #define BC_U32STR(x) std::bit_cast<std::byte>(x)
 /**
  * @brief Macro to cast to std::string_view.
@@ -418,7 +378,6 @@
  * Usage example: @code{.cpp} std::string_view strView = C_STRV("Hello, World!");@endcode
  */
 #define C_STRV(x) static_cast<std::string_view>(x)
-#define NC_STRV(x) gsl::narrow_cast<std::string_view>(x)
 #define BC_STRV(x) std::bit_cast<std::byte>(x)
 /**
  * @brief Macro to cast to std::wstring_view.
@@ -428,7 +387,6 @@
  * Usage example: @code{.cpp} std::wstring_view wstrView = C_WSTRV(L"Hello, World!");@endcode
  */
 #define C_WSTRV(x) static_cast<std::wstring_view>(x)
-#define NC_WSTRV(x) gsl::narrow_cast<std::wstring_view>(x)
 #define BC_WSTRV(x) std::bit_cast<std::byte>(x)
 /**
  * @brief Macro to cast to std::u8string_view.
@@ -438,7 +396,6 @@
  * Usage example: @code{.cpp} std::u8string_view u8strView = C_U8STRV(u8"Hello, World!");@endcode
  */
 #define C_U8STRV(x) static_cast<std::u8string_view>(x)
-#define NC_U8STRV(x) gsl::narrow_cast<std::u8string_view>(x)
 #define BC_U8STRV(x) std::bit_cast<std::byte>(x)
 /**
  * @brief Macro to cast to std::u16string_view.
@@ -448,7 +405,6 @@
  * Usage example: @code{.cpp} std::u16string_view u16strView = C_U16STRV(u8"Hello, World!");@endcode
  */
 #define C_U16STRV(x) static_cast<std::u16string_view>(x)
-#define NC_U16STRV(x) gsl::narrow_cast<std::u16string_view>(x)
 #define BC_U16STRV(x) std::bit_cast<std::u16string_view>(x)
 /**
  * @brief Macro to cast to std::u32string_view.
@@ -458,7 +414,6 @@
  * Usage example: @code{.cpp} std::u32string_view u32strView = C_U32STRV(u8"Hello, World!");@endcode
  */
 #define C_U32STRV(x) static_cast<std::u32string_view>(x)
-#define NC_U32STRV(x) gsl::narrow_cast<std::u32string_view>(x)
 #define BC_U32STRV(x) std::bit_cast<std::u32string_view>(x)
 
 /**
@@ -480,12 +435,16 @@
  * Usage example: @code{.cpp} const uint32_t * cpu32t = C_CPCU32T(&42);@endcode
  */
 #define C_CPCU32T(x) static_cast<const uint32_t *>(static_cast<const void *>(x))
-#define NC_CPCU32T(x) gsl::narrow_cast<const uint32_t *>(static_cast<const void *>(x))
 #define BC_CPCU32T(x) std::bit_cast<const uint32_t *>(x)
 
 /** @} */  // end of TypeCastingMacros group
 /**
  * @brief Namespace containing sizes of various types.
+ *
+ * This namespace provides constants representing the sizes of different types in bytes.
+ * It includes fundamental types, pointer types, character types, floating-point types,
+ * and string types.
+ *
  * @namespace TypeSizes
  * @{
  */

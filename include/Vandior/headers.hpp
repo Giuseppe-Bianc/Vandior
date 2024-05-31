@@ -3,6 +3,7 @@
 
 #include "disableWarn.hpp"
 // clang-format off
+/** \cond */
 DISABLE_WARNINGS_PUSH(
     4005 4201 4459 4514 4625 4626 4820
     6244 6285 6385 6386 26409 26415 26418
@@ -12,7 +13,7 @@ DISABLE_WARNINGS_PUSH(
     26474 26475 26481 26482 26485 26490
     26491 26493 26494 26495 26496 26497 
     26498 26800 26814 26818 26826)
-
+/** \endcond */
 #include <any>
 #include <algorithm>
 #include <array>
@@ -42,7 +43,6 @@ DISABLE_WARNINGS_PUSH(
 #include <memory>
 #include <memory_resource>
 #include <numbers>
-//#include <omp.h>
 #include <ostream>
 #include <optional>
 #include <random>
@@ -101,7 +101,16 @@ static inline constexpr const char *NEWL = &CNL;  // Default case
 /**
  * @def SYSPAUSE
  * @brief A macro to pause the system and wait for user input.
- * Usage: SYSPAUSE();
+ *
+ * This macro outputs a message to the user and waits for them to press
+ * the enter key before continuing. It is useful for pausing the execution
+ * of a console application to allow the user to read any final output
+ * before the program exits.
+ *
+ * Usage example:
+ * @code
+ * SYSPAUSE();
+ * @endcode
  */
 #define SYSPAUSE()                                                                                                                         \
     do {                                                                                                                                   \
@@ -178,30 +187,48 @@ template <> struct fmt::formatter<nlohmann::basic_json<>> : formatter<std::strin
 /**
  * @typedef StringPair
  * @brief A pair of strings.
+ *
+ * This type alias defines a pair of strings using `std::pair` from the C++ Standard Library.
+ * It is useful for storing two associated strings together, such as key-value pairs or name-description pairs.
  */
 using StringPair = std::pair<std::string, std::string>;
 
 /**
  * @typedef StringPairVec
  * @brief A vector of string pairs.
+ *
+ * This type alias defines a vector of `StringPair` using `std::vector` from the C++ Standard Library.
+ * It is useful for storing a list of associated string pairs, such as a collection of key-value pairs.
  */
 using StringPairVec = std::vector<StringPair>;
 
 /**
  * @typedef StringVec
  * @brief A vector of strings.
+ *
+ * This type alias defines a vector of strings using `std::vector` from the C++ Standard Library.
+ * It is useful for storing a list of strings, such as a collection of words or lines from a text.
  */
 using StringVec = std::vector<std::string>;
 
 /**
  * @typedef StrViewVec
  * @brief A vector of string views.
+ *
+ * This type alias defines a vector of string views using `std::vector` from the C++ Standard Library.
+ * `std::string_view` provides a non-owning view of a string, which can be useful for performance-sensitive
+ * operations where creating a copy of a string is not necessary.
+ * This is useful for storing a list of string views that reference parts of strings without owning them.
  */
 using StrViewVec = std::vector<std::string_view>;
 
 /**
  * @typedef OptionalSizeT
  * @brief An optional size_t value.
+ *
+ * This type alias defines an optional size_t using `std::optional` from the C++ Standard Library.
+ * `std::optional` can be used to represent a value that may or may not be present. In this case, it represents
+ * an optional `size_t` value, which can be useful for functions that may or may not return a valid size or index.
  */
 using OptionalSizeT = std::optional<size_t>;
 
@@ -209,9 +236,20 @@ using OptionalSizeT = std::optional<size_t>;
  * @concept StringOrStringView
  * @brief Concept that checks if a type is either std::string or std::string_view.
  *
- * This concept can be used to constrain template parameters to ensure that
- * only `std::string` or `std::string_view` types are accepted.
+ * This concept is used to constrain template parameters to ensure that only `std::string` or `std::string_view` types are accepted.
+ * It is useful for generic programming where a function or class template should only work with string types.
+ *
  * @tparam T The type to check.
+ *
+ * @note This concept uses `std::same_as` from the C++ Standard Library, which checks if two types are the same.
+ *
+ * Example usage:
+ * @code
+ * template <StringOrStringView T>
+ * void printString(T str) {
+ *     std::cout << str << std::endl;
+ * }
+ * @endcode
  */
 template <typename T>
 concept StringOrStringView = std::same_as<T, std::string> || std::same_as<T, std::string_view>;
