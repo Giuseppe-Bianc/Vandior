@@ -937,6 +937,7 @@ TEST_CASE("Parser emit integer number node form exadecimal", "[parser]") {
     REQUIRE(ast->getType() == NodeType::Number);
     const auto *number = ast->as<vnd::NumberNode<int>>();
     REQUIRE(number != nullptr);
+    REQUIRE(number->getTypeIDName() == "int");
     REQUIRE(number->get_value() == 35);
 }
 
@@ -947,6 +948,7 @@ TEST_CASE("Parser emit integer number node form exadecimal max int -1", "[parser
     REQUIRE(ast->getType() == NodeType::Number);
     const auto *number = ast->as<vnd::NumberNode<int>>();
     REQUIRE(number != nullptr);
+    REQUIRE(number->getTypeIDName() == "int");
     REQUIRE(number->get_value() == 2147483646);
 }
 
@@ -957,6 +959,7 @@ TEST_CASE("Parser emit integer number node form octal", "[parser]") {
     REQUIRE(ast->getType() == NodeType::Number);
     const auto *number = ast->as<vnd::NumberNode<int>>();
     REQUIRE(number != nullptr);
+    REQUIRE(number->getTypeIDName() == "int");
     REQUIRE(number->get_value() == 19);
 }
 
@@ -967,6 +970,7 @@ TEST_CASE("Parser emit integer number node form octal max int -1", "[parser]") {
     REQUIRE(ast->getType() == NodeType::Number);
     const auto *number = ast->as<vnd::NumberNode<int>>();
     REQUIRE(number != nullptr);
+    REQUIRE(number->getTypeIDName() == "int");
     REQUIRE(number->get_value() == 2147483646);
 }
 
@@ -978,6 +982,7 @@ TEST_CASE("Parser emit integenumber node print", "[parser]") {
     const auto *number = ast->as<vnd::NumberNode<int>>();
     REQUIRE(number != nullptr);
     REQUIRE(number->get_value() == 1);
+    REQUIRE(number->getTypeIDName() == "int");
     REQUIRE(number->print() == "NUMBER_INTEGER(1)");
 }
 
@@ -989,6 +994,7 @@ TEST_CASE("Parser emit integer number node compat print", "[parser]") {
     const auto *number = ast->as<vnd::NumberNode<int>>();
     REQUIRE(number != nullptr);
     REQUIRE(number->get_value() == 1);
+    REQUIRE(number->getTypeIDName() == "int");
     REQUIRE(number->comp_print() == "NUM_INT(1)");
 }
 
@@ -1009,6 +1015,7 @@ TEST_CASE("Parser emit double number node double", "[parser]") {
     REQUIRE(ast->getType() == NodeType::Number);
     const auto *number = ast->as<vnd::NumberNode<double>>();
     REQUIRE(number != nullptr);
+    REQUIRE(number->getTypeIDName() == "double");
     REQUIRE(number->get_value() == 1.5);
 }
 
@@ -1019,6 +1026,7 @@ TEST_CASE("Parser emit double number node double print", "[parser]") {
     REQUIRE(ast->getType() == NodeType::Number);
     const auto *number = ast->as<vnd::NumberNode<double>>();
     REQUIRE(number != nullptr);
+    REQUIRE(number->getTypeIDName() == "double");
     REQUIRE(number->get_value() == 1.5);
     REQUIRE(number->print() == "NUMBER_DOUBLE(1.5)");
 }
@@ -1030,6 +1038,7 @@ TEST_CASE("Parser emit double number node double compat print", "[parser]") {
     REQUIRE(ast->getType() == NodeType::Number);
     const auto *number = ast->as<vnd::NumberNode<double>>();
     REQUIRE(number != nullptr);
+    REQUIRE(number->getTypeIDName() == "double");
     REQUIRE(number->get_value() == 1.5);
     REQUIRE(number->comp_print() == "NUM_DBL(1.5)");
 }
@@ -1139,6 +1148,8 @@ TEST_CASE("Parser emit binary expression node", "[parser]") {
 
     REQUIRE(leftNumber != nullptr);
     REQUIRE(rightNumber != nullptr);
+    REQUIRE(leftNumber->getTypeIDName() == "int");
+    REQUIRE(rightNumber->getTypeIDName() == "int");
 
     // Check the values of left and right operands
     REQUIRE(leftNumber->get_value() == 1);
@@ -1162,6 +1173,8 @@ TEST_CASE("Parser emit binary expression node print", "[parser]") {
 
     REQUIRE(leftNumber != nullptr);
     REQUIRE(rightNumber != nullptr);
+    REQUIRE(leftNumber->getTypeIDName() == "int");
+    REQUIRE(rightNumber->getTypeIDName() == "int");
 
     // Check the values of left and right operands
     REQUIRE(leftNumber->get_value() == 1);
@@ -1186,6 +1199,8 @@ TEST_CASE("Parser emit binary expression node compact print", "[parser]") {
 
     REQUIRE(leftNumber != nullptr);
     REQUIRE(rightNumber != nullptr);
+    REQUIRE(leftNumber->getTypeIDName() == "int");
+    REQUIRE(rightNumber->getTypeIDName() == "int");
 
     // Check the values of left and right operands
     REQUIRE(leftNumber->get_value() == 1);

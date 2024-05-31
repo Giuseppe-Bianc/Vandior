@@ -4,15 +4,20 @@
 
 #pragma once
 #include "ASTNode.hpp"
+#ifdef __GNUG__  // This macro is defined for GCC and Clang
+#include <cxxabi.h>
+#endif
+
 namespace vnd {
 
     /**
-     * @brief generic Node class representing a literal values in the AST.
+     * @brief Generic Node class representing literal values in the AST.
+     * @tparam T The type of the literal value.
      */
     template <typename T> class LiteralNode : public ASTNode {
     public:
         /**
-         * @brief Creates a LiteralNode.
+         * @brief Constructs a LiteralNode.
          * @param value The value of the node.
          * @param token The token correspondent to the node.
          * @param type NodeType of the node.
@@ -24,21 +29,40 @@ namespace vnd {
          * @return NodeType enumeration value.
          */
         [[nodiscard]] NodeType getType() const noexcept override { return m_type; }
+
+        /**
+         * @brief Gets the demangled name of the type T.
+         * @return Demangled name of the type T if using GCC/Clang, otherwise mangled name.
+         */
+        [[nodiscard]] std::string_view getTypeIDName() const noexcept {
+#ifdef __GNUG__
+            int status = 0;
+            std::unique_ptr<char[], decltype(&std::free)> demangledName(abi::__cxa_demangle(typeid(T).name(), nullptr, nullptr, &status),
+                                                                        std::free);
+            return (status == 0) ? demangledName.get() : typeid(T).name();
+#else
+            return typeid(T).name();
+#endif
+        }
+
         /**
          * @brief Returns a string representation of the AST node.
          * @return String representation of the AST node.
          */
         [[nodiscard]] std::string print() const override { return FORMAT("{}_LIT({})", m_type, m_value); }
+
         /**
          * @brief Returns a compact string representation of the AST node for compilation purposes.
          * @return Compact string representation of the AST node.
          */
         [[nodiscard]] std::string comp_print() const override { return FORMAT("{}({})", m_type, m_value); }
+
         /**
          * @brief Gets the value of the node.
          * @return The value of the node.
          */
         [[nodiscard]] T get_value() const noexcept { return m_value; }
+
         friend void swap(LiteralNode &lhs, LiteralNode &rhs) noexcept {
             using std::swap;
             swap(static_cast<LiteralNode &>(lhs), static_cast<LiteralNode &>(rhs));
@@ -47,8 +71,8 @@ namespace vnd {
         }
 
     private:
-        T m_value;
-        NodeType m_type;
+        T m_value;        ///< The literal value held by the node.
+        NodeType m_type;  ///< The type of the node.
     };
 
 }  // namespace vnd
