@@ -340,7 +340,7 @@ namespace vnd {
     /**
      * @brief Extracts leading tabs from the given string view.
      *
-     * This function removes leading tab characters ('\t') from the beginning of the
+     * This function removes leading tab characters from the beginning of the
      * provided string view and returns the modified string view without those tabs.
      *
      * @param input The input string view from which tabs are to be extracted.
@@ -351,7 +351,7 @@ namespace vnd {
      * any exceptions.
      */
     [[nodiscard]] std::string_view extractTabs(const std::string_view &input) noexcept {
-        // Find the position of the first character that is not a tab ('\t')
+        // Find the position of the first character that is not a tab
         const auto pos = input.find_first_not_of(ctab);
 
         // Return a substring starting from the beginning of the input string view
