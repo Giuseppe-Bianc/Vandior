@@ -54,21 +54,21 @@ namespace vnd {
 
     DISABLE_WARNINGS_PUSH(6005 26447 26455 26496)
 
-    // OLINTBEGIN(*-include-cleaner)
+    // NOLINTBEGIN(*-include-cleaner)
     /**
      * @brief Timer class for measuring the execution time of code.
      */
     class Timer {  // NOLINT(*-special-member-functions)
     protected:
         /// This is a typedef to make clocks easier to use
-        using clock = std::chrono::high_resolution_clock;  // NOLINT(*-include-cleaner)
+        using clock = std::chrono::high_resolution_clock;
         using times = std::tuple<long double, long double, long double, long double, std::string, std::string, std::string, std::string>;
 
         /// This typedef is for points in time
-        using time_point = std::chrono::time_point<clock>;  // NOLINT(*-include-cleaner)
+        using time_point = std::chrono::time_point<clock>;
 
         /// This is the type of a printing function, you can make your own
-        using time_print_t = std::function<std::string(std::string, std::string)>;  // NOLINT(*-include-cleaner)
+        using time_print_t = std::function<std::string(std::string, std::string)>;
         using nanolld = std::chrono::duration<long double, std::nano>;
         /// This is the title of the timer
         std::string title_;
@@ -84,7 +84,6 @@ namespace vnd {
 
     public:
         /// Standard print function, this one is set by default
-        // NOLINTBEGIN
         /**
          * @brief Default print function for Timer class.
          */
@@ -96,7 +95,6 @@ namespace vnd {
         static const std::string Big(const std::string &title, const std::string &time) {
             return FORMAT("{0:-^{1}}\n| {2} | Time = {3}\n{0:-^{1}}", "", 41, title, time);
         }
-        // NOLINTEND
 
         /**
          * @brief Standard constructor for Timer class.
@@ -143,8 +141,6 @@ namespace vnd {
             const nanolld elapsed = clock::now() - start_;
             return elapsed.count();
         }
-
-        // NOLINTBEGIN
         /**
          * @brief Get the named times (seconds, milliseconds, microseconds, nanoseconds).
          * @param time The time in nanoseconds.
@@ -156,7 +152,6 @@ namespace vnd {
             const auto &microTime = time / MICROSECONDSFACTOR;
             return {secondsTime, millisTime, microTime, time, "s", "ms", "us", "ns"};
         }
-        // NOLINTEND
 
         [[maybe_unused]] [[nodiscard]] times multi_time() const { return make_named_times(make_time()); }
 
@@ -260,7 +255,7 @@ template <> struct fmt::formatter<vnd::Timer> : formatter<std::string_view> {  /
 /// This prints out the time if shifted into a std::cout like stream.
 inline std::ostream &operator<<(std::ostream &in, const vnd::Timer &timer) { return in << timer.to_string(); }
 
-// OLINTEND
+// NOLINTEND(*-include-cleaner)
 DISABLE_WARNINGS_POP()
 #if defined(__GNUC__) && (__GNUC__ >= 11)
 #pragma GCC diagnostic pop
