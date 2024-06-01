@@ -3,7 +3,7 @@
 //
 
 #pragma once
-
+// NOLINTBEGIN
 #include <bit>
 
 /**
@@ -11,53 +11,165 @@
  * @{
  */
 
-
+/**
+ * @brief Macro to cast a value to bool using std::bit_cast.
+ * This macro is used to cast a value to a boolean type using the underlying bit representation.
+ * @param x The value to be casted.
+ * @return The value casted to bool.
+ * Usage example: @code{.cpp} bool b = BC_BOOL(someValue); @endcode
+ * @see std::bit_cast
+ */
 #define BC_BOOL(x) std::bit_cast<bool>(x)
+
+/**
+ * @brief Macro to cast a value to std::byte using std::bit_cast.
+ * This macro is used to cast a value to std::byte type.
+ * @param x The value to be casted.
+ * @return The value casted to std::byte.
+ * Usage example: @code{.cpp} std::byte b = BC_B(someValue); @endcode
+ * @see std::bit_cast
+ */
 #define BC_B(x) std::bit_cast<std::byte>(x)
+
+/**
+ * @brief Macro to cast a value to std::intptr_t using std::bit_cast.
+ * This macro is used to cast a value to std::intptr_t type, which is useful for holding a pointer.
+ * @param x The value to be casted.
+ * @return The value casted to std::intptr_t.
+ * Usage example: @code{.cpp} std::intptr_t i = BC_IPTR(someValue); @endcode
+ * @see std::bit_cast
+ */
 #define BC_IPTR(x) std::bit_cast<std::intptr_t>(x)
+
+/**
+ * @brief Macro to cast a value to std::uintptr_t using std::bit_cast.
+ * This macro is used to cast a value to std::uintptr_t type, which is an unsigned integer pointer type.
+ * @param x The value to be casted.
+ * @return The value casted to std::uintptr_t.
+ * Usage example: @code{.cpp} std::uintptr_t ui = BC_UIPTR(someValue); @endcode
+ * @see std::bit_cast
+ */
 #define BC_UIPTR(x) std::bit_cast<std::uintptr_t>(x)
+
+/**
+ * @brief Macro to cast a value to std::int8_t using std::bit_cast.
+ * This macro is used to cast a value to std::int8_t type, which is an 8-bit signed integer.
+ * @param x The value to be casted.
+ * @return The value casted to std::int8_t.
+ * Usage example: @code{.cpp} std::int8_t i8 = BC_I8T(someValue); @endcode
+ * @see std::bit_cast
+ */
 #define BC_I8T(x) std::bit_cast<std::int8_t>(x)
+
+/**
+ * @brief Macro to cast a value to std::int16_t using std::bit_cast.
+ * This macro is used to cast a value to std::int16_t type, which is a 16-bit signed integer.
+ * @param x The value to be casted.
+ * @return The value casted to std::int16_t.
+ * Usage example: @code{.cpp} std::int16_t i16 = BC_I16T(someValue); @endcode
+ * @see std::bit_cast
+ */
 #define BC_I16T(x) std::bit_cast<std::int16_t>(x)
+
+/**
+ * @brief Macro to cast a value to std::int32_t using std::bit_cast.
+ * This macro is used to cast a value to std::int32_t type, which is a 32-bit signed integer.
+ * @param x The value to be casted.
+ * @return The value casted to std::int32_t.
+ * Usage example: @code{.cpp} std::int32_t i32 = BC_I32T(someValue); @endcode
+ * @see std::bit_cast
+ */
 #define BC_I32T(x) std::bit_cast<std::int32_t>(x)
+
+/**
+ * @brief Macro to cast a value to std::int64_t using std::bit_cast.
+ * This macro is used to cast a value to std::int64_t type, which is a 64-bit signed integer.
+ * @param x The value to be casted.
+ * @return The value casted to std::int64_t.
+ * Usage example: @code{.cpp} std::int64_t i64 = BC_I64T(someValue); @endcode
+ * @see std::bit_cast
+ */
 #define BC_I64T(x) std::bit_cast<std::int64_t>(x)
+
+/**
+ * @brief Macro to cast a value to std::uint8_t using std::bit_cast.
+ * This macro is used to cast a value to std::uint8_t type, which is an 8-bit unsigned integer.
+ * @param x The value to be casted.
+ * @return The value casted to std::uint8_t.
+ * Usage example: @code{.cpp} std::uint8_t ui8 = BC_UI8T(someValue); @endcode
+ * @see std::bit_cast
+ */
 #define BC_UI8T(x) std::bit_cast<std::uint8_t>(x)
-#define BC_UI16T(x) std::bit_cast<std::unit16_t>(x)
+
+/**
+ * @brief Macro to cast a value to std::uint16_t using std::bit_cast.
+ * This macro is used to cast a value to std::uint16_t type, which is a 16-bit unsigned integer.
+ * @param x The value to be casted.
+ * @return The value casted to std::uint16_t.
+ * Usage example: @code{.cpp} std::uint16_t ui16 = BC_UI16T(someValue); @endcode
+ * @see std::bit_cast
+ */
+#define BC_UI16T(x) std::bit_cast<std::uint16_t>(x)
+
+/**
+ * @brief Macro to cast a value to std::uint32_t using std::bit_cast.
+ * This macro is used to cast a value to std::uint32_t type, which is a 32-bit unsigned integer.
+ * @param x The value to be casted.
+ * @return The value casted to std::uint32_t.
+ * Usage example: @code{.cpp} std::uint32_t ui32 = BC_UI32T(someValue); @endcode
+ * @see std::bit_cast
+ */
 #define BC_UI32T(x) std::bit_cast<std::uint32_t>(x)
-#define BC_UI64T(x) std::bit_cast<std::ui64_t>(x)
+
+/**
+ * @brief Macro to cast a value to std::uint64_t using std::bit_cast.
+ * This macro is used to cast a value to std::uint64_t type, which is a 64-bit unsigned integer.
+ * @param x The value to be casted.
+ * @return The value casted to std::uint64_t.
+ * Usage example: @code{.cpp} std::uint64_t ui64 = BC_UI64T(someValue); @endcode
+ * @see std::bit_cast
+ */
+#define BC_UI64T(x) std::bit_cast<std::uint64_t>(x)
+
+/**
+ * @brief Macro to cast a value to std::ptrdiff_t using std::bit_cast.
+ * This macro is used to cast a value to std::ptrdiff_t type, which is an integer type capable of representing the difference between two pointers.
+ * @param x The value to be casted.
+ * @return The value casted to std::ptrdiff_t.
+ * Usage example: @code{.cpp} std::ptrdiff_t pDiff = BC_PTRDIFT(someValue); @endcode
+ * @see std::bit_cast
+ */
 #define BC_PTRDIFT(x) std::bit_cast<std::ptrdiff_t>(x)
+
+/**
+ * @brief Macro to cast a value to std::div_t using std::bit_cast.
+ * This macro is used to cast a value to std::div_t type, which is a structure used to store the result of the div function, including both the quotient and the remainder.
+ * @param x The value to be casted.
+ * @return The value casted to std::div_t.
+ * Usage example: @code{.cpp} std::div_t divResult = BC_DIVT(someValue); @endcode
+ * @see std::bit_cast
+ */
 #define BC_DIVT(x) std::bit_cast<std::div_t>(x)
+
+/**
+ * @brief Macro to cast a value to std::ldiv_t using std::bit_cast.
+ * This macro is used to cast a value to std::ldiv_t type, which is a structure used to store the result of the ldiv function, including both the quotient and the remainder.
+ * @param x The value to be casted.
+ * @return The value casted to std::ldiv_t.
+ * Usage example: @code{.cpp} std::ldiv_t ldivResult = BC_LDIVT(someValue); @endcode
+ * @see std::bit_cast
+ */
 #define BC_LDIVT(x) std::bit_cast<std::ldiv_t>(x)
-#define BC_C(x) std::bit_cast<char>(x)
-#define BC_C16(x) std::bit_cast<char16_t>(x)
-#define BC_C32(x) std::bit_cast<char32_t>(x)
-#define BC_C8(x) std::bit_cast<char8_t>(x)
-#define BC_D(x) std::bit_cast<double>(x)
-#define BC_F(x) std::bit_cast<float>(x)
-#define BC_I(x) std::bit_cast<int>(x)
-#define BC_L(x) std::bit_cast<long>(x)
-#define BC_LD(x) std::bit_cast<long double>(x)
-#define BC_LI(x) std::bit_cast<long int>(x)
-#define BC_LL(x) std::bit_cast<long long>(x)
-#define BC_LLI(x) std::bit_cast<long long int>(x)
-#define BC_S(x) std::bit_cast<short>(x)
-#define BC_SI(x) std::bit_cast<short int>(x)
-#define BC_UC(x) std::bit_cast<unsigned char>(x)
-#define BC_UI(x) std::bit_cast<unsigned int>(x)
-#define BC_UL(x) std::bit_cast<unsigned long>(x)
-#define BC_ULI(x) std::bit_cast<unsigned long int>(x)
-#define BC_ULLI(x) std::bit_cast<unsigned long long int>(x)
-#define BC_STR(x) std::bit_cast<std::string>(x)
-#define BC_WSTR(x) std::bit_cast<std::wtring>(x)
-#define BC_U8STR(x) std::bit_cast<std::u8string>(x)
-#define BC_U16STR(x) std::bit_cast<std::u16string>(x)
-#define BC_U32STR(x) std::bit_cast<std::u32string>(x)
-#define BC_STRV(x) std::bit_cast<std::string_view>(x)
-#define BC_WSTRV(x) std::bit_cast<std::wstring_view>(x)
-#define BC_U8STRV(x) std::bit_cast<std::u8string_view>(x)
-#define BC_U16STRV(x) std::bit_cast<std::u16string_view>(x)
-#define BC_U32STRV(x) std::bit_cast<std::u32string_view>(x)
-#define NC_ST(x) gsl::narrow_cast<std::size_t>(x)
-#define BC_ST(x) std::bit_cast<std::size_t>(x)
-#define BC_CPCU32T(x) std::bit_cast<const uint32_t *>(x)
+
+/**
+ * @brief Macro to cast a value to std::lldiv_t using std::bit_cast.
+ * This macro is used to cast a value to std::lldiv_t type, which is a structure used to store the result of the lldiv function, including both the quotient and the remainder.
+ * @param x The value to be casted.
+ * @return The value casted to std::lldiv_t.
+ * Usage example: @code{.cpp} std::lldiv_t lldivResult = BC_LLDIVT(someValue); @endcode
+ * @see std::bit_cast
+ */
+#define BC_LLDIVT(x) std::bit_cast<std::lldiv_t>(x)
 
 /** @} */  // end of TypeCastingMacros group
+// NOLINTEND
