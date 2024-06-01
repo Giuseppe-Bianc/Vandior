@@ -40,7 +40,7 @@ DISABLE_WARNINGS_PUSH(
 #include <glm/gtx/hash.hpp>
 #include <glm/gtx/fast_square_root.hpp> // fastNormalize
 // clang-format on
-#include "casts.hpp"
+#include "cast/casts.hpp"
 // Restore warning levels.
 DISABLE_WARNINGS_POP()
 namespace glm {

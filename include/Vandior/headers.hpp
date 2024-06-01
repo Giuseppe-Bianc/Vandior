@@ -60,7 +60,7 @@ DISABLE_WARNINGS_PUSH(
 #include <variant>
 #include <vector>
 // clang-format on
-#include "casts.hpp"
+#include "cast/casts.hpp"
 #include "glm_matld.hpp"
 #include "glm_prety_string_cast.hpp"
 #include "move.hpp"
