@@ -7,7 +7,7 @@
 #include <bit>
 
 /**
- * @defgroup BitTypeCastingMacros Type Casting Macros
+ * @defgroup BitTypeCastingMacros Bit Type Casting Macros
  * @{
  */
 
@@ -133,7 +133,8 @@
 
 /**
  * @brief Macro to cast a value to std::ptrdiff_t using std::bit_cast.
- * This macro is used to cast a value to std::ptrdiff_t type, which is an integer type capable of representing the difference between two pointers.
+ * This macro is used to cast a value to std::ptrdiff_t type, which is an integer type capable of representing the difference between two
+ * pointers.
  * @param x The value to be casted.
  * @return The value casted to std::ptrdiff_t.
  * Usage example: @code{.cpp} std::ptrdiff_t pDiff = BC_PTRDIFT(someValue); @endcode
@@ -143,7 +144,8 @@
 
 /**
  * @brief Macro to cast a value to std::div_t using std::bit_cast.
- * This macro is used to cast a value to std::div_t type, which is a structure used to store the result of the div function, including both the quotient and the remainder.
+ * This macro is used to cast a value to std::div_t type, which is a structure used to store the result of the div function, including both
+ * the quotient and the remainder.
  * @param x The value to be casted.
  * @return The value casted to std::div_t.
  * Usage example: @code{.cpp} std::div_t divResult = BC_DIVT(someValue); @endcode
@@ -153,7 +155,8 @@
 
 /**
  * @brief Macro to cast a value to std::ldiv_t using std::bit_cast.
- * This macro is used to cast a value to std::ldiv_t type, which is a structure used to store the result of the ldiv function, including both the quotient and the remainder.
+ * This macro is used to cast a value to std::ldiv_t type, which is a structure used to store the result of the ldiv function, including
+ * both the quotient and the remainder.
  * @param x The value to be casted.
  * @return The value casted to std::ldiv_t.
  * Usage example: @code{.cpp} std::ldiv_t ldivResult = BC_LDIVT(someValue); @endcode
@@ -163,7 +166,8 @@
 
 /**
  * @brief Macro to cast a value to std::lldiv_t using std::bit_cast.
- * This macro is used to cast a value to std::lldiv_t type, which is a structure used to store the result of the lldiv function, including both the quotient and the remainder.
+ * This macro is used to cast a value to std::lldiv_t type, which is a structure used to store the result of the lldiv function, including
+ * both the quotient and the remainder.
  * @param x The value to be casted.
  * @return The value casted to std::lldiv_t.
  * Usage example: @code{.cpp} std::lldiv_t lldivResult = BC_LLDIVT(someValue); @endcode
