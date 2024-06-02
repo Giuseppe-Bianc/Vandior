@@ -870,8 +870,8 @@ TEST_CASE("unary node swap", "[parser]") {
     auto token2 = vnd::Token{IDENTIFIER, "d", vnd::CodeSourceLocation{filename, t_line, t_colum6}};
     auto token3 = vnd::Token{OPERATOR, "*", vnd::CodeSourceLocation{filename, t_line4, t_colum}};
     auto token4 = vnd::Token{OPERATOR, "s", vnd::CodeSourceLocation{filename, t_line4, t_colum4}};
-    vnd::UnaryExpressionNode unara{"-", token1, std::make_unique<vnd::VariableNode>("d", token2)};
-    vnd::UnaryExpressionNode unarb{"*", token3, std::make_unique<vnd::VariableNode>("s", token4)};
+    vnd::UnaryExpressionNode unara{"-", token1, MAKE_UNIQUE(vnd::VariableNode, "d", token2)};
+    vnd::UnaryExpressionNode unarb{"*", token3, MAKE_UNIQUE(vnd::VariableNode, "s", token4)};
     REQUIRE(unara.getOp() == "-");
     REQUIRE(unara.getOperand()->as<vnd::VariableNode>()->getName() == "d");
     REQUIRE(unara.get_token() == token1);
@@ -899,10 +899,8 @@ TEST_CASE("binary node swap", "[parser]") {
     auto token4 = vnd::Token{OPERATOR, "*", vnd::CodeSourceLocation{filename, t_line, t_colum5}};
     auto token5 = vnd::Token{IDENTIFIER, "s", vnd::CodeSourceLocation{filename, t_line, t_colum6}};
     auto token6 = vnd::Token{IDENTIFIER, "b", vnd::CodeSourceLocation{filename, t_line, t_colum5}};
-    vnd::BinaryExpressionNode unara{"-", token1, std::make_unique<vnd::VariableNode>("d", token2),
-                                    std::make_unique<vnd::VariableNode>("a", token3)};
-    vnd::BinaryExpressionNode unarb{"*", token4, std::make_unique<vnd::VariableNode>("s", token5),
-                                    std::make_unique<vnd::VariableNode>("b", token6)};
+    vnd::BinaryExpressionNode unara{"-", token1, MAKE_UNIQUE(vnd::VariableNode, "d", token2), MAKE_UNIQUE(vnd::VariableNode, "a", token3)};
+    vnd::BinaryExpressionNode unarb{"*", token4, MAKE_UNIQUE(vnd::VariableNode, "s", token5), MAKE_UNIQUE(vnd::VariableNode, "b", token6)};
     REQUIRE(unara.getOp() == "-");
     REQUIRE(unara.getLeft()->as<vnd::VariableNode>()->getName() == "d");
     REQUIRE(unara.getRight()->as<vnd::VariableNode>()->getName() == "a");

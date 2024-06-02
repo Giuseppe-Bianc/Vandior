@@ -110,30 +110,30 @@ namespace vnd {
             consumeToken();
             if(currentValue.starts_with("#o") || currentValue.starts_with("#O")) {
                 cval.erase(0, 2);
-                return std::make_unique<NumberNode<int>>(convertToIntformOct(cval), currentToken, Integer);
+                return MAKE_UNIQUE(NumberNode<int>, convertToIntformOct(cval), currentToken, Integer);
             }
             if(currentValue.starts_with("#")) {
                 cval.erase(0, 1);
-                return std::make_unique<NumberNode<int>>(convertToIntformExa(cval), currentToken, Integer);
+                return MAKE_UNIQUE(NumberNode<int>, convertToIntformExa(cval), currentToken, Integer);
             }
-            return std::make_unique<NumberNode<int>>(convertToInt(currentValue), currentToken, Integer);
+            return MAKE_UNIQUE(NumberNode<int>, convertToInt(currentValue), currentToken, Integer);
         } else if(currentType == TokenType::DOUBLE) {
             consumeToken();
-            return std::make_unique<NumberNode<double>>(convertToDouble(currentValue), currentToken, Double);
+            return MAKE_UNIQUE(NumberNode<double>, convertToDouble(currentValue), currentToken, Double);
         } else if(currentType == TokenType::BOOLEAN) {
             consumeToken();
             auto value = true;
             if(currentValue == "false") { value = false; }
-            return std::make_unique<LiteralNode<bool>>(value, currentToken, NodeType::Boolean);
+            return MAKE_UNIQUE(LiteralNode<bool>, value, currentToken, NodeType::Boolean);
         } else if(currentType == TokenType::CHAR) {
             consumeToken();
-            return std::make_unique<LiteralNode<char>>(currentValue.at(0), currentToken, NodeType::Char);
+            return MAKE_UNIQUE(LiteralNode<char>, currentValue.at(0), currentToken, NodeType::Char);
         } else if(currentType == TokenType::STRING) {
             consumeToken();
-            return std::make_unique<LiteralNode<std::string_view>>(currentValue, currentToken, NodeType::String);
+            return MAKE_UNIQUE(LiteralNode<std::string_view>, currentValue, currentToken, NodeType::String);
         } else if(currentType == TokenType::IDENTIFIER) {
             consumeToken();
-            return std::make_unique<VariableNode>(currentValue, currentToken);
+            return MAKE_UNIQUE(VariableNode, currentValue, currentToken);
         } else if(currentToken.getValue() == "(") {
             consumeToken();
             auto expression = parseExpression();
@@ -156,7 +156,7 @@ namespace vnd {
         if(unaryOperatorPrecedence != 0 && unaryOperatorPrecedence >= parentPrecendence) {
             consumeToken();
             auto operand = parseExpression(unaryOperatorPrecedence);
-            return std::make_unique<UnaryExpressionNode>(currentToken, std::move(operand));
+            return MAKE_UNIQUE(UnaryExpressionNode, currentToken, std::move(operand));
         } else {
             return parsePrimary();
         }
@@ -169,7 +169,7 @@ namespace vnd {
             const Token &opToken = getCurrentToken();
             consumeToken();
             auto right = parseExpression(precedence);
-            left = std::make_unique<BinaryExpressionNode>(opToken, std::move(left), std::move(right));
+            left = MAKE_UNIQUE(BinaryExpressionNode, opToken, std::move(left), std::move(right));
         }
         return left;
     }
