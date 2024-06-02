@@ -1,5 +1,4 @@
 // NOLINTBEGIN(*-include-cleaner, *-avoid-magic-numbers, *-magic-numbers)
-#include "catch2/benchmark/catch_benchmark.hpp"
 
 #include <catch2/catch_test_macros.hpp>
 
@@ -36,18 +35,6 @@ static inline constexpr std::string_view timerName = "My Timer";
 static inline constexpr std::string_view timerBigs = "-----------";
 static inline constexpr std::string_view timerTime1 = "ms";
 static inline constexpr std::string_view timerTime2 = "ns";
-/*#ifdef _WIN32  // Windows
-#ifdef __MINGW32__
-constexpr std::string_view tfile = R"(..\..\..\test\test_imp.vn)";  // windows mingw form editor, use this when building for mingw
-#elifdef __clang__
-constexpr std::string_view tfile = R"(..\..\..\test\test_imp.vn)";  // windows mingw form editor, use this when building for clang
-#else
-constexpr std::string_view tfile = R"(..\..\test\test_imp.vn)";
-#endif
-#elif defined __unix__  // Linux and Unix-like systems
-// constexpr std::string_view tfile = "../../../test/test_imp.vn";  // Linux and Unix  form editor
-constexpr std::string_view tfile = "../../test/test_imp.vn";  // Linux and Unix
-#endif */
 
 static inline constexpr long long int timerSleap = 12;
 static inline constexpr long long int timerSleap2 = 5;
@@ -545,6 +532,11 @@ TEST_CASE("tokenizer emit integer token for hexadecimals numbers", "[tokenizer]"
     REQUIRE(tokens[4] == vnd::Token(inte, "#7f", vnd::CodeSourceLocation(filename, 1, t_colum10)));
 }
 
+TEST_CASE("tokenizer emit exception on  malformed exadecimal number or octal number", "[tokenizer]") {
+    vnd::Tokenizer tokenizer{"#", filename};
+    REQUIRE_THROWS_AS(tokenizer.tokenize(), std::runtime_error);
+}
+
 TEST_CASE("tokenizer emit integer token for octal numbers", "[tokenizer]") {
     // octal 0oOctnum 0-7
     vnd::Tokenizer tokenizer{"#o0 #o23 #o24", filename};
@@ -729,14 +721,6 @@ TEST_CASE("tokenizer emit multiline comment token", "[tokenizer]") {
     REQUIRE(tokens[0] == vnd::Token(vnd::TokenType::COMMENT, R"(/*multi\nline\ncomment*/)", vnd::CodeSourceLocation(filename, 1, 1)));
 }  // namespace
 
-/*TEST_CASE("Benchmark vnd::Tokenizer::tokenize()", "[tokenizer]") {
-    const std::string input = vnd::readFromFile(tfile.data());
-    vnd::Tokenizer tokenizer(input);
-
-    BENCHMARK("Tokenize input string") { return tokenizer.tokenize(); };
-}
-*/
-
 TEST_CASE("ASTNode type conversion using as<T>()", "[ast]") {
     vnd::Token token{vnd::TokenType::IDENTIFIER, "id", vnd::CodeSourceLocation{filename, t_line, t_colum}};
     vnd::VariableNode dummyNode("id", token);
@@ -886,8 +870,8 @@ TEST_CASE("unary node swap", "[parser]") {
     auto token2 = vnd::Token{IDENTIFIER, "d", vnd::CodeSourceLocation{filename, t_line, t_colum6}};
     auto token3 = vnd::Token{OPERATOR, "*", vnd::CodeSourceLocation{filename, t_line4, t_colum}};
     auto token4 = vnd::Token{OPERATOR, "s", vnd::CodeSourceLocation{filename, t_line4, t_colum4}};
-    vnd::UnaryExpressionNode unara{"-", token1, std::make_unique<vnd::VariableNode>("d", token2)};
-    vnd::UnaryExpressionNode unarb{"*", token3, std::make_unique<vnd::VariableNode>("s", token4)};
+    vnd::UnaryExpressionNode unara{"-", token1, MAKE_UNIQUE(vnd::VariableNode, "d", token2)};
+    vnd::UnaryExpressionNode unarb{"*", token3, MAKE_UNIQUE(vnd::VariableNode, "s", token4)};
     REQUIRE(unara.getOp() == "-");
     REQUIRE(unara.getOperand()->as<vnd::VariableNode>()->getName() == "d");
     REQUIRE(unara.get_token() == token1);
@@ -915,10 +899,8 @@ TEST_CASE("binary node swap", "[parser]") {
     auto token4 = vnd::Token{OPERATOR, "*", vnd::CodeSourceLocation{filename, t_line, t_colum5}};
     auto token5 = vnd::Token{IDENTIFIER, "s", vnd::CodeSourceLocation{filename, t_line, t_colum6}};
     auto token6 = vnd::Token{IDENTIFIER, "b", vnd::CodeSourceLocation{filename, t_line, t_colum5}};
-    vnd::BinaryExpressionNode unara{"-", token1, std::make_unique<vnd::VariableNode>("d", token2),
-                                    std::make_unique<vnd::VariableNode>("a", token3)};
-    vnd::BinaryExpressionNode unarb{"*", token4, std::make_unique<vnd::VariableNode>("s", token5),
-                                    std::make_unique<vnd::VariableNode>("b", token6)};
+    vnd::BinaryExpressionNode unara{"-", token1, MAKE_UNIQUE(vnd::VariableNode, "d", token2), MAKE_UNIQUE(vnd::VariableNode, "a", token3)};
+    vnd::BinaryExpressionNode unarb{"*", token4, MAKE_UNIQUE(vnd::VariableNode, "s", token5), MAKE_UNIQUE(vnd::VariableNode, "b", token6)};
     REQUIRE(unara.getOp() == "-");
     REQUIRE(unara.getLeft()->as<vnd::VariableNode>()->getName() == "d");
     REQUIRE(unara.getRight()->as<vnd::VariableNode>()->getName() == "a");
@@ -953,6 +935,7 @@ TEST_CASE("Parser emit integer number node form exadecimal", "[parser]") {
     REQUIRE(ast->getType() == NodeType::Number);
     const auto *number = ast->as<vnd::NumberNode<int>>();
     REQUIRE(number != nullptr);
+    REQUIRE(number->getTypeIDName() == "int");
     REQUIRE(number->get_value() == 35);
 }
 
@@ -963,6 +946,7 @@ TEST_CASE("Parser emit integer number node form exadecimal max int -1", "[parser
     REQUIRE(ast->getType() == NodeType::Number);
     const auto *number = ast->as<vnd::NumberNode<int>>();
     REQUIRE(number != nullptr);
+    REQUIRE(number->getTypeIDName() == "int");
     REQUIRE(number->get_value() == 2147483646);
 }
 
@@ -973,6 +957,7 @@ TEST_CASE("Parser emit integer number node form octal", "[parser]") {
     REQUIRE(ast->getType() == NodeType::Number);
     const auto *number = ast->as<vnd::NumberNode<int>>();
     REQUIRE(number != nullptr);
+    REQUIRE(number->getTypeIDName() == "int");
     REQUIRE(number->get_value() == 19);
 }
 
@@ -983,6 +968,7 @@ TEST_CASE("Parser emit integer number node form octal max int -1", "[parser]") {
     REQUIRE(ast->getType() == NodeType::Number);
     const auto *number = ast->as<vnd::NumberNode<int>>();
     REQUIRE(number != nullptr);
+    REQUIRE(number->getTypeIDName() == "int");
     REQUIRE(number->get_value() == 2147483646);
 }
 
@@ -994,6 +980,7 @@ TEST_CASE("Parser emit integenumber node print", "[parser]") {
     const auto *number = ast->as<vnd::NumberNode<int>>();
     REQUIRE(number != nullptr);
     REQUIRE(number->get_value() == 1);
+    REQUIRE(number->getTypeIDName() == "int");
     REQUIRE(number->print() == "NUMBER_INTEGER(1)");
 }
 
@@ -1005,6 +992,7 @@ TEST_CASE("Parser emit integer number node compat print", "[parser]") {
     const auto *number = ast->as<vnd::NumberNode<int>>();
     REQUIRE(number != nullptr);
     REQUIRE(number->get_value() == 1);
+    REQUIRE(number->getTypeIDName() == "int");
     REQUIRE(number->comp_print() == "NUM_INT(1)");
 }
 
@@ -1025,6 +1013,7 @@ TEST_CASE("Parser emit double number node double", "[parser]") {
     REQUIRE(ast->getType() == NodeType::Number);
     const auto *number = ast->as<vnd::NumberNode<double>>();
     REQUIRE(number != nullptr);
+    REQUIRE(number->getTypeIDName() == "double");
     REQUIRE(number->get_value() == 1.5);
 }
 
@@ -1035,6 +1024,7 @@ TEST_CASE("Parser emit double number node double print", "[parser]") {
     REQUIRE(ast->getType() == NodeType::Number);
     const auto *number = ast->as<vnd::NumberNode<double>>();
     REQUIRE(number != nullptr);
+    REQUIRE(number->getTypeIDName() == "double");
     REQUIRE(number->get_value() == 1.5);
     REQUIRE(number->print() == "NUMBER_DOUBLE(1.5)");
 }
@@ -1046,6 +1036,7 @@ TEST_CASE("Parser emit double number node double compat print", "[parser]") {
     REQUIRE(ast->getType() == NodeType::Number);
     const auto *number = ast->as<vnd::NumberNode<double>>();
     REQUIRE(number != nullptr);
+    REQUIRE(number->getTypeIDName() == "double");
     REQUIRE(number->get_value() == 1.5);
     REQUIRE(number->comp_print() == "NUM_DBL(1.5)");
 }
@@ -1155,6 +1146,8 @@ TEST_CASE("Parser emit binary expression node", "[parser]") {
 
     REQUIRE(leftNumber != nullptr);
     REQUIRE(rightNumber != nullptr);
+    REQUIRE(leftNumber->getTypeIDName() == "int");
+    REQUIRE(rightNumber->getTypeIDName() == "int");
 
     // Check the values of left and right operands
     REQUIRE(leftNumber->get_value() == 1);
@@ -1178,6 +1171,8 @@ TEST_CASE("Parser emit binary expression node print", "[parser]") {
 
     REQUIRE(leftNumber != nullptr);
     REQUIRE(rightNumber != nullptr);
+    REQUIRE(leftNumber->getTypeIDName() == "int");
+    REQUIRE(rightNumber->getTypeIDName() == "int");
 
     // Check the values of left and right operands
     REQUIRE(leftNumber->get_value() == 1);
@@ -1202,6 +1197,8 @@ TEST_CASE("Parser emit binary expression node compact print", "[parser]") {
 
     REQUIRE(leftNumber != nullptr);
     REQUIRE(rightNumber != nullptr);
+    REQUIRE(leftNumber->getTypeIDName() == "int");
+    REQUIRE(rightNumber->getTypeIDName() == "int");
 
     // Check the values of left and right operands
     REQUIRE(leftNumber->get_value() == 1);
