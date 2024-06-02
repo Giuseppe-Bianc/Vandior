@@ -118,6 +118,12 @@ static inline constexpr const char *NEWL = &CNL;  // Default case
         std::cin.ignore();                                                                                                                 \
     } while(0);
 
+#define STRINGIFY(x) #x
+#define TOSTRING(x) STRINGIFY(x)
+#define MAKE_UNIQUE(type, ...) std::make_unique<type>(__VA_ARGS__)
+#define MAKE_SHARED(type, ...) std::make_shared<type>(__VA_ARGS__)
+#define GET_VARIANT_INDEX(var) var.index()
+#define GET_VARIANT_TYPE(var, type) std::get<type>(var)
 /**
  * \cond
  */
