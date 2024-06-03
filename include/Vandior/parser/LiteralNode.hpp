@@ -4,10 +4,6 @@
 
 #pragma once
 #include "ASTNode.hpp"
-#ifdef __GNUG__  // This macro is defined for GCC and Clang
-#include <cxxabi.h>
-#endif
-
 namespace vnd {
 
     /**
@@ -35,14 +31,7 @@ namespace vnd {
          * @return Demangled name of the type T if using GCC/Clang, otherwise mangled name.
          */
         [[nodiscard]] std::string_view getTypeIDName() const noexcept {
-#ifdef __GNUG__
-            int status = 0;
-            std::unique_ptr<char[], decltype(&std::free)> demangledName(abi::__cxa_demangle(typeid(T).name(), nullptr, nullptr, &status),
-                                                                        std::free);
-            return (status == 0) ? demangledName.get() : typeid(T).name();
-#else
             return typeid(T).name();
-#endif
         }
 
         /**

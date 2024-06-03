@@ -970,7 +970,11 @@ TEST_CASE("Parser emit integer number node form exadecimal", "[parser]") {
     REQUIRE(ast->getType() == NodeType::Number);
     const auto *number = ast->as<vnd::NumberNode<int>>();
     REQUIRE(number != nullptr);
+#ifdef __linux__
+    REQUIRE(number->getTypeIDName() == "i");
+#else
     REQUIRE(number->getTypeIDName() == "int");
+#endif
     REQUIRE(number->get_value() == 35);
 }
 
@@ -981,7 +985,11 @@ TEST_CASE("Parser emit integer number node form exadecimal max int -1", "[parser
     REQUIRE(ast->getType() == NodeType::Number);
     const auto *number = ast->as<vnd::NumberNode<int>>();
     REQUIRE(number != nullptr);
+#ifdef __linux__
+    REQUIRE(number->getTypeIDName() == "i");
+#else
     REQUIRE(number->getTypeIDName() == "int");
+#endif
     REQUIRE(number->get_value() == 2147483646);
 }
 
@@ -992,7 +1000,11 @@ TEST_CASE("Parser emit integer number node form octal", "[parser]") {
     REQUIRE(ast->getType() == NodeType::Number);
     const auto *number = ast->as<vnd::NumberNode<int>>();
     REQUIRE(number != nullptr);
+#ifdef __linux__
+    REQUIRE(number->getTypeIDName() == "i");
+#else
     REQUIRE(number->getTypeIDName() == "int");
+#endif
     REQUIRE(number->get_value() == 19);
 }
 
@@ -1003,11 +1015,15 @@ TEST_CASE("Parser emit integer number node form octal max int -1", "[parser]") {
     REQUIRE(ast->getType() == NodeType::Number);
     const auto *number = ast->as<vnd::NumberNode<int>>();
     REQUIRE(number != nullptr);
+#ifdef __linux__
+    REQUIRE(number->getTypeIDName() == "i");
+#else
     REQUIRE(number->getTypeIDName() == "int");
+#endif
     REQUIRE(number->get_value() == 2147483646);
 }
 
-TEST_CASE("Parser emit integenumber node print", "[parser]") {
+TEST_CASE("Parser emit integer number node print", "[parser]") {
     vnd::Parser parser("1", filename);
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
@@ -1015,7 +1031,11 @@ TEST_CASE("Parser emit integenumber node print", "[parser]") {
     const auto *number = ast->as<vnd::NumberNode<int>>();
     REQUIRE(number != nullptr);
     REQUIRE(number->get_value() == 1);
+#ifdef __linux__
+    REQUIRE(number->getTypeIDName() == "i");
+#else
     REQUIRE(number->getTypeIDName() == "int");
+#endif
     REQUIRE(number->print() == "NUMBER_INTEGER(1)");
 }
 
@@ -1027,7 +1047,11 @@ TEST_CASE("Parser emit integer number node compat print", "[parser]") {
     const auto *number = ast->as<vnd::NumberNode<int>>();
     REQUIRE(number != nullptr);
     REQUIRE(number->get_value() == 1);
+#ifdef __linux__
+    REQUIRE(number->getTypeIDName() == "i");
+#else
     REQUIRE(number->getTypeIDName() == "int");
+#endif
     REQUIRE(number->comp_print() == "NUM_INT(1)");
 }
 
@@ -1048,7 +1072,11 @@ TEST_CASE("Parser emit double number node double", "[parser]") {
     REQUIRE(ast->getType() == NodeType::Number);
     const auto *number = ast->as<vnd::NumberNode<double>>();
     REQUIRE(number != nullptr);
+#ifdef __linux__
+    REQUIRE(number->getTypeIDName() == "d");
+#else
     REQUIRE(number->getTypeIDName() == "double");
+#endif
     REQUIRE(number->get_value() == 1.5);
 }
 
@@ -1059,7 +1087,11 @@ TEST_CASE("Parser emit double number node double print", "[parser]") {
     REQUIRE(ast->getType() == NodeType::Number);
     const auto *number = ast->as<vnd::NumberNode<double>>();
     REQUIRE(number != nullptr);
+#ifdef __linux__
+    REQUIRE(number->getTypeIDName() == "d");
+#else
     REQUIRE(number->getTypeIDName() == "double");
+#endif
     REQUIRE(number->get_value() == 1.5);
     REQUIRE(number->print() == "NUMBER_DOUBLE(1.5)");
 }
@@ -1071,7 +1103,11 @@ TEST_CASE("Parser emit double number node double compat print", "[parser]") {
     REQUIRE(ast->getType() == NodeType::Number);
     const auto *number = ast->as<vnd::NumberNode<double>>();
     REQUIRE(number != nullptr);
+#ifdef __linux__
+    REQUIRE(number->getTypeIDName() == "d");
+#else
     REQUIRE(number->getTypeIDName() == "double");
+#endif
     REQUIRE(number->get_value() == 1.5);
     REQUIRE(number->comp_print() == "NUM_DBL(1.5)");
 }
@@ -1181,8 +1217,13 @@ TEST_CASE("Parser emit binary expression node", "[parser]") {
 
     REQUIRE(leftNumber != nullptr);
     REQUIRE(rightNumber != nullptr);
+#ifdef __linux__
+    REQUIRE(leftNumber->getTypeIDName() == "i");
+    REQUIRE(rightNumber->getTypeIDName() == "i");
+#else
     REQUIRE(leftNumber->getTypeIDName() == "int");
     REQUIRE(rightNumber->getTypeIDName() == "int");
+#endif
 
     // Check the values of left and right operands
     REQUIRE(leftNumber->get_value() == 1);
@@ -1206,8 +1247,13 @@ TEST_CASE("Parser emit binary expression node print", "[parser]") {
 
     REQUIRE(leftNumber != nullptr);
     REQUIRE(rightNumber != nullptr);
+#ifdef __linux__
+    REQUIRE(leftNumber->getTypeIDName() == "i");
+    REQUIRE(rightNumber->getTypeIDName() == "i");
+#else
     REQUIRE(leftNumber->getTypeIDName() == "int");
     REQUIRE(rightNumber->getTypeIDName() == "int");
+#endif
 
     // Check the values of left and right operands
     REQUIRE(leftNumber->get_value() == 1);
@@ -1232,8 +1278,13 @@ TEST_CASE("Parser emit binary expression node compact print", "[parser]") {
 
     REQUIRE(leftNumber != nullptr);
     REQUIRE(rightNumber != nullptr);
+#ifdef __linux__
+    REQUIRE(leftNumber->getTypeIDName() == "i");
+    REQUIRE(rightNumber->getTypeIDName() == "i");
+#else
     REQUIRE(leftNumber->getTypeIDName() == "int");
     REQUIRE(rightNumber->getTypeIDName() == "int");
+#endif
 
     // Check the values of left and right operands
     REQUIRE(leftNumber->get_value() == 1);
