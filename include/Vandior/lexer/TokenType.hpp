@@ -11,10 +11,33 @@ namespace vnd {
         INTEGER,               ///< Integer literal
         DOUBLE,                ///< Double literal
         BOOLEAN,               ///< Boolean literal
-        OPERATOR,              ///< Generic operator
-        MINUS_OPERATOR,        ///< Minus operator
-        EQUAL_OPERATOR,        ///< Equal operator
-        DOT_OPERATOR,          ///< Dot operator
+        PLUS,                  ///< Plus oprator
+        MINUS,                 ///< Minus operator
+        NOT,                   ///< Not operator '!'
+        STAR,                  ///< Star operator
+        DIVIDE,                ///< Divide operator
+        XOR,                   ///< Xor operator
+        PERCENT,               ///< Percent operator
+        OR,                    ///< Or operator
+        AND,                   ///< And operator
+        EQUAL,                 ///< Equal operator
+        LESS,                  ///< Less operator
+        GREATER,               ///< Greater operator
+        PLUSPLUS,              ///< Plus Plus oprator
+        MINUSMINUS,            ///< Minus Minus operator
+        PLUSEQUAL,             ///< Plus Equal oprator
+        MINUSEQUAL,            ///< Minus Equal oprator
+        NOTEQUAL,              ///< Not Equal operator '!='
+        STAREQUAL,             ///< Star  Equal operator
+        DIVIDEEQUAL,           ///< Divide  Equal operator
+        XOREQUAL,              ///< Xor Equal operator
+        PERCENTEQUAL,          ///< Percent  Equal operator
+        OROR,                  ///< Or operator
+        ANDAND,                ///< And operator
+        EQUALEQUAL,            ///< Equal Equal operator
+        LESSEQUAL,             ///< Less Equal operator
+        GREATEREQUAL,          ///< Greater Equal operator
+        DOT,                   ///< Dot operator
         IDENTIFIER,            ///< Identifier
         CHAR,                  ///< Character literal
         STRING,                ///< String literal
@@ -34,11 +57,6 @@ namespace vnd {
         CLOSE_PARENTESIS,      ///< Closing parenthesis ')'
         CLOSE_SQ_PARENTESIS,   ///< Closing square parenthesis ']'
         CLOSE_CUR_PARENTESIS,  ///< Closing curly parenthesis '}'
-        OPERATION_EQUAL,       ///< Operation equal '='
-        BOOLEAN_OPERATOR,      ///< Boolean operator
-        NOT_OPERATOR,          ///< Not operator '!'
-        LOGICAL_OPERATOR,      ///< Logical operator
-        UNARY_OPERATOR,        ///< Unary operator
         COMMA,                 ///< Comma ','
         COLON,                 ///< Colon ':'
         COMMENT,               ///< Comment
@@ -69,17 +87,83 @@ template <> struct fmt::formatter<vnd::TokenType> : fmt::formatter<std::string_v
         case BOOLEAN:
             name = "BOOLEAN";
             break;
-        case OPERATOR:
-            name = "OPERATOR";
+        case PLUS:
+            name = "PLUS_OPERATOR";
             break;
-        case MINUS_OPERATOR:
+        case MINUS:
             name = "MINUS_OPERATOR";
             break;
-        case EQUAL_OPERATOR:
+        case EQUAL:
             name = "EQUAL_OPERATOR";
             break;
-        case DOT_OPERATOR:
+        case DOT:
             name = "DOT_OPERATOR";
+            break;
+        case STAR:
+            name = "STAR_OPERATOR";
+            break;
+        case DIVIDE:
+            name = "DIVIDE_OPERATOR";
+            break;
+        case XOR:
+            name = "XOR_OPERATOR";
+            break;
+        case PERCENT:
+            name = "PERCENT_OPERATOR";
+            break;
+        case OR:
+            name = "OR_OPERATOR";
+            break;
+        case AND:
+            name = "AND_OPERATOR";
+            break;
+        case LESS:
+            name = "LESS_OPERATOR";
+            break;
+        case GREATER:
+            name = "GREATER_OPERATOR";
+            break;
+        case PLUSPLUS:
+            name = "PLUSPLUS_OPERATOR";
+            break;
+        case MINUSMINUS:
+            name = "MINUSMINUS_OPERATOR";
+            break;
+        case PLUSEQUAL:
+            name = "PLUSEQUAL_OPERATOR";
+            break;
+        case MINUSEQUAL:
+            name = "MINUSEQUAL_OPERATOR";
+            break;
+        case NOTEQUAL:
+            name = "NOTEQUAL_OPERATOR";
+            break;
+        case STAREQUAL:
+            name = "STAREQUAL_OPERATOR";
+            break;
+        case DIVIDEEQUAL:
+            name = "DIVIDEEQUAL_OPERATOR";
+            break;
+        case XOREQUAL:
+            name = "XOREQUAL_OPERATOR";
+            break;
+        case PERCENTEQUAL:
+            name = "PERCENTEQUAL_OPERATOR";
+            break;
+        case OROR:
+            name = "OROR_OPERATOR";
+            break;
+        case ANDAND:
+            name = "ANDAND_OPERATOR";
+            break;
+        case EQUALEQUAL:
+            name = "EQUALEQUAL_OPERATOR";
+            break;
+        case LESSEQUAL:
+            name = "LESSEQUAL_OPERATOR";
+            break;
+        case GREATEREQUAL:
+            name = "GREATEREQUAL_OPERATOR";
             break;
         case IDENTIFIER:
             name = "IDENTIFIER";
@@ -141,20 +225,8 @@ template <> struct fmt::formatter<vnd::TokenType> : fmt::formatter<std::string_v
         case CLOSE_CUR_PARENTESIS:
             name = "CLOSE_CUR_PARENTESIS";
             break;
-        case OPERATION_EQUAL:
-            name = "OPERATION_EQUAL";
-            break;
-        case BOOLEAN_OPERATOR:
-            name = "BOOLEAN_OPERATOR";
-            break;
-        case NOT_OPERATOR:
+        case NOT:
             name = "NOT_OPERATOR";
-            break;
-        case LOGICAL_OPERATOR:
-            name = "LOGICAL_OPERATOR";
-            break;
-        case UNARY_OPERATOR:
-            name = "UNARY_OPERATOR";
             break;
         case COMMA:
             name = "COMMA";

@@ -145,7 +145,7 @@ namespace vnd {
 
     Token Tokenizer::handleDot() {
         const auto start = position;
-        auto type = TokenType::DOT_OPERATOR;
+        auto type = TokenType::DOT;
         incPosAndColumn();
         if(positionIsInText() && std::isdigit(_input[position])) {
             type = TokenType::DOUBLE;
@@ -257,24 +257,29 @@ namespace vnd {
         switch(view) {
             using enum TokenType;
         case '-':
-            return MINUS_OPERATOR;
+            return MINUS;
         case '=':
-            return EQUAL_OPERATOR;
+            return EQUAL;
         case '<':
-            [[fallthrough]];
+            return LESS;
         case '>':
-            return BOOLEAN_OPERATOR;
+            return GREATER;
         case '!':
-            return NOT_OPERATOR;
+            return NOT;
         case '+':
+            return PLUS;
         case '*':
+            return STAR;
         case '/':
+            return DIVIDE;
         case '^':
+            return XOR;
         case '%':
+            return PERCENT;
         case '|':
-            [[fallthrough]];
+            return OR;
         case '&':
-            return OPERATOR;
+            return AND;
         default:
             return UNKNOWN;
         }
@@ -282,10 +287,38 @@ namespace vnd {
 
     TokenType Tokenizer::multyCharOp(const std::string_view &view) noexcept {
         using enum TokenType;
-        if(TokenizerUtility::isOperationEqual(view)) { return OPERATION_EQUAL; }
-        if(TokenizerUtility::isBooleanOperator(view)) { return BOOLEAN_OPERATOR; }
-        if(TokenizerUtility::isLogicalOperator(view)) { return LOGICAL_OPERATOR; }
-        if(TokenizerUtility::isUnaryOperator(view)) { return UNARY_OPERATOR; }
+        if(view == "+="sv) {
+            return PLUSEQUAL;
+        } else if(view == "-="sv) {
+            return MINUSEQUAL;
+        } else if(view == "*="sv) {
+            return STAREQUAL;
+        } else if(view == "/="sv) {
+            return DIVIDEEQUAL;
+        } else if(view == "^="sv) {
+            return XOREQUAL;
+        } else if(view == "%="sv) {
+            return PERCENTEQUAL;
+        }
+        if(view == "=="sv) {
+            return EQUALEQUAL;
+        } else if(view == ">="sv) {
+            return GREATEREQUAL;
+        } else if(view == "<="sv) {
+            return LESSEQUAL;
+        } else if(view == "!="sv) {
+            return NOTEQUAL;
+        }
+        if(view == "&&"sv) {
+            return ANDAND;
+        } else if(view == "||"sv) {
+            return OROR;
+        }
+        if(view == "++"sv) {
+            return PLUSPLUS;
+        } else if(view == "--"sv) {
+            return MINUSMINUS;
+        }
         return UNKNOWN;
     }
 

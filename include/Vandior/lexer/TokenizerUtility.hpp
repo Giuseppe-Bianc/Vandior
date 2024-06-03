@@ -22,33 +22,33 @@ namespace vnd {
          */
         [[nodiscard]] static bool isPlusOrMinus(const char cara) noexcept;
 
-        /**
+        /*#1#=
          * @brief Check if the string represents an assignment operator.
          * @param value The string to check.
          * @return True if the string is an assignment operator, false otherwise.
-         */
+         #1#
         [[nodiscard]] static bool isOperationEqual(const std::string_view &value) noexcept;
 
-        /**
+         #1#
          * @brief Check if the string represents a boolean operator.
          * @param value The string to check.
          * @return True if the string is a boolean operator, false otherwise.
-         */
+         #1#
         [[nodiscard]] static bool isBooleanOperator(const std::string_view &value) noexcept;
 
-        /**
+         #1#
          * @brief Check if the string represents a logical operator.
          * @param value The string to check.
          * @return True if the string is a logical operator, false otherwise.
-         */
+         #1#
         [[nodiscard]] static bool isLogicalOperator(const std::string_view &value) noexcept;
 
-        /**
+         #1#
          * @brief Check if the string represents a unary operator.
          * @param value The string to check.
          * @return True if the string is a unary operator, false otherwise.
-         */
-        [[nodiscard]] static bool isUnaryOperator(const std::string_view &value) noexcept;
+         #1#
+        [[nodiscard]] static bool isUnaryOperator(const std::string_view &value) noexcept;*/
 
         /**
          * @brief Check if the character is a dot.
@@ -98,7 +98,7 @@ namespace vnd {
          * @param position The starting position for checking the comment.
          * @return True if a comment is found, false otherwise.
          */
-        [[nodiscard]] static bool isComment(const std::string_view &inputSpan,const size_t position) noexcept;
+        [[nodiscard]] static bool isComment(const std::string_view &inputSpan, const size_t position) noexcept;
 
         /**
          * @brief Check if the character is alphanumeric or underscore.
