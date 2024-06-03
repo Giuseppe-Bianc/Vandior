@@ -22,7 +22,6 @@ static inline constexpr std::size_t t_colum14 = 12;
 static inline constexpr auto identf = vnd::TokenType::IDENTIFIER;
 static inline constexpr auto inte = vnd::TokenType::INTEGER;
 static inline constexpr auto doub = vnd::TokenType::DOUBLE;
-static inline constexpr auto oper = vnd::TokenType::OPERATOR;
 #ifdef _WIN32  // Windows
 static inline constexpr std::string_view filename = R"(.\unknown.vn)";
 #else
@@ -179,16 +178,38 @@ TEST_CASE("corrected format for Tokentype", "[token_type]") {
     REQ_FORMAT(INTEGER, "INTEGER")
     REQ_FORMAT(DOUBLE, "DOUBLE")
     REQ_FORMAT(BOOLEAN, "BOOLEAN")
-    REQ_FORMAT(OPERATOR, "OPERATOR")
-    REQ_FORMAT(MINUS_OPERATOR, "MINUS_OPERATOR")
-    REQ_FORMAT(EQUAL_OPERATOR, "EQUAL_OPERATOR")
-    REQ_FORMAT(DOT_OPERATOR, "DOT_OPERATOR")
+    REQ_FORMAT(PLUS, "PLUS_OPERATOR")
+    REQ_FORMAT(MINUS, "MINUS_OPERATOR")
+    REQ_FORMAT(EQUAL, "EQUAL_OPERATOR")
+    REQ_FORMAT(DOT, "DOT_OPERATOR")
+    REQ_FORMAT(STAR, "STAR_OPERATOR")
+    REQ_FORMAT(DIVIDE, "DIVIDE_OPERATOR")
+    REQ_FORMAT(XOR, "XOR_OPERATOR")
+    REQ_FORMAT(PERCENT, "PERCENT_OPERATOR")
+    REQ_FORMAT(OR, "OR_OPERATOR")
+    REQ_FORMAT(AND, "AND_OPERATOR")
+    REQ_FORMAT(LESS, "LESS_OPERATOR")
+    REQ_FORMAT(GREATER, "GREATER_OPERATOR")
+    REQ_FORMAT(PLUSPLUS, "PLUSPLUS_OPERATOR")
+    REQ_FORMAT(MINUSMINUS, "MINUSMINUS_OPERATOR")
+    REQ_FORMAT(PLUSEQUAL, "PLUSEQUAL_OPERATOR")
+    REQ_FORMAT(MINUSEQUAL, "MINUSEQUAL_OPERATOR")
+    REQ_FORMAT(NOTEQUAL, "NOTEQUAL_OPERATOR")
+    REQ_FORMAT(STAREQUAL, "STAREQUAL_OPERATOR")
+    REQ_FORMAT(DIVIDEEQUAL, "DIVIDEEQUAL_OPERATOR")
+    REQ_FORMAT(XOREQUAL, "XOREQUAL_OPERATOR")
+    REQ_FORMAT(PERCENTEQUAL, "PERCENTEQUAL_OPERATOR")
+    REQ_FORMAT(OROR, "OROR_OPERATOR")
+    REQ_FORMAT(ANDAND, "ANDAND_OPERATOR")
+    REQ_FORMAT(EQUALEQUAL, "EQUALEQUAL_OPERATOR")
+    REQ_FORMAT(LESSEQUAL, "LESSEQUAL_OPERATOR")
+    REQ_FORMAT(GREATEREQUAL, "GREATEREQUAL_OPERATOR")
     REQ_FORMAT(IDENTIFIER, "IDENTIFIER")
     REQ_FORMAT(CHAR, "CHAR")
     REQ_FORMAT(STRING, "STRING")
+    REQ_FORMAT(EOFT, "EOF")
     REQ_FORMAT(K_MAIN, "K_MAIN")
     REQ_FORMAT(K_VAR, "K_VAR")
-    REQ_FORMAT(K_FOR, "K_FOR")
     REQ_FORMAT(K_IF, "K_IF")
     REQ_FORMAT(K_WHILE, "K_WHILE")
     REQ_FORMAT(K_ELSE, "K_ELSE")
@@ -203,15 +224,10 @@ TEST_CASE("corrected format for Tokentype", "[token_type]") {
     REQ_FORMAT(CLOSE_PARENTESIS, "CLOSE_PARENTESIS")
     REQ_FORMAT(CLOSE_SQ_PARENTESIS, "CLOSE_SQ_PARENTESIS")
     REQ_FORMAT(CLOSE_CUR_PARENTESIS, "CLOSE_CUR_PARENTESIS")
-    REQ_FORMAT(OPERATION_EQUAL, "OPERATION_EQUAL")
-    REQ_FORMAT(BOOLEAN_OPERATOR, "BOOLEAN_OPERATOR")
-    REQ_FORMAT(NOT_OPERATOR, "NOT_OPERATOR")
-    REQ_FORMAT(LOGICAL_OPERATOR, "LOGICAL_OPERATOR")
-    REQ_FORMAT(UNARY_OPERATOR, "UNARY_OPERATOR")
+    REQ_FORMAT(NOT, "NOT_OPERATOR")
     REQ_FORMAT(COMMA, "COMMA")
     REQ_FORMAT(COLON, "COLON")
     REQ_FORMAT(COMMENT, "COMMENT")
-    REQ_FORMAT(EOFT, "EOF")
     REQ_FORMAT(UNKNOWN, "UNKNOWN")
 }
 
@@ -220,16 +236,38 @@ TEST_CASE("corrected format for Tokentype compat to string", "[token_type]") {
     REQ_FORMAT(comp_tokType(INTEGER), "INT")
     REQ_FORMAT(comp_tokType(DOUBLE), "DBL")
     REQ_FORMAT(comp_tokType(BOOLEAN), "BOOL")
-    REQ_FORMAT(comp_tokType(OPERATOR), "OPER")
-    REQ_FORMAT(comp_tokType(MINUS_OPERATOR), "MINUS_OP")
-    REQ_FORMAT(comp_tokType(EQUAL_OPERATOR), "EQUAL_OP")
-    REQ_FORMAT(comp_tokType(DOT_OPERATOR), "DOT_OP")
+    REQ_FORMAT(comp_tokType(PLUS), "PLUS_OP")
+    REQ_FORMAT(comp_tokType(MINUS), "MINUS_OP")
+    REQ_FORMAT(comp_tokType(EQUAL), "EQUAL_OP")
+    REQ_FORMAT(comp_tokType(DOT), "DOT_OP")
+    REQ_FORMAT(comp_tokType(STAR), "STAR_OP")
+    REQ_FORMAT(comp_tokType(DIVIDE), "DIVIDE_OP")
+    REQ_FORMAT(comp_tokType(XOR), "XOR_OP")
+    REQ_FORMAT(comp_tokType(PERCENT), "PERCENT_OP")
+    REQ_FORMAT(comp_tokType(OR), "OR_OP")
+    REQ_FORMAT(comp_tokType(AND), "AND_OP")
+    REQ_FORMAT(comp_tokType(LESS), "LESS_OP")
+    REQ_FORMAT(comp_tokType(GREATER), "GREATER_OP")
+    REQ_FORMAT(comp_tokType(PLUSPLUS), "PLUSPLUS_OP")
+    REQ_FORMAT(comp_tokType(MINUSMINUS), "MINUSMINUS_OP")
+    REQ_FORMAT(comp_tokType(PLUSEQUAL), "PLUSEQUAL_OP")
+    REQ_FORMAT(comp_tokType(MINUSEQUAL), "MINUSEQUAL_OP")
+    REQ_FORMAT(comp_tokType(NOTEQUAL), "NOTEQUAL_OP")
+    REQ_FORMAT(comp_tokType(STAREQUAL), "STAREQUAL_OP")
+    REQ_FORMAT(comp_tokType(DIVIDEEQUAL), "DIVIDEEQUAL_OP")
+    REQ_FORMAT(comp_tokType(XOREQUAL), "XOREQUAL_OP")
+    REQ_FORMAT(comp_tokType(PERCENTEQUAL), "PERCENTEQUAL_OP")
+    REQ_FORMAT(comp_tokType(OROR), "OROR_OP")
+    REQ_FORMAT(comp_tokType(ANDAND), "ANDAND_OP")
+    REQ_FORMAT(comp_tokType(EQUALEQUAL), "EQUALEQUAL_OP")
+    REQ_FORMAT(comp_tokType(LESSEQUAL), "LESSEQUAL_OP")
+    REQ_FORMAT(comp_tokType(GREATEREQUAL), "GREATEREQUAL_OP")
     REQ_FORMAT(comp_tokType(IDENTIFIER), "IDENT")
     REQ_FORMAT(comp_tokType(CHAR), "CH")
     REQ_FORMAT(comp_tokType(STRING), "STR")
+    REQ_FORMAT(comp_tokType(EOFT), "EOF")
     REQ_FORMAT(comp_tokType(K_MAIN), "K_MAIN")
     REQ_FORMAT(comp_tokType(K_VAR), "K_VAR")
-    REQ_FORMAT(comp_tokType(K_FOR), "K_FOR")
     REQ_FORMAT(comp_tokType(K_IF), "K_IF")
     REQ_FORMAT(comp_tokType(K_WHILE), "K_WHILE")
     REQ_FORMAT(comp_tokType(K_ELSE), "K_ELSE")
@@ -244,15 +282,10 @@ TEST_CASE("corrected format for Tokentype compat to string", "[token_type]") {
     REQ_FORMAT(comp_tokType(CLOSE_PARENTESIS), "CLOSE_PAR")
     REQ_FORMAT(comp_tokType(CLOSE_SQ_PARENTESIS), "CLOSE_SQ_PAR")
     REQ_FORMAT(comp_tokType(CLOSE_CUR_PARENTESIS), "CLOSE_CUR_PAR")
-    REQ_FORMAT(comp_tokType(OPERATION_EQUAL), "OP_EQUAL")
-    REQ_FORMAT(comp_tokType(BOOLEAN_OPERATOR), "BOOLEAN_OP")
-    REQ_FORMAT(comp_tokType(NOT_OPERATOR), "NOT_OP")
-    REQ_FORMAT(comp_tokType(LOGICAL_OPERATOR), "LOGICAL_OP")
-    REQ_FORMAT(comp_tokType(UNARY_OPERATOR), "UNARY_OP")
+    REQ_FORMAT(comp_tokType(NOT), "NOT_OP")
     REQ_FORMAT(comp_tokType(COMMA), "COMMA")
     REQ_FORMAT(comp_tokType(COLON), "COLON")
     REQ_FORMAT(comp_tokType(COMMENT), "COMMENT")
-    REQ_FORMAT(comp_tokType(EOFT), "EOF")
     REQ_FORMAT(comp_tokType(UNKNOWN), "UNKNOWN")
 }
 
@@ -487,8 +520,8 @@ TEST_CASE("default constructed token set propriety format", "[token]") {
 }
 
 TEST_CASE("Token Comparison Equality", "[Token]") {
-    vnd::Token token1(oper, "+", vnd::CodeSourceLocation(filename, t_line, t_colum));
-    vnd::Token token2(oper, "+", vnd::CodeSourceLocation(filename, t_line, t_colum));
+    vnd::Token token1(vnd::TokenType::PLUS, "+", vnd::CodeSourceLocation(filename, t_line, t_colum));
+    vnd::Token token2(vnd::TokenType::PLUS, "+", vnd::CodeSourceLocation(filename, t_line, t_colum));
     REQUIRE(token1 == token2);
 }
 
@@ -589,34 +622,36 @@ TEST_CASE("tokenizer emit double token", "[tokenizer]") {
 
 TEST_CASE("tokenizer emit operator token", "[tokenizer]") {
     using enum vnd::TokenType;
-    vnd::Tokenizer tokenizer{"* / = , : < > ! | & + - ^ .", filename};
+    vnd::Tokenizer tokenizer{"* / = , : < > ! | & + - ^ . %", filename};
     std::vector<vnd::Token> tokens = tokenizer.tokenize();
-    REQUIRE(tokens.size() == 15);
-    REQUIRE(tokens[0] == vnd::Token(oper, "*", vnd::CodeSourceLocation(filename, 1, 1)));
-    REQUIRE(tokens[1] == vnd::Token(oper, "/", vnd::CodeSourceLocation(filename, 1, 3)));
-    REQUIRE(tokens[2] == vnd::Token(EQUAL_OPERATOR, "=", vnd::CodeSourceLocation(filename, 1, 5)));
+    REQUIRE(tokens.size() == 16);
+    REQUIRE(tokens[0] == vnd::Token(STAR, "*", vnd::CodeSourceLocation(filename, 1, 1)));
+    REQUIRE(tokens[1] == vnd::Token(DIVIDE, "/", vnd::CodeSourceLocation(filename, 1, 3)));
+    REQUIRE(tokens[2] == vnd::Token(EQUAL, "=", vnd::CodeSourceLocation(filename, 1, 5)));
     REQUIRE(tokens[3] == vnd::Token(COMMA, ",", vnd::CodeSourceLocation(filename, 1, t_colum)));
     REQUIRE(tokens[4] == vnd::Token(COLON, ":", vnd::CodeSourceLocation(filename, 1, t_colum4)));
-    REQUIRE(tokens[5] == vnd::Token(BOOLEAN_OPERATOR, "<", vnd::CodeSourceLocation(filename, 1, t_colum8)));
-    REQUIRE(tokens[6] == vnd::Token(BOOLEAN_OPERATOR, ">", vnd::CodeSourceLocation(filename, 1, t_colum11)));
-    REQUIRE(tokens[7] == vnd::Token(NOT_OPERATOR, "!", vnd::CodeSourceLocation(filename, 1, t_colum10)));
-    REQUIRE(tokens[8] == vnd::Token(oper, "|", vnd::CodeSourceLocation(filename, 1, t_colum13)));
-    REQUIRE(tokens[9] == vnd::Token(oper, "&", vnd::CodeSourceLocation(filename, 1, 19)));
-    REQUIRE(tokens[10] == vnd::Token(oper, "+", vnd::CodeSourceLocation(filename, 1, 21)));
-    REQUIRE(tokens[11] == vnd::Token(MINUS_OPERATOR, "-", vnd::CodeSourceLocation(filename, 1, 23)));
-    REQUIRE(tokens[12] == vnd::Token(oper, "^", vnd::CodeSourceLocation(filename, 1, 25)));
-    REQUIRE(tokens[13] == vnd::Token(DOT_OPERATOR, ".", vnd::CodeSourceLocation(filename, 1, 27)));
+    REQUIRE(tokens[5] == vnd::Token(LESS, "<", vnd::CodeSourceLocation(filename, 1, t_colum8)));
+    REQUIRE(tokens[6] == vnd::Token(GREATER, ">", vnd::CodeSourceLocation(filename, 1, t_colum11)));
+    REQUIRE(tokens[7] == vnd::Token(NOT, "!", vnd::CodeSourceLocation(filename, 1, t_colum10)));
+    REQUIRE(tokens[8] == vnd::Token(OR, "|", vnd::CodeSourceLocation(filename, 1, t_colum13)));
+    REQUIRE(tokens[9] == vnd::Token(AND, "&", vnd::CodeSourceLocation(filename, 1, 19)));
+    REQUIRE(tokens[10] == vnd::Token(PLUS, "+", vnd::CodeSourceLocation(filename, 1, 21)));
+    REQUIRE(tokens[11] == vnd::Token(MINUS, "-", vnd::CodeSourceLocation(filename, 1, 23)));
+    REQUIRE(tokens[12] == vnd::Token(XOR, "^", vnd::CodeSourceLocation(filename, 1, 25)));
+    REQUIRE(tokens[13] == vnd::Token(DOT, ".", vnd::CodeSourceLocation(filename, 1, 27)));
+    REQUIRE(tokens[14] == vnd::Token(PERCENT, "%", vnd::CodeSourceLocation(filename, 1, 29)));
 }
 
 TEST_CASE("tokenizer emit operationEqual token", "[tokenizer]") {
     using enum vnd::TokenType;
-    vnd::Tokenizer tokenizer{"+= -= *= /=", filename};
+    vnd::Tokenizer tokenizer{"+= -= *= /= %=", filename};
     std::vector<vnd::Token> tokens = tokenizer.tokenize();
-    REQUIRE(tokens.size() == 5);
-    REQUIRE(tokens[0] == vnd::Token(OPERATION_EQUAL, "+=", vnd::CodeSourceLocation(filename, 1, 1)));
-    REQUIRE(tokens[1] == vnd::Token(OPERATION_EQUAL, "-=", vnd::CodeSourceLocation(filename, 1, 4)));
-    REQUIRE(tokens[2] == vnd::Token(OPERATION_EQUAL, "*=", vnd::CodeSourceLocation(filename, 1, t_colum3)));
-    REQUIRE(tokens[3] == vnd::Token(OPERATION_EQUAL, "/=", vnd::CodeSourceLocation(filename, 1, 10)));
+    REQUIRE(tokens.size() == 6);
+    REQUIRE(tokens[0] == vnd::Token(PLUSEQUAL, "+=", vnd::CodeSourceLocation(filename, 1, 1)));
+    REQUIRE(tokens[1] == vnd::Token(MINUSEQUAL, "-=", vnd::CodeSourceLocation(filename, 1, 4)));
+    REQUIRE(tokens[2] == vnd::Token(STAREQUAL, "*=", vnd::CodeSourceLocation(filename, 1, t_colum3)));
+    REQUIRE(tokens[3] == vnd::Token(DIVIDEEQUAL, "/=", vnd::CodeSourceLocation(filename, 1, 10)));
+    REQUIRE(tokens[4] == vnd::Token(PERCENTEQUAL, "%=", vnd::CodeSourceLocation(filename, 1, 13)));
 }
 
 TEST_CASE("tokenizer emit boolean operator token", "[tokenizer]") {
@@ -624,26 +659,26 @@ TEST_CASE("tokenizer emit boolean operator token", "[tokenizer]") {
     vnd::Tokenizer tokenizer{"== >= <= !=", filename};
     std::vector<vnd::Token> tokens = tokenizer.tokenize();
     REQUIRE(tokens.size() == 5);
-    REQUIRE(tokens[0] == vnd::Token(BOOLEAN_OPERATOR, "==", vnd::CodeSourceLocation(filename, 1, 1)));
-    REQUIRE(tokens[1] == vnd::Token(BOOLEAN_OPERATOR, ">=", vnd::CodeSourceLocation(filename, 1, 4)));
-    REQUIRE(tokens[2] == vnd::Token(BOOLEAN_OPERATOR, "<=", vnd::CodeSourceLocation(filename, 1, t_colum3)));
-    REQUIRE(tokens[3] == vnd::Token(BOOLEAN_OPERATOR, "!=", vnd::CodeSourceLocation(filename, 1, 10)));
+    REQUIRE(tokens[0] == vnd::Token(EQUALEQUAL, "==", vnd::CodeSourceLocation(filename, 1, 1)));
+    REQUIRE(tokens[1] == vnd::Token(GREATEREQUAL, ">=", vnd::CodeSourceLocation(filename, 1, 4)));
+    REQUIRE(tokens[2] == vnd::Token(LESSEQUAL, "<=", vnd::CodeSourceLocation(filename, 1, t_colum3)));
+    REQUIRE(tokens[3] == vnd::Token(NOTEQUAL, "!=", vnd::CodeSourceLocation(filename, 1, 10)));
 }
 
 TEST_CASE("tokenizer emit logical operator token", "[tokenizer]") {
     vnd::Tokenizer tokenizer{"&& ||", filename};
     std::vector<vnd::Token> tokens = tokenizer.tokenize();
     REQUIRE(tokens.size() == 3);
-    REQUIRE(tokens[0] == vnd::Token(vnd::TokenType::LOGICAL_OPERATOR, "&&", vnd::CodeSourceLocation(filename, 1, 1)));
-    REQUIRE(tokens[1] == vnd::Token(vnd::TokenType::LOGICAL_OPERATOR, "||", vnd::CodeSourceLocation(filename, 1, 4)));
+    REQUIRE(tokens[0] == vnd::Token(vnd::TokenType::ANDAND, "&&", vnd::CodeSourceLocation(filename, 1, 1)));
+    REQUIRE(tokens[1] == vnd::Token(vnd::TokenType::OROR, "||", vnd::CodeSourceLocation(filename, 1, 4)));
 }
 
 TEST_CASE("tokenizer emit unary operator token", "[tokenizer]") {
     vnd::Tokenizer tokenizer{"++ --", filename};
     std::vector<vnd::Token> tokens = tokenizer.tokenize();
     REQUIRE(tokens.size() == 3);
-    REQUIRE(tokens[0] == vnd::Token(vnd::TokenType::UNARY_OPERATOR, "++", vnd::CodeSourceLocation(filename, 1, 1)));
-    REQUIRE(tokens[1] == vnd::Token(vnd::TokenType::UNARY_OPERATOR, "--", vnd::CodeSourceLocation(filename, 1, 4)));
+    REQUIRE(tokens[0] == vnd::Token(vnd::TokenType::PLUSPLUS, "++", vnd::CodeSourceLocation(filename, 1, 1)));
+    REQUIRE(tokens[1] == vnd::Token(vnd::TokenType::MINUSMINUS, "--", vnd::CodeSourceLocation(filename, 1, 4)));
 }
 
 TEST_CASE("tokenizer emit parenthesis token", "[tokenizer]") {
@@ -866,10 +901,10 @@ TEST_CASE("double number node swap", "[parser]") {
 
 TEST_CASE("unary node swap", "[parser]") {
     using enum vnd::TokenType;
-    auto token1 = vnd::Token{MINUS_OPERATOR, "-", vnd::CodeSourceLocation{filename, t_line, t_colum}};
+    auto token1 = vnd::Token{MINUS, "-", vnd::CodeSourceLocation{filename, t_line, t_colum}};
     auto token2 = vnd::Token{IDENTIFIER, "d", vnd::CodeSourceLocation{filename, t_line, t_colum6}};
-    auto token3 = vnd::Token{OPERATOR, "*", vnd::CodeSourceLocation{filename, t_line4, t_colum}};
-    auto token4 = vnd::Token{OPERATOR, "s", vnd::CodeSourceLocation{filename, t_line4, t_colum4}};
+    auto token3 = vnd::Token{STAR, "*", vnd::CodeSourceLocation{filename, t_line4, t_colum}};
+    auto token4 = vnd::Token{IDENTIFIER, "s", vnd::CodeSourceLocation{filename, t_line4, t_colum4}};
     vnd::UnaryExpressionNode unara{"-", token1, MAKE_UNIQUE(vnd::VariableNode, "d", token2)};
     vnd::UnaryExpressionNode unarb{"*", token3, MAKE_UNIQUE(vnd::VariableNode, "s", token4)};
     REQUIRE(unara.getOp() == "-");
@@ -893,10 +928,10 @@ TEST_CASE("unary node swap", "[parser]") {
 
 TEST_CASE("binary node swap", "[parser]") {
     using enum vnd::TokenType;
-    auto token1 = vnd::Token{MINUS_OPERATOR, "-", vnd::CodeSourceLocation{filename, t_line, t_colum5}};
+    auto token1 = vnd::Token{MINUS, "-", vnd::CodeSourceLocation{filename, t_line, t_colum5}};
     auto token2 = vnd::Token{IDENTIFIER, "d", vnd::CodeSourceLocation{filename, t_line, t_colum6}};
     auto token3 = vnd::Token{IDENTIFIER, "a", vnd::CodeSourceLocation{filename, t_line, t_colum4}};
-    auto token4 = vnd::Token{OPERATOR, "*", vnd::CodeSourceLocation{filename, t_line, t_colum5}};
+    auto token4 = vnd::Token{STAR, "*", vnd::CodeSourceLocation{filename, t_line, t_colum5}};
     auto token5 = vnd::Token{IDENTIFIER, "s", vnd::CodeSourceLocation{filename, t_line, t_colum6}};
     auto token6 = vnd::Token{IDENTIFIER, "b", vnd::CodeSourceLocation{filename, t_line, t_colum5}};
     vnd::BinaryExpressionNode unara{"-", token1, MAKE_UNIQUE(vnd::VariableNode, "d", token2), MAKE_UNIQUE(vnd::VariableNode, "a", token3)};
@@ -935,7 +970,11 @@ TEST_CASE("Parser emit integer number node form exadecimal", "[parser]") {
     REQUIRE(ast->getType() == NodeType::Number);
     const auto *number = ast->as<vnd::NumberNode<int>>();
     REQUIRE(number != nullptr);
+#ifdef __linux__
+    REQUIRE(number->getTypeIDName() == "i");
+#else
     REQUIRE(number->getTypeIDName() == "int");
+#endif
     REQUIRE(number->get_value() == 35);
 }
 
@@ -946,7 +985,11 @@ TEST_CASE("Parser emit integer number node form exadecimal max int -1", "[parser
     REQUIRE(ast->getType() == NodeType::Number);
     const auto *number = ast->as<vnd::NumberNode<int>>();
     REQUIRE(number != nullptr);
+#ifdef __linux__
+    REQUIRE(number->getTypeIDName() == "i");
+#else
     REQUIRE(number->getTypeIDName() == "int");
+#endif
     REQUIRE(number->get_value() == 2147483646);
 }
 
@@ -957,7 +1000,11 @@ TEST_CASE("Parser emit integer number node form octal", "[parser]") {
     REQUIRE(ast->getType() == NodeType::Number);
     const auto *number = ast->as<vnd::NumberNode<int>>();
     REQUIRE(number != nullptr);
+#ifdef __linux__
+    REQUIRE(number->getTypeIDName() == "i");
+#else
     REQUIRE(number->getTypeIDName() == "int");
+#endif
     REQUIRE(number->get_value() == 19);
 }
 
@@ -968,11 +1015,15 @@ TEST_CASE("Parser emit integer number node form octal max int -1", "[parser]") {
     REQUIRE(ast->getType() == NodeType::Number);
     const auto *number = ast->as<vnd::NumberNode<int>>();
     REQUIRE(number != nullptr);
+#ifdef __linux__
+    REQUIRE(number->getTypeIDName() == "i");
+#else
     REQUIRE(number->getTypeIDName() == "int");
+#endif
     REQUIRE(number->get_value() == 2147483646);
 }
 
-TEST_CASE("Parser emit integenumber node print", "[parser]") {
+TEST_CASE("Parser emit integer number node print", "[parser]") {
     vnd::Parser parser("1", filename);
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
@@ -980,7 +1031,11 @@ TEST_CASE("Parser emit integenumber node print", "[parser]") {
     const auto *number = ast->as<vnd::NumberNode<int>>();
     REQUIRE(number != nullptr);
     REQUIRE(number->get_value() == 1);
+#ifdef __linux__
+    REQUIRE(number->getTypeIDName() == "i");
+#else
     REQUIRE(number->getTypeIDName() == "int");
+#endif
     REQUIRE(number->print() == "NUMBER_INTEGER(1)");
 }
 
@@ -992,7 +1047,11 @@ TEST_CASE("Parser emit integer number node compat print", "[parser]") {
     const auto *number = ast->as<vnd::NumberNode<int>>();
     REQUIRE(number != nullptr);
     REQUIRE(number->get_value() == 1);
+#ifdef __linux__
+    REQUIRE(number->getTypeIDName() == "i");
+#else
     REQUIRE(number->getTypeIDName() == "int");
+#endif
     REQUIRE(number->comp_print() == "NUM_INT(1)");
 }
 
@@ -1013,7 +1072,11 @@ TEST_CASE("Parser emit double number node double", "[parser]") {
     REQUIRE(ast->getType() == NodeType::Number);
     const auto *number = ast->as<vnd::NumberNode<double>>();
     REQUIRE(number != nullptr);
+#ifdef __linux__
+    REQUIRE(number->getTypeIDName() == "d");
+#else
     REQUIRE(number->getTypeIDName() == "double");
+#endif
     REQUIRE(number->get_value() == 1.5);
 }
 
@@ -1024,7 +1087,11 @@ TEST_CASE("Parser emit double number node double print", "[parser]") {
     REQUIRE(ast->getType() == NodeType::Number);
     const auto *number = ast->as<vnd::NumberNode<double>>();
     REQUIRE(number != nullptr);
+#ifdef __linux__
+    REQUIRE(number->getTypeIDName() == "d");
+#else
     REQUIRE(number->getTypeIDName() == "double");
+#endif
     REQUIRE(number->get_value() == 1.5);
     REQUIRE(number->print() == "NUMBER_DOUBLE(1.5)");
 }
@@ -1036,7 +1103,11 @@ TEST_CASE("Parser emit double number node double compat print", "[parser]") {
     REQUIRE(ast->getType() == NodeType::Number);
     const auto *number = ast->as<vnd::NumberNode<double>>();
     REQUIRE(number != nullptr);
+#ifdef __linux__
+    REQUIRE(number->getTypeIDName() == "d");
+#else
     REQUIRE(number->getTypeIDName() == "double");
+#endif
     REQUIRE(number->get_value() == 1.5);
     REQUIRE(number->comp_print() == "NUM_DBL(1.5)");
 }
@@ -1146,8 +1217,13 @@ TEST_CASE("Parser emit binary expression node", "[parser]") {
 
     REQUIRE(leftNumber != nullptr);
     REQUIRE(rightNumber != nullptr);
+#ifdef __linux__
+    REQUIRE(leftNumber->getTypeIDName() == "i");
+    REQUIRE(rightNumber->getTypeIDName() == "i");
+#else
     REQUIRE(leftNumber->getTypeIDName() == "int");
     REQUIRE(rightNumber->getTypeIDName() == "int");
+#endif
 
     // Check the values of left and right operands
     REQUIRE(leftNumber->get_value() == 1);
@@ -1171,8 +1247,13 @@ TEST_CASE("Parser emit binary expression node print", "[parser]") {
 
     REQUIRE(leftNumber != nullptr);
     REQUIRE(rightNumber != nullptr);
+#ifdef __linux__
+    REQUIRE(leftNumber->getTypeIDName() == "i");
+    REQUIRE(rightNumber->getTypeIDName() == "i");
+#else
     REQUIRE(leftNumber->getTypeIDName() == "int");
     REQUIRE(rightNumber->getTypeIDName() == "int");
+#endif
 
     // Check the values of left and right operands
     REQUIRE(leftNumber->get_value() == 1);
@@ -1197,8 +1278,13 @@ TEST_CASE("Parser emit binary expression node compact print", "[parser]") {
 
     REQUIRE(leftNumber != nullptr);
     REQUIRE(rightNumber != nullptr);
+#ifdef __linux__
+    REQUIRE(leftNumber->getTypeIDName() == "i");
+    REQUIRE(rightNumber->getTypeIDName() == "i");
+#else
     REQUIRE(leftNumber->getTypeIDName() == "int");
     REQUIRE(rightNumber->getTypeIDName() == "int");
+#endif
 
     // Check the values of left and right operands
     REQUIRE(leftNumber->get_value() == 1);
