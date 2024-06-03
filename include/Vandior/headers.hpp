@@ -76,27 +76,29 @@ static inline constexpr long double NINFINITY = std::numeric_limits<long double>
 static inline constexpr long double PI = std::numbers::pi_v<long double>;
 static inline constexpr long double TWO_PI = 2 * PI;
 static inline constexpr long double HALF_PI = PI / 2;
-static inline constexpr char CNL = '\n';
-static inline constexpr char CCR = '\r';
+static inline constexpr const auto *CNL = "\n";
+static inline constexpr const auto *CCR = "\r";
+static inline constexpr auto NL = CNL[0];
+static inline constexpr auto CR = CCR[0];
 static inline constexpr char PNT = '.';
 static inline constexpr char ECR = 'E';
-static inline constexpr const char *CRNL = "\r\n";
+static inline constexpr const auto *CRNL = "\r\n";
 static inline constexpr char ctab = '\t';
 
 #ifdef _WIN32                              // Windows
-static inline constexpr auto NEWL = CRNL;  // Windows
+static inline constexpr const auto *NEWL = CRNL;  // Windows
 #elif defined macintosh                    // OS 9
-static inline constexpr const char *NEWL = &CCR;  // Classic Mac OS
+static inline constexpr const auto *NEWL = &CCR;  // Classic Mac OS
 #elif defined __unix__                     // Linux and Unix-like systems
-static inline constexpr const char *NEWL = &CNL;  // Linux and Unix
+static inline constexpr const auto * NEWL = CNL;  // Linux and Unix
 #elif defined __APPLE__                    // macOS
-static inline constexpr const char *NEWL = &CNL;  // macOS
+static inline constexpr const auto *NEWL = CNL;  // macOS
 #elif defined __VMS                        // OpenVMS
-static inline constexpr const char *NEWL = &CRNL;  // OpenVMS
+static inline constexpr const auto *NEWL = CRNL;  // OpenVMS
 #elif defined __FreeBSD__                  // FreeBSD
-static inline constexpr const char *NEWL = &CNL;  // FreeBSD
+static inline constexpr const auto *NEWL = CNL;  // FreeBSD
 #else
-static inline constexpr const char *NEWL = &CNL;  // Default case
+static inline constexpr const auto *NEWL = CNL;  // Default case
 #endif
 /**
  * @def SYSPAUSE

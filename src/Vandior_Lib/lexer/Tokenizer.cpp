@@ -122,7 +122,7 @@ namespace vnd {
 
     Token Tokenizer::handleSingleLineComment() {
         const auto start = position;
-        while(positionIsInText() && _input[position] != CNL) { incPosAndColumn(); }
+        while(positionIsInText() && _input[position] != NL) { incPosAndColumn(); }
         const auto value = _input.substr(start, position - start);
         return {TokenType::COMMENT, value, {_filename, line, column - value.size()}};
     }
@@ -352,13 +352,13 @@ namespace vnd {
 
     std::size_t Tokenizer::findLineStart() const noexcept {
         auto lineStart = position;
-        while(lineStart > 0 && _input[lineStart - 1] != CNL) { --lineStart; }
+        while(lineStart > 0 && _input[lineStart - 1] != NL) { --lineStart; }
         return lineStart;
     }
 
     std::size_t Tokenizer::findLineEnd() const noexcept {
         auto lineEnd = position;
-        while(lineEnd < _inputSize && _input[lineEnd] != CNL) { ++lineEnd; }
+        while(lineEnd < _inputSize && _input[lineEnd] != NL) { ++lineEnd; }
         return lineEnd;
     }
 
