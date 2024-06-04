@@ -6,9 +6,8 @@
 #include "../Log.hpp"
 #include "../disableWarn.hpp"
 #include "../format.hpp"
-#include "TimePoints.hpp"
-#include "Times.hpp"
-#include "cronoRedefinition.hpp"
+#include "../headers.hpp"
+#include "timeFactors.hpp"
 // On GCC < 4.8, the following define is often missing. Since
 // this library only uses sleep_for, this should be safe
 #if defined(__GNUC__) && !defined(__clang__) && __GNUC__ < 5 && __GNUC_MINOR__ < 8
@@ -24,8 +23,16 @@ namespace vnd {
      */
     class Timer {  // NOLINT(*-special-member-functions)
     protected:
+        /// This is a typedef to make clocks easier to use
+        using clock = std::chrono::high_resolution_clock;
+        using times = std::tuple<long double, long double, long double, long double, std::string, std::string, std::string, std::string>;
+
+        /// This typedef is for points in time
+        using time_point = std::chrono::time_point<clock>;
+
         /// This is the type of a printing function, you can make your own
         using time_print_t = std::function<std::string(std::string, std::string)>;
+        using nanolld = std::chrono::duration<long double, std::nano>;
         /// This is the title of the timer
         std::string title_;
 
@@ -33,7 +40,7 @@ namespace vnd {
         time_print_t time_print_;
 
         /// This is the starting point (when the timer was created)
-        TimePoints start_;
+        time_point start_;
 
         /// This is the number of times cycles (print divides by this number)
         std::size_t cycles{1};
@@ -57,8 +64,7 @@ namespace vnd {
          *  Standard constructor, can set title and print function
          */
         explicit Timer(const std::string &title = "Timer", const time_print_t &time_print = Simple)
-          : title_(title), time_print_(time_print),
-            start_(clock::now(), utc_clock::now(), tai_clock::now(), gps_clock::now(), file_clock::now()) {}
+          : title_(title), time_print_(time_print), start_(clock::now()) {}
 
         Timer(const Timer &other) = delete;              /// Delete copy constructor
         Timer &operator=(const Timer &other) = delete;   /// Delete copy assignment operator
@@ -73,21 +79,19 @@ namespace vnd {
          */
         // NOLINTNEXTLINE(*-identifier-length)
         [[nodiscard]] std::string time_it(const std::function<void()> &f, long double target_time = 1) {
-            const TimePoints start = start_;
+            const time_point start = start_;
             // NOLINTNEXTLINE(clang-analyzer-cplusplus.InnerPointer)
-            auto total_times = Clocks{C_LD(NAN), C_LD(NAN), C_LD(NAN), C_LD(NAN), C_LD(NAN)};
-            start_ = {clock::now(), utc_clock::now(), tai_clock::now(), gps_clock::now(), file_clock::now()};
+            auto total_time = C_LD(NAN);
+
+            start_ = clock::now();
             std::size_t n = 0;  // NOLINT(*-identifier-length)
-            do {
-                // NOLINT(*-avoid-do-while)
+            do {                // NOLINT(*-avoid-do-while)
                 f();
-                auto elapsed = TimePoints{clock::now(), utc_clock::now(), tai_clock::now(), gps_clock::now(), file_clock::now()} - start_;
-                total_times = elapsed.toClocks();
-            } while(n++ < vnd::MFACTOR && total_times.time < target_time);
-            const auto ldn = C_LD(n);
-            const auto mktstr = make_time_str({total_times.time / ldn, total_times.utc_time / ldn, total_times.tai_time / ldn,
-                                               total_times.gps_time / ldn, total_times.file_time / ldn});
-            std::string out = FORMAT("{} for {} tries", mktstr, std::to_string(n));
+                nanolld elapsed = clock::now() - start_;
+                total_time = elapsed.count();
+            } while(n++ < MFACTOR && total_time < target_time);
+
+            std::string out = FORMAT("{} for {} tries", make_time_str(C_LD(total_time / C_LD(n))), std::to_string(n));
             start_ = start;
             return out;
         }
@@ -96,41 +100,40 @@ namespace vnd {
          * @brief Get the elapsed time in seconds.
          * @return Elapsed time in seconds.
          */
-        [[nodiscard]] inline Clocks make_time() const noexcept {
-            const auto elapsed = TimePoints{clock::now(), utc_clock::now(), tai_clock::now(), gps_clock::now(), file_clock::now()} - start_;
-            return elapsed.toClocks();
+        [[nodiscard]] inline long double make_time() const noexcept {
+            const nanolld elapsed = clock::now() - start_;
+            return elapsed.count();
         }
         /**
          * @brief Get the named times (seconds, milliseconds, microseconds, nanoseconds).
-         * @param times The time in nanoseconds.
+         * @param time The time in nanoseconds.
          * @return A tuple containing named times.
          */
-        [[nodiscard]] static Times make_named_times(Clocks times) {  // NOLINT(*-identifier-length)
-            return {times.getInSeconds(), times.getinMicros(), times.getinMicros(), times, "s", "ms", "us", "ns"};
+        [[nodiscard]] static times make_named_times(long double time) {  // NOLINT(*-identifier-length)
+            const auto &secondsTime = time / SECONDSFACTOR;
+            const auto &millisTime = time / MILLISECONDSFACTOR;
+            const auto &microTime = time / MICROSECONDSFACTOR;
+            return {secondsTime, millisTime, microTime, time, "s", "ms", "us", "ns"};
         }
 
-        [[maybe_unused]] [[nodiscard]] Times multi_time() const { return make_named_times(make_time()); }
+        [[maybe_unused]] [[nodiscard]] times multi_time() const { return make_named_times(make_time()); }
 
         /**
          * @brief Get the named time and its unit.
-         * @param intime The time in nanoseconds.
+         * @param time The time in nanoseconds.
          * @return A pair containing the named time and its unit.
          */
-        [[nodiscard]] static std::pair<Clocks, std::string> make_named_time(const Clocks &intime) {
-            const auto &times = make_named_times(intime);
-            const auto &[ld1, utc_ld1, tai_ld1, gps_ld1, file_ld1] = times.tseconds;
-            const auto &[ld2, utc_ld2, tai_ld2, gps_ld2, file_ld2] = times.tmillis;
-            const auto &[ld3, utc_ld3, tai_ld3, gps_ld3, file_ld3] = times.tmicros;
-            const auto &[ld4, utc_ld4, tai_ld4, gps_ld4, file_ld4] = times.tnanos;
-            //  Accessing values
-            if(ld1 > 1 && utc_ld1 > 1 && tai_ld1 > 1 && gps_ld1 > 1 && file_ld1 > 1) [[likely]] {  // seconds
-                return {{ld1, utc_ld1, tai_ld1, gps_ld1, file_ld1}, times.seconds};
-            } else if(ld2 > 1 && utc_ld2 > 1 && tai_ld2 > 1 && gps_ld2 > 1 && file_ld2 > 1) [[likely]] {  // milli
-                return {{ld2, utc_ld2, tai_ld2, gps_ld2, file_ld2}, times.millis};
-            } else if(ld3 > 1 && utc_ld3 > 1 && tai_ld3 > 1 && gps_ld3 > 1 && file_ld3 > 1) [[likely]] {  // micro
-                return {{ld3, utc_ld3, tai_ld3, gps_ld3, file_ld3}, times.micros};
+        [[nodiscard]] static std::pair<long double, std::string> make_named_time(long double time) {
+            const auto &[ld1, ld2, ld3, ld4, str1, str2, str3, str4] = make_named_times(time);
+            // Accessing values
+            if(ld1 > 1) [[likely]] {  // seconds
+                return {ld1, str1};
+            } else if(ld2 > 1) [[likely]] {  // milli
+                return {ld2, str2};
+            } else if(ld3 > 1) [[likely]] {  // micro
+                return {ld3, str3};
             } else [[unlikely]] {
-                return {{ld4, utc_ld4, tai_ld4, gps_ld4, file_ld4}, times.nanos};
+                return {ld4, str4};
             }
         }
 
@@ -140,28 +143,20 @@ namespace vnd {
          * @return A formatted time string.
          */
         [[nodiscard]] inline std::string make_time_str() const {  // NOLINT(modernize-use-nodiscard)
-            const auto &[time, utc_time, tai_time, gps_time, file_time] = make_time();
-            const auto ldcycles = C_LD(cycles);
-            return make_time_str({time / ldcycles, utc_time / ldcycles, tai_time / ldcycles, gps_time / ldcycles, file_time / ldcycles});
+            const auto time = C_LD(make_time() / C_LD(cycles));
+            return make_time_str(time);
         }
 
         // LCOV_EXCL_START
         /**
          * @brief Format a given time value into a string.
          * This prints out a time string from a time
-         * @param intime The time value in nanoseconds.
+         * @param time The time value in nanoseconds.
          * @return A formatted time string.
          */
-        [[nodiscard]] static inline std::string make_time_str(const Clocks &intime) {  // NOLINT(modernize-use-nodiscard)
-            const auto &[titmes, stime] = make_named_time(intime);
-            const auto &[time, utc_time, tai_time, gps_time, file_time] = titmes;
-
-            const auto stimes = FORMAT("Sys: {:.3Lf} {}", time, stime);
-            const auto sutc_time = FORMAT("UTC: {:.3Lf} {}", utc_time, stime);
-            const auto stai_time = FORMAT("TAI: {:.3Lf} {}", tai_time, stime);
-            const auto sgps_time = FORMAT("GPS: {:.3Lf} {}", gps_time, stime);
-            const auto sfile_time = FORMAT("File: {:.3Lf} {}", file_time, stime);
-            return FORMAT("{},{},{},{},{}", stimes, sutc_time, stai_time, sgps_time, sfile_time);
+        [[nodiscard]] static inline std::string make_time_str(long double time) {  // NOLINT(modernize-use-nodiscard)
+            const auto &[titme, stime] = make_named_time(time);
+            return FORMAT("{:.Lf} {}", titme, stime);
         }
         // LCOV_EXCL_STOP
 
@@ -181,7 +176,7 @@ namespace vnd {
             cycles = val;
             return *this;
         }
-    };  // namespace vnd
+    };
 
     /**
      * @brief Automatic Timer class that prints out the time upon destruction.
