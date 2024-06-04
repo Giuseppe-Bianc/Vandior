@@ -7,7 +7,24 @@
 #include "TokenType.hpp"
 
 namespace vnd {
-    [[nodiscard]] inline std::string comp_tokType(TokenType type) {
+
+    /**
+     * @brief Converts a TokenType to its corresponding string representation.
+     * This function provides a string representation for a given TokenType.
+     * It can be useful for debugging, logging, or any situation where a human-readable
+     * form of the token type is required.
+     * @param type The TokenType to be converted to a string.
+     * @return A std::string representing the token type.
+     * @note The function is marked as [[nodiscard]], which means the compiler will issue
+     * a warning if the return value is ignored.
+     * Example usage:
+     * @code
+     * TokenType type = TokenType::PLUS;
+     * std::string typeStr = vnd::comp_tokType(type);
+     * std::cout << "Token type: " << typeStr << std::endl;  // Output: Token type: PLUS_OP
+     * @endcode
+     */
+    [[nodiscard]] inline std::string comp_tokType(TokenType type) noexcept {
         using enum TokenType;
         switch(type) {
         case INTEGER:
