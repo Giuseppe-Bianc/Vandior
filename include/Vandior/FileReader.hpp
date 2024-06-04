@@ -5,8 +5,8 @@
 #pragma once
 
 #include "FileReaderError.hpp"
-#include "Timer.hpp"
 #include "headers.hpp"
+#include "timer/Timer.hpp"
 
 namespace vnd {
     inline auto readFromFile(const std::string &filename) -> std::string {

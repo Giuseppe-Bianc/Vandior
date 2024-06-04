@@ -2,7 +2,7 @@
 // clang-format off
 #include "headers.hpp"
 #include "Log.hpp"
-#include "Timer.hpp"
+#include "timer/Timer.hpp"
 #include "lexer/Tokenizer.hpp"
 #include "FolderCreationResult.hpp"
 #include "FileReader.hpp"
