@@ -5,17 +5,24 @@
 #pragma once
 
 #include "../headers.hpp"
+#include <complex>
 /**
  * @brief Enum representing different types of AST nodes.
  */
-enum class NumberNodeType { Integer, Double };
+enum class NumberNodeType { Integer, Float, Double, ImaginaryFloat, Imaginary };
 [[nodiscard]] inline std::string NumNodeType_comp(NumberNodeType type) {
     using enum NumberNodeType;
     switch(type) {
     case Integer:
         return "INT";
+    case Float:
+        return "FLT";
     case Double:
         return "DBL";
+    case ImaginaryFloat:
+        return "IMF";
+    case Imaginary:
+        return "IMG";
     default:
         return "UNKOWN";
     }
@@ -41,8 +48,17 @@ template <> struct fmt::formatter<NumberNodeType> : fmt::formatter<std::string_v
         case Integer:
             name = "INTEGER";
             break;
+        case Float:
+            name = "FLOAT";
+            break;
         case Double:
             name = "DOUBLE";
+            break;
+        case ImaginaryFloat:
+            name = "IMAGINARY_F";
+            break;
+        case Imaginary:
+            name = "IMAGINARY";
             break;
         default:
             name = "UNKOWN";
@@ -52,3 +68,4 @@ template <> struct fmt::formatter<NumberNodeType> : fmt::formatter<std::string_v
     }
 };
 /** \endcond */
+

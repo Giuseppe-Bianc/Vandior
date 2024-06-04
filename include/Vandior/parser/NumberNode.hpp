@@ -6,6 +6,31 @@
 #include "LiteralNode.hpp"
 #include "NumberNodeType.hpp"
 
+/**
+ * This function is a formatter for complex value using fmt.
+ * \cond
+ */
+/**
+ * @brief Specialization of fmt::formatter for std::complex.
+ */
+template <typename T> struct fmt::formatter<std::complex<T>> : fmt::formatter<std::string_view> {
+    /**
+     * @brief Formats the std::complex for printing.
+     * @param nodeType The value to be formatted.
+     * @param ctx The formatting context.
+     * @return The formatted string.
+     */
+    template <typename FormatContext> auto format(std::complex<T> num, FormatContext &ctx) {
+        using enum NumberNodeType;
+        std::string_view name = FORMAT("({}, {})", std::real(num), std::imag(num));
+        return fmt::formatter<std::string_view>::format(name, ctx);
+    }
+};
+/** \endcond */
+
+template <typename T> struct is_complex_t : public std::false_type {};
+template <typename T> struct is_complex_t<std::complex<T>> : public std::true_type {};
+
 namespace vnd {
 
     /**
@@ -32,6 +57,7 @@ namespace vnd {
          * @return String representation of the AST node.
          */
         [[nodiscard]] std::string print() const override {
+            if(is_complex_t<T>()) { return FORMAT("{}_{}(img)", LiteralNode<T>::getType(), getNumberType()); }
             return FORMAT("{}_{}({})", LiteralNode<T>::getType(), getNumberType(), LiteralNode<T>::get_value());
         }
 
@@ -40,6 +66,7 @@ namespace vnd {
          * @return Compact string representation of the AST node.
          */
         [[nodiscard]] std::string comp_print() const override {
+            if(is_complex_t<T>()) { return FORMAT("{}_{}(img)", LiteralNode<T>::getType(), getNumberType()); }
             return FORMAT("NUM_{}({})", NumNodeType_comp(getNumberType()), LiteralNode<T>::get_value());
         }
 

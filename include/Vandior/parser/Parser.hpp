@@ -24,7 +24,8 @@ namespace vnd {
         static int convertToInt(std::string_view str) noexcept;
         static int convertToIntformExa(std::string_view str) noexcept;
         static int convertToIntformOct(std::string_view str) noexcept;
-        static double convertToDouble(std::string_view str) noexcept;
+        template <typename T> static T convertToDouble(std::string_view str) noexcept;
+        template <typename T> static std::complex<T> convertToImg(std::string_view str) noexcept;
         std::unique_ptr<ASTNode> parsePrimary();
         std::unique_ptr<ASTNode> parseUnary(std::size_t parentPrecendence);
         std::unique_ptr<ASTNode> parseBinary(std::size_t parentPrecendence);

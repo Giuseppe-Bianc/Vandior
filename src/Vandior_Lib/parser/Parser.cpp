@@ -86,8 +86,9 @@ namespace vnd {
         return 0;
     }
 
-    double Parser::convertToDouble(std::string_view str) noexcept {
-        double result{};
+    template <typename T>
+    T Parser::convertToDouble(std::string_view str) noexcept {
+        T result{};
         auto [ptr, ec] = std::from_chars(str.data(), str.data() + str.size(), result);
 
         if(ec == std::errc()) [[likely]] {
@@ -99,6 +100,19 @@ namespace vnd {
 
         return 0.0;
     }
+
+    template <typename T>
+    std::complex<T> Parser::convertToImg(std::string_view str) noexcept {
+        std::string_view doubleStr;
+
+        if(str.ends_with("f")) {
+            doubleStr = str.substr(0, str.size() - 2);
+        } else {
+            doubleStr = str.substr(0, str.size() - 1);
+        }
+        return std::complex<T>(0, convertToDouble<T>(doubleStr));
+    }
+
     std::unique_ptr<ASTNode> Parser::parsePrimary() {
         using enum NumberNodeType;
         const Token &currentToken = getCurrentToken();
@@ -119,7 +133,16 @@ namespace vnd {
             return MAKE_UNIQUE(NumberNode<int>, convertToInt(currentValue), currentToken, Integer);
         } else if(currentType == TokenType::DOUBLE) {
             consumeToken();
-            return MAKE_UNIQUE(NumberNode<double>, convertToDouble(currentValue), currentToken, Double);
+            if(currentValue.ends_with("if")) {
+                return MAKE_UNIQUE(NumberNode<std::complex<float>>, convertToImg<float>(currentValue), currentToken, ImaginaryFloat);
+            }
+            if(currentValue.ends_with("i")) {
+                return MAKE_UNIQUE(NumberNode<std::complex<double>>, convertToImg<double>(currentValue), currentToken, Imaginary);
+            }
+            if(currentValue.ends_with("f")) {
+                return MAKE_UNIQUE(NumberNode<float>, convertToDouble<float>(currentValue), currentToken, Float);
+            }
+            return MAKE_UNIQUE(NumberNode<double>, convertToDouble<double>(currentValue), currentToken, Double);
         } else if(currentType == TokenType::BOOLEAN) {
             consumeToken();
             auto value = true;
