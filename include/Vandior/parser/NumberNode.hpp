@@ -43,7 +43,6 @@ namespace vnd {
          */
         [[nodiscard]] NumberNode(T value, const Token &token, NumberNodeType number_type)
           : LiteralNode<T>(value, token, NodeType::Number), m_number_type(number_type) {
-            LINFO("{}", value);
         }
 
         /**
