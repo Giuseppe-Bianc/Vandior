@@ -22,14 +22,11 @@ template <typename T> struct fmt::formatter<std::complex<T>> : fmt::formatter<st
      */
     template <typename FormatContext> auto format(std::complex<T> num, FormatContext &ctx) {
         using enum NumberNodeType;
-        std::string_view name = FORMAT("({}, {})", std::real(num), std::imag(num));
+        std::string name = FORMAT("({}, {})", std::real(num), std::imag(num));
         return fmt::formatter<std::string_view>::format(name, ctx);
     }
 };
 /** \endcond */
-
-template <typename T> struct is_complex_t : public std::false_type {};
-template <typename T> struct is_complex_t<std::complex<T>> : public std::true_type {};
 
 namespace vnd {
 
@@ -45,7 +42,9 @@ namespace vnd {
          * @param number_type NumberNodeType of the node.
          */
         [[nodiscard]] NumberNode(T value, const Token &token, NumberNodeType number_type)
-          : LiteralNode<T>(value, token, NodeType::Number), m_number_type(number_type) {}
+          : LiteralNode<T>(value, token, NodeType::Number), m_number_type(number_type) {
+            LINFO("{}", value);
+        }
 
         /**
          * @brief Gets the number type of the AST node.
@@ -57,7 +56,6 @@ namespace vnd {
          * @return String representation of the AST node.
          */
         [[nodiscard]] std::string print() const override {
-            if(is_complex_t<T>()) { return FORMAT("{}_{}(img)", LiteralNode<T>::getType(), getNumberType()); }
             return FORMAT("{}_{}({})", LiteralNode<T>::getType(), getNumberType(), LiteralNode<T>::get_value());
         }
 
@@ -66,7 +64,6 @@ namespace vnd {
          * @return Compact string representation of the AST node.
          */
         [[nodiscard]] std::string comp_print() const override {
-            if(is_complex_t<T>()) { return FORMAT("{}_{}(img)", LiteralNode<T>::getType(), getNumberType()); }
             return FORMAT("NUM_{}({})", NumNodeType_comp(getNumberType()), LiteralNode<T>::get_value());
         }
 
