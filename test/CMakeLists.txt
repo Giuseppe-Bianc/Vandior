@@ -1,9 +1,9 @@
-cmake_minimum_required(VERSION 3.23...3.27)  # Aggiornare alla versione minima di CMake necessaria
+cmake_minimum_required(VERSION 3.23...3.28)  # Aggiornare alla versione minima di CMake necessaria
 
 if (${CMAKE_VERSION} VERSION_LESS 3.23)
     cmake_policy(VERSION ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION})
 else ()
-    cmake_policy(VERSION 3.27)
+    cmake_policy(VERSION 3.28)
 endif ()
 
 project(CmakeConfigPackageTests LANGUAGES CXX)

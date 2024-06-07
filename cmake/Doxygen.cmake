@@ -1,16 +1,20 @@
 # Enable doxygen doc builds of source
 function(Vandior_enable_doxygen DOXYGEN_THEME)
     message(STATUS "Configuring Doxygen documentation...")
-    # If not specified, use the top readme file as the first page
+
+    # Ensure Doxygen is available
+    find_package(Doxygen REQUIRED OPTIONAL_COMPONENTS dot)
+
+    # Initialize variables
+    set(doxygen_conf "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile")
+
+    # Default to top README file as the main page if not specified
     if ((NOT DOXYGEN_USE_MDFILE_AS_MAINPAGE) AND EXISTS "${PROJECT_SOURCE_DIR}/README.md")
         set(DOXYGEN_USE_MDFILE_AS_MAINPAGE "${PROJECT_SOURCE_DIR}/README.md")
     endif ()
 
-    # set better defaults for doxygen
-    is_verbose(_is_verbose)
-    if (NOT ${_is_verbose})
-        set(DOXYGEN_QUIET YES)
-    endif ()
+    # Set default values
+    set(DOXYGEN_QUIET YES)
     set(DOXYGEN_CALLER_GRAPH YES)
     set(DOXYGEN_CALL_GRAPH YES)
     set(DOXYGEN_EXTRACT_ALL YES)
@@ -19,7 +23,7 @@ function(Vandior_enable_doxygen DOXYGEN_THEME)
     set(DOXYGEN_DOT_IMAGE_FORMAT svg)
     set(DOXYGEN_DOT_TRANSPARENT YES)
 
-    # If not specified, exclude the vcpkg files and the files CMake downloads under _deps (like project_options)
+    # Exclude vcpkg and _deps directories if not specified
     if (NOT DOXYGEN_EXCLUDE_PATTERNS)
         set(DOXYGEN_EXCLUDE_PATTERNS "${CMAKE_CURRENT_BINARY_DIR}/vcpkg_installed/*" "${CMAKE_CURRENT_BINARY_DIR}/_deps/*")
     endif ()
@@ -52,6 +56,6 @@ function(Vandior_enable_doxygen DOXYGEN_THEME)
     # Add Doxygen-docs target
     message(STATUS "Adding `doxygen-docs` target to build the documentation.")
     doxygen_add_docs(doxygen-docs ALL ${PROJECT_SOURCE_DIR}
-            COMMENT "Generating documentation - entry file: ${CMAKE_CURRENT_BINARY_DIR}/html/index.html")
+            COMMENT "Generating Doxygen documentation...\nDocumentation will be available at: ${CMAKE_CURRENT_BINARY_DIR}/html/index.html\nOpen the above file in a web browser to view the documentation.")
     message(STATUS "Doxygen documentation configuration completed.")
 endfunction()
