@@ -7,6 +7,7 @@
 #include "../disableWarn.hpp"
 #include "../format.hpp"
 #include "../headers.hpp"
+#include "Times.hpp"
 #include "timeFactors.hpp"
 // On GCC < 4.8, the following define is often missing. Since
 // this library only uses sleep_for, this should be safe
@@ -25,8 +26,6 @@ namespace vnd {
     protected:
         /// This is a typedef to make clocks easier to use
         using clock = std::chrono::high_resolution_clock;
-        using times = std::tuple<long double, long double, long double, long double, std::string, std::string, std::string, std::string>;
-
         /// This typedef is for points in time
         using time_point = std::chrono::time_point<clock>;
 
@@ -90,8 +89,8 @@ namespace vnd {
                 nanolld elapsed = clock::now() - start_;
                 total_time = elapsed.count();
             } while(n++ < MFACTOR && total_time < target_time);
-
-            std::string out = FORMAT("{} for {} tries", make_time_str(C_LD(total_time / C_LD(n))), std::to_string(n));
+            const auto total_timef = C_LD(total_time / C_LD(n));
+            std::string out = FORMAT("{} for {} tries", make_time_str(total_timef), std::to_string(n));
             start_ = start;
             return out;
         }
@@ -109,33 +108,9 @@ namespace vnd {
          * @param time The time in nanoseconds.
          * @return A tuple containing named times.
          */
-        [[nodiscard]] static times make_named_times(long double time) {  // NOLINT(*-identifier-length)
-            const auto &secondsTime = time / SECONDSFACTOR;
-            const auto &millisTime = time / MILLISECONDSFACTOR;
-            const auto &microTime = time / MICROSECONDSFACTOR;
-            return {secondsTime, millisTime, microTime, time, "s", "ms", "us", "ns"};
-        }
+        [[nodiscard]] static Times make_named_times(long double time) { return Times{time}; }
 
-        [[maybe_unused]] [[nodiscard]] times multi_time() const { return make_named_times(make_time()); }
-
-        /**
-         * @brief Get the named time and its unit.
-         * @param time The time in nanoseconds.
-         * @return A pair containing the named time and its unit.
-         */
-        [[nodiscard]] static std::pair<long double, std::string> make_named_time(long double time) {
-            const auto &[ld1, ld2, ld3, ld4, str1, str2, str3, str4] = make_named_times(time);
-            // Accessing values
-            if(ld1 > 1) [[likely]] {  // seconds
-                return {ld1, str1};
-            } else if(ld2 > 1) [[likely]] {  // milli
-                return {ld2, str2};
-            } else if(ld3 > 1) [[likely]] {  // micro
-                return {ld3, str3};
-            } else [[unlikely]] {
-                return {ld4, str4};
-            }
-        }
+        [[maybe_unused]] [[nodiscard]] Times multi_time() const { return Times{make_time()}; }
 
         /**
          * @brief Format the numerical value for the time string.
@@ -146,8 +121,7 @@ namespace vnd {
             const auto time = C_LD(make_time() / C_LD(cycles));
             return make_time_str(time);
         }
-
-        // LCOV_EXCL_START
+        //   LCOV_EXCL_START
         /**
          * @brief Format a given time value into a string.
          * This prints out a time string from a time
@@ -155,8 +129,8 @@ namespace vnd {
          * @return A formatted time string.
          */
         [[nodiscard]] static inline std::string make_time_str(long double time) {  // NOLINT(modernize-use-nodiscard)
-            const auto &[titme, stime] = make_named_time(time);
-            return FORMAT("{:.Lf} {}", titme, stime);
+            const auto &[titme, stime] = make_named_times(time).getRelevantTimeframe();
+            return FORMAT("{:.3Lf} {}", titme, stime);
         }
         // LCOV_EXCL_STOP
 

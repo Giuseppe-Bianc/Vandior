@@ -7,11 +7,11 @@
 DISABLE_WARNINGS_PUSH(
     4005 4201 4459 4514 4625 4626 4820
     6244 6285 6385 6386 26409 26415 26418
-    26429 26432 26437 26438 26440 26465 
-    26446 26447 26450 26451 26455 26457 
-    26459 26460 26461 26467 26472 26473 
+    26429 26432 26437 26438 26440 26465
+    26446 26447 26450 26451 26455 26457
+    26459 26460 26461 26467 26472 26473
     26474 26475 26481 26482 26485 26490
-    26491 26493 26494 26495 26496 26497 
+    26491 26493 26494 26495 26496 26497
     26498 26800 26814 26818 26826)
 /** \endcond */
 #include <any>
@@ -85,17 +85,17 @@ static inline constexpr char ECR = 'E';
 static inline constexpr const auto *CRNL = "\r\n";
 static inline constexpr char ctab = '\t';
 
-#ifdef _WIN32                              // Windows
+#ifdef _WIN32                                     // Windows
 static inline constexpr const auto *NEWL = CRNL;  // Windows
-#elif defined macintosh                    // OS 9
+#elif defined macintosh                           // OS 9
 static inline constexpr const auto *NEWL = &CCR;  // Classic Mac OS
-#elif defined __unix__                     // Linux and Unix-like systems
-static inline constexpr const auto * NEWL = CNL;  // Linux and Unix
-#elif defined __APPLE__                    // macOS
+#elif defined __unix__                            // Linux and Unix-like systems
+static inline constexpr const auto *NEWL = CNL;  // Linux and Unix
+#elif defined __APPLE__                           // macOS
 static inline constexpr const auto *NEWL = CNL;  // macOS
-#elif defined __VMS                        // OpenVMS
+#elif defined __VMS                               // OpenVMS
 static inline constexpr const auto *NEWL = CRNL;  // OpenVMS
-#elif defined __FreeBSD__                  // FreeBSD
+#elif defined __FreeBSD__                         // FreeBSD
 static inline constexpr const auto *NEWL = CNL;  // FreeBSD
 #else
 static inline constexpr const auto *NEWL = CNL;  // Default case
@@ -103,12 +103,10 @@ static inline constexpr const auto *NEWL = CNL;  // Default case
 /**
  * @def SYSPAUSE
  * @brief A macro to pause the system and wait for user input.
- *
  * This macro outputs a message to the user and waits for them to press
  * the enter key before continuing. It is useful for pausing the execution
  * of a console application to allow the user to read any final output
  * before the program exits.
- *
  * Usage example:
  * @code
  * SYSPAUSE();
@@ -172,9 +170,7 @@ static inline constexpr const auto *NEWL = CNL;  // Default case
  * @return The value of the specified type stored in the variant.
  */
 #define GET_VARIANT_TYPE(var, type) std::get<type>(var)
-/**
- * \cond
- */
+/** \cond */
 
 /**
  * @brief Specialization of fmt::formatter for glm::vec.
@@ -223,7 +219,7 @@ template <typename T, glm::qualifier Q> struct fmt::formatter<glm::qua<T, Q>> : 
 };
 
 /**
- * @brief Specialization of fmt::formatter for std::filesystem::path.
+ * @brief Specialization of fmt::formatter for nlohmann::json.
  */
 template <> struct fmt::formatter<nlohmann::basic_json<>> : formatter<std::string_view> {
     /**
@@ -250,7 +246,6 @@ using StringPair = std::pair<std::string, std::string>;
 /**
  * @typedef StringPairVec
  * @brief A vector of string pairs.
- *
  * This type alias defines a vector of `StringPair` using `std::vector` from the C++ Standard Library.
  * It is useful for storing a list of associated string pairs, such as a collection of key-value pairs.
  */
@@ -259,7 +254,6 @@ using StringPairVec = std::vector<StringPair>;
 /**
  * @typedef StringVec
  * @brief A vector of strings.
- *
  * This type alias defines a vector of strings using `std::vector` from the C++ Standard Library.
  * It is useful for storing a list of strings, such as a collection of words or lines from a text.
  */
@@ -306,5 +300,12 @@ using OptionalSizeT = std::optional<size_t>;
  * @endcode
  */
 template <typename T>
-concept StringOrStringView = std::same_as<T, std::string> || std::same_as<T, std::string_view>;
+concept StringOrStringView = std::same_as<std::remove_cvref_t<T>, std::string> || std::same_as<std::remove_cvref_t<T>, std::string_view> ||
+                             (requires(const T &t) {
+                                 { std::ranges::begin(t) } -> std::convertible_to<typename T::const_iterator>;
+                                 { std::ranges::end(t) } -> std::convertible_to<typename T::const_iterator>;
+                                 { t.data() } -> std::convertible_to<const char *>;
+                                 { t.size() } -> std::integral;
+                                 { t.length() } -> std::integral;
+                             });
 // NOLINTEND
