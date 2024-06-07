@@ -871,6 +871,16 @@ TEST_CASE("Parser emit integer number node", "[parser]") {
     REQUIRE(number->get_value() == 1);
 }
 
+TEST_CASE("Parser emit complex number node", "[parser]") {
+    vnd::Parser parser("1i", filename);
+    auto ast = parser.parse();
+    REQUIRE(ast != nullptr);
+    REQUIRE(ast->getType() == NodeType::Number);
+    const auto *number = ast->as<vnd::NumberNode<std::complex<double>>>();
+    REQUIRE(number != nullptr);
+    REQUIRE(number->get_value() == std::complex<double>(0, 1));
+}
+
 TEST_CASE("integer number node swap", "[parser]") {
     auto token1 = vnd::Token{vnd::TokenType::INTEGER, "2", vnd::CodeSourceLocation{filename, t_line, t_colum}};
     auto token2 = vnd::Token{vnd::TokenType::INTEGER, "3", vnd::CodeSourceLocation{filename, t_line, t_colum2}};
@@ -885,6 +895,22 @@ TEST_CASE("integer number node swap", "[parser]") {
     REQUIRE(intb.get_value() == 2);
     REQUIRE(inta.get_token() == token2);
     REQUIRE(intb.get_token() == token1);
+}
+
+TEST_CASE("Imaginary number node swap", "[parser]") {
+    auto token1 = vnd::Token{vnd::TokenType::DOUBLE, "2if", vnd::CodeSourceLocation{filename, t_line, t_colum}};
+    auto token2 = vnd::Token{vnd::TokenType::DOUBLE, "3if", vnd::CodeSourceLocation{filename, t_line, t_colum3}};
+    vnd::NumberNode<std::complex<float>> cmpa{std::complex<float>(0, 2), token1, NumberNodeType::ImaginaryFloat};
+    vnd::NumberNode<std::complex<float>> cmpb{std::complex<float>(0, 3), token2, NumberNodeType::ImaginaryFloat};
+    REQUIRE(cmpa.get_value() == std::complex<float>(0, 2));
+    REQUIRE(cmpb.get_value() == std::complex<float>(0, 3));
+    REQUIRE(cmpa.get_token() == token1);
+    REQUIRE(cmpb.get_token() == token2);
+    std::swap(cmpa, cmpb);
+    REQUIRE(cmpa.get_value() == std::complex<float>(0, 3));
+    REQUIRE(cmpb.get_value() == std::complex<float>(0, 2));
+    REQUIRE(cmpa.get_token() == token2);
+    REQUIRE(cmpb.get_token() == token1);
 }
 
 TEST_CASE("double number node swap", "[parser]") {
@@ -1303,7 +1329,17 @@ TEST_CASE("Parser pars complex expression", "[parser]") {
 
 TEST_CASE("Parser emit exception for mismacted  paren", "[parser]") {
     vnd::Parser tokenizer{"1 + 2 +( 2+3*3", filename};
-    REQUIRE_THROWS_AS(tokenizer.parse(), std::runtime_error);
+    REQUIRE_THROWS_AS(tokenizer.parse(), vnd::ParserException);
+}
+
+TEST_CASE("Parser emit exception for uncomplete expression", "[parser]") {
+    vnd::Parser tokenizer{"1 + 2 *", filename};
+    REQUIRE_THROWS_AS(tokenizer.parse(), vnd::ParserException);
+}
+
+TEST_CASE("Parser emit exception for nonexistent unary operator", "[parser]") {
+    vnd::Parser tokenizer{"*2", filename};
+    REQUIRE_THROWS_AS(tokenizer.parse(), vnd::ParserException);
 }
 
 // NOLINTEND(*-include-cleaner, *-avoid-magic-numbers, *-magic-numbers)

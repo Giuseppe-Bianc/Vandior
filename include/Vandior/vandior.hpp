@@ -7,4 +7,5 @@
 #include "FolderCreationResult.hpp"
 #include "FileReader.hpp"
 #include "parser/Parser.hpp"
+#include "parser/ParserException.hpp"
 // clang-format on

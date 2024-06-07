@@ -6,6 +6,28 @@
 #include "LiteralNode.hpp"
 #include "NumberNodeType.hpp"
 
+/**
+ * This function is a formatter for complex value using fmt.
+ * \cond
+ */
+/**
+ * @brief Specialization of fmt::formatter for std::complex.
+ */
+template <typename T> struct fmt::formatter<std::complex<T>> : fmt::formatter<std::string_view> {
+    /**
+     * @brief Formats the std::complex for printing.
+     * @param nodeType The value to be formatted.
+     * @param ctx The formatting context.
+     * @return The formatted string.
+     */
+    template <typename FormatContext> auto format(std::complex<T> num, FormatContext &ctx) {
+        using enum NumberNodeType;
+        std::string name = FORMAT("({}, {})", std::real(num), std::imag(num));
+        return fmt::formatter<std::string_view>::format(name, ctx);
+    }
+};
+/** \endcond */
+
 namespace vnd {
 
     /**
@@ -20,7 +42,8 @@ namespace vnd {
          * @param number_type NumberNodeType of the node.
          */
         [[nodiscard]] NumberNode(T value, const Token &token, NumberNodeType number_type)
-          : LiteralNode<T>(value, token, NodeType::Number), m_number_type(number_type) {}
+          : LiteralNode<T>(value, token, NodeType::Number), m_number_type(number_type) {
+        }
 
         /**
          * @brief Gets the number type of the AST node.

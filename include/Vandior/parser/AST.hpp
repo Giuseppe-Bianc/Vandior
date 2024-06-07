@@ -58,6 +58,15 @@ static inline void prettyPrint(const vnd::ASTNode &node, const std::string &inde
     } else if(const auto *intnumberNode = node.safe_as<vnd::NumberNode<int>>()) {
         LINFO("{}_{}, val: {}){}", imarknnum, NumNodeType_comp(intnumberNode->getNumberType()), intnumberNode->get_value(),
               node.get_token().compat_to_string());
+    } else if(const auto *cflnumberNode = node.safe_as<vnd::NumberNode<std::complex<float>>>()) {
+        LINFO("{}_{}, val: {}){}", imarknnum, NumNodeType_comp(cflnumberNode->getNumberType()), cflnumberNode->get_value(),
+              node.get_token().compat_to_string());
+    } else if(const auto *dflnumberNode = node.safe_as<vnd::NumberNode<std::complex<double>>>()) {
+        LINFO("{}_{}, val: {}){}", imarknnum, NumNodeType_comp(dflnumberNode->getNumberType()), dflnumberNode->get_value(),
+              node.get_token().compat_to_string());
+    } else if(const auto *flnumberNode = node.safe_as<vnd::NumberNode<float>>()) {
+        LINFO("{}_{}, val: {}){}", imarknnum, NumNodeType_comp(flnumberNode->getNumberType()), flnumberNode->get_value(),
+              node.get_token().compat_to_string());
     } else if(const auto *dblnumberNode = node.safe_as<vnd::NumberNode<double>>()) {
         LINFO("{}_{}, val: {}){}", imarknnum, NumNodeType_comp(dblnumberNode->getNumberType()), dblnumberNode->get_value(),
               node.get_token().compat_to_string());
