@@ -24,18 +24,12 @@ function(Vandior_enable_cache)
     if (CACHE_BINARY)
         message(STATUS "Cache binary '${CACHE_BINARY}' found and enabled. Compiler cache will be used.")
 
-        # Additional security checks to ensure CACHE_BINARY is executable
-        if (EXISTS ${CACHE_BINARY} AND IS_EXECUTABLE ${CACHE_BINARY})
-            # Set the compiler launcher properties securely
-            set(CMAKE_CXX_COMPILER_LAUNCHER
-                    ${CACHE_BINARY}
-                    CACHE FILEPATH "CXX compiler cache used" FORCE)
-            set(CMAKE_C_COMPILER_LAUNCHER
-                    ${CACHE_BINARY}
-                    CACHE FILEPATH "C compiler cache used" FORCE)
-        else ()
-            message(WARNING "The found cache binary '${CACHE_BINARY}' is not executable. Not using it.")
-        endif ()
+        set(CMAKE_CXX_COMPILER_LAUNCHER
+            ${CACHE_BINARY}
+            CACHE FILEPATH "CXX compiler cache used")
+        set(CMAKE_C_COMPILER_LAUNCHER
+            ${CACHE_BINARY}
+            CACHE FILEPATH "C compiler cache used")
     else ()
         message(WARNING "${CACHE_OPTION} is enabled but was not found. Not using it.")
     endif ()
