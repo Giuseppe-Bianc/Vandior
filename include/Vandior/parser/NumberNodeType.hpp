@@ -5,7 +5,6 @@
 #pragma once
 
 #include "../headers.hpp"
-#include <complex>
 /**
  * @brief Enum representing different types of AST nodes.
  */
@@ -68,4 +67,3 @@ template <> struct fmt::formatter<NumberNodeType> : fmt::formatter<std::string_v
     }
 };
 /** \endcond */
-

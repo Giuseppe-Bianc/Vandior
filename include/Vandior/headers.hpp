@@ -19,6 +19,7 @@ DISABLE_WARNINGS_PUSH(
 #include <array>
 #include <atomic>
 #include <cassert>
+#include <complex>
 #include <chrono>
 #include <cmath>
 #include <cstdlib>
@@ -230,6 +231,22 @@ template <> struct fmt::formatter<nlohmann::basic_json<>> : formatter<std::strin
      */
     template <typename FormatContext> auto format(const nlohmann::basic_json<> &json, FormatContext &ctx) {
         return formatter<std::string_view>::format(json.dump(4), ctx);
+    }
+};
+
+/**
+ * @brief Specialization of fmt::formatter for std::complex.
+ */
+template <typename T> struct fmt::formatter<std::complex<T>> : fmt::formatter<std::string_view> {
+    /**
+     * @brief Formats the std::complex for printing.
+     * @param nodeType The value to be formatted.
+     * @param ctx The formatting context.
+     * @return The formatted string.
+     */
+    template <typename FormatContext> auto format(std::complex<T> num, FormatContext &ctx) {
+        std::string name = FORMAT("({}, {})", std::real(num), std::imag(num));
+        return fmt::formatter<std::string_view>::format(name, ctx);
     }
 };
 /** \endcond */
