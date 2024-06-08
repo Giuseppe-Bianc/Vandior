@@ -30,10 +30,11 @@ namespace vnd {
         using time_point = std::chrono::time_point<clock>;
 
         /// This is the type of a printing function, you can make your own
-        using time_print_t = std::function<std::string(std::string, std::string)>;
+        using time_print_t = std::function<std::string(std::string, std::size_t, std::string)>;
         using nanolld = std::chrono::duration<long double, std::nano>;
         /// This is the title of the timer
         std::string title_;
+        std::size_t title_lenpadd;
 
         /// This is the function that is used to format most of the timing message
         time_print_t time_print_;
@@ -49,21 +50,54 @@ namespace vnd {
         /**
          * @brief Default print function for Timer class.
          */
-        static const std::string Simple(const std::string &title, const std::string &time) { return FORMAT("{}: {}", title, time); }
+        static const std::string Simple(const std::string &title, [[maybe_unused]] std::size_t title_lenpadd, const std::string &time) {
+            return FORMAT("{}: Time = {}", title, time);
+        }
 
         /**
          * @brief A more elaborate print function for Timer class.
          */
-        static const std::string Big(const std::string &title, const std::string &time) {
-            return FORMAT("{0:-^{1}}\n| {2} | Time = {3}\n{0:-^{1}}", "", 41, title, time);
+        static const std::string Big(const std::string &title, std::size_t title_lenpadd, const std::string &time) {
+            auto times = FORMAT("Time = {}", time);
+            const auto times_len = times.length() + 3;
+            auto tot_len = title_lenpadd + times_len;
+            auto title_time_section = FORMAT("|{0: ^{1}}|{2: ^{3}}|", title, title_lenpadd - 4, times, times_len + 1);
+
+            return FORMAT("\n{0:-^{1}}\n{2}\n{0:-^{1}}", "", tot_len, title_time_section);
         }
 
+        /**
+         * @brief A compact print function for Timer class.
+         */
+        static const std::string Compact(const std::string &title, [[maybe_unused]] std::size_t title_lenpadd, const std::string &time) {
+            return FORMAT("[{}]{}", title, time);
+        }
+
+        /**
+         * @brief A detailed print function for Timer class.
+         */
+        static const std::string Detailed(const std::string &title, [[maybe_unused]] std::size_t title_lenpadd, const std::string &time) {
+            return FORMAT("Timer '{}' measured a duration of {}", title, time);
+        }
+
+        /**
+         * @brief A block style print function for Timer class.
+         */
+        static const std::string Block(const std::string &title, std::size_t title_lenpadd, const std::string &time) {
+            auto patternf = FORMAT("{0:=^{1}}|{0:=^{1}}|{0:=^{1}}", "*", title_lenpadd / 3);
+            auto times = FORMAT("Time:{}", time);
+            return FORMAT("\n{0}\n{2: ^{1}}\n{0}\n{3: ^{1}}\n{0}", patternf, title_lenpadd, title, times);
+        }
+        /**
+         * @brief A minimal print function for Timer class.
+         */
+        static const std::string Minimal(const std::string &title, const std::string &time) { return FORMAT("{} - {}", title, time); }
         /**
          * @brief Standard constructor for Timer class.
          *  Standard constructor, can set title and print function
          */
         explicit Timer(const std::string &title = "Timer", const time_print_t &time_print = Simple)
-          : title_(title), time_print_(time_print), start_(clock::now()) {}
+          : title_(title), title_lenpadd(title.length() + 10), time_print_(time_print), start_(clock::now()) {}
 
         Timer(const Timer &other) = delete;              /// Delete copy constructor
         Timer &operator=(const Timer &other) = delete;   /// Delete copy assignment operator
@@ -108,7 +142,7 @@ namespace vnd {
          * @param time The time in nanoseconds.
          * @return A tuple containing named times.
          */
-        [[nodiscard]] static Times make_named_times(long double time) { return Times{time}; }
+        [[nodiscard]] static Times make_named_times(const long double time) { return Times{time}; }
 
         [[maybe_unused]] [[nodiscard]] Times multi_time() const { return Times{make_time()}; }
 
@@ -128,7 +162,7 @@ namespace vnd {
          * @param time The time value in nanoseconds.
          * @return A formatted time string.
          */
-        [[nodiscard]] static inline std::string make_time_str(long double time) {  // NOLINT(modernize-use-nodiscard)
+        [[nodiscard]] static inline std::string make_time_str(const long double time) {  // NOLINT(modernize-use-nodiscard)
             const auto &[titme, stime] = make_named_times(time).getRelevantTimeframe();
             return FORMAT("{:.3Lf} {}", titme, stime);
         }
@@ -138,7 +172,9 @@ namespace vnd {
          * @brief Get a string representation of the Timer.
          * @return A string representation of the Timer.
          */
-        [[nodiscard]] inline std::string to_string() const noexcept { return std::invoke(time_print_, title_, make_time_str()); }
+        [[nodiscard]] inline std::string to_string() const noexcept {
+            return std::invoke(time_print_, title_, title_lenpadd, make_time_str());
+        }
 
         /**
          * @brief Set the number of cycles to divide by.
