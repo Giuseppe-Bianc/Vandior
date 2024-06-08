@@ -16,12 +16,12 @@ namespace vnd {
         long double nano{};
 
         TimeValues() = default;
-        explicit TimeValues(const long double nanoseconds)
-          : seconds(nanoseconds / SECONDSFACTOR), millis(nanoseconds / MILLISECONDSFACTOR), micro(nanoseconds / MICROSECONDSFACTOR),
-            nano(nanoseconds) {}
+        explicit TimeValues(const long double nanoseconds_)
+          : seconds(nanoseconds_ / SECONDSFACTOR), millis(nanoseconds_ / MILLISECONDSFACTOR), micro(nanoseconds_ / MICROSECONDSFACTOR),
+            nano(nanoseconds_) {}
 
-        TimeValues(const long double seconds, const long double millis, const long double micro, const long double nano)
-          : seconds(seconds), millis(millis), micro(micro), nano(nano) {}
+        TimeValues(const long double seconds_, const long double millis_, const long double micro_, const long double nano_)
+          : seconds(seconds_), millis(millis_), micro(micro_), nano(nano_) {}
 
         TimeValues(const TimeValues &other) = default;
         TimeValues(TimeValues &&other) noexcept = default;
@@ -40,13 +40,13 @@ namespace vnd {
 
         Times() = default;
 
-        explicit Times(const long double nanoseconds) : values(nanoseconds) {}
+        explicit Times(const long double nanoseconds_) : values(nanoseconds_) {}
 
         explicit Times(const TimeValues &time_values) : values(time_values) {}
 
-        Times(const TimeValues &time_values, const std::string &labelseconds, const std::string &labelmillis, const std::string &labelmicro,
-              const std::string &labelnano)
-          : values(time_values), labelseconds(labelseconds), labelmillis(labelmillis), labelmicro(labelmicro), labelnano(labelnano) {}
+        Times(const TimeValues &time_values, const std::string &labelseconds_, const std::string &labelmillis_, const std::string &labelmicro_,
+              const std::string &labelnano_)
+          : values(time_values), labelseconds(labelseconds_), labelmillis(labelmillis_), labelmicro(labelmicro_), labelnano(labelnano_) {}
         Times(const Times &other) = default;
         Times(Times &&other) noexcept = default;
         Times &operator=(const Times &other) = default;
