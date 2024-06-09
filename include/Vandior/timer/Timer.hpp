@@ -30,7 +30,7 @@ namespace vnd {
         using time_point = std::chrono::time_point<clock>;
 
         /// This is the type of a printing function, you can make your own
-        using time_print_t = std::function<std::string(std::string, std::size_t, std::string)>;
+        using time_print_t = std::function<std::string(std::string, std::size_t, ValueLable)>;
         using nanolld = std::chrono::duration<long double, std::nano>;
         /// This is the title of the timer
         std::string title_;
@@ -50,18 +50,18 @@ namespace vnd {
         /**
          * @brief Default print function for Timer class.
          */
-        static const std::string Simple(const std::string &title, [[maybe_unused]] std::size_t title_lenpadd, const std::string &time) {
+        static const std::string Simple(const std::string &title, [[maybe_unused]] std::size_t title_lenpadd, const ValueLable &time) {
             return FORMAT("{}: Time = {}", title, time);
         }
 
         /**
          * @brief A more elaborate print function for Timer class.
          */
-        static const std::string Big(const std::string &title, std::size_t title_lenpadd, const std::string &time) {
-            auto times = FORMAT("Time = {}", time);
+        static const std::string Big(const std::string &title, std::size_t title_lenpadd, const ValueLable &time) {
+            const auto times = FORMAT("Time = {}", time);
             const auto times_len = times.length() + 3;
-            auto tot_len = title_lenpadd + times_len;
-            auto title_time_section = FORMAT("|{0: ^{1}}|{2: ^{3}}|", title, title_lenpadd - 4, times, times_len + 1);
+            const auto tot_len = title_lenpadd + times_len;
+            const auto title_time_section = FORMAT("|{0: ^{1}}|{2: ^{3}}|", title, title_lenpadd - 4, times, times_len + 1);
 
             return FORMAT("\n{0:-^{1}}\n{2}\n{0:-^{1}}", "", tot_len, title_time_section);
         }
@@ -69,23 +69,35 @@ namespace vnd {
         /**
          * @brief A compact print function for Timer class.
          */
-        static const std::string Compact(const std::string &title, [[maybe_unused]] std::size_t title_lenpadd, const std::string &time) {
+        static const std::string Compact(const std::string &title, [[maybe_unused]] std::size_t title_lenpadd, const ValueLable &time) {
             return FORMAT("[{}]{}", title, time);
         }
 
         /**
          * @brief A detailed print function for Timer class.
          */
-        static const std::string Detailed(const std::string &title, [[maybe_unused]] std::size_t title_lenpadd, const std::string &time) {
+        static const std::string Detailed(const std::string &title, [[maybe_unused]] std::size_t title_lenpadd, const ValueLable &time) {
             return FORMAT("Timer '{}' measured a duration of {}", title, time);
         }
 
+        static const std::string createPatterm(std::size_t title_lenpadd) {
+            /*auto divisors = find_divisors(title_lenpadd);
+            std::size_t maxDivisor = 0;
+            std::ranges::for_each(divisors, [&maxDivisor](std::size_t divisor) {
+                if(divisor > 15) {    // NOLINT(*-magic-numbers)
+                    maxDivisor = 15;  // NOLINT(*-magic-numbers)
+                } else {
+                    maxDivisor = divisor;
+                }
+            });*/
+            return FORMAT("{0:=^{1}}|{0:=^{1}}|{0:=^{1}}|{0:=^{1}}", "*", title_lenpadd / 4);
+        }
         /**
          * @brief A block style print function for Timer class.
          */
-        static const std::string Block(const std::string &title, std::size_t title_lenpadd, const std::string &time) {
-            auto patternf = FORMAT("{0:=^{1}}|{0:=^{1}}|{0:=^{1}}", "*", title_lenpadd / 3);
-            auto times = FORMAT("Time:{}", time);
+        static const std::string Block(const std::string &title, std::size_t title_lenpadd, const ValueLable &time) {
+            const auto patternf = createPatterm(title_lenpadd);
+            const auto times = FORMAT("Time:{}", time);
             return FORMAT("\n{0}\n{2: ^{1}}\n{0}\n{3: ^{1}}\n{0}", patternf, title_lenpadd, title, times);
         }
         /**
@@ -151,7 +163,7 @@ namespace vnd {
          * This formats the numerical value for the time string
          * @return A formatted time string.
          */
-        [[nodiscard]] inline std::string make_time_str() const {  // NOLINT(modernize-use-nodiscard)
+        [[nodiscard]] inline ValueLable make_time_str() const {  // NOLINT(modernize-use-nodiscard)
             const auto time = C_LD(make_time() / C_LD(cycles));
             return make_time_str(time);
         }
@@ -162,9 +174,8 @@ namespace vnd {
          * @param time The time value in nanoseconds.
          * @return A formatted time string.
          */
-        [[nodiscard]] static inline std::string make_time_str(const long double time) {  // NOLINT(modernize-use-nodiscard)
-            const auto &[titme, stime] = make_named_times(time).getRelevantTimeframe();
-            return FORMAT("{:.3Lf} {}", titme, stime);
+        [[nodiscard]] static inline ValueLable make_time_str(const long double time) {  // NOLINT(modernize-use-nodiscard)
+            return make_named_times(time).getRelevantTimeframe();
         }
         // LCOV_EXCL_STOP
 

@@ -73,6 +73,7 @@ DISABLE_WARNINGS_POP()
 
 namespace fs = std::filesystem;
 
+DISABLE_WARNINGS_PUSH(26481)
 static inline constexpr long double NINFINITY = std::numeric_limits<long double>::infinity();
 static inline constexpr long double PI = std::numbers::pi_v<long double>;
 static inline constexpr long double TWO_PI = 2 * PI;
@@ -101,6 +102,7 @@ static inline constexpr const auto *NEWL = CNL;  // FreeBSD
 #else
 static inline constexpr const auto *NEWL = CNL;  // Default case
 #endif
+DISABLE_WARNINGS_POP()
 /**
  * @def SYSPAUSE
  * @brief A macro to pause the system and wait for user input.
@@ -119,6 +121,22 @@ static inline constexpr const auto *NEWL = CNL;  // Default case
         std::cin.ignore();                                                                                                                 \
     } while(0);
 
+template <std::integral T> [[nodiscard]] std::vector<T> find_divisors(T num) noexcept {
+    std::vector<T> divisors;
+
+    // Using std::views::iota to generate numbers from 1 to sqrt(num)
+    for(T val : std::views::iota(T(1), T(std::sqrtl(C_LD(num))) + 1)) {
+        if(num % val == 0) {
+            divisors.emplace_back(val);
+            if(val != num / val) { divisors.emplace_back(num / val); }
+        }
+    }
+
+    // Sort the divisors
+    std::ranges::sort(divisors);
+
+    return divisors;
+}
 /**
  * @brief Converts the given parameter into a string literal.
  * This macro converts the provided parameter into a string literal.
