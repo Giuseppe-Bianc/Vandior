@@ -122,13 +122,16 @@ DISABLE_WARNINGS_POP()
     } while(0);
 
 template <std::integral T> [[nodiscard]] std::vector<T> find_divisors(T num) noexcept {
+    T num_sqrt = T(std::sqrt(num));
     std::vector<T> divisors;
+    divisors.reserve(num_sqrt);
 
     // Using std::views::iota to generate numbers from 1 to sqrt(num)
-    for(T val : std::views::iota(T(1), T(std::sqrtl(C_LD(num))) + 1)) {
+    for(const T &val : std::views::iota(T(1), num_sqrt + 1)) {
+        T numBval = num / val;
         if(num % val == 0) {
             divisors.emplace_back(val);
-            if(val != num / val) { divisors.emplace_back(num / val); }
+            if(val != numBval) { divisors.emplace_back(numBval); }
         }
     }
 
