@@ -52,8 +52,6 @@ namespace vnd {
         std::string timeLabel{""};
     };
 
-    /** \endcond */
-
     class Times {
     public:
         Times() = default;
