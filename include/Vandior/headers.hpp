@@ -121,21 +121,24 @@ DISABLE_WARNINGS_POP()
         std::cin.ignore();                                                                                                                 \
     } while(0);
 
-template <std::integral T> [[nodiscard]] std::vector<T> find_divisors(T num) noexcept {
+[[nodiscard]] inline constexpr auto is_divisor(std::integral auto n, std::integral auto d) noexcept -> bool { return n % d == 0; }
+
+template <std::integral T> [[nodiscard]] constexpr auto find_divisors(T num) noexcept -> std::vector<T> {
+    if(num < 1) {
+        return {};  // Handle edge case where num is less than 1.
+    }
     T num_sqrt = T(std::sqrt(num));
     std::vector<T> divisors;
     divisors.reserve(num_sqrt);
 
-    // Using std::views::iota to generate numbers from 1 to sqrt(num)
     for(const T &val : std::views::iota(T(1), num_sqrt + 1)) {
         T numBval = num / val;
-        if(num % val == 0) {
+        if(is_divisor(num, val)) {
             divisors.emplace_back(val);
             if(val != numBval) { divisors.emplace_back(numBval); }
         }
     }
 
-    // Sort the divisors
     std::ranges::sort(divisors);
 
     return divisors;
