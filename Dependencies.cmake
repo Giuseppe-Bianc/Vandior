@@ -58,30 +58,11 @@ function(Vandior_setup_dependencies)
     endif ()
 
     if (NOT TARGET Catch2::Catch2WithMain)
-        CPMAddPackage(
-                NAME
-                Catch2
-                VERSION
-                3.6.0
-                GITHUB_REPOSITORY
-                "catchorg/Catch2"
-                OPTIONS
-                "CATCH_INSTALL_DOCS OFF"
-                "CATCH_INSTALL_EXTRAS OFF")
+        CPMAddPackage("gh:catchorg/Catch2@3.6.0")
     endif ()
 
     if (NOT TARGET CLI11::CLI11)
-        CPMAddPackage(
-                NAME
-                CLI11
-                VERSION
-                2.3.2
-                GITHUB_REPOSITORY
-                "CLIUtils/CLI11"
-                OPTIONS
-                "CLI11_PRECOMPILED ON"
-                "CLI11_SANITIZERS ON"
-                "CLI11_WARNINGS_AS_ERRORS ON")
+        CPMAddPackage("gh:CLIUtils/CLI11@2.3.2")
     endif ()
     if (NOT TARGET nlohmann_json::nlohmann_json)
         CPMAddPackage(
