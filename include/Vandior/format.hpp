@@ -8,10 +8,18 @@
 #pragma once
 
 // NOLINTBEGIN(*-include-cleaner)
+#if defined(__GNUC__) && (__GNUC__ >= 11)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wstringop-overflow"
+#endif
 #include <fmt/core.h>
 #include <fmt/format.h>
 #include <fmt/ranges.h>
 #include <fmt/std.h>
+#if defined(__GNUC__) && (__GNUC__ >= 11)
+#pragma GCC diagnostic pop
+#endif
+
 /**
  * @def FORMAT(...)
  * @brief Macro for formatting strings using the fmt library.

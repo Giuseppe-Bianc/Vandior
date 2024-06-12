@@ -1,7 +1,7 @@
+// NOLINTBEGIN(*-include-cleaner)
 #include "Vandior/lexer/TokenizerUtility.hpp"
 using namespace std::literals::string_view_literals;
 
-// NOLINTBEGIN(*-include-cleaner)
 DISABLE_WARNINGS_PUSH(26497)
 namespace vnd {
     bool TokenizerUtility::isOperator(const char aChar) {
