@@ -13,7 +13,8 @@ namespace vnd {
         if(position < tokenSize) { position++; }
     }
 
-    const std::vector<StrViewVec> Parser::operatorPrecedence = {{"=", "+=", "-=", "*=", "/=", "^=", "%="},
+    const std::vector<StrViewVec> Parser::operatorPrecedence = {{":"},
+                                                                {"=", "+=", "-=", "*=", "/=", "^=", "%="},
                                                                 {","},
                                                                 {"||"},
                                                                 {"&&"},
