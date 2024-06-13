@@ -59,6 +59,21 @@ namespace vnd {
         CLOSE_CUR_PARENTESIS,  ///< Closing curly parenthesis '}'
         COMMA,                 ///< Comma ','
         COLON,                 ///< Colon ':'
+        TYPE_I8,               ///< i8 
+        TYPE_I16,              ///< i16 token
+        TYPE_I32,              ///< i32 token
+        TYPE_I64,              ///< i64 token
+        TYPE_U8,               ///< u8 token
+        TYPE_U16,              ///< u16 token
+        TYPE_U32,              ///< u32 token
+        TYPE_U64,              ///< u64 token
+        TYPE_F32,              ///< f32 token
+        TYPE_F64,              ///< f64 token
+        TYPE_C32,              ///< c32 token
+        TYPE_C64,              ///< c64 token
+        TYPE_CHAR,             ///< char token
+        TYPE_STRING,           ///< string token
+        TYPE_BOOL,             ///< bool token
         COMMENT,               ///< Comment
         UNKNOWN,               ///< Unknown token type
         EOFT,                  ///< End of file token
@@ -233,6 +248,51 @@ template <> struct fmt::formatter<vnd::TokenType> : fmt::formatter<std::string_v
             break;
         case COLON:
             name = "COLON";
+            break;
+        case TYPE_I8:
+            name = "TYPE_I8";
+            break;
+        case TYPE_I16:
+            name = "TYPE_I16";
+            break;
+        case TYPE_I32:
+            name = "TYPE_I32";
+            break;
+        case TYPE_I64:
+            name = "TYPE_I64";
+            break;
+        case TYPE_U8:
+            name = "TYPE_U8";
+            break;
+        case TYPE_U16:
+            name = "TYPE_U16";
+            break;
+        case TYPE_U32:
+            name = "TYPE_U32";
+            break;
+        case TYPE_U64:
+            name = "TYPE_U64";
+            break;
+        case TYPE_F32:
+            name = "TYPE_F32";
+            break;
+        case TYPE_F64:
+            name = "TYPE_F64";
+            break;
+        case TYPE_C32:
+            name = "TYPE_C32";
+            break;
+        case TYPE_C64:
+            name = "TYPE_C64";
+            break;
+        case TYPE_CHAR:
+            name = "TYPE_CHAR";
+            break;
+        case TYPE_STRING:
+            name = "TYPE_STRING";
+            break;
+        case TYPE_BOOL:
+            name = "TYPE_BOOL";
             break;
         case COMMENT:
             name = "COMMENT";
