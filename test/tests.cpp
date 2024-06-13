@@ -77,6 +77,16 @@ TEST_CASE("std::complex formater", "[FMT]") {
     REQ_FORMAT(complexDouble, "(3, 4)");
     REQ_FORMAT(complexLongDouble, "(5, 6)");
 }
+
+TEST_CASE("std::complex formater 2", "[FMT]") {
+    std::complex<float> complexFloat(1.1F, 2.1F);
+    std::complex<double> complexDouble(3.1, 4.1);
+    std::complex<long double> complexLongDouble(5.1L, 6.1L);
+
+    REQ_FORMAT(complexFloat, "(1.1, 2.1)");
+    REQ_FORMAT(complexDouble, "(3.1, 4.1)");
+    REQ_FORMAT(complexLongDouble, "(5.1, 6.1)");
+}
 // clang-format on
 
 TEST_CASE("Timer: MSTimes", "[timer]") {
