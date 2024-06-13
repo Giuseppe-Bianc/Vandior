@@ -12,6 +12,8 @@ function(Vandior_setup_dependencies)
                 GIT_TAG master # Use "master" for the latest version
                 OPTIONS # Add options if needed
                 "GLM_TEST_ENABLE OFF" # Disable tests if needed
+                "GLM_ENABLE_CXX_20 ON"
+                "GLM_ENABLE_SIMD_AVX2 ON"
         )
     endif ()
 
