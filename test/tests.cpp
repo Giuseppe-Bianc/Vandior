@@ -66,6 +66,17 @@ TEST_CASE("glm::mat formater", "[FMT]") {
     REQ_FORMAT(glm::dmat4(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0), "dmat4x4((0, 0, 0, 0), (0, 0, 0, 0), (0, 0, 0, 0), (0, 0, 0, 0))");
     REQ_FORMAT(glm::ldmat4(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0), "ldmat4x4((0, 0, 0, 0), (0, 0, 0, 0), (0, 0, 0, 0), (0, 0, 0, 0))");
 }
+
+
+TEST_CASE("std::complex formater", "[FMT]") {
+    std::complex<float> complexFloat(1.0F, 2.0F);
+    std::complex<double> complexDouble(3.0, 4.0);
+    std::complex<long double> complexLongDouble(5.0L, 6.0L);
+
+    REQ_FORMAT(complexFloat, "(1, 2)");
+    REQ_FORMAT(complexDouble, "(3, 4)");
+    REQ_FORMAT(complexLongDouble, "(5, 6)");
+}
 // clang-format on
 
 TEST_CASE("Timer: MSTimes", "[timer]") {
