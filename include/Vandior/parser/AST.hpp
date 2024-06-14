@@ -10,6 +10,7 @@
 #include "NumberNode.hpp"
 #include "UnaryExpressionNode.hpp"
 #include "VariableNode.hpp"
+#include "TypeNode.hpp"
 
 /** \cond */
 DISABLE_WARNINGS_PUSH(
@@ -76,6 +77,8 @@ static inline void prettyPrint(const vnd::ASTNode &node, const std::string &inde
         LINFO("{}, val: {}){}", imarknode, chliteralNode->get_value(), node.get_token().compat_to_string());
     } else if(const auto *svliteralNode = node.safe_as<vnd::LiteralNode<std::string_view>>()) {
         LINFO("{}, val: {}){}", imarknode, svliteralNode->get_value(), node.get_token().compat_to_string());
+    } else if(const auto *typeNode = node.safe_as<vnd::TypeNode>()) {
+        LINFO("{}, type: {}){}", imarknode, typeNode->get_value(), node.get_token().compat_to_string());
     } else {
         LERROR("Unknown or not handled node type: {}", node.getType());
     }

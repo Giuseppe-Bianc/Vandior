@@ -52,8 +52,8 @@ namespace vnd {
         }
 
     private:
-        std::string_view m_value;
-        TokenType m_type;
+        std::string_view m_value;   //< The value of the node.
+        TokenType m_type;           //< The type of the token node.
 
     };
 
