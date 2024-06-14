@@ -80,8 +80,8 @@ namespace vnd {
         if(value == "true"sv || value == "false"sv) { type = BOOLEAN; }
     }
 
-    bool Tokenizer::inTextAndE() const noexcept { return positionIsInText() && std::toupper(_input.at(position)) == ECR; }
-    bool Tokenizer::inTextAnd(char chr) const noexcept { return positionIsInText() && _input.at(position) == chr; }
+    bool Tokenizer::inTextAndE() const noexcept { return positionIsInText() && std::toupper(_input[position]) == ECR; }
+    bool Tokenizer::inTextAnd(char chr) const noexcept { return positionIsInText() && _input[position] == chr; }
 
     Token Tokenizer::handleDigits() {
         using enum TokenType;
