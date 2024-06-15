@@ -51,7 +51,7 @@ namespace vnd {
     Token Tokenizer::handleAlpha() {
         const auto start = position;
         auto type = TokenType::IDENTIFIER;
-        while(positionIsInText() && (TokenizerUtility::isalnumUnderscore(_input.at(position)))) { incPosAndColumn(); }
+        while(positionIsInText() && (TokenizerUtility::isalnumUnderscore(_input[position]))) { incPosAndColumn(); }
         const auto value = _input.substr(start, position - start);
         kewordType(value, type);
         return {type, value, {_filename, line, column - value.size()}};
@@ -60,7 +60,7 @@ namespace vnd {
     Token Tokenizer::handleUnderscoreAlpha() {
         const auto start = position;
         incPosAndColumn();
-        while(positionIsInText() && (TokenizerUtility::isalnumUnderscore(_input.at(position)))) { incPosAndColumn(); }
+        while(positionIsInText() && (TokenizerUtility::isalnumUnderscore(_input[position]))) { incPosAndColumn(); }
         const auto value = _input.substr(start, position - start);
         return {TokenType::IDENTIFIER, value, {_filename, line, column - value.size()}};
     }
@@ -236,7 +236,7 @@ namespace vnd {
         incPosAndColumn();
         const auto start = position;
         std::string_view value{};
-        while(!TokenizerUtility::isQuotation(_input.at(position))) {
+        while(!TokenizerUtility::isQuotation(_input[position])) {
             if(position + 1 == _inputSize) {
                 incPosAndColumn();
                 value = _input.substr(start, position - start);
@@ -250,7 +250,7 @@ namespace vnd {
     }
 
     void Tokenizer::extractVarLenOperator() {
-        while(positionIsInText() && TokenizerUtility::isOperator(_input.at(position))) { incPosAndColumn(); }
+        while(positionIsInText() && TokenizerUtility::isOperator(_input[position])) { incPosAndColumn(); }
     }
 
     TokenType Tokenizer::singoleCharOp(const char view) noexcept {
@@ -329,10 +329,15 @@ namespace vnd {
         auto value = _input.substr(start, position - start);
         while(!value.empty()) {
             Token token;
-            if(value.size() > 1) { token = {multyCharOp(value.substr(0, 2)), value.substr(0, 2), {_filename, line, column - 2}}; }
-            if(token.isType(TokenType::UNKNOWN) || value.size() == 1) {
-                token = Token{singoleCharOp(value[0]), value.substr(0, 1), {_filename, line, column - 1}};
+            if(value.size() > 1) {
+                auto twoCharOp = value.substr(0, 2);
+                token = {multyCharOp(twoCharOp), twoCharOp, {_filename, line, column - 2}};
             }
+            if(token.isType(TokenType::UNKNOWN) || value.size() == 1) {
+                auto oneCharOp = value.substr(0, 1);
+                token = Token{singoleCharOp(oneCharOp[0]), oneCharOp, {_filename, line, column - 1}};
+            }
+
             tokens.emplace_back(token);
             value = value.substr(token.getValue().size(), value.size() - token.getValue().size());
         }

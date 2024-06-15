@@ -27,7 +27,7 @@ namespace vnd {
     bool TokenizerUtility::isComma(const char cha) noexcept { return cha == ','; }
     bool TokenizerUtility::isColon(const char cha) noexcept { return cha == ':'; }
     bool TokenizerUtility::isComment(const std::string_view &inputSpan, const size_t position) noexcept {
-        return position != inputSpan.size() - 1 && inputSpan[position] == '/' &&
+        return position != inputSpan.size() && inputSpan[position] == '/' &&
                (inputSpan[position + 1] == '/' || inputSpan[position + 1] == '*');
     }
     bool TokenizerUtility::isalnumUnderscore(const char cha) noexcept { return std::isalnum(C_UC(cha)) || cha == '_'; }
