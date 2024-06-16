@@ -167,7 +167,7 @@ namespace vnd {
     }
 
     void Tokenizer::extractDigits() noexcept {
-        while(positionIsInText() && isdigit(_input.at(position))) { incPosAndColumn(); }
+        while(positionIsInText() && isdigit(_input[position])) { incPosAndColumn(); }
     }
 
     void Tokenizer::incPosAndColumn() noexcept {
@@ -176,7 +176,7 @@ namespace vnd {
     }
 
     void Tokenizer::handleWhiteSpace() noexcept {
-        if(_input[position] == '\n') {
+        if(_input[position] == '\n') [[unlikely]] {
             ++line;
             column = 1;
         } else {
@@ -191,26 +191,6 @@ namespace vnd {
         const auto value = _input.substr(start, position - start);
         const auto type = getBracketsType(value);
         return {type, value, {_filename, line, column - value.size()}};
-    }
-
-    TokenType Tokenizer::getBracketsType(const std::string_view &value) const noexcept {
-        switch(value[0]) {
-            using enum TokenType;
-        case '(':
-            return OPEN_PARENTESIS;
-        case ')':
-            return CLOSE_PARENTESIS;
-        case '[':
-            return OPEN_SQ_PARENTESIS;
-        case ']':
-            return CLOSE_SQ_PARENTESIS;
-        case '{':
-            return OPEN_CUR_PARENTESIS;
-        case '}':
-            return CLOSE_CUR_PARENTESIS;
-        default:
-            return UNKNOWN;
-        }
     }
 
     Token Tokenizer::handleChar() {

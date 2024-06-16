@@ -145,8 +145,8 @@ namespace vnd {
          * @return Error message.
          */
         template <StringOrStringView T>
-        std::string getErrorMessage(const T &value, const std::string_view &errMsg, const std::string &contextLine,
-                                    const std::string &highlighting);
+        [[nodiscard]] std::string getErrorMessage(const T &value, const std::string_view &errMsg, const std::string &contextLine,
+                                                  const std::string &highlighting);
         /**
          * @brief Extracts digits from the input.
          */
@@ -192,13 +192,6 @@ namespace vnd {
          * @return Token representing brackets.
          */
         [[nodiscard]] Token handleBrackets();
-
-        /**
-         * @brief Gets the TokenType of a value.
-         * @param value The value.
-         * @return TokenType of the value.
-         */
-        [[nodiscard]] TokenType getBracketsType(const std::string_view &value) const noexcept;
 
         /**
          * @brief Handles characters.
