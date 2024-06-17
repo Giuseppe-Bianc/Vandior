@@ -29,7 +29,7 @@ namespace vnd {
          * @return String representation of the AST node.
          */
         [[nodiscard]] std::string print() const override {
-            return FORMAT("{}_{}({})", m_type, getType(), get_value());
+            return FORMAT("{}_{}({})", getVariableType(), getType(), get_value());
         }
 
         /**
@@ -43,6 +43,12 @@ namespace vnd {
          * @return The value of the node.
          */
         [[nodiscard]] std::string_view get_value() const noexcept { return m_value; }
+
+        /**
+         * @brief Gets the variable type of the node.
+         * @return The variable type of the node.
+         */
+        [[nodiscard]] TokenType getVariableType() const noexcept { return m_type; }
 
         friend void swap(TypeNode &lhs, TypeNode &rhs) noexcept {
             using std::swap;

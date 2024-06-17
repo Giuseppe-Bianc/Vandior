@@ -126,7 +126,13 @@ namespace vnd {
         const auto &currentValue = currentToken.getValue();
         auto cval = std::string{currentValue};
         
-        if(currentType == TokenType::INTEGER) {
+        if(isPreviusColon()) {
+            if(std::find(std::ranges::begin(types), std::ranges::end(types), currentType) == std::ranges::end(types)) {
+                throw ParserException(currentToken);
+            }
+            consumeToken();
+            return MAKE_UNIQUE(TypeNode, currentToken);
+        } else if(currentType == TokenType::INTEGER) {
             consumeToken();
             if(currentValue.starts_with("#o") || currentValue.starts_with("#O")) {
                 cval.erase(0, 2);
@@ -160,12 +166,6 @@ namespace vnd {
         } else if(currentType == TokenType::STRING) {
             consumeToken();
             return MAKE_UNIQUE(LiteralNode<std::string_view>, currentValue, currentToken, NodeType::String);
-        } else if(isPreviusColon()) {
-            if(std::find(std::ranges::begin(types), std::ranges::end(types), currentType) == std::ranges::end(types)) {
-                throw new ParserException(currentToken);
-            }
-            consumeToken();
-            return MAKE_UNIQUE(TypeNode, currentToken);
         } else if(currentType == TokenType::IDENTIFIER) {
             consumeToken();
             return MAKE_UNIQUE(VariableNode, currentValue, currentToken);
