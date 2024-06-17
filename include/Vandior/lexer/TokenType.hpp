@@ -82,6 +82,31 @@ namespace vnd {
 
     static inline constexpr TokenType eofTokenType = TokenType::EOFT;
     using TokenTypeVec = std::vector<TokenType>;
+
+    /**
+     * @brief Gets the TokenType of a value.
+     * @param value The value.
+     * @return TokenType of the value.
+     */
+    [[nodiscard]] static constexpr TokenType getBracketsType(const std::string_view &value) noexcept {
+        switch(value[0]) {
+            using enum TokenType;
+        case '(':
+            return OPEN_PARENTESIS;
+        case ')':
+            return CLOSE_PARENTESIS;
+        case '[':
+            return OPEN_SQ_PARENTESIS;
+        case ']':
+            return CLOSE_SQ_PARENTESIS;
+        case '{':
+            return OPEN_CUR_PARENTESIS;
+        case '}':
+            return CLOSE_CUR_PARENTESIS;
+        default:
+            return UNKNOWN;
+        }
+    }
 }  // namespace vnd
 
 /**
