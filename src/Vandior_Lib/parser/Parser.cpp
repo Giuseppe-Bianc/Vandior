@@ -25,8 +25,8 @@ namespace vnd {
                                                                 {"^", "%"},
                                                                 {"."}};
     const std::vector<TokenType> Parser::types = {
-        TokenType::TYPE_I8,   TokenType::TYPE_I16, TokenType::TYPE_I32,  TokenType::TYPE_I64,   TokenType::TYPE_U8,  TokenType::TYPE_U16,
-        TokenType::TYPE_U32,  TokenType::TYPE_U64, TokenType::TYPE_F32,  TokenType::TYPE_F64,   TokenType::TYPE_C32, TokenType::TYPE_C64,
+        TokenType::TYPE_I8,   TokenType::TYPE_I16,    TokenType::TYPE_I32,  TokenType::TYPE_I64,   TokenType::TYPE_U8,  TokenType::TYPE_U16,
+        TokenType::TYPE_U32,  TokenType::TYPE_U64,    TokenType::TYPE_F32,  TokenType::TYPE_F64,   TokenType::TYPE_C32, TokenType::TYPE_C64,
         TokenType::TYPE_CHAR, TokenType::TYPE_STRING, TokenType::TYPE_BOOL, TokenType::IDENTIFIER,
     };
 
@@ -92,8 +92,7 @@ namespace vnd {
         return 0;
     }
 
-    template <typename T>
-    T Parser::convertToDouble(std::string_view str) noexcept {
+    template <typename T> T Parser::convertToDouble(std::string_view str) noexcept {
         T result{};
         auto [ptr, ec] = std::from_chars(str.data(), str.data() + str.size(), result);
 
@@ -107,8 +106,7 @@ namespace vnd {
         return 0.0;
     }
 
-    template <typename T>
-    std::complex<T> Parser::convertToImg(std::string_view str) noexcept {
+    template <typename T> std::complex<T> Parser::convertToImg(std::string_view str) noexcept {
         std::string_view doubleStr;
 
         if(str.ends_with("f")) {
@@ -119,17 +117,16 @@ namespace vnd {
         return std::complex<T>(0, convertToDouble<T>(doubleStr));
     }
 
+    // NOLINTNEXTLINE(*-function-cognitive-complexity)
     std::unique_ptr<ASTNode> Parser::parsePrimary() {
         using enum NumberNodeType;
         const Token &currentToken = getCurrentToken();
         const auto &currentType = currentToken.getType();
         const auto &currentValue = currentToken.getValue();
         auto cval = std::string{currentValue};
-        
+
         if(isPreviusColon()) {
-            if(std::find(std::ranges::begin(types), std::ranges::end(types), currentType) == std::ranges::end(types)) {
-                throw ParserException(currentToken);
-            }
+            if(std::ranges::find(types, currentType) == types.end()) { throw ParserException(currentToken); }
             consumeToken();
             return MAKE_UNIQUE(TypeNode, currentToken);
         } else if(currentType == TokenType::INTEGER) {

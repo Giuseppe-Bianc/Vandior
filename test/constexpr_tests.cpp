@@ -51,4 +51,13 @@ TEST_CASE("the constexpr size of types", "[TypeSizes]") {
     STATIC_REQUIRE(TypeSizes::sizeOfU32StringView == sizeof(std::u32string_view));
 }
 
+TEST_CASE("the constexpr paretesis tokenType", "[tokenType]") {
+    STATIC_REQUIRE(vnd::getBracketsType("(") == vnd::TokenType::OPEN_PARENTESIS);
+    STATIC_REQUIRE(vnd::getBracketsType("[") == vnd::TokenType::OPEN_SQ_PARENTESIS);
+    STATIC_REQUIRE(vnd::getBracketsType("{") == vnd::TokenType::OPEN_CUR_PARENTESIS);
+    STATIC_REQUIRE(vnd::getBracketsType(")") == vnd::TokenType::CLOSE_PARENTESIS);
+    STATIC_REQUIRE(vnd::getBracketsType("]") == vnd::TokenType::CLOSE_SQ_PARENTESIS);
+    STATIC_REQUIRE(vnd::getBracketsType("}") == vnd::TokenType::CLOSE_CUR_PARENTESIS);
+}
+
 // NOLINTEND(*-include-cleaner)

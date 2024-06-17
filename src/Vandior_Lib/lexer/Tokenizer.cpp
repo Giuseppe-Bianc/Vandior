@@ -65,6 +65,23 @@ namespace vnd {
         return {TokenType::IDENTIFIER, value, {_filename, line, column - value.size()}};
     }
 
+    void Tokenizer::getType(const std::string_view &value, TokenType &type) noexcept {
+        if(value == "i8"sv) { type = TokenType::TYPE_I8; }
+        if(value == "i16"sv) { type = TokenType::TYPE_I16; }
+        if(value == "i32"sv) { type = TokenType::TYPE_I32; }
+        if(value == "i64"sv) { type = TokenType::TYPE_I64; }
+        if(value == "u8"sv) { type = TokenType::TYPE_U8; }
+        if(value == "u16"sv) { type = TokenType::TYPE_U16; }
+        if(value == "u32"sv) { type = TokenType::TYPE_U32; }
+        if(value == "u64"sv) { type = TokenType::TYPE_U64; }
+        if(value == "f32"sv) { type = TokenType::TYPE_F32; }
+        if(value == "f64"sv) { type = TokenType::TYPE_F64; }
+        if(value == "c32"sv) { type = TokenType::TYPE_C32; }
+        if(value == "c64"sv) { type = TokenType::TYPE_C64; }
+        if(value == "char"sv) { type = TokenType::TYPE_CHAR; }
+        if(value == "string"sv) { type = TokenType::TYPE_STRING; }
+        if(value == "bool"sv) { type = TokenType::TYPE_BOOL; }
+    }
     void Tokenizer::kewordType(const std::string_view &value, TokenType &type) noexcept {
         using enum TokenType;
         if(value == "main"sv) { type = K_MAIN; }
@@ -78,21 +95,7 @@ namespace vnd {
         if(value == "return"sv) { type = K_RETURN; }
         if(value == "nullptr"sv) { type = K_NULLPTR; }
         if(value == "true"sv || value == "false"sv) { type = BOOLEAN; }
-        if(value == "i8"sv) { type = TYPE_I8; }
-        if(value == "i16"sv) { type = TYPE_I16; }
-        if(value == "i32"sv) { type = TYPE_I32; }
-        if(value == "i64"sv) { type = TYPE_I64; }
-        if(value == "u8"sv) { type = TYPE_U8; }
-        if(value == "u16"sv) { type = TYPE_U16; }
-        if(value == "u32"sv) { type = TYPE_U32; }
-        if(value == "u64"sv) { type = TYPE_U64; }
-        if(value == "f32"sv) { type = TYPE_F32; }
-        if(value == "f64"sv) { type = TYPE_F64; }
-        if(value == "c32"sv) { type = TYPE_C32; }
-        if(value == "c64"sv) { type = TYPE_C64; }
-        if(value == "char"sv) { type = TYPE_CHAR; }
-        if(value == "string"sv) { type = TYPE_STRING; }
-        if(value == "bool"sv) { type = TYPE_BOOL; }
+        getType(value, type);
     }
 
     bool Tokenizer::inTextAndE() const noexcept { return positionIsInText() && std::toupper(_input[position]) == ECR; }

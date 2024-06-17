@@ -80,6 +80,7 @@ namespace vnd {
          */
         [[nodiscard]] Token handleDot();
 
+        static void getType(const std::string_view &value, TokenType &type) noexcept;
         /**
          * @brief Sets TokenType based on the keyword.
          * @param value The keyword.
