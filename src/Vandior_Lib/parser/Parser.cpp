@@ -13,7 +13,8 @@ namespace vnd {
         if(position < tokenSize) { position++; }
     }
 
-    const std::vector<StrViewVec> Parser::operatorPrecedence = {{"=", "+=", "-=", "*=", "/=", "^=", "%="},
+    const std::vector<StrViewVec> Parser::operatorPrecedence = {{":"},
+                                                                {"=", "+=", "-=", "*=", "/=", "^=", "%="},
                                                                 {","},
                                                                 {"||"},
                                                                 {"&&"},
@@ -23,6 +24,11 @@ namespace vnd {
                                                                 {"*", "/"},
                                                                 {"^", "%"},
                                                                 {"."}};
+    const std::vector<TokenType> Parser::types = {
+        TokenType::TYPE_I8,   TokenType::TYPE_I16, TokenType::TYPE_I32,  TokenType::TYPE_I64,   TokenType::TYPE_U8,  TokenType::TYPE_U16,
+        TokenType::TYPE_U32,  TokenType::TYPE_U64, TokenType::TYPE_F32,  TokenType::TYPE_F64,   TokenType::TYPE_C32, TokenType::TYPE_C64,
+        TokenType::TYPE_CHAR, TokenType::TYPE_STRING, TokenType::TYPE_BOOL, TokenType::IDENTIFIER,
+    };
 
     const Token &Parser::getCurrentToken() const { return tokens.at(position); }
     std::size_t Parser::getUnaryOperatorPrecedence(const Token &token) noexcept {
@@ -119,8 +125,14 @@ namespace vnd {
         const auto &currentType = currentToken.getType();
         const auto &currentValue = currentToken.getValue();
         auto cval = std::string{currentValue};
-
-        if(currentType == TokenType::INTEGER) {
+        
+        if(isPreviusColon()) {
+            if(std::find(std::ranges::begin(types), std::ranges::end(types), currentType) == std::ranges::end(types)) {
+                throw ParserException(currentToken);
+            }
+            consumeToken();
+            return MAKE_UNIQUE(TypeNode, currentToken);
+        } else if(currentType == TokenType::INTEGER) {
             consumeToken();
             if(currentValue.starts_with("#o") || currentValue.starts_with("#O")) {
                 cval.erase(0, 2);
@@ -198,6 +210,8 @@ namespace vnd {
     }
 
     std::unique_ptr<ASTNode> Parser::parseExpression(std::size_t parentPrecendence) { return parseBinary(parentPrecendence); }
+
+    bool Parser::isPreviusColon() const noexcept { return position > 0 && tokens.at(position - 1).getType() == TokenType::COLON; }
 }  // namespace vnd
 DISABLE_WARNINGS_POP()
 // NOLINTEND(*-include-cleaner,*-no-recursion, *-avoid-magic-numbers,*-magic-numbers)

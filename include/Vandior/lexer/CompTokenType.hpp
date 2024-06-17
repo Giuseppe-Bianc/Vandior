@@ -131,6 +131,36 @@ namespace vnd {
             return "COMMA";
         case COLON:
             return "COLON";
+        case TYPE_I8:
+            return "I8";
+        case TYPE_I16:
+            return "I16";
+        case TYPE_I32:
+            return "I32";
+        case TYPE_I64:
+            return "I64";
+        case TYPE_U8:
+            return "U8";
+        case TYPE_U16:
+            return "U16";
+        case TYPE_U32:
+            return "U32";
+        case TYPE_U64:
+            return "U64";
+        case TYPE_F32:
+            return "F32";
+        case TYPE_F64:
+            return "F64";
+        case TYPE_C32:
+            return "C32";
+        case TYPE_C64:
+            return "C64";
+        case TYPE_CHAR:
+            return "CHAR";
+        case TYPE_STRING:
+            return "STRING";
+        case TYPE_BOOL:
+            return "BOOL";
         case COMMENT:
             return "COMMENT";
         // Add more cases as needed

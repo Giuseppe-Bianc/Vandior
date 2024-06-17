@@ -1363,4 +1363,37 @@ TEST_CASE("Parser emit exception for nonexistent unary operator", "[parser]") {
     REQUIRE_THROWS_AS(tokenizer.parse(), vnd::ParserException);
 }
 
+TEST_CASE("Parser emit i8 TypeNode node", "[parser]") {
+    vnd::Parser parser("a: i8", filename);
+    auto ast = parser.parse();
+    REQUIRE(ast != nullptr);
+    REQUIRE(ast->getType() == NodeType::BinaryExpression);
+    const auto *binaryNode = ast->as<vnd::BinaryExpressionNode>();
+    REQUIRE(binaryNode != nullptr);
+    REQUIRE(binaryNode->getOp() == ":");
+    const auto *typeNode = binaryNode->getRight()->as<vnd::TypeNode>();
+    REQUIRE(typeNode != nullptr);
+    REQUIRE(typeNode->getVariableType() == vnd::TokenType::TYPE_I8);
+    REQUIRE(typeNode->get_value() == "i8");
+}
+
+TEST_CASE("Parser emit identifier TypeNode node", "[parser]") {
+    vnd::Parser parser("a: type", filename);
+    auto ast = parser.parse();
+    REQUIRE(ast != nullptr);
+    REQUIRE(ast->getType() == NodeType::BinaryExpression);
+    const auto *binaryNode = ast->as<vnd::BinaryExpressionNode>();
+    REQUIRE(binaryNode != nullptr);
+    REQUIRE(binaryNode->getOp() == ":");
+    const auto *typeNode = binaryNode->getRight()->as<vnd::TypeNode>();
+    REQUIRE(typeNode != nullptr);
+    REQUIRE(typeNode->getVariableType() == vnd::TokenType::IDENTIFIER);
+    REQUIRE(typeNode->get_value() == "type");
+}
+
+TEST_CASE("Parser emit exception for impossibile TypeNode node", "[parser]") {
+    vnd::Parser parser("a: 1", filename);
+    REQUIRE_THROWS_AS(parser.parse(), vnd::ParserException);
+}
+
 // NOLINTEND(*-include-cleaner, *-avoid-magic-numbers, *-magic-numbers)
