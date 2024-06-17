@@ -133,8 +133,9 @@ namespace vnd {
     }
 
     Token Tokenizer::handleComment() {
-        if(_input[position + 1] == '/') { return handleSingleLineComment(); }
-        if(_input[position + 1] == '*') { return handleMultiLineComment(); }
+        auto nextposition = position + 1;
+        if(_input[nextposition] == '/') { return handleSingleLineComment(); }
+        if(_input[nextposition] == '*') { return handleMultiLineComment(); }
         return {TokenType::UNKNOWN, {_filename, line, column}};
     }
 
