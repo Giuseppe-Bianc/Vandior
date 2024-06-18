@@ -14,6 +14,10 @@ namespace vnd {
 
         std::unique_ptr<ASTNode> parse();
 
+        static int convertToInt(std::string_view str);
+        static int convertToIntformExa(std::string_view str);
+        static int convertToIntformOct(std::string_view str);
+
     private:
         static const std::vector<StrViewVec> operatorPrecedence;
         static const std::vector<TokenType> types;
@@ -22,9 +26,6 @@ namespace vnd {
         const Token &getCurrentToken() const;
         static std::size_t getUnaryOperatorPrecedence(const Token &token) noexcept;
         static std::size_t getOperatorPrecedence(const Token &token) noexcept;
-        static int convertToInt(std::string_view str) noexcept;
-        static int convertToIntformExa(std::string_view str) noexcept;
-        static int convertToIntformOct(std::string_view str) noexcept;
         template <typename T> static T convertToDouble(std::string_view str) noexcept;
         template <typename T> static std::complex<T> convertToImg(std::string_view str) noexcept;
         std::unique_ptr<ASTNode> parsePrimary();

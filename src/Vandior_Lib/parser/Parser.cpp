@@ -48,48 +48,57 @@ namespace vnd {
         }
         return 0;
     }
-    int Parser::convertToInt(std::string_view str) noexcept {
+    int Parser::convertToInt(std::string_view str) {
         int result{};
         auto [ptr, ec] = std::from_chars(str.data(), str.data() + str.size(), result);
 
-        if(ec == std::errc()) [[likely]] {
-            return result;
-        } else if(ec == std::errc::invalid_argument || ec == std::errc::result_out_of_range) [[likely]] {
-            // Handle error
-            return 0;
+        if(ec == std::errc::invalid_argument) {
+            throw std::invalid_argument("parse_integer: invalid argument");
+        } else if(ec == std::errc::result_out_of_range) {
+            throw std::out_of_range("parse_integer: result out of range");
+        } else if(ec != std::errc()) {
+            throw std::runtime_error("parse_integer: unknown error");
         }
 
-        return 0;
+        if(ptr != str.data() + str.size()) { throw std::invalid_argument("parse_integer: trailing characters"); }
+
+        return result;
     }
 
-    int Parser::convertToIntformExa(std::string_view str) noexcept {
+    int Parser::convertToIntformExa(std::string_view str) {
         int result{};
         // NOLINTNEXTLINE(*-avoid-magic-numbers, *-magic-numbers)
         auto [ptr, ec] = std::from_chars(str.data(), str.data() + str.size(), result, 16);
 
-        if(ec == std::errc()) [[likely]] {
-            return result;
-        } else if(ec == std::errc::invalid_argument || ec == std::errc::result_out_of_range) [[likely]] {
-            // Handle error
-            return 0;
+        if(ec == std::errc::invalid_argument) {
+            throw std::invalid_argument("parse_integer: invalid argument");
+        } else if(ec == std::errc::result_out_of_range) {
+            throw std::out_of_range("parse_integer: result out of range");
+        } else if(ec != std::errc()) {
+            throw std::runtime_error("parse_integer: unknown error");
         }
 
-        return 0;
+        if(ptr != str.data() + str.size()) { throw std::invalid_argument("parse_integer: trailing characters"); }
+
+        return result;
     }
 
-    int Parser::convertToIntformOct(std::string_view str) noexcept {
+    int Parser::convertToIntformOct(std::string_view str) {
         int result{};
         // NOLINTNEXTLINE(*-avoid-magic-numbers, *-magic-numbers)
         auto [ptr, ec] = std::from_chars(str.data(), str.data() + str.size(), result, 8);
 
-        if(ec == std::errc()) [[likely]] {
-            return result;
-        } else if(ec == std::errc::invalid_argument || ec == std::errc::result_out_of_range) [[likely]] {
-            // Handle error
-            return 0;
+        if(ec == std::errc::invalid_argument) {
+            throw std::invalid_argument("parse_integer: invalid argument");
+        } else if(ec == std::errc::result_out_of_range) {
+            throw std::out_of_range("parse_integer: result out of range");
+        } else if(ec != std::errc()) {
+            throw std::runtime_error("parse_integer: unknown error");
         }
 
-        return 0;
+        if(ptr != str.data() + str.size()) { throw std::invalid_argument("parse_integer: trailing characters"); }
+
+        return result;
     }
 
     template <typename T> T Parser::convertToDouble(std::string_view str) noexcept {

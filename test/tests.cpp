@@ -1009,6 +1009,50 @@ TEST_CASE("binary node swap", "[parser]") {
     REQUIRE(unarb.getLeft()->as<vnd::VariableNode>()->get_token() == token2);
     REQUIRE(unarb.getRight()->as<vnd::VariableNode>()->get_token() == token3);
 }
+TEST_CASE("Parser::convertToInt tests", "[parser]") {
+    SECTION("Valid integer conversion") {
+        REQUIRE(vnd::Parser::convertToInt("123") == 123);
+        REQUIRE(vnd::Parser::convertToInt("-456") == -456);
+    }
+
+    SECTION("Invalid argument throws exception") { REQUIRE_THROWS_AS(vnd::Parser::convertToInt("abc"), std::invalid_argument); }
+
+    SECTION("Result out of range throws exception") {
+        REQUIRE_THROWS_AS(vnd::Parser::convertToInt("2147483648"), std::out_of_range);  // Assuming int is 32-bit
+    }
+
+    SECTION("Trailing characters throws exception") { REQUIRE_THROWS_AS(vnd::Parser::convertToInt("123a"), std::invalid_argument); }
+}
+
+TEST_CASE("Parser::convertToIntformExa tests") {
+    SECTION("Valid hexadecimal conversion") {
+        REQUIRE(vnd::Parser::convertToIntformExa("1A") == 26);     // 0x1A = 26 in decimal
+        REQUIRE(vnd::Parser::convertToIntformExa("-FF") == -255);  // 0xFF = -255 in decimal
+    }
+
+    SECTION("Invalid argument throws exception") { REQUIRE_THROWS_AS(vnd::Parser::convertToIntformExa("xyz"), std::invalid_argument); }
+
+    SECTION("Result out of range throws exception") {
+        REQUIRE_THROWS_AS(vnd::Parser::convertToIntformExa("80000000"), std::out_of_range);  // Assuming int is 32-bit
+    }
+
+    SECTION("Trailing characters throws exception") { REQUIRE_THROWS_AS(vnd::Parser::convertToIntformExa("1A a"), std::invalid_argument); }
+}
+
+TEST_CASE("Parser::convertToIntformOct tests") {
+    SECTION("Valid octal conversion") {
+        REQUIRE(vnd::Parser::convertToIntformOct("77") == 63);   // 077 = 63 in decimal
+        REQUIRE(vnd::Parser::convertToIntformOct("-10") == -8);  // -010 = -8 in decimal
+    }
+
+    SECTION("Invalid argument throws exception") { REQUIRE_THROWS_AS(vnd::Parser::convertToIntformOct("xyz"), std::invalid_argument); }
+
+    SECTION("Result out of range throws exception") {
+        REQUIRE_THROWS_AS(vnd::Parser::convertToIntformOct("20000000000"), std::out_of_range);  // Assuming int is 32-bit
+    }
+
+    SECTION("Trailing characters throws exception") { REQUIRE_THROWS_AS(vnd::Parser::convertToIntformOct("77a"), std::invalid_argument); }
+}
 
 TEST_CASE("Parser emit integer number node form exadecimal", "[parser]") {
     vnd::Parser parser("#23", filename);
