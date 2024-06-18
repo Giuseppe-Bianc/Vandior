@@ -16,7 +16,7 @@ namespace vnd {
          * @brief Creates a TypeNode.
          * @param token The token correspondent to the node.
          */
-        [[nodiscard]] TypeNode(Token token) noexcept : ASTNode(token), m_value(token.getValue()), m_type(token.getType()) {}
+        [[nodiscard]] explicit TypeNode(const Token &token) noexcept : ASTNode(token), m_value(token.getValue()), m_type(token.getType()) {}
 
         /**
          * @brief Gets the type of the AST node.

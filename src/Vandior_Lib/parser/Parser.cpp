@@ -44,7 +44,7 @@ namespace vnd {
         std::size_t precedence = 0;
         for(const auto &itm : operatorPrecedence) {
             precedence++;
-            if(std::find(std::ranges::begin(itm), std::ranges::end(itm), tokenValue) != std::ranges::end(itm)) { return precedence; }
+            if(std::ranges::find(itm, tokenValue) != itm.end()) { return precedence; }
         }
         return 0;
     }
