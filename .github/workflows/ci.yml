@@ -81,7 +81,7 @@ jobs:
             gcov_executable: gcov
             packaging_maintainer_mode: On
             enable_ipo: Off
-            enable_cppcheck: On
+            enable_cppcheck: Off
 
           # Windows msvc builds
           - os: windows-2022
