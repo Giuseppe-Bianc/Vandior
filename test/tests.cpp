@@ -1417,6 +1417,9 @@ TEST_CASE("Parser emit i8 TypeNode node", "[parser]") {
     REQUIRE(binaryNode->getOp() == ":");
     const auto *typeNode = binaryNode->getRight()->as<vnd::TypeNode>();
     REQUIRE(typeNode != nullptr);
+    REQUIRE(typeNode->getType() == NodeType::Type);
+    REQUIRE(typeNode->comp_print() == "TYPE(i8)");
+    REQUIRE(typeNode->print() == "TYPE_I8_TYPE(i8)");
     REQUIRE(typeNode->getVariableType() == vnd::TokenType::TYPE_I8);
     REQUIRE(typeNode->get_value() == "i8");
 }
