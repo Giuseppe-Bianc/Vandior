@@ -16,8 +16,8 @@ namespace vnd {
          * @brief Creates a TypeNode.
          * @param token The token correspondent to the node.
          */
-        [[nodiscard]] TypeNode(Token token) noexcept: ASTNode(token), m_value(token.getValue()), m_type(token.getType()) {}
-        
+        [[nodiscard]] TypeNode(Token token) noexcept : ASTNode(token), m_value(token.getValue()), m_type(token.getType()) {}
+
         /**
          * @brief Gets the type of the AST node.
          * @return NodeType enumeration value.
@@ -28,9 +28,7 @@ namespace vnd {
          * @brief Returns a string representation of the AST node.
          * @return String representation of the AST node.
          */
-        [[nodiscard]] std::string print() const override {
-            return FORMAT("{}_{}({})", getVariableType(), getType(), get_value());
-        }
+        [[nodiscard]] std::string print() const override { return FORMAT("{}_{}({})", getVariableType(), getType(), get_value()); }
 
         /**
          * @brief Returns a compact string representation of the AST node for compilation purposes.
@@ -52,15 +50,14 @@ namespace vnd {
 
         friend void swap(TypeNode &lhs, TypeNode &rhs) noexcept {
             using std::swap;
-            swap(static_cast<TypeNode &>(lhs), static_cast<TypeNode &>(rhs));
+            swap(static_cast<ASTNode &>(lhs), static_cast<ASTNode &>(rhs));
             swap(lhs.m_value, rhs.m_value);
             swap(lhs.m_type, rhs.m_type);
         }
 
     private:
-        std::string_view m_value;   //< The value of the node.
-        TokenType m_type;           //< The type of the token node.
-
+        std::string_view m_value;  ///< The value of the node.
+        TokenType m_type;          ///< The type of the token node.
     };
 
 }  // namespace vnd
