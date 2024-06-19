@@ -174,7 +174,7 @@ jobs:
           cmake --build ./build --config ${{matrix.build_type}}
 
       - name: Create Coverage Directory
-        run: mkdir -p /out/coverage
+        run: mkdir -p ./out/coverage
 
       - name: Unix - Test and coverage
         if: runner.os != 'Windows'
