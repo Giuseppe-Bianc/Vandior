@@ -799,6 +799,28 @@ TEST_CASE("ASTNode type conversion using as<T>()", "[ast]") {
     REQUIRE(constAnotherPtr == nullptr);
 }
 
+TEST_CASE("ASTNode type conversion using safe_as<T>()", "[ast]") {
+    vnd::Token token{vnd::TokenType::IDENTIFIER, "id", vnd::CodeSourceLocation{filename, t_line, t_colum}};
+    vnd::VariableNode dummyNode("id", token);
+
+    // Test conversion to base type (should work)
+    vnd::ASTNode *basePtr = &dummyNode;
+    auto *dummyPtr = basePtr->as<vnd::VariableNode>();
+    REQUIRE(dummyPtr != nullptr);
+
+    // Test conversion to derived type (should fail)
+    auto *anotherPtr = basePtr->as<vnd::Token>();
+    REQUIRE(anotherPtr == nullptr);
+
+    // Test const conversion
+    const vnd::ASTNode *constBasePtr = &dummyNode;
+    const auto *constDummyPtr = constBasePtr->safe_as<vnd::VariableNode>();
+    REQUIRE(constDummyPtr != nullptr);
+
+    const auto *constAnotherPtr = constBasePtr->safe_as<vnd::Token>();
+    REQUIRE(constAnotherPtr == nullptr);
+}
+
 TEST_CASE("ASTNode get token", "[ast]") {
     vnd::Token token{vnd::TokenType::IDENTIFIER, "id", vnd::CodeSourceLocation{filename, t_line, t_colum}};
     vnd::VariableNode dummyNode("id", token);
@@ -812,6 +834,8 @@ TEST_CASE("Parser emit boolean literal node", "[parser]") {
     REQUIRE(ast->getType() == NodeType::Boolean);
     const auto *number = ast->as<vnd::LiteralNode<bool>>();
     REQUIRE(number != nullptr);
+    REQUIRE(number->print() == "BOOLEAN_LIT(true)");
+    REQUIRE(number->comp_print() == "BOOLEAN(true)");
     REQUIRE(number->get_value() == true);
 }
 
@@ -838,6 +862,8 @@ TEST_CASE("Parser emit string literal node", "[parser]") {
     REQUIRE(ast->getType() == NodeType::String);
     const auto *number = ast->as<vnd::LiteralNode<std::string_view>>();
     REQUIRE(number != nullptr);
+    REQUIRE(number->print() == "STRING_LIT(tr)");
+    REQUIRE(number->comp_print() == "STRING(tr)");
     REQUIRE(number->get_value() == "tr");
 }
 
@@ -864,6 +890,8 @@ TEST_CASE("Parser emit char literal node", "[parser]") {
     REQUIRE(ast->getType() == NodeType::Char);
     const auto *number = ast->as<vnd::LiteralNode<char>>();
     REQUIRE(number != nullptr);
+    REQUIRE(number->print() == "CHAR_LIT(c)");
+    REQUIRE(number->comp_print() == "CHAR(c)");
     REQUIRE(number->get_value() == 'c');
 }
 
