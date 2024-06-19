@@ -485,6 +485,7 @@ TEST_CASE("FolderCreationResult Folder Creation Functions") {
         vnd::FolderCreationResult result = vnd::FolderCreationResult::createFolderNextToFile(nonExistentFilePath, folderName);
         REQUIRE(result.success() == true);
         REQUIRE(!result.path().empty());
+        REQUIRE(!result.pathcref().empty());
     }
 
     SECTION("Create folder next to existing file") {
