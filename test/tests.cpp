@@ -508,6 +508,19 @@ TEST_CASE("FolderCreationResult Folder Creation Functions") {
         REQUIRE(!result.path().empty());
     }
 
+    SECTION("Create folder existent directory") {
+        fs::path nonExistentParentDir = tempDir / "non_existent_dir";
+        std::string folderName = "test_folder";
+        vnd::FolderCreationResult result = vnd::FolderCreationResult::createFolder(folderName, nonExistentParentDir);
+        REQUIRE(result.success() == true);
+        REQUIRE(!result.path().empty());
+        fs::path ExistentParentDir = tempDir / "non_existent_dir";
+        std::string folderName2 = "test_folder";
+        vnd::FolderCreationResult result2 = vnd::FolderCreationResult::createFolder(folderName2, nonExistentParentDir);
+        REQUIRE(result2.success() == true);
+        REQUIRE(!result2.path().empty());
+    }
+
     SECTION("Create folder next to non-existent file") {
         fs::path nonExistentFilePath = tempDir / "non_existent_file.txt";
         std::string folderName = "test_folder";
