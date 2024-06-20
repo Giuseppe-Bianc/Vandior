@@ -248,6 +248,20 @@ TEST_CASE("corrected format for Tokentype", "[token_type]") {
     REQ_FORMAT(NOT, "NOT_OPERATOR")
     REQ_FORMAT(COMMA, "COMMA")
     REQ_FORMAT(COLON, "COLON")
+    REQ_FORMAT(TYPE_I16, "TYPE_I16")
+    REQ_FORMAT(TYPE_I32, "TYPE_I32")
+    REQ_FORMAT(TYPE_I64, "TYPE_I64")
+    REQ_FORMAT(TYPE_U8, "TYPE_U8")
+    REQ_FORMAT(TYPE_U16, "TYPE_U16")
+    REQ_FORMAT(TYPE_U32, "TYPE_U32")
+    REQ_FORMAT(TYPE_U64, "TYPE_U64")
+    REQ_FORMAT(TYPE_F32, "TYPE_F32")
+    REQ_FORMAT(TYPE_F64, "TYPE_F64")
+    REQ_FORMAT(TYPE_C32, "TYPE_C32")
+    REQ_FORMAT(TYPE_C64, "TYPE_C64")
+    REQ_FORMAT(TYPE_CHAR, "TYPE_CHAR")
+    REQ_FORMAT(TYPE_STRING, "TYPE_STRING")
+    REQ_FORMAT(TYPE_BOOL, "TYPE_BOOL")
     REQ_FORMAT(COMMENT, "COMMENT")
     REQ_FORMAT(UNKNOWN, "UNKNOWN")
 }
@@ -306,6 +320,21 @@ TEST_CASE("corrected format for Tokentype compat to string", "[token_type]") {
     REQ_FORMAT(comp_tokType(NOT), "NOT_OP")
     REQ_FORMAT(comp_tokType(COMMA), "COMMA")
     REQ_FORMAT(comp_tokType(COLON), "COLON")
+    REQ_FORMAT(comp_tokType(TYPE_I8), "I8")
+    REQ_FORMAT(comp_tokType(TYPE_I16), "I16")
+    REQ_FORMAT(comp_tokType(TYPE_I32), "I32")
+    REQ_FORMAT(comp_tokType(TYPE_I64), "I64")
+    REQ_FORMAT(comp_tokType(TYPE_U8), "U8")
+    REQ_FORMAT(comp_tokType(TYPE_U16), "U16")
+    REQ_FORMAT(comp_tokType(TYPE_U32), "U32")
+    REQ_FORMAT(comp_tokType(TYPE_U64), "U64")
+    REQ_FORMAT(comp_tokType(TYPE_F32), "F32")
+    REQ_FORMAT(comp_tokType(TYPE_F64), "F64")
+    REQ_FORMAT(comp_tokType(TYPE_C32), "C32")
+    REQ_FORMAT(comp_tokType(TYPE_C64), "C64")
+    REQ_FORMAT(comp_tokType(TYPE_CHAR), "CHAR")
+    REQ_FORMAT(comp_tokType(TYPE_STRING), "STRING")
+    REQ_FORMAT(comp_tokType(TYPE_BOOL), "BOOL")
     REQ_FORMAT(comp_tokType(COMMENT), "COMMENT")
     REQ_FORMAT(comp_tokType(UNKNOWN), "UNKNOWN")
 }
@@ -928,7 +957,21 @@ TEST_CASE("Parser emit complex number node", "[parser]") {
     REQUIRE(ast->getType() == NodeType::Number);
     const auto *number = ast->as<vnd::NumberNode<std::complex<double>>>();
     REQUIRE(number != nullptr);
+    REQUIRE(number->print() == "NUMBER_IMAGINARY((0, 1))");
+    REQUIRE(number->comp_print() == "NUM_IMG((0, 1))");
     REQUIRE(number->get_value() == std::complex<double>(0, 1));
+}
+
+TEST_CASE("Parser emit complex float number node", "[parser]") {
+    vnd::Parser parser("1if", filename);
+    auto ast = parser.parse();
+    REQUIRE(ast != nullptr);
+    REQUIRE(ast->getType() == NodeType::Number);
+    const auto *number = ast->as<vnd::NumberNode<std::complex<float>>>();
+    REQUIRE(number != nullptr);
+    REQUIRE(number->print() == "NUMBER_IMAGINARY_F((0, 1))");
+    REQUIRE(number->comp_print() == "NUM_IMF((0, 1))");
+    REQUIRE(number->get_value() == std::complex<float>(0, 1));
 }
 
 TEST_CASE("integer number node swap", "[parser]") {
@@ -1200,6 +1243,21 @@ TEST_CASE("Parser emit double number node double", "[parser]") {
     REQUIRE(number->get_value() == 1.5);
 }
 
+TEST_CASE("Parser emit flaot number node float", "[parser]") {
+    vnd::Parser parser("1.5f", filename);
+    auto ast = parser.parse();
+    REQUIRE(ast != nullptr);
+    REQUIRE(ast->getType() == NodeType::Number);
+    const auto *number = ast->as<vnd::NumberNode<float>>();
+    REQUIRE(number != nullptr);
+#ifdef __linux__
+    REQUIRE(number->getTypeIDName() == "f");
+#else
+    REQUIRE(number->getTypeIDName() == "float");
+#endif
+    REQUIRE(number->get_value() == 1.5F);
+}
+
 TEST_CASE("Parser emit double number node double print", "[parser]") {
     vnd::Parser parser("1.5", filename);
     auto ast = parser.parse();
@@ -1216,6 +1274,21 @@ TEST_CASE("Parser emit double number node double print", "[parser]") {
     REQUIRE(number->print() == "NUMBER_DOUBLE(1.5)");
 }
 
+TEST_CASE("Parser emit flaot number node float print", "[parser]") {
+    vnd::Parser parser("1.5f", filename);
+    auto ast = parser.parse();
+    REQUIRE(ast != nullptr);
+    REQUIRE(ast->getType() == NodeType::Number);
+    const auto *number = ast->as<vnd::NumberNode<float>>();
+    REQUIRE(number != nullptr);
+#ifdef __linux__
+    REQUIRE(number->getTypeIDName() == "f");
+#else
+    REQUIRE(number->getTypeIDName() == "float");
+#endif
+    REQUIRE(number->get_value() == 1.5F);
+    REQUIRE(number->print() == "NUMBER_FLOAT(1.5)");
+}
 TEST_CASE("Parser emit double number node double compat print", "[parser]") {
     vnd::Parser parser("1.5", filename);
     auto ast = parser.parse();
@@ -1230,6 +1303,21 @@ TEST_CASE("Parser emit double number node double compat print", "[parser]") {
 #endif
     REQUIRE(number->get_value() == 1.5);
     REQUIRE(number->comp_print() == "NUM_DBL(1.5)");
+}
+TEST_CASE("Parser emit flaot number node float compat print", "[parser]") {
+    vnd::Parser parser("1.5f", filename);
+    auto ast = parser.parse();
+    REQUIRE(ast != nullptr);
+    REQUIRE(ast->getType() == NodeType::Number);
+    const auto *number = ast->as<vnd::NumberNode<float>>();
+    REQUIRE(number != nullptr);
+#ifdef __linux__
+    REQUIRE(number->getTypeIDName() == "f");
+#else
+    REQUIRE(number->getTypeIDName() == "float");
+#endif
+    REQUIRE(number->get_value() == 1.5F);
+    REQUIRE(number->comp_print() == "NUM_FLT(1.5)");
 }
 
 TEST_CASE("Parser emit variable node print", "[parser]") {
