@@ -343,4 +343,3 @@ concept StringOrStringView = std::same_as<std::remove_cvref_t<T>, std::string> |
                                  { t.length() } -> std::integral;
                              });
 // NOLINTEND
-// NOLINTEND
