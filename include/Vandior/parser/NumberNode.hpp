@@ -45,7 +45,7 @@ namespace vnd {
 
         friend void swap(NumberNode &lhs, NumberNode &rhs) noexcept {
             using std::swap;
-            swap(static_cast<NumberNode &>(lhs), static_cast<NumberNode &>(rhs));
+            swap(static_cast<LiteralNode<T> &>(lhs), static_cast<LiteralNode<T> &>(rhs));
             swap(lhs.m_number_type, rhs.m_number_type);
         }
 

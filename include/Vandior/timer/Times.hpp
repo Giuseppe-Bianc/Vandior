@@ -12,6 +12,7 @@ namespace vnd {
     class TimeValues {
     public:
         TimeValues() = default;
+
         explicit TimeValues(const long double nanoseconds_) noexcept
           : seconds(nanoseconds_ / SECONDSFACTOR), millis(nanoseconds_ / MILLISECONDSFACTOR), micro(nanoseconds_ / MICROSECONDSFACTOR),
             nano(nanoseconds_) {}
@@ -39,7 +40,7 @@ namespace vnd {
     class ValueLable {
     public:
         ValueLable() noexcept = default;
-        ValueLable(const long double time_val, const std::string &time_label) noexcept : timeVal(time_val), timeLabel(time_label) {}
+        ValueLable(const long double time_val, const std::string_view time_label) noexcept : timeVal(time_val), timeLabel(time_label) {}
         ValueLable(const ValueLable &other) = default;
         ValueLable(ValueLable &&other) noexcept = default;
         ValueLable &operator=(const ValueLable &other) = default;
@@ -60,13 +61,15 @@ namespace vnd {
 
         explicit Times(const TimeValues &time_values) : values(time_values) {}
 
-        Times(const TimeValues &time_values, const std::string &labelseconds_, const std::string &labelmillis_,
-              const std::string &labelmicro_, const std::string &labelnano_)
+        Times(const TimeValues &time_values, const std::string_view labelseconds_, const std::string_view labelmillis_,
+              const std::string_view labelmicro_, std::string_view labelnano_)
           : values(time_values), labelseconds(labelseconds_), labelmillis(labelmillis_), labelmicro(labelmicro_), labelnano(labelnano_) {}
+
         Times(const Times &other) = default;
         Times(Times &&other) noexcept = default;
         Times &operator=(const Times &other) = default;
         Times &operator=(Times &&other) noexcept = default;
+
         [[nodiscard]] ValueLable getRelevantTimeframe() const noexcept {
             if(values.get_seconds() > 1) {  // seconds
                 return {values.get_seconds(), labelseconds};
@@ -82,13 +85,14 @@ namespace vnd {
     private:
         // Campi della classe
         TimeValues values{};
-        std::string labelseconds{"s"};
-        std::string labelmillis{"ms"};
-        std::string labelmicro{"us"};
-        std::string labelnano{"ns"};
+        std::string_view labelseconds{"s"};
+        std::string_view labelmillis{"ms"};
+        std::string_view labelmicro{"us"};
+        std::string_view labelnano{"ns"};
     };
     DISABLE_WARNINGS_POP()
 }  // namespace vnd
+
 /**
  * This function is a formatter for CodeSourceLocation using fmt.
  * \cond

@@ -18,24 +18,35 @@ namespace vnd {
      */
     class ASTNode {
     public:
+        /**
+         * @brief Constructor for ASTNode.
+         * @param token The token associated with this AST node.
+         */
         [[nodiscard]] explicit ASTNode(const Token &token) noexcept : m_token(token) {}
 
+        /**
+         * @brief Destructor for ASTNode.
+         */
         virtual ~ASTNode() = default;
+
         /**
          * @brief Gets the type of the AST node.
          * @return NodeType enumeration value.
          */
         [[nodiscard]] virtual NodeType getType() const = 0;
+
         /**
          * @brief Returns a string representation of the AST node.
          * @return String representation of the AST node.
          */
         [[nodiscard]] virtual std::string print() const = 0;
+
         /**
          * @brief Returns a compact string representation of the AST node for compilation purposes.
          * @return Compact string representation of the AST node.
          */
         [[nodiscard]] virtual std::string comp_print() const = 0;
+
         /**
          * @brief Converts this ASTNode to the specified type.
          * @tparam T The type to convert the ASTNode to.
@@ -88,10 +99,21 @@ namespace vnd {
             return nullptr;
         }
 
+        /**
+         * @brief Gets the token associated with this AST node.
+         * @return The token.
+         */
         [[nodiscard]] const Token &get_token() const noexcept { return m_token; }
+
+        /**
+         * @brief Swaps two ASTNode objects.
+         * @param lhs The first ASTNode.
+         * @param rhs The second ASTNode.
+         */
         friend void swap(ASTNode &lhs, ASTNode &rhs) noexcept { std::swap(lhs.m_token, rhs.m_token); }
 
     private:
-        Token m_token;
+        Token m_token;  ///< The token associated with this AST node.
     };
+
 }  // namespace vnd

@@ -2,6 +2,7 @@
 
 #include "CodeSourceLocation.hpp"
 #include "CompTokenType.hpp"
+
 namespace vnd {
 
     /**
@@ -22,13 +23,13 @@ namespace vnd {
          * @param value The value associated with the token.
          * @param sourceLocation The source location where the token appears.
          */
-        Token(TokenType type, const std::string_view &value, const CodeSourceLocation &sourceLocation) noexcept
+        Token(TokenType type, const std::string_view value, const CodeSourceLocation &sourceLocation) noexcept
           : _type(type), _value(value), _sourceLocation{sourceLocation} {}
 
         /**
-         * @brief Parameterized constructor for Token whit a empty value.
-         * Initializes the token with the specified values.
-         * @param type The type of the token..
+         * @brief Parameterized constructor for Token with an empty value.
+         * Initializes the token with the specified type and source location.
+         * @param type The type of the token.
          * @param sourceLocation The source location where the token appears.
          */
         Token(TokenType type, const CodeSourceLocation &sourceLocation) noexcept
@@ -36,7 +37,6 @@ namespace vnd {
 
         /**
          * @brief Copy constructor for Token.
-         * Initializes the token by copying values from another token.
          * @param other The token to copy.
          */
         Token(const Token &other) = default;
@@ -50,7 +50,6 @@ namespace vnd {
 
         /**
          * @brief Copy assignment operator for Token.
-         * Copies values from another token.
          * @param other The token to copy.
          * @return Reference to the current token.
          */
@@ -58,7 +57,6 @@ namespace vnd {
 
         /**
          * @brief Move assignment operator for Token.
-         * Moves values from another token.
          * @param other The token to move.
          * @return Reference to the current token.
          */
@@ -73,63 +71,75 @@ namespace vnd {
          * @brief Get the type of the token.
          * @return The type of the token.
          */
-        [[nodiscard]] inline TokenType getType() const noexcept { return _type; }
+        [[nodiscard]] TokenType getType() const noexcept { return _type; }
 
-        [[nodiscard]] inline bool isType(TokenType type) const noexcept { return _type == type; }
-        [[nodiscard]] inline bool isTypeAny_of(const std::initializer_list<TokenType> &tokenTypes) const noexcept {
+        /**
+         * @brief Check if the token type matches the specified type.
+         * @param type The type to check against.
+         * @return True if the token type matches, false otherwise.
+         */
+        [[nodiscard]] bool isType(TokenType type) const noexcept { return _type == type; }
+
+        /**
+         * @brief Check if the token type matches any of the specified types.
+         * @param tokenTypes The list of types to check against.
+         * @return True if the token type matches any of the specified types, false otherwise.
+         */
+        [[nodiscard]] bool isTypeAnyOf(const std::initializer_list<TokenType> &tokenTypes) const noexcept {
             return std::ranges::any_of(tokenTypes, [&](const auto &value) { return _type == value; });
         }
+
         /**
          * @brief Get the value associated with the token.
          * @return The value associated with the token.
          */
-        [[nodiscard]] inline std::string_view getValue() const noexcept { return _value; }
+        [[nodiscard]] std::string_view getValue() const noexcept { return _value; }
 
         /**
-         * @brief Get the file where the token appears.
-         * @return The filename.
+         * @brief Get the file name where the token appears.
+         * @return The file name.
          */
-        [[nodiscard]] inline std::string_view getFileName() const noexcept { return _sourceLocation.getFileName(); }
+        [[nodiscard]] const std::string_view getFileName() const noexcept { return _sourceLocation.getFileName(); }
 
         /**
          * @brief Get the line number where the token appears.
          * @return The line number.
          */
-        [[nodiscard]] inline std::size_t getLine() const noexcept { return _sourceLocation.getLine(); }
+        [[nodiscard]] std::size_t getLine() const noexcept { return _sourceLocation.getLine(); }
 
         /**
          * @brief Get the column number where the token appears.
          * @return The column number.
          */
-        [[nodiscard]] inline std::size_t getColumn() const noexcept { return _sourceLocation.getColumn(); }
+        [[nodiscard]] std::size_t getColumn() const noexcept { return _sourceLocation.getColumn(); }
 
         /**
          * @brief Convert the token to a string representation.
          * @return A string representation of the token.
          */
-        [[nodiscard]] std::string to_string() const;  // NOLINT(*-include-cleaner)
+        [[nodiscard]] std::string to_string() const;
 
         /**
-         * @brief Convert the token to a string representation.
+         * @brief Convert the token to a compatible string representation.
          * @return A string representation of the token.
          */
-        [[nodiscard]] std::string compat_to_string() const;  // NOLINT(*-include-cleaner)
+        [[nodiscard]] std::string compat_to_string() const;
 
         /**
          * @brief Set the type of the token.
          * @param type The type to set.
          */
-        inline void setType(TokenType type) noexcept { _type = type; }
+        void setType(TokenType type) noexcept { _type = type; }
 
         /**
          * @brief Set the value associated with the token.
          * @param value The value to set.
          */
-        inline void setValue(const std::string_view &value) noexcept { _value = value; }
+        void setValue(std::string_view value) noexcept { _value = value; }
 
         /**
-         * @brief Set the filename where the token appears.
-         * @param fileName The filename to set.
+         * @brief Set the file name where the token appears.
+         * @param fileName The file name to set.
          */
         void setFileName(const std::string_view &fileName) noexcept { _sourceLocation.setFileName(fileName); }
 
@@ -153,26 +163,27 @@ namespace vnd {
 
         /**
          * @brief Equality operator.
-         * @param other The Token to compare with.
-         * @return True if the Token are equal, false otherwise.
+         * @param other The token to compare with.
+         * @return True if the tokens are equal, false otherwise.
          */
         bool operator==(const Token &other) const noexcept = default;
 
         /**
          * @brief Inequality operator.
-         * @param other The Token to compare with.
-         * @return True if the Token are not equal, false otherwise.
+         * @param other The token to compare with.
+         * @return True if the tokens are not equal, false otherwise.
          */
         bool operator!=(const Token &other) const noexcept = default;
 
     private:
         TokenType _type;                     ///< The type of the token.
         std::string_view _value;             ///< The value associated with the token.
-        CodeSourceLocation _sourceLocation;  ///< the token source location;
+        CodeSourceLocation _sourceLocation;  ///< The token source location.
     };
 
     using TokenVec = std::vector<Token>;
     using TokenVecIter = TokenVec::iterator;
+
 }  // namespace vnd
 
 /**
