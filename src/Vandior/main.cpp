@@ -28,6 +28,7 @@ DISABLE_WARNINGS_PUSH(26461 26821)
 auto main(int argc, const char *const argv[]) -> int {
     // NOLINTNEXTLINE
     INIT_LOG()
+    std::cout << FORMATST("messagio da {}\n", "std::format");
     try {
         CLI::App app{FORMAT("{} version {}", Vandior::cmake::project_name, Vandior::cmake::project_version)};  // NOLINT(*-include-cleaner)
         // std::optional<std::string> message;  // NOLINT(*-include-cleaner)

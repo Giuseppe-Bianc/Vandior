@@ -26,13 +26,6 @@ DISABLE_WARNINGS_PUSH(
 #include <cstring>
 #include <ctime>
 #include <execution>
-#ifdef _WIN32    // Check if the target platform is Windows
-#ifdef _MSC_VER  // Check if the compiler is MSVC
-
-#include <format>
-
-#endif
-#endif
 #include <filesystem>
 #include <fstream>
 #include <iomanip>
@@ -342,11 +335,12 @@ using OptionalSizeT = std::optional<size_t>;
  */
 template <typename T>
 concept StringOrStringView = std::same_as<std::remove_cvref_t<T>, std::string> || std::same_as<std::remove_cvref_t<T>, std::string_view> ||
-                             (requires(const T &t) {
+                             std::convertible_to<T, std::string> || std::convertible_to<T, std::string_view> || (requires(const T &t) {
                                  { std::ranges::begin(t) } -> std::convertible_to<typename T::const_iterator>;
                                  { std::ranges::end(t) } -> std::convertible_to<typename T::const_iterator>;
                                  { t.data() } -> std::convertible_to<const char *>;
                                  { t.size() } -> std::integral;
                                  { t.length() } -> std::integral;
                              });
+// NOLINTEND
 // NOLINTEND

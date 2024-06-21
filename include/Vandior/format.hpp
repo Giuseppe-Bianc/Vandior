@@ -7,6 +7,9 @@
  */
 #pragma once
 
+#ifdef __cpp_lib_format
+#include <format>
+#endif
 // NOLINTBEGIN(*-include-cleaner)
 #if defined(__GNUC__) && (__GNUC__ >= 11)
 #pragma GCC diagnostic push
@@ -28,6 +31,27 @@
  * @return The formatted string.
  */
 #define FORMAT(...) fmt::format(__VA_ARGS__)
+
+#ifdef __cpp_lib_format
+/**
+ * @def FORMATST(...)
+ * @brief Macro for formatting strings using the std::format.
+ * This macro wraps the std::format function for convenient string formatting.
+ * @param ... The format string and arguments.
+ * @return The formatted string.
+ */
+#define FORMATST(...) std::format(__VA_ARGS__)
+#else
+/**
+ * @def FORMATST(...)
+ * @brief Macro for formatting strings using the fmt library in stead of std::format.
+ * This macro wraps the format function for convenient string formatting.
+ * @param ... The format string and arguments.
+ * @return The formatted string.
+ */
+#define FORMATST(...) fmt::format(__VA_ARGS__)
+#endif
+
 
 /**
  * @def FMT_PTR(ptr)

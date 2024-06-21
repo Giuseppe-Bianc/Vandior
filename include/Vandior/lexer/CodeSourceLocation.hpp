@@ -41,10 +41,9 @@ namespace vnd {
          * @param line The line number in the source file.
          * @param column The column number in the source file.
          */
-        template <typename FileNameT>
-            requires std::convertible_to<FileNameT, std::string_view>
-        CodeSourceLocation(FileNameT &&fileName, std::size_t line, std::size_t column) noexcept
-          : _fileName(std::forward<FileNameT>(fileName)), _line(line), _column(column) {}
+        template <typename StringOrStringView>
+        CodeSourceLocation(StringOrStringView &&fileName, std::size_t line, std::size_t column) noexcept
+          : _fileName(std::forward<StringOrStringView>(fileName)), _line(line), _column(column) {}
 
         /**
          * @brief Copy constructor.
