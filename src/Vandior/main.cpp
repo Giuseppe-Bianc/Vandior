@@ -14,14 +14,25 @@ DISABLE_WARNINGS_POP()
 
 #define HIDE_SYSTEM_OUTPUT
 
-namespace {
-    auto timeTokenizer(vnd::Tokenizer &tokenizer, std::vector<vnd::Token> &tokens) -> void {
+namespace vnd {
+    auto timeTokenizer(Tokenizer &tokenizer, std::vector<Token> &tokens) -> void {
         tokens.clear();
-        vnd::AutoTimer timer("tokenization");
+        AutoTimer timer("tokenization");
         tokens = tokenizer.tokenize();
     }
 
-}  // namespace
+    auto timeParser(std::unique_ptr<vnd::ASTNode> &ast, vnd::Parser &parser) -> void {
+        vnd::AutoTimer timer("parse");
+        ast = parser.parse();
+    }
+
+    [[nodiscard]] auto timeParse(Parser &parser) -> std::unique_ptr<ASTNode> {
+        std::unique_ptr<ASTNode> ast;
+        timeParser(ast, parser);
+        return ast;
+    }
+
+}  // namespace vnd
 DISABLE_WARNINGS_PUSH(26461 26821)
 
 // NOLINTNEXTLINE(*-function-cognitive-complexity)
@@ -47,11 +58,13 @@ auto main(int argc, const char *const argv[]) -> int {
             LINFO("{}", Vandior::cmake::project_version);
             return EXIT_SUCCESS;  // NOLINT(*-include-cleaner)
         }
+        vnd::Timer folderTime("floder creation");
         auto resultFolderCreation = vnd::FolderCreationResult::createFolderNextToFile(path.value_or(filename.data()), "vnbuild");
         const auto &vnBuildFolder = resultFolderCreation.pathcref();
         if(!resultFolderCreation.success()) { return EXIT_FAILURE; }
         auto resultFolderCreationsrc = vnd::FolderCreationResult::createFolder("src", vnBuildFolder);
-        auto vnSrcFolder = resultFolderCreationsrc.pathcref();
+        const auto &vnSrcFolder = resultFolderCreationsrc.pathcref();
+        LINFO("{}", folderTime);
         if(!resultFolderCreationsrc.success()) {
             return EXIT_FAILURE;
         } else {
@@ -61,7 +74,7 @@ auto main(int argc, const char *const argv[]) -> int {
         const std::string_view code(str);
         vnd::Tokenizer tokenizer{code, path.value_or(filename.data())};
         std::vector<vnd::Token> tokens;
-        timeTokenizer(tokenizer, tokens);
+        vnd::timeTokenizer(tokenizer, tokens);
         LINFO("num tokens {}", tokens.size());
 
         // 2 + 3 + (4.2 / 2) * 3 + y + (true / false) - 'd' * "ciao"
@@ -69,7 +82,7 @@ auto main(int argc, const char *const argv[]) -> int {
         std::getline(std::cin, input);
         LINFO("Input: {}", input);
         vnd::Parser parser{input, "input.vn"};
-        auto ast = parser.parse();
+        auto ast = vnd::timeParse(parser);
         LINFO("print interlal function");
         LINFO("{}", ast->print());
         LINFO("comp_print interlal function");
