@@ -27,18 +27,24 @@ namespace vnd {
          * @return NodeType enumeration value.
          */
         [[nodiscard]] NodeType getType() const noexcept override { return NodeType::Array; }
+        
+        /**
+         * @brief Gets the demangled name of the type T.
+         * @return Demangled name of the type T if using GCC/Clang, otherwise mangled name.
+         */
+        [[nodiscard]] std::string_view getTypeIDName() const noexcept { return typeid(T).name(); }
 
         /**
          * @brief Returns a string representation of the AST node.
          * @return String representation of the AST node.
          */
-        [[nodiscard]] std::string print() const override { return FORMAT("arr"); }
+        [[nodiscard]] std::string print() const override { return FORMAT("{}<{}>", getType(), getTypeIDName()); }
 
         /**
          * @brief Returns a compact string representation of the AST node for compilation purposes.
          * @return Compact string representation of the AST node.
          */
-        [[nodiscard]] std::string comp_print() const override { return FORMAT("array"); }
+        [[nodiscard]] std::string comp_print() const override { return FORMAT("{}", getType()); }
 
         /**
          * @brief Gets the root of the node.
