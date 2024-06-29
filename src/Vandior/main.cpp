@@ -83,10 +83,8 @@ auto main(int argc, const char *const argv[]) -> int {
         LINFO("Input: {}", input);
         vnd::Parser parser{input, "input.vn"};
         auto ast = vnd::timeParse(parser);
-        LINFO("print interlal function");
-        LINFO("{}", ast->print());
-        LINFO("comp_print interlal function");
-        LINFO("{}", ast->comp_print());
+        LINFO("print interlal function\n{}", ast->print());
+        LINFO("comp_print interlal function\n {}", ast->comp_print());
         LINFO("pretyPrint external function");
         prettyPrint(*ast);
     } catch(const std::exception &e) { LERROR("Unhandled exception in main: {}", e.what()); }
