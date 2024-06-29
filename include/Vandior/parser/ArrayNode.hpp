@@ -12,45 +12,47 @@ namespace vnd {
      * @brief Generic Node class representing literal array values in the AST.
      * @tparam T The type of the literal array values.
      */
-    template <typename T> class ArrayNode : public ASTNode {
+    class ArrayNode : public ASTNode {
     public:
         /**
          * @brief Constructs a ArrayNode.
          * @param root The root element of the array.
          * @param token The token correspondent to the node.
          */
-        [[nodiscard]] ArrayNode(std::unique_ptr<ASTNode> root, const Token &token) noexcept
-          : ASTNode(token), m_root(vnd_move_always_even_const(root)) {}
+        [[nodiscard]] ArrayNode(std::unique_ptr<ASTNode> dimension, std::unique_ptr<ASTNode> elements, const Token &token) noexcept
+          : ASTNode(token), m_dimension(vnd_move_always_even_const(dimension)), m_elements(vnd_move_always_even_const(elements)) {}
 
         /**
          * @brief Gets the type of the AST node.
          * @return NodeType enumeration value.
          */
         [[nodiscard]] NodeType getType() const noexcept override { return NodeType::Array; }
-        
-        /**
-         * @brief Gets the demangled name of the type T.
-         * @return Demangled name of the type T if using GCC/Clang, otherwise mangled name.
-         */
-        [[nodiscard]] std::string_view getTypeIDName() const noexcept { return typeid(T).name(); }
 
         /**
          * @brief Returns a string representation of the AST node.
          * @return String representation of the AST node.
          */
-        [[nodiscard]] std::string print() const override { return FORMAT("{}<{}>", getType(), getTypeIDName()); }
+        [[nodiscard]] std::string print() const override { return FORMAT("{}<{}>", getType(), m_dimension->comp_print()); }
 
         /**
          * @brief Returns a compact string representation of the AST node for compilation purposes.
          * @return Compact string representation of the AST node.
          */
-        [[nodiscard]] std::string comp_print() const override { return FORMAT("{}", getType()); }
+        [[nodiscard]] std::string comp_print() const override {
+            return FORMAT("{}<{}>{}", getType(), m_dimension->comp_print(), m_elements->comp_print());
+        }
 
         /**
-         * @brief Gets the root of the node.
-         * @return The root of the node.
+         * @brief Gets the dimension of the node.
+         * @return The dimension of the node.
          */
-        [[nodiscard]] const std::unique_ptr<ASTNode> &get_root() const noexcept { return m_root; }
+        [[nodiscard]] const std::unique_ptr<ASTNode> &get_dimension() const noexcept { return m_dimension; }
+
+        /**
+         * @brief Gets the elements of the node.
+         * @return The elements of the node.
+         */
+        [[nodiscard]] const std::unique_ptr<ASTNode> &get_elements() const noexcept { return m_elements; }
 
         /**
          * @brief Swaps the contents of two LiteralNode objects.
@@ -60,11 +62,13 @@ namespace vnd {
         friend void swap(ArrayNode &lhs, ArrayNode &rhs) noexcept {
             using std::swap;
             swap(static_cast<ASTNode &>(lhs), static_cast<ASTNode &>(rhs));
-            swap(lhs.m_root, rhs.m_root);
+            swap(lhs.m_dimension, rhs.m_dimension);
+            swap(lhs.m_elements, rhs.m_elements);
         }
 
     private:
-        std::unique_ptr<ASTNode> m_root;  ///< The root child of the array.
+        std::unique_ptr<ASTNode> m_dimension;  ///< The dimension of the array.
+        std::unique_ptr<ASTNode> m_elements;   ///< The elements child of the array.
     };
 
 }  // namespace vnd

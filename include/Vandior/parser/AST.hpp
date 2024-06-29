@@ -80,9 +80,10 @@ static inline void prettyPrint(const vnd::ASTNode &node, const std::string &inde
         LINFO("{}, val: {}){}", imarknode, svliteralNode->get_value(), node.get_token().compat_to_string());
     } else if(const auto *typeNode = node.safe_as<vnd::TypeNode>()) {
         LINFO("{}, type: {}){}", imarknode, typeNode->get_value(), node.get_token().compat_to_string());
-    } else if(const auto *intArratNode = node.safe_as<vnd::ArrayNode<int>>()) {
+    } else if(const auto *intArratNode = node.safe_as<vnd::ArrayNode>()) {
         LINFO("{}, {}", imarknode, node.get_token().compat_to_string());
-        prettyPrint(*intArratNode->get_root(), newindent, true, "CHILD");
+        prettyPrint(*intArratNode->get_dimension(), newindent, true, "DIM");
+        prettyPrint(*intArratNode->get_elements(), newindent, true, "ELEM");
     } else {
         LERROR("Unknown or not handled node type: {}", node.getType());
     }

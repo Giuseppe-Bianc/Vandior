@@ -181,20 +181,29 @@ namespace vnd {
             if(getCurrentToken().getValue() == ")") {
                 consumeToken();
                 return expression;
-            } else {
+            }
+            // Handle error: mismatched parentheses
+            throw ParserException(currentToken);
+        } else if(currentToken.getValue() == "[") {
+            consumeToken();
+            auto dimension = parseExpression();
+            if(getCurrentToken().getValue() != "]") {
                 // Handle error: mismatched parentheses
                 throw ParserException(currentToken);
             }
-        } else if(currentToken.getValue() == "{") {
             consumeToken();
-            auto expression = parseExpression();
+            if(getCurrentToken().getValue() != "{") {
+                // Handle error: mismatched parentheses
+                throw ParserException(currentToken);
+            }
+            consumeToken();
+            auto elements = parseExpression();
             if(getCurrentToken().getValue() == "}") {
                 consumeToken();
-                return MAKE_UNIQUE(ArrayNode<int>, std::move(expression), currentToken);
-            } else {
-                // Handle error: mismatched parentheses
-                throw ParserException(currentToken);
+                return MAKE_UNIQUE(ArrayNode, std::move(dimension), std::move(elements), currentToken);
             }
+            // Handle error: mismatched parentheses
+            throw ParserException(currentToken);
         } else [[unlikely]] {
             // Handle error: unexpected token
             throw ParserException(currentToken);
