@@ -46,7 +46,7 @@ namespace vnd {
         ValueLable &operator=(const ValueLable &other) = default;
         ValueLable &operator=(ValueLable &&other) noexcept = default;
 
-        [[nodiscard]] std::string toString() const noexcept { return FORMAT("{:.3Lf} {}", timeVal, timeLabel); }
+        [[nodiscard]] std::string toString() const noexcept { return FORMAT("{:.Lf} {}", timeVal, timeLabel); }
 
     private:
         long double timeVal{};
@@ -57,12 +57,12 @@ namespace vnd {
     public:
         Times() = default;
 
-        explicit Times(const long double nanoseconds_) : values(nanoseconds_) {}
+        explicit Times(const long double nanoseconds_) noexcept : values(nanoseconds_) {}
 
-        explicit Times(const TimeValues &time_values) : values(time_values) {}
+        explicit Times(const TimeValues &time_values) noexcept : values(time_values) {}
 
         Times(const TimeValues &time_values, const std::string_view labelseconds_, const std::string_view labelmillis_,
-              const std::string_view labelmicro_, std::string_view labelnano_)
+              const std::string_view labelmicro_, std::string_view labelnano_) noexcept
           : values(time_values), labelseconds(labelseconds_), labelmillis(labelmillis_), labelmicro(labelmicro_), labelnano(labelnano_) {}
 
         Times(const Times &other) = default;
