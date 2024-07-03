@@ -32,7 +32,7 @@ namespace vnd {
         std::unique_ptr<ASTNode> parseUnary(std::size_t parentPrecendence);
         std::unique_ptr<ASTNode> parseBinary(std::size_t parentPrecendence);
         std::unique_ptr<ASTNode> parseExpression(std::size_t parentPrecendence = 0);
-        [[nodiscard]] bool isPreviusColon() const noexcept;
+        [[nodiscard]] bool canBeType() const noexcept;
 
         Tokenizer tokenizer;
         std::vector<Token> tokens{};

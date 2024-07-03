@@ -134,7 +134,7 @@ namespace vnd {
         const auto &currentValue = currentToken.getValue();
         auto cval = std::string{currentValue};
 
-        if(isPreviusColon()) {
+        if(canBeType()) {
             if(std::ranges::find(types, currentType) == types.end()) { throw ParserException(currentToken); }
             consumeToken();
             return MAKE_UNIQUE(TypeNode, currentToken);
@@ -236,7 +236,11 @@ namespace vnd {
 
     std::unique_ptr<ASTNode> Parser::parseExpression(std::size_t parentPrecendence) { return parseBinary(parentPrecendence); }
 
-    bool Parser::isPreviusColon() const noexcept { return position > 0 && tokens.at(position - 1).getType() == TokenType::COLON; }
+    bool Parser::canBeType() const noexcept {
+        if(position == 0) { return false; }
+        auto type = tokens.at(position - 1).getType();
+        return type == TokenType::COLON || type == TokenType::OPEN_SQ_PARENTESIS;
+    }
 }  // namespace vnd
 DISABLE_WARNINGS_POP()
 // NOLINTEND(*-include-cleaner,*-no-recursion, *-avoid-magic-numbers,*-magic-numbers)
