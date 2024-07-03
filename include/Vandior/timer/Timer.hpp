@@ -154,16 +154,16 @@ namespace vnd {
          * @param time The time in nanoseconds.
          * @return A tuple containing named times.
          */
-        [[nodiscard]] static Times make_named_times(const long double time) { return Times{time}; }
+        [[nodiscard]] static Times make_named_times(const long double time) noexcept { return Times{time}; }
 
-        [[maybe_unused]] [[nodiscard]] Times multi_time() const { return Times{make_time()}; }
+        [[maybe_unused]] [[nodiscard]] Times multi_time() const noexcept { return Times{make_time()}; }
 
         /**
          * @brief Format the numerical value for the time string.
          * This formats the numerical value for the time string
          * @return A formatted time string.
          */
-        [[nodiscard]] inline ValueLable make_time_str() const {  // NOLINT(modernize-use-nodiscard)
+        [[nodiscard]] inline ValueLable make_time_str() const noexcept {  // NOLINT(modernize-use-nodiscard)
             const auto time = C_LD(make_time() / C_LD(cycles));
             return make_time_str(time);
         }
@@ -174,7 +174,7 @@ namespace vnd {
          * @param time The time value in nanoseconds.
          * @return A formatted time string.
          */
-        [[nodiscard]] static inline ValueLable make_time_str(const long double time) {  // NOLINT(modernize-use-nodiscard)
+        [[nodiscard]] static inline ValueLable make_time_str(const long double time) noexcept {  // NOLINT(modernize-use-nodiscard)
             return make_named_times(time).getRelevantTimeframe();
         }
         // LCOV_EXCL_STOP
