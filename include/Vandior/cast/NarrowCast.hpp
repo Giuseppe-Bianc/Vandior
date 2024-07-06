@@ -1,7 +1,7 @@
 //
 // Created by gbian on 01/06/2024.
 //
-
+// NOLINTBEGIN(*-macro-usage)
 #pragma once
 
 #include <utility>
@@ -12,7 +12,7 @@
  * converting from a larger integral type to a smaller integral type.
  * @tparam T The target type of the cast.
  * @tparam U The source type of the cast.
- * @param u The value to be casted.
+ * @param nci The value to be casted.
  * @return The result of the cast.
  * @note This function performs a static_cast, which means it's a compile-time cast and might not perform runtime checks for validity.
  * Ensure that the cast is safe in all contexts where it's used.
@@ -35,7 +35,7 @@
  * @see static_cast
  * @see std::forward
  */
-template <class T, class U> constexpr T narrow_cast(U &&u) noexcept { return static_cast<T>(std::forward<U>(u)); }
+template <class T, class U> constexpr T narrow_cast(U &&nci) noexcept { return static_cast<T>(std::forward<U>(nci)); }
 
 /**
  * @defgroup NarrowTypeCastingMacros Narrow Type Casting Macros
@@ -468,3 +468,4 @@ template <class T, class U> constexpr T narrow_cast(U &&u) noexcept { return sta
  */
 #define NC_CPCU32T(x) narrow_cast<const uint32_t *>(static_cast<const void *>(x))
 /** @} */  // end of TypeCastingMacros group
+// NOLINTEND(*-macro-usage)

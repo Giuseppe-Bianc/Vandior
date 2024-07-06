@@ -1,7 +1,7 @@
 //
 // Created by gbian on 01/06/2024.
 //
-
+// NOLINTBEGIN(*-macro-usage)
 #pragma once
 
 /**
@@ -388,3 +388,5 @@
  */
 #define C_CPCU32T(x) static_cast<const uint32_t *>(static_cast<const void *>(x))
 /** @} */  // end of TypeCastingMacros group
+
+// NOLINTEND(*-macro-usage)
