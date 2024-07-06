@@ -137,7 +137,9 @@ namespace vnd {
         if(canBeType()) {
             if(std::ranges::find(types, currentType) == types.end()) { throw ParserException(currentToken); }
             consumeToken();
-            return MAKE_UNIQUE(TypeNode, currentToken);
+            auto node = MAKE_UNIQUE(TypeNode, currentToken);
+            parseIndex<TypeNode>(node);
+            return node;
         } else if(currentType == TokenType::INTEGER) {
             consumeToken();
             if(currentValue.starts_with("#o") || currentValue.starts_with("#O")) {
@@ -184,26 +186,6 @@ namespace vnd {
             }
             // Handle error: mismatched parentheses
             throw ParserException(currentToken);
-        } else if(currentToken.getValue() == "[") {
-            consumeToken();
-            auto dimension = parseExpression();
-            if(getCurrentToken().getValue() != "]") {
-                // Handle error: mismatched parentheses
-                throw ParserException(currentToken);
-            }
-            consumeToken();
-            if(getCurrentToken().getValue() != "{") {
-                // Handle error: mismatched parentheses
-                throw ParserException(currentToken);
-            }
-            consumeToken();
-            auto elements = parseExpression();
-            if(getCurrentToken().getValue() == "}") {
-                consumeToken();
-                return MAKE_UNIQUE(ArrayNode, std::move(dimension), std::move(elements), currentToken);
-            }
-            // Handle error: mismatched parentheses
-            throw ParserException(currentToken);
         } else [[unlikely]] {
             // Handle error: unexpected token
             throw ParserException(currentToken);
@@ -239,8 +221,26 @@ namespace vnd {
     bool Parser::canBeType() const noexcept {
         if(position == 0) { return false; }
         auto type = tokens.at(position - 1).getType();
-        return type == TokenType::COLON || type == TokenType::OPEN_SQ_PARENTESIS;
+        return type == TokenType::COLON;
     }
+
+    template <typename T> void Parser::parseIndex(std::unique_ptr<T> &node, bool isType) {
+        auto token = getCurrentToken();
+        if(token.getType() != TokenType::OPEN_SQ_PARENTESIS) { return; }
+        consumeToken();
+        if(getCurrentToken().getType() == TokenType::CLOSE_SQ_PARENTESIS) {
+            consumeToken();
+            node->set_index(MAKE_UNIQUE(IndexNode, nullptr, token));
+            parseIndex<T>(node, isType);
+            return;
+        }
+        auto elements = parseExpression();
+        if(getCurrentToken().getType() != TokenType::CLOSE_SQ_PARENTESIS) { throw ParserException(getCurrentToken()); }
+        consumeToken();
+        node->set_index(MAKE_UNIQUE(IndexNode, std::move(elements), token));
+        parseIndex<T>(node, isType);
+    }
+
 }  // namespace vnd
 DISABLE_WARNINGS_POP()
 // NOLINTEND(*-include-cleaner,*-no-recursion, *-avoid-magic-numbers,*-magic-numbers)

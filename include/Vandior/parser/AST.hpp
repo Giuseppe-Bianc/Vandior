@@ -11,7 +11,7 @@
 #include "UnaryExpressionNode.hpp"
 #include "VariableNode.hpp"
 #include "TypeNode.hpp"
-#include "ArrayNode.hpp"
+#include "IndexNode.hpp"
 
 /** \cond */
 DISABLE_WARNINGS_PUSH(
@@ -80,10 +80,10 @@ static inline void prettyPrint(const vnd::ASTNode &node, const std::string &inde
         LINFO("{}, val: {}){}", imarknode, svliteralNode->get_value(), node.get_token().compat_to_string());
     } else if(const auto *typeNode = node.safe_as<vnd::TypeNode>()) {
         LINFO("{}, type: {}){}", imarknode, typeNode->get_value(), node.get_token().compat_to_string());
-    } else if(const auto *intArratNode = node.safe_as<vnd::ArrayNode>()) {
-        LINFO("{}, {}", imarknode, node.get_token().compat_to_string());
-        prettyPrint(*intArratNode->get_dimension(), newindent, true, "DIM");
-        prettyPrint(*intArratNode->get_elements(), newindent, true, "ELEM");
+        if(typeNode->get_index()) { prettyPrint(*typeNode->get_index(), newindent, true, "INDEX"); }
+    } else if(const auto *indexNode = node.safe_as<vnd::IndexNode>()) {
+        LINFO("{}", indentmark, node.comp_print());
+        if(indexNode->get_elements()) { prettyPrint(*indexNode->get_elements(), newindent, true, ""); }
     } else {
         LERROR("Unknown or not handled node type: {}", node.getType());
     }
