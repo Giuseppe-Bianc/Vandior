@@ -84,6 +84,7 @@ static inline void prettyPrint(const vnd::ASTNode &node, const std::string &inde
     } else if(const auto *indexNode = node.safe_as<vnd::IndexNode>()) {
         LINFO("{}", indentmark, node.comp_print());
         if(indexNode->get_elements()) { prettyPrint(*indexNode->get_elements(), newindent, true, ""); }
+        if(indexNode->get_index()) { prettyPrint(*indexNode->get_index(), newindent, true, "INDEX"); }
     } else {
         LERROR("Unknown or not handled node type: {}", node.getType());
     }

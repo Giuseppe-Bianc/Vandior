@@ -230,15 +230,17 @@ namespace vnd {
         consumeToken();
         if(getCurrentToken().getType() == TokenType::CLOSE_SQ_PARENTESIS) {
             consumeToken();
-            node->set_index(MAKE_UNIQUE(IndexNode, nullptr, token));
-            parseIndex<T>(node, isType);
+            auto index = MAKE_UNIQUE(IndexNode, nullptr, token);
+            parseIndex<IndexNode>(index, isType);
+            node->set_index(vnd_move_always_even_const(index));
             return;
         }
         auto elements = parseExpression();
         if(getCurrentToken().getType() != TokenType::CLOSE_SQ_PARENTESIS) { throw ParserException(getCurrentToken()); }
         consumeToken();
-        node->set_index(MAKE_UNIQUE(IndexNode, std::move(elements), token));
-        parseIndex<T>(node, isType);
+        auto index = MAKE_UNIQUE(IndexNode, std::move(elements), token);
+        parseIndex<IndexNode>(index, isType);
+        node->set_index(vnd_move_always_even_const(index));
     }
 
 }  // namespace vnd

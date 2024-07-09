@@ -20,7 +20,7 @@ namespace vnd {
          * @param token The token correspondent to the node.
          */
         [[nodiscard]] IndexNode(std::unique_ptr<ASTNode> elements, const Token &token) noexcept
-          : ASTNode(token), m_elements(vnd_move_always_even_const(elements)) {}
+          : ASTNode(token), m_elements(vnd_move_always_even_const(elements)), m_index(nullptr) {}
 
         /**
          * @brief Gets the type of the AST node.
@@ -48,11 +48,17 @@ namespace vnd {
          */
         [[nodiscard]] const std::unique_ptr<ASTNode> &get_elements() const noexcept { return m_elements; }
 
-        /**
+         /**
          * @brief Gets the index node of the node.
-         * @return The index of the node.
+         * @return The index node of the node.
          */
-        //[[nodiscard]] const std::unique_ptr<IndexNode> &get_index() const noexcept { return m_index; }
+        [[nodiscard]] const std::unique_ptr<IndexNode> &get_index() const noexcept { return m_index; }
+
+        /**
+         * @brief Sets the index node of the node.
+         * @param index The index node of the node.
+         */
+        [[nodiscard]] void set_index(std::unique_ptr<IndexNode> index) noexcept { m_index = vnd_move_always_even_const(index); }
 
         /**
          * @brief Swaps the contents of two LiteralNode objects.
@@ -62,13 +68,12 @@ namespace vnd {
         friend void swap(IndexNode &lhs, IndexNode &rhs) noexcept {
             using std::swap;
             swap(static_cast<ASTNode &>(lhs), static_cast<ASTNode &>(rhs));
-            swap(lhs.m_dimension, rhs.m_dimension);
             swap(lhs.m_elements, rhs.m_elements);
         }
 
     private:
-        std::unique_ptr<ASTNode> m_dimension;  ///< The dimension of the array.
         std::unique_ptr<ASTNode> m_elements;   ///< The elements child of the array.
+        std::unique_ptr<IndexNode> m_index;   ///< The possible index node of an array type.
     };
 
 }  // namespace vnd
