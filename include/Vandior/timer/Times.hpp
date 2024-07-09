@@ -46,7 +46,48 @@ namespace vnd {
         ValueLable &operator=(const ValueLable &other) = default;
         ValueLable &operator=(ValueLable &&other) noexcept = default;
 
-        [[nodiscard]] std::string toString() const noexcept { return FORMAT("{:.Lf} {}", timeVal, timeLabel); }
+        [[nodiscard]] std::string transformTimeMicro(long double inputTimeMicro) const noexcept {
+            using namespace std::chrono;
+
+            const duration<long double, std::micro> durationmicros(inputTimeMicro);
+
+            auto durationUs = duration_cast<microseconds>(durationmicros);
+            auto durationNs = duration_cast<nanoseconds>(durationmicros - durationUs);
+
+            return FORMAT("{}us,{}ns", C_LD(durationUs.count()), C_LD(durationNs.count()));
+        }
+
+        [[nodiscard]] std::string transformTimeMilli(long double inputTimeMilli) const noexcept {
+            using namespace std::chrono;
+
+            const duration<long double, std::milli> durationmils(inputTimeMilli);
+
+            auto durationMs = duration_cast<milliseconds>(durationmils);
+            auto durationUs = duration_cast<microseconds>(durationmils - durationMs);
+            auto durationNs = duration_cast<nanoseconds>(durationmils - durationMs - durationUs);
+
+            return FORMAT("{}ms,{}us,{}ns", C_LD(durationMs.count()), C_LD(durationUs.count()), C_LD(durationNs.count()));
+        }
+
+        [[nodiscard]] std::string transformTimeSeconds(long double inputTimeSeconds) const noexcept {
+            using namespace std::chrono;
+
+            const duration<long double> durationSecs(inputTimeSeconds);
+
+            auto durationSec = duration_cast<seconds>(durationSecs);
+            auto durationMs = duration_cast<milliseconds>(durationSecs - durationSec);
+            auto durationUs = duration_cast<microseconds>(durationSecs - durationSec - durationMs);
+            auto durationNs = duration_cast<nanoseconds>(durationSecs - durationSec - durationMs - durationUs);
+
+            return FORMAT("{}s,{}ms,{}us,{}ns", C_LD(durationSec.count()), C_LD(durationMs.count()), C_LD(durationUs.count()),
+                          C_LD(durationNs.count()));
+        }
+        [[nodiscard]] std::string toString() const noexcept {
+            if(timeLabel == "s") { return transformTimeSeconds(timeVal); }
+            if(timeLabel == "ms") { return transformTimeMilli(timeVal); }
+            if(timeLabel == "us") { return transformTimeMicro(timeVal); }
+            return FORMAT("{} {}", timeVal, timeLabel);
+        }
 
     private:
         long double timeVal{};
