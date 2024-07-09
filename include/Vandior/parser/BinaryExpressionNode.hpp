@@ -22,7 +22,7 @@ namespace vnd {
          * @param _left Left operand.
          * @param _right Right operand.
          */
-        [[nodiscard]] BinaryExpressionNode(std::string _op, const Token &op_Token, std::unique_ptr<ASTNode> _left,
+        [[nodiscard]] BinaryExpressionNode(std::string_view _op, const Token &op_Token, std::unique_ptr<ASTNode> _left,
                                            std::unique_ptr<ASTNode> _right) noexcept
           : ASTNode(op_Token), op(_op), left(vnd_move_always_even_const(_left)), right(vnd_move_always_even_const(_right)) {}
 
