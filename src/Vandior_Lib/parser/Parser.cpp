@@ -219,14 +219,14 @@ namespace vnd {
 
     std::unique_ptr<ASTNode> Parser::parseExpression(std::size_t parentPrecendence) { return parseBinary(parentPrecendence); }
 
-    template <typename T> void Parser::parseIndex(std::unique_ptr<T> &node, bool isType) {
+    template <typename T> void Parser::parseIndex(std::unique_ptr<T> &node) {
         auto token = getCurrentToken();
         if(token.getType() != TokenType::OPEN_SQ_PARENTESIS) { return; }
         consumeToken();
         if(getCurrentToken().getType() == TokenType::CLOSE_SQ_PARENTESIS) {
             consumeToken();
             auto index = MAKE_UNIQUE(IndexNode, nullptr, token);
-            parseIndex<IndexNode>(index, isType);
+            if(!parseArray(index)) { parseIndex<IndexNode>(index);; }
             node->set_index(vnd_move_always_even_const(index));
             return;
         }
@@ -234,8 +234,24 @@ namespace vnd {
         if(getCurrentToken().getType() != TokenType::CLOSE_SQ_PARENTESIS) { throw ParserException(getCurrentToken()); }
         consumeToken();
         auto index = MAKE_UNIQUE(IndexNode, std::move(elements), token);
-        parseIndex<IndexNode>(index, isType);
+        if(!parseArray(index)) { parseIndex<IndexNode>(index);; }
         node->set_index(vnd_move_always_even_const(index));
+    }
+
+    bool Parser::parseArray(std::unique_ptr<IndexNode> &node) {
+        auto token = getCurrentToken();
+        if(token.getType() != TokenType::OPEN_CUR_PARENTESIS) { return false; }
+        consumeToken();
+        if(getCurrentToken().getType() == TokenType::CLOSE_CUR_PARENTESIS) {
+            consumeToken();
+            node->set_array(MAKE_UNIQUE(ArrayNode, nullptr, token));
+            return true;
+        }
+        auto elements = parseExpression();
+        if(getCurrentToken().getType() != TokenType::CLOSE_CUR_PARENTESIS) { throw ParserException(getCurrentToken()); }
+        consumeToken();
+        node->set_array(MAKE_UNIQUE(ArrayNode, std::move(elements), token));
+        return true;
     }
 
 }  // namespace vnd

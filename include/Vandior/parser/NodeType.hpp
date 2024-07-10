@@ -7,7 +7,7 @@
 /**
  * @brief Enum representing different types of AST nodes.
  */
-enum class NodeType { BinaryExpression, UnaryExpression, Number, Boolean, Char, String, Variable, Type, Index };
+enum class NodeType { BinaryExpression, UnaryExpression, Number, Boolean, Char, String, Variable, Type, Index, Array };
 
 /**
  * This function is a formatter for NodeType using fmt.
@@ -53,6 +53,9 @@ template <> struct fmt::formatter<NodeType> : fmt::formatter<std::string_view> {
             break;
         case Index:
             name = "INDEX";
+            break;
+        case Array:
+            name = "ARRAY";
             break;
         default:
             name = "UNKOWN";

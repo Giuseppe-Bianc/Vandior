@@ -66,6 +66,7 @@ namespace vnd {
             swap(static_cast<ASTNode &>(lhs), static_cast<ASTNode &>(rhs));
             swap(lhs.m_value, rhs.m_value);
             swap(lhs.m_type, rhs.m_type);
+            swap(lhs.m_index, rhs.m_index);
         }
 
     private:

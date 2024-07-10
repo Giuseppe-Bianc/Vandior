@@ -45,6 +45,7 @@ namespace vnd {
             using std::swap;
             swap(static_cast<ASTNode &>(lhs), static_cast<ASTNode &>(rhs));
             swap(lhs.name, rhs.name);
+            swap(lhs.m_index, rhs.m_index);
         }
 
     private:

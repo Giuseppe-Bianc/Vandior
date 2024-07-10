@@ -13,6 +13,7 @@ add_library(vandior_lib vandior.cpp
         parser/VariableNode.cpp
         parser/TypeNode.cpp
         parser/IndexNode.cpp
+        parser/ArrayNode.cpp
 )
 
 add_library(Vandior::vandior_lib ALIAS vandior_lib)

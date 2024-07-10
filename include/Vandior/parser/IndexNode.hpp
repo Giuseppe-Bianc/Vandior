@@ -5,22 +5,23 @@
 #pragma once
 
 #include "ASTNode.hpp"
+#include "ArrayNode.hpp"
 
 namespace vnd {
 
     /**
-     * @brief Generic Node class representing literal array values in the AST.
+     * @brief Node class representing an index values in the AST.
      * @tparam T The type of the literal array values.
      */
     class IndexNode : public ASTNode {
     public:
         /**
-         * @brief Constructs a ArrayNode.
-         * @param root The root element of the array.
+         * @brief Constructs a IndexNode.
+         * @param root The root element of the index.
          * @param token The token correspondent to the node.
          */
         [[nodiscard]] IndexNode(std::unique_ptr<ASTNode> elements, const Token &token) noexcept
-          : ASTNode(token), m_elements(vnd_move_always_even_const(elements)), m_index(nullptr) {}
+          : ASTNode(token), m_elements(vnd_move_always_even_const(elements)), m_index(nullptr), m_array(nullptr) {}
 
         /**
          * @brief Gets the type of the AST node.
@@ -61,6 +62,18 @@ namespace vnd {
         [[nodiscard]] void set_index(std::unique_ptr<IndexNode> index) noexcept { m_index = vnd_move_always_even_const(index); }
 
         /**
+         * @brief Gets the array node of the node.
+         * @return The array node of the node.
+         */
+        [[nodiscard]] const std::unique_ptr<ArrayNode> &get_array() const noexcept { return m_array; }
+
+        /**
+         * @brief Sets the array node of the node.
+         * @param index The array node of the node.
+         */
+        [[nodiscard]] void set_array(std::unique_ptr<ArrayNode> _array) noexcept { m_array = vnd_move_always_even_const(_array); }
+
+        /**
          * @brief Swaps the contents of two LiteralNode objects.
          * @param lhs The first LiteralNode.
          * @param rhs The second LiteralNode.
@@ -69,11 +82,14 @@ namespace vnd {
             using std::swap;
             swap(static_cast<ASTNode &>(lhs), static_cast<ASTNode &>(rhs));
             swap(lhs.m_elements, rhs.m_elements);
+            swap(lhs.m_index, rhs.m_index);
+            swap(lhs.m_array, rhs.m_array);
         }
 
     private:
-        std::unique_ptr<ASTNode> m_elements;   ///< The elements child of the array.
+        std::unique_ptr<ASTNode> m_elements;   ///< The elements child of the index.
         std::unique_ptr<IndexNode> m_index;    ///< The possible index node of an array type.
+        std::unique_ptr<ArrayNode> m_array;    ///< The array elements of the index.
     };
 
 }  // namespace vnd
