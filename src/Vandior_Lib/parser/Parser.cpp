@@ -27,7 +27,7 @@ namespace vnd {
     const std::vector<TokenType> Parser::types = {
         TokenType::TYPE_I8,   TokenType::TYPE_I16,    TokenType::TYPE_I32,  TokenType::TYPE_I64,   TokenType::TYPE_U8,  TokenType::TYPE_U16,
         TokenType::TYPE_U32,  TokenType::TYPE_U64,    TokenType::TYPE_F32,  TokenType::TYPE_F64,   TokenType::TYPE_C32, TokenType::TYPE_C64,
-        TokenType::TYPE_CHAR, TokenType::TYPE_STRING, TokenType::TYPE_BOOL, TokenType::IDENTIFIER,
+        TokenType::TYPE_CHAR, TokenType::TYPE_STRING, TokenType::TYPE_BOOL
     };
 
     const Token &Parser::getCurrentToken() const { return tokens.at(position); }
@@ -134,8 +134,7 @@ namespace vnd {
         const auto &currentValue = currentToken.getValue();
         auto cval = std::string{currentValue};
 
-        if(canBeType()) {
-            if(std::ranges::find(types, currentType) == types.end()) { throw ParserException(currentToken); }
+        if(std::ranges::find(types, currentType) != types.end()) {
             consumeToken();
             auto node = MAKE_UNIQUE(TypeNode, currentToken);
             parseIndex<TypeNode>(node);
@@ -176,7 +175,9 @@ namespace vnd {
             return MAKE_UNIQUE(LiteralNode<std::string_view>, currentValue, currentToken, NodeType::String);
         } else if(currentType == TokenType::IDENTIFIER) {
             consumeToken();
-            return MAKE_UNIQUE(VariableNode, currentValue, currentToken);
+            auto node = MAKE_UNIQUE(VariableNode, currentValue, currentToken);
+            parseIndex<VariableNode>(node);
+            return node;
         } else if(currentToken.getValue() == "(") {
             consumeToken();
             auto expression = parseExpression();
@@ -217,12 +218,6 @@ namespace vnd {
     }
 
     std::unique_ptr<ASTNode> Parser::parseExpression(std::size_t parentPrecendence) { return parseBinary(parentPrecendence); }
-
-    bool Parser::canBeType() const noexcept {
-        if(position == 0) { return false; }
-        auto type = tokens.at(position - 1).getType();
-        return type == TokenType::COLON;
-    }
 
     template <typename T> void Parser::parseIndex(std::unique_ptr<T> &node, bool isType) {
         auto token = getCurrentToken();

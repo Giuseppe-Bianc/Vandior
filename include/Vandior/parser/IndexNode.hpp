@@ -73,7 +73,7 @@ namespace vnd {
 
     private:
         std::unique_ptr<ASTNode> m_elements;   ///< The elements child of the array.
-        std::unique_ptr<IndexNode> m_index;   ///< The possible index node of an array type.
+        std::unique_ptr<IndexNode> m_index;    ///< The possible index node of an array type.
     };
 
 }  // namespace vnd

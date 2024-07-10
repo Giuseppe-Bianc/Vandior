@@ -32,7 +32,6 @@ namespace vnd {
         std::unique_ptr<ASTNode> parseUnary(std::size_t parentPrecendence);
         std::unique_ptr<ASTNode> parseBinary(std::size_t parentPrecendence);
         std::unique_ptr<ASTNode> parseExpression(std::size_t parentPrecendence = 0);
-        [[nodiscard]] bool canBeType() const noexcept;
         template <typename T> void parseIndex(std::unique_ptr<T> &node, bool isType = true);
 
         Tokenizer tokenizer;
