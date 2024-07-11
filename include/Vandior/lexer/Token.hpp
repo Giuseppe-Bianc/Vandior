@@ -191,7 +191,7 @@ namespace vnd {
  * \cond
  */
 template <> struct fmt::formatter<vnd::Token> : fmt::formatter<std::string_view> {  // NOLINT(*-include-cleaner)
-    template <typename FormatContext> auto format(const vnd::Token &val, FormatContext &ctx) {
+    auto format(const vnd::Token &val, format_context &ctx) const -> format_context::iterator {
         return fmt::formatter<std::string_view>::format(val.to_string(), ctx);
     }
 };

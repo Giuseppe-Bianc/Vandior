@@ -16,6 +16,17 @@
 #endif
 
 namespace vnd {
+    static inline constexpr auto simpleFomrat = "{}: Time = {}";
+    static inline constexpr auto bigTimesFotmat = "Time = {}";
+    static inline constexpr auto bigTitleTimeFotmat = "|{0: ^{1}}|{2: ^{3}}|";
+    static inline constexpr auto bigFotmat = "\n{0:-^{1}}\n{2}\n{0:-^{1}}";
+    static inline constexpr auto compatFotmat = "[{}]{}";
+    static inline constexpr auto detaildFotmat = "Timer '{}' measured a duration of {}";
+    static inline constexpr auto blockPatternFotmat = "{0:=^{1}}|{0:=^{1}}|{0:=^{1}}|{0:=^{1}}";
+    static inline constexpr auto blockTimesFotmat = "Time:{}";
+    static inline constexpr auto blockFotmat = "\n{0}\n{2: ^{1}}\n{0}\n{3: ^{1}}\n{0}";
+    static inline constexpr auto minimalFotmat = "{} - {}";
+    static inline constexpr auto timeItFotmat = "{} for {} tries";
     DISABLE_WARNINGS_PUSH(6005 26447 26455 26496)
 
     // NOLINTBEGIN(*-include-cleaner)
@@ -51,59 +62,51 @@ namespace vnd {
          * @brief Default print function for Timer class.
          */
         static const std::string Simple(const std::string &title, [[maybe_unused]] std::size_t title_lenpadd, const ValueLable &time) {
-            return FORMAT("{}: Time = {}", title, time);
+            return FORMAT(simpleFomrat, title, time);
         }
 
         /**
          * @brief A more elaborate print function for Timer class.
          */
         static const std::string Big(const std::string &title, std::size_t title_lenpadd, const ValueLable &time) {
-            const auto times = FORMAT("Time = {}", time);
+            std::string times = FORMAT(bigTimesFotmat, time);
             const auto times_len = times.length() + 3;
             const auto tot_len = title_lenpadd + times_len;
-            const auto title_time_section = FORMAT("|{0: ^{1}}|{2: ^{3}}|", title, title_lenpadd - 4, times, times_len + 1);
-
-            return FORMAT("\n{0:-^{1}}\n{2}\n{0:-^{1}}", "", tot_len, title_time_section);
+            const auto title_time_section = FORMAT(bigTitleTimeFotmat, title, title_lenpadd - 4, times, times_len + 1);
+            return FORMAT(bigFotmat, "", tot_len, title_time_section);
         }
 
         /**
          * @brief A compact print function for Timer class.
          */
         static const std::string Compact(const std::string &title, [[maybe_unused]] std::size_t title_lenpadd, const ValueLable &time) {
-            return FORMAT("[{}]{}", title, time);
+            return FORMAT(compatFotmat, title, time);
         }
 
         /**
          * @brief A detailed print function for Timer class.
          */
         static const std::string Detailed(const std::string &title, [[maybe_unused]] std::size_t title_lenpadd, const ValueLable &time) {
-            return FORMAT("Timer '{}' measured a duration of {}", title, time);
+            return FORMAT(detaildFotmat, title, time);
         }
 
         static const std::string createPatterm(std::size_t title_lenpadd) {
-            /*auto divisors = find_divisors(title_lenpadd);
-            std::size_t maxDivisor = 0;
-            std::ranges::for_each(divisors, [&maxDivisor](std::size_t divisor) {
-                if(divisor > 15) {    // NOLINT(*-magic-numbers)
-                    maxDivisor = 15;  // NOLINT(*-magic-numbers)
-                } else {
-                    maxDivisor = divisor;
-                }
-            });*/
-            return FORMAT("{0:=^{1}}|{0:=^{1}}|{0:=^{1}}|{0:=^{1}}", "*", title_lenpadd / 4);
+            const auto ntlenpadd = title_lenpadd / 4;
+            return FORMAT(blockPatternFotmat, "*", ntlenpadd);
         }
         /**
          * @brief A block style print function for Timer class.
          */
         static const std::string Block(const std::string &title, std::size_t title_lenpadd, const ValueLable &time) {
             const auto patternf = createPatterm(title_lenpadd);
-            const auto times = FORMAT("Time:{}", time);
-            return FORMAT("\n{0}\n{2: ^{1}}\n{0}\n{3: ^{1}}\n{0}", patternf, title_lenpadd, title, times);
+            const auto times = FORMAT(blockTimesFotmat, time);
+            return FORMAT(blockFotmat, patternf, title_lenpadd, title, times);
         }
         /**
          * @brief A minimal print function for Timer class.
          */
-        static const std::string Minimal(const std::string &title, const std::string &time) { return FORMAT("{} - {}", title, time); }
+        static const std::string Minimal(const std::string &title, const std::string &time) { return FORMAT(minimalFotmat, title, time); }
+
         /**
          * @brief Standard constructor for Timer class.
          *  Standard constructor, can set title and print function
@@ -136,7 +139,7 @@ namespace vnd {
                 total_time = elapsed.count();
             } while(n++ < MFACTOR && total_time < target_time);
             const auto total_timef = C_LD(total_time / C_LD(n));
-            std::string out = FORMAT("{} for {} tries", make_time_str(total_timef), std::to_string(n));
+            std::string out = FORMAT(timeItFotmat, make_time_str(total_timef), std::to_string(n));
             start_ = start;
             return out;
         }
@@ -224,16 +227,25 @@ namespace vnd {
  * @brief Specialization of the fmt::formatter for the Timer class.
  */
 template <> struct fmt::formatter<vnd::Timer> : formatter<std::string_view> {  // NOLINT(*-include-cleaner)
-    /**
-     * @brief Format the Timer object into a string view.
-     * @param timer The Timer object.
-     * @param ctx The format context.
-     * @return A formatted string view.
-     */
-    template <typename FormatContext> auto format(const vnd::Timer &timer, FormatContext &ctx) {
+                                                                               /**
+                                                                                * @brief Format the Timer object into a string view.
+                                                                                * @param timer The Timer object.
+                                                                                * @param ctx The format context.
+                                                                                * @return A formatted string view.
+                                                                                */
+    auto format(const vnd::Timer &timer, format_context &ctx) const -> format_context::iterator {
         return formatter<std::string_view>::format(timer.to_string(), ctx);
     }
 };
+
+template <> struct std::formatter<vnd::Timer, char> {
+    template <class ParseContext> constexpr auto parse(ParseContext &&ctx) -> decltype(ctx.begin()) { return ctx.begin(); }
+
+    template <typename FormatContext> auto format(const vnd::Timer &timer, FormatContext &ctx) const -> decltype(ctx.out()) {
+        return std::format_to(ctx.out(), "{}", timer.to_string());
+    }
+};
+
 /** \endcond */
 
 /// This prints out the time if shifted into a std::cout like stream.

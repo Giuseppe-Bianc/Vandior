@@ -158,7 +158,7 @@ DISABLE_WARNINGS_POP()
  */
 // NOLINTNEXTLINE
 template <> struct fmt::formatter<vnd::CodeSourceLocation> : fmt::formatter<std::string_view> {
-    template <typename FormatContext> auto format(const vnd::CodeSourceLocation &val, FormatContext &ctx) {
+    auto format(const vnd::CodeSourceLocation &val, format_context &ctx) const -> format_context::iterator {
         return fmt::formatter<std::string_view>::format(val.toString(), ctx);
     }
 };
