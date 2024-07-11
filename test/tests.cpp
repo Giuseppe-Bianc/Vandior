@@ -1583,6 +1583,20 @@ TEST_CASE("Parser emit empty array", "[parser]") {
     REQUIRE(variable->get_index()->get_array()->get_elements() == nullptr);
 }
 
+TEST_CASE("Parser emit array type", "[parser]") {
+    vnd::Parser parser("i8[]", filename);
+    auto ast = parser.parse();
+    REQUIRE(ast != nullptr);
+    REQUIRE(ast->getType() == NodeType::Type);
+    const auto *typeNode = ast->as<vnd::TypeNode>();
+    REQUIRE(typeNode != nullptr);
+    REQUIRE(typeNode->get_index() != nullptr);
+    REQUIRE(typeNode->get_index()->getType() == NodeType::Index);
+    REQUIRE(typeNode->get_index()->get_elements() == nullptr);
+    REQUIRE(typeNode->get_index()->get_index() == nullptr);
+    REQUIRE(typeNode->get_index()->get_array() == nullptr);
+}
+
 TEST_CASE("Parser emit mismatched square brackets exception", "[parser]") {
     vnd::Parser parser("Object[size", filename);
     REQUIRE_THROWS_AS(parser.parse(), vnd::ParserException);
