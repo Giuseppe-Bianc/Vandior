@@ -140,7 +140,7 @@ namespace vnd {
  */
 // NOLINTNEXTLINE
 template <> struct fmt::formatter<vnd::ValueLable> : fmt::formatter<std::string_view> {
-    template <typename FormatContext> auto format(const vnd::ValueLable &val, FormatContext &ctx) {
+    auto format(const vnd::ValueLable &val, format_context &ctx) const -> format_context::iterator {
         return fmt::formatter<std::string_view>::format(val.toString(), ctx);
     }
 };

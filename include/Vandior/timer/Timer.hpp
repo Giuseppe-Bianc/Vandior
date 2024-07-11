@@ -64,6 +64,7 @@ namespace vnd {
         static const std::string Simple(const std::string &title, [[maybe_unused]] std::size_t title_lenpadd, const ValueLable &time) {
             return FORMAT(simpleFomrat, title, time);
         }
+
         /**
          * @brief A more elaborate print function for Timer class.
          */
@@ -74,6 +75,7 @@ namespace vnd {
             const auto title_time_section = FORMAT(bigTitleTimeFotmat, title, title_lenpadd - 4, times, times_len + 1);
             return FORMAT(bigFotmat, "", tot_len, title_time_section);
         }
+
         /**
          * @brief A compact print function for Timer class.
          */
@@ -225,14 +227,22 @@ namespace vnd {
  * @brief Specialization of the fmt::formatter for the Timer class.
  */
 template <> struct fmt::formatter<vnd::Timer> : formatter<std::string_view> {  // NOLINT(*-include-cleaner)
-    /**
-     * @brief Format the Timer object into a string view.
-     * @param timer The Timer object.
-     * @param ctx The format context.
-     * @return A formatted string view.
-     */
-    template <typename FormatContext> auto format(const vnd::Timer &timer, FormatContext &ctx) {
+                                                                               /**
+                                                                                * @brief Format the Timer object into a string view.
+                                                                                * @param timer The Timer object.
+                                                                                * @param ctx The format context.
+                                                                                * @return A formatted string view.
+                                                                                */
+    auto format(const vnd::Timer &timer, format_context &ctx) const -> format_context::iterator {
         return formatter<std::string_view>::format(timer.to_string(), ctx);
+    }
+};
+
+template <> struct std::formatter<vnd::Timer, char> {
+    template <class ParseContext> constexpr auto parse(ParseContext &&ctx) -> decltype(ctx.begin()) { return ctx.begin(); }
+
+    template <typename FormatContext> auto format(const vnd::Timer &timer, FormatContext &ctx) const -> decltype(ctx.out()) {
+        return std::format_to(ctx.out(), "{}", timer.to_string());
     }
 };
 

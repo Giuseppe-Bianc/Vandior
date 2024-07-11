@@ -23,7 +23,7 @@ template <> struct fmt::formatter<NodeType> : fmt::formatter<std::string_view> {
      * @param ctx The formatting context.
      * @return The formatted string.
      */
-    template <typename FormatContext> auto format(NodeType nodeType, FormatContext &ctx) {
+    auto format(NodeType nodeType, format_context &ctx) const -> format_context::iterator {
         using enum NodeType;
         std::string_view name;
         switch(nodeType) {

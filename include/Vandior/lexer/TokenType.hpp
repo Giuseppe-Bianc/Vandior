@@ -59,7 +59,7 @@ namespace vnd {
         CLOSE_CUR_PARENTESIS,  ///< Closing curly parenthesis '}'
         COMMA,                 ///< Comma ','
         COLON,                 ///< Colon ':'
-        TYPE_I8,               ///< i8 
+        TYPE_I8,               ///< i8
         TYPE_I16,              ///< i16 token
         TYPE_I32,              ///< i32 token
         TYPE_I64,              ///< i64 token
@@ -114,7 +114,7 @@ namespace vnd {
  * \cond
  */
 template <> struct fmt::formatter<vnd::TokenType> : fmt::formatter<std::string_view> {  // NOLINT(*-include-cleaner)
-    template <typename FormatContext> auto format(vnd::TokenType tokenType, FormatContext &ctx) {
+    auto format(vnd::TokenType tokenType, format_context &ctx) const -> format_context::iterator {
         std::string_view name;
         switch(tokenType) {
             using enum vnd::TokenType;
