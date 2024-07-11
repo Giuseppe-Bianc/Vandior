@@ -238,13 +238,13 @@ template <> struct fmt::formatter<vnd::Timer> : formatter<std::string_view> {  /
     }
 };
 
-template <> struct std::formatter<vnd::Timer, char> {
+/*template <> struct std::formatter<vnd::Timer, char> {
     template <class ParseContext> constexpr auto parse(ParseContext &&ctx) -> decltype(ctx.begin()) { return ctx.begin(); }
 
     template <typename FormatContext> auto format(const vnd::Timer &timer, FormatContext &ctx) const -> decltype(ctx.out()) {
         return std::format_to(ctx.out(), "{}", timer.to_string());
     }
-};
+};*/
 
 /** \endcond */
 
