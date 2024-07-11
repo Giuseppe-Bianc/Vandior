@@ -200,7 +200,7 @@ template <typename T, glm::length_t L, glm::qualifier Q> struct fmt::formatter<g
      * @param ctx The format context.
      * @return The formatted string.
      */
-    template <typename FormatContext> auto format(const glm::vec<L, T, Q> &vector, format_context &ctx) const -> format_context::iterator {
+    auto format(const glm::vec<L, T, Q> &vector, format_context &ctx) const -> format_context::iterator {
         return formatter<std::string_view>::format(glmp::to_string(vector), ctx);
     }
 };
