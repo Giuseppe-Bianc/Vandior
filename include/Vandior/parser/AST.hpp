@@ -11,6 +11,7 @@
 #include "UnaryExpressionNode.hpp"
 #include "VariableNode.hpp"
 #include "TypeNode.hpp"
+#include "IndexNode.hpp"
 
 /** \cond */
 DISABLE_WARNINGS_PUSH(
@@ -56,6 +57,7 @@ static inline void prettyPrint(const vnd::ASTNode &node, const std::string &inde
         prettyPrint(*unaryNode->getOperand(), newindent, true, "OPERAND");
     } else if(const auto *variableNode = node.safe_as<vnd::VariableNode>()) {
         LINFO("{}(Type: VAR, val: {}){}", indentmark, variableNode->getName(), node.get_token().compat_to_string());
+        if(variableNode->get_index()) { prettyPrint(*variableNode->get_index(), newindent, true, "INDEX"); }
     } else if(const auto *intnumberNode = node.safe_as<vnd::NumberNode<int>>()) {
         LINFO("{}_{}, val: {}){}", imarknnum, NumNodeType_comp(intnumberNode->getNumberType()), intnumberNode->get_value(),
               node.get_token().compat_to_string());
@@ -79,6 +81,15 @@ static inline void prettyPrint(const vnd::ASTNode &node, const std::string &inde
         LINFO("{}, val: {}){}", imarknode, svliteralNode->get_value(), node.get_token().compat_to_string());
     } else if(const auto *typeNode = node.safe_as<vnd::TypeNode>()) {
         LINFO("{}, type: {}){}", imarknode, typeNode->get_value(), node.get_token().compat_to_string());
+        if(typeNode->get_index()) { prettyPrint(*typeNode->get_index(), newindent, true, "INDEX"); }
+    } else if(const auto *indexNode = node.safe_as<vnd::IndexNode>()) {
+        LINFO("{}", indentmark, node.comp_print());
+        if(indexNode->get_elements()) { prettyPrint(*indexNode->get_elements(), newindent, true, ""); }
+        if(indexNode->get_index()) { prettyPrint(*indexNode->get_index(), newindent, true, "INDEX"); }
+        if(indexNode->get_array()) { prettyPrint(*indexNode->get_array(), newindent, true, "ELEM"); }
+    } else if(const auto *arrayNode = node.safe_as<vnd::ArrayNode>()) {
+        LINFO("{}", indentmark, node.comp_print());
+        if(arrayNode->get_elements()) { prettyPrint(*arrayNode->get_elements(), newindent, true, ""); }
     } else {
         LERROR("Unknown or not handled node type: {}", node.getType());
     }

@@ -27,7 +27,7 @@ namespace vnd {
     const std::vector<TokenType> Parser::types = {
         TokenType::TYPE_I8,   TokenType::TYPE_I16,    TokenType::TYPE_I32,  TokenType::TYPE_I64,   TokenType::TYPE_U8,  TokenType::TYPE_U16,
         TokenType::TYPE_U32,  TokenType::TYPE_U64,    TokenType::TYPE_F32,  TokenType::TYPE_F64,   TokenType::TYPE_C32, TokenType::TYPE_C64,
-        TokenType::TYPE_CHAR, TokenType::TYPE_STRING, TokenType::TYPE_BOOL, TokenType::IDENTIFIER,
+        TokenType::TYPE_CHAR, TokenType::TYPE_STRING, TokenType::TYPE_BOOL
     };
 
     const Token &Parser::getCurrentToken() const { return tokens.at(position); }
@@ -134,10 +134,11 @@ namespace vnd {
         const auto &currentValue = currentToken.getValue();
         auto cval = std::string{currentValue};
 
-        if(isPreviusColon()) {
-            if(std::ranges::find(types, currentType) == types.end()) { throw ParserException(currentToken); }
+        if(std::ranges::find(types, currentType) != types.end()) {
             consumeToken();
-            return MAKE_UNIQUE(TypeNode, currentToken);
+            auto node = MAKE_UNIQUE(TypeNode, currentToken);
+            parseIndex<TypeNode>(node);
+            return node;
         } else if(currentType == TokenType::INTEGER) {
             consumeToken();
             if(currentValue.starts_with("#o") || currentValue.starts_with("#O")) {
@@ -174,17 +175,18 @@ namespace vnd {
             return MAKE_UNIQUE(LiteralNode<std::string_view>, currentValue, currentToken, NodeType::String);
         } else if(currentType == TokenType::IDENTIFIER) {
             consumeToken();
-            return MAKE_UNIQUE(VariableNode, currentValue, currentToken);
+            auto node = MAKE_UNIQUE(VariableNode, currentValue, currentToken);
+            parseIndex<VariableNode>(node);
+            return node;
         } else if(currentToken.getValue() == "(") {
             consumeToken();
             auto expression = parseExpression();
             if(getCurrentToken().getValue() == ")") {
                 consumeToken();
                 return expression;
-            } else {
-                // Handle error: mismatched parentheses
-                throw ParserException(currentToken);
             }
+            // Handle error: mismatched parentheses
+            throw ParserException(currentToken);
         } else [[unlikely]] {
             // Handle error: unexpected token
             throw ParserException(currentToken);
@@ -217,7 +219,41 @@ namespace vnd {
 
     std::unique_ptr<ASTNode> Parser::parseExpression(std::size_t parentPrecendence) { return parseBinary(parentPrecendence); }
 
-    bool Parser::isPreviusColon() const noexcept { return position > 0 && tokens.at(position - 1).getType() == TokenType::COLON; }
+    template <typename T> void Parser::parseIndex(std::unique_ptr<T> &node) {
+        auto token = getCurrentToken();
+        if(token.getType() != TokenType::OPEN_SQ_PARENTESIS) { return; }
+        consumeToken();
+        if(getCurrentToken().getType() == TokenType::CLOSE_SQ_PARENTESIS) {
+            consumeToken();
+            auto index = MAKE_UNIQUE(IndexNode, nullptr, token);
+            if(!parseArray(index)) { parseIndex<IndexNode>(index);; }
+            node->set_index(vnd_move_always_even_const(index));
+            return;
+        }
+        auto elements = parseExpression();
+        if(getCurrentToken().getType() != TokenType::CLOSE_SQ_PARENTESIS) { throw ParserException(getCurrentToken()); }
+        consumeToken();
+        auto index = MAKE_UNIQUE(IndexNode, std::move(elements), token);
+        if(!parseArray(index)) { parseIndex<IndexNode>(index);; }
+        node->set_index(vnd_move_always_even_const(index));
+    }
+
+    bool Parser::parseArray(std::unique_ptr<IndexNode> &node) {
+        auto token = getCurrentToken();
+        if(token.getType() != TokenType::OPEN_CUR_PARENTESIS) { return false; }
+        consumeToken();
+        if(getCurrentToken().getType() == TokenType::CLOSE_CUR_PARENTESIS) {
+            consumeToken();
+            node->set_array(MAKE_UNIQUE(ArrayNode, nullptr, token));
+            return true;
+        }
+        auto elements = parseExpression();
+        if(getCurrentToken().getType() != TokenType::CLOSE_CUR_PARENTESIS) { throw ParserException(getCurrentToken()); }
+        consumeToken();
+        node->set_array(MAKE_UNIQUE(ArrayNode, std::move(elements), token));
+        return true;
+    }
+
 }  // namespace vnd
 DISABLE_WARNINGS_POP()
 // NOLINTEND(*-include-cleaner,*-no-recursion, *-avoid-magic-numbers,*-magic-numbers)

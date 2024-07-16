@@ -1538,39 +1538,72 @@ TEST_CASE("Parser emit exception for nonexistent unary operator", "[parser]") {
 }
 
 TEST_CASE("Parser emit i8 TypeNode node", "[parser]") {
-    vnd::Parser parser("a: i8", filename);
+    vnd::Parser parser("i8", filename);
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
-    REQUIRE(ast->getType() == NodeType::BinaryExpression);
-    const auto *binaryNode = ast->as<vnd::BinaryExpressionNode>();
-    REQUIRE(binaryNode != nullptr);
-    REQUIRE(binaryNode->getOp() == ":");
-    const auto *typeNode = binaryNode->getRight()->as<vnd::TypeNode>();
+    REQUIRE(ast->getType() == NodeType::Type);
+    const auto *typeNode = ast->as<vnd::TypeNode>();
     REQUIRE(typeNode != nullptr);
-    REQUIRE(typeNode->getType() == NodeType::Type);
     REQUIRE(typeNode->comp_print() == "TYPE(i8)");
     REQUIRE(typeNode->print() == "TYPE_I8_TYPE(i8)");
     REQUIRE(typeNode->getVariableType() == vnd::TokenType::TYPE_I8);
     REQUIRE(typeNode->get_value() == "i8");
+    REQUIRE(typeNode->get_index() == nullptr);
 }
 
-TEST_CASE("Parser emit identifier TypeNode node", "[parser]") {
-    vnd::Parser parser("a: type", filename);
+TEST_CASE("Parser emit array", "[parser]") {
+    vnd::Parser parser("i8[size][]{1, 2}", filename);
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
-    REQUIRE(ast->getType() == NodeType::BinaryExpression);
-    const auto *binaryNode = ast->as<vnd::BinaryExpressionNode>();
-    REQUIRE(binaryNode != nullptr);
-    REQUIRE(binaryNode->getOp() == ":");
-    const auto *typeNode = binaryNode->getRight()->as<vnd::TypeNode>();
+    REQUIRE(ast->getType() == NodeType::Type);
+    const auto *typeNode = ast->as<vnd::TypeNode>();
     REQUIRE(typeNode != nullptr);
-    REQUIRE(typeNode->getVariableType() == vnd::TokenType::IDENTIFIER);
-    REQUIRE(typeNode->get_value() == "type");
+    REQUIRE(typeNode->get_index() != nullptr);
+    REQUIRE(typeNode->get_index()->getType() == NodeType::Index);
+    REQUIRE(typeNode->get_index()->get_elements() != nullptr);
+    REQUIRE(typeNode->get_index()->get_index() != nullptr);
+    REQUIRE(typeNode->get_index()->get_array() == nullptr);
+    REQUIRE(typeNode->get_index()->get_index()->get_elements() == nullptr);
+    REQUIRE(typeNode->get_index()->get_index()->get_index() == nullptr);
+    REQUIRE(typeNode->get_index()->get_index()->get_array() != nullptr);
+    REQUIRE(typeNode->get_index()->get_index()->get_array()->getType() == NodeType::Array);
+    REQUIRE(typeNode->get_index()->get_index()->get_array()->get_elements() != nullptr);
 }
 
-TEST_CASE("Parser emit exception for impossibile TypeNode node", "[parser]") {
-    vnd::Parser parser("a: 1", filename);
+TEST_CASE("Parser emit empty array", "[parser]") {
+    vnd::Parser parser("Object[]{}", filename);
+    auto ast = parser.parse();
+    REQUIRE(ast != nullptr);
+    REQUIRE(ast->getType() == NodeType::Variable);
+    const auto *variable = ast->as<vnd::VariableNode>();
+    REQUIRE(variable != nullptr);
+    REQUIRE(variable->get_index() != nullptr);
+    REQUIRE(variable->get_index()->get_array() != nullptr);
+    REQUIRE(variable->get_index()->get_array()->getType() == NodeType::Array);
+    REQUIRE(variable->get_index()->get_array()->get_elements() == nullptr);
+}
+
+TEST_CASE("Parser emit array type", "[parser]") {
+    vnd::Parser parser("i8[]", filename);
+    auto ast = parser.parse();
+    REQUIRE(ast != nullptr);
+    REQUIRE(ast->getType() == NodeType::Type);
+    const auto *typeNode = ast->as<vnd::TypeNode>();
+    REQUIRE(typeNode != nullptr);
+    REQUIRE(typeNode->get_index() != nullptr);
+    REQUIRE(typeNode->get_index()->getType() == NodeType::Index);
+    REQUIRE(typeNode->get_index()->get_elements() == nullptr);
+    REQUIRE(typeNode->get_index()->get_index() == nullptr);
+    REQUIRE(typeNode->get_index()->get_array() == nullptr);
+}
+
+TEST_CASE("Parser emit mismatched square brackets exception", "[parser]") {
+    vnd::Parser parser("Object[size", filename);
     REQUIRE_THROWS_AS(parser.parse(), vnd::ParserException);
 }
 
+TEST_CASE("Parser emit mismatched curly brackets exception", "[parser]") {
+    vnd::Parser parser("string[size]{", filename);
+    REQUIRE_THROWS_AS(parser.parse(), vnd::ParserException);
+}
 // NOLINTEND(*-include-cleaner, *-avoid-magic-numbers, *-magic-numbers)
