@@ -145,7 +145,7 @@ inline std::string get_current_timestamp() {
     const auto now = std::chrono::system_clock::now();
     const auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()) % 1000;
 
-    return FORMATST("{}.{:03d}", std::chrono::system_clock::from_time_t(std::chrono::system_clock::to_time_t(now)), ms.count());
+    return FORMAT("{}.{:03d}", std::chrono::system_clock::from_time_t(std::chrono::system_clock::to_time_t(now)), ms.count());
 }
 #ifdef _MSC_VER
 inline void print_stack_trace() { std::cerr << FORMATST("Stack trace:\n{}\n", std::stacktrace::current()); }
@@ -156,11 +156,11 @@ inline void print_stack_trace() {}
 // Hypothetical implementation using C++23-like features
 inline void my_error_handler(const std::string &msg) {
     const std::source_location &location = std::source_location::current();
-    std::cerr << FORMATST("Error occurred:\n  Timestamp: {}\n", get_current_timestamp());
-    std::cerr << FORMATST("  Thread ID: {}\n", std::this_thread::get_id());
-    std::cerr << FORMATST("  Message: {}\n", msg);
-    std::cerr << FORMATST("  Function: {}, File: {}, Line: {}, Column: {}\n", location.function_name(), location.file_name(),
-                          location.line(), location.column());
+    std::cerr << FORMAT("Error occurred:\n  Timestamp: {}\n", get_current_timestamp());
+    std::cerr << FORMAT("  Thread ID: {}\n", std::this_thread::get_id());
+    std::cerr << FORMAT("  Message: {}\n", msg);
+    std::cerr << FORMAT("  Function: {}, File: {}, Line: {}, Column: {}\n", location.function_name(), location.file_name(), location.line(),
+                        location.column());
 
     // Attempt to print stack trace (platform-specific)
     print_stack_trace();
