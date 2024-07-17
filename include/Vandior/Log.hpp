@@ -35,9 +35,6 @@
 // clang-format off
 #include "disableWarn.hpp"
 #include <source_location>
-#if defined(_MSC_VER) && (_MSC_VER >= 1920)
-#include <stacktrace>
-#endif
 #include <iostream>
 #include "format.hpp"
 // clang-format on
@@ -147,11 +144,6 @@ inline std::string get_current_timestamp() {
 
     return FORMAT("{}.{:03d}", std::chrono::system_clock::from_time_t(std::chrono::system_clock::to_time_t(now)), ms.count());
 }
-#if defined(_MSC_VER) && (_MSC_VER >= 1920)
-inline void print_stack_trace() { std::cerr << FORMATST("Stack trace:\n{}\n", std::stacktrace::current()); }
-#else
-inline void print_stack_trace() {}
-#endif
 
 // Hypothetical implementation using C++23-like features
 inline void my_error_handler(const std::string &msg) {
@@ -161,9 +153,6 @@ inline void my_error_handler(const std::string &msg) {
     std::cerr << FORMAT("  Message: {}\n", msg);
     std::cerr << FORMAT("  Function: {}, File: {}, Line: {}, Column: {}\n", location.function_name(), location.file_name(), location.line(),
                         location.column());
-
-    // Attempt to print stack trace (platform-specific)
-    print_stack_trace();
 }
 // C:\Users\gbian\AppData\Local\Programs\CLion
 /**
