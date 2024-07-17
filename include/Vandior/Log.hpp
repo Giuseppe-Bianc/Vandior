@@ -35,7 +35,9 @@
 // clang-format off
 #include "disableWarn.hpp"
 #include <source_location>
+#ifdef _MSC_VER
 #include <stacktrace>
+#endif
 #include <iostream>
 #include "format.hpp"
 // clang-format on
@@ -145,8 +147,11 @@ inline std::string get_current_timestamp() {
 
     return FORMATST("{}.{:03d}", std::chrono::system_clock::from_time_t(std::chrono::system_clock::to_time_t(now)), ms.count());
 }
-
+#ifdef _MSC_VER
 inline void print_stack_trace() { std::cerr << FORMATST("Stack trace:\n{}\n", std::stacktrace::current()); }
+#else
+inline void print_stack_trace() {}
+#endif
 
 // Hypothetical implementation using C++23-like features
 inline void my_error_handler(const std::string &msg) {

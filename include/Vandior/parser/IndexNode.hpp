@@ -11,13 +11,12 @@ namespace vnd {
 
     /**
      * @brief Node class representing an index values in the AST.
-     * @tparam T The type of the literal array values.
      */
     class IndexNode : public ASTNode {
     public:
         /**
          * @brief Constructs a IndexNode.
-         * @param root The root element of the index.
+         * @param elements The root element of the index.
          * @param token The token correspondent to the node.
          */
         [[nodiscard]] IndexNode(std::unique_ptr<ASTNode> elements, const Token &token) noexcept
@@ -34,14 +33,12 @@ namespace vnd {
          * @return String representation of the AST node.
          */
         [[nodiscard]] std::string print() const override { return FORMAT("{}({})", getType(), m_elements->comp_print()); }
-        
+
         /**
          * @brief Returns a compact string representation of the AST node for compilation purposes.
          * @return Compact string representation of the AST node.
          */
-        [[nodiscard]] std::string comp_print() const override {
-            return FORMAT("{}", getType());
-        }
+        [[nodiscard]] std::string comp_print() const override { return FORMAT("{}", getType()); }
 
         /**
          * @brief Gets the elements of the node.
@@ -49,7 +46,7 @@ namespace vnd {
          */
         [[nodiscard]] const std::unique_ptr<ASTNode> &get_elements() const noexcept { return m_elements; }
 
-         /**
+        /**
          * @brief Gets the index node of the node.
          * @return The index node of the node.
          */
@@ -59,7 +56,7 @@ namespace vnd {
          * @brief Sets the index node of the node.
          * @param index The index node of the node.
          */
-        [[nodiscard]] void set_index(std::unique_ptr<IndexNode> index) noexcept { m_index = vnd_move_always_even_const(index); }
+        void set_index(std::unique_ptr<IndexNode> index) noexcept { m_index = vnd_move_always_even_const(index); }
 
         /**
          * @brief Gets the array node of the node.
@@ -69,9 +66,9 @@ namespace vnd {
 
         /**
          * @brief Sets the array node of the node.
-         * @param index The array node of the node.
+         * @param _array The array node of the node.
          */
-        [[nodiscard]] void set_array(std::unique_ptr<ArrayNode> _array) noexcept { m_array = vnd_move_always_even_const(_array); }
+        void set_array(std::unique_ptr<ArrayNode> _array) noexcept { m_array = vnd_move_always_even_const(_array); }
 
         /**
          * @brief Swaps the contents of two LiteralNode objects.
@@ -87,9 +84,9 @@ namespace vnd {
         }
 
     private:
-        std::unique_ptr<ASTNode> m_elements;   ///< The elements child of the index.
-        std::unique_ptr<IndexNode> m_index;    ///< The possible index node of an array type.
-        std::unique_ptr<ArrayNode> m_array;    ///< The array elements of the index.
+        std::unique_ptr<ASTNode> m_elements;  ///< The elements child of the index.
+        std::unique_ptr<IndexNode> m_index;   ///< The possible index node of an array type.
+        std::unique_ptr<ArrayNode> m_array;   ///< The array elements of the index.
     };
 
 }  // namespace vnd
