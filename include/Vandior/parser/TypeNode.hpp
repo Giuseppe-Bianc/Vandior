@@ -17,7 +17,8 @@ namespace vnd {
          * @brief Creates a TypeNode.
          * @param token The token correspondent to the node.
          */
-        [[nodiscard]] explicit TypeNode(const Token &token) noexcept : ASTNode(token), m_value(token.getValue()), m_type(token.getType()), m_index(nullptr) {}
+        [[nodiscard]] explicit TypeNode(const Token &token) noexcept
+          : ASTNode(token), m_value(token.getValue()), m_type(token.getType()), m_index(nullptr) {}
 
         /**
          * @brief Gets the type of the AST node.
@@ -53,7 +54,7 @@ namespace vnd {
          * @brief Sets the index node of the node.
          * @param index The index node of the node.
          */
-        [[nodiscard]] void set_index(std::unique_ptr<IndexNode> index) noexcept { m_index = vnd_move_always_even_const(index); }
+        void set_index(std::unique_ptr<IndexNode> index) noexcept { m_index = vnd_move_always_even_const(index); }
 
         /**
          * @brief Gets the variable type of the node.
@@ -70,9 +71,9 @@ namespace vnd {
         }
 
     private:
-        std::string_view m_value;             ///< The value of the node.
-        TokenType m_type;                     ///< The type of the token node.
-        std::unique_ptr<IndexNode> m_index;   ///< The possible index node of an array type.
+        std::string_view m_value;            ///< The value of the node.
+        TokenType m_type;                    ///< The type of the token node.
+        std::unique_ptr<IndexNode> m_index;  ///< The possible index node of an array type.
     };
 
 }  // namespace vnd
