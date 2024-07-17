@@ -35,7 +35,7 @@
 // clang-format off
 #include "disableWarn.hpp"
 #include <source_location>
-#ifdef _MSC_VER
+#if defined(_MSC_VER) && (_MSC_VER >= 1920)
 #include <stacktrace>
 #endif
 #include <iostream>
@@ -147,7 +147,7 @@ inline std::string get_current_timestamp() {
 
     return FORMAT("{}.{:03d}", std::chrono::system_clock::from_time_t(std::chrono::system_clock::to_time_t(now)), ms.count());
 }
-#ifdef _MSC_VER
+#if defined(_MSC_VER) && (_MSC_VER >= 1920)
 inline void print_stack_trace() { std::cerr << FORMATST("Stack trace:\n{}\n", std::stacktrace::current()); }
 #else
 inline void print_stack_trace() {}
