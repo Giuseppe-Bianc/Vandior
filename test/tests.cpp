@@ -1,6 +1,7 @@
 // NOLINTBEGIN(*-include-cleaner, *-avoid-magic-numbers, *-magic-numbers)
 
 #include <catch2/catch_test_macros.hpp>
+#include <future>
 
 #include <Vandior/vandior.hpp>
 
@@ -40,6 +41,73 @@ static inline constexpr long long int timerSleap2 = 5;
 static inline constexpr std::size_t timerCicles = 1000000;
 static inline constexpr long double timerResolution = 5.0L;
 #define REQ_FORMAT(type, string) REQUIRE(FORMAT("{}", type) == (string));  // NOLINT(*-macro-usage)
+
+// NOLINTNEXTLINE(*-function-cognitive-complexity)
+TEST_CASE("get_current_timestamp() tests", "[timestamp]") {
+    SECTION("Basic test") {
+        auto timestamp = get_current_timestamp();
+        REQUIRE(timestamp.size() >= 24);
+    }
+
+    SECTION("Repeatability test") {
+        auto timestamp1 = get_current_timestamp();
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        auto timestamp2 = get_current_timestamp();
+        REQUIRE(timestamp1 != timestamp2);
+    }
+
+    SECTION("Concurrency test") {
+        constexpr int num_threads = 4;
+        std::vector<std::future<std::string>> futures;
+        for(int i = 0; i < num_threads; ++i) {
+            // NOLINTNEXTLINE(*-inefficient-vector-operation)
+            futures.emplace_back(std::async(std::launch::async, []() { return get_current_timestamp(); }));
+        }
+        for(auto &future : futures) {
+            auto timestamp = future.get();
+            REQUIRE(timestamp.size() >= 24);
+        }
+    }
+}
+
+TEST_CASE("my_error_handler(const std::string&) tests", "[error_handler]") {
+    SECTION("Basic error handling") {
+        std::stringstream sss;
+        auto *original = std::cerr.rdbuf(sss.rdbuf());  // Redirect cerr to stringstream
+        my_error_handler("Sample error message");
+        std::cerr.rdbuf(original);  // Restore cerr
+
+        auto output = sss.str();
+        REQUIRE(output.find("Error occurred:") != std::string::npos);
+        REQUIRE(output.find("Timestamp: ") != std::string::npos);
+        REQUIRE(output.find("Thread ID: ") != std::string::npos);
+        REQUIRE(output.find("Message: Sample error message") != std::string::npos);
+    }
+
+    SECTION("Error handler with different messages") {
+        std::stringstream sss;
+        auto *original = std::cerr.rdbuf(sss.rdbuf());  // Redirect cerr to stringstream
+        my_error_handler("Error 1");
+        my_error_handler("Another error");
+        std::cerr.rdbuf(original);  // Restore cerr
+
+        auto output = sss.str();
+        REQUIRE(output.find("Message: Error 1") != std::string::npos);
+        REQUIRE(output.find("Message: Another error") != std::string::npos);
+    }
+
+    SECTION("Location information") {
+        std::stringstream sss;
+        auto *original = std::cerr.rdbuf(sss.rdbuf());  // Redirect cerr to stringstream
+        my_error_handler("Location test");
+        std::cerr.rdbuf(original);  // Restore cerr
+
+        auto output = sss.str();
+        REQUIRE(output.find("File: ") != std::string::npos);
+        REQUIRE(output.find("Line: ") != std::string::npos);
+        REQUIRE(output.find("Column: ") != std::string::npos);
+    }
+}
 
 TEST_CASE("std::filesystem::path formater", "[FMT]") { REQ_FORMAT(std::filesystem::path("../ssss"), "../ssss"); }
 TEST_CASE("glm::vec formater", "[FMT]") {
