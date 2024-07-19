@@ -186,6 +186,17 @@ namespace vnd {
             }
             // Handle error: mismatched parentheses
             throw ParserException(currentToken);
+        } else if(currentToken.getValue() == "{") {
+            auto token = getCurrentToken();
+            consumeToken();
+            if(getCurrentToken().getType() == vnd::TokenType::CLOSE_CUR_PARENTESIS) {
+                consumeToken();
+                return MAKE_UNIQUE(ArrayNode, nullptr, token);
+            }
+            auto elements = parseExpression();
+            if(getCurrentToken().getType() != vnd::TokenType::CLOSE_CUR_PARENTESIS) { throw ParserException(getCurrentToken()); }
+            consumeToken();
+            return MAKE_UNIQUE(ArrayNode, std::move(elements), token);
         } else [[unlikely]] {
             // Handle error: unexpected token
             throw ParserException(currentToken);
