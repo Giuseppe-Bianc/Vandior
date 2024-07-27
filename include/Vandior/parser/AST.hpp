@@ -57,6 +57,10 @@ static inline void prettyPrint(const vnd::ASTNode &node, const std::string &inde
         prettyPrint(*unaryNode->getOperand(), newindent, true, "OPERAND");
     } else if(const auto *variableNode = node.safe_as<vnd::VariableNode>()) {
         LINFO("{}(Type: VAR, val: {}){}", indentmark, variableNode->getName(), node.get_token().compat_to_string());
+        if(variableNode->is_call()) {
+            LINFO("{}()", indentmark);
+            if(variableNode->get_call()) { prettyPrint(*variableNode->get_call(), newindent, true, "CALL"); }
+        }
         if(variableNode->get_index()) { prettyPrint(*variableNode->get_index(), newindent, true, "INDEX"); }
     } else if(const auto *intnumberNode = node.safe_as<vnd::NumberNode<int>>()) {
         LINFO("{}_{}, val: {}){}", imarknnum, NumNodeType_comp(intnumberNode->getNumberType()), intnumberNode->get_value(),
