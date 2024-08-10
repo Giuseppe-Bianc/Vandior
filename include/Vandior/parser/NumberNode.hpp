@@ -54,3 +54,9 @@ namespace vnd {
     };
 
 }  // namespace vnd
+
+#define VND_NUM_INT vnd::NumberNode<int>
+#define VND_NUM_FLOAT vnd::NumberNode<float>
+#define VND_NUM_DOUBLE vnd::NumberNode<double>
+#define VND_NUM_CFLOAT vnd::NumberNode<std::complex<float>>
+#define VND_NUM_CDOUBLE vnd::NumberNode<std::complex<double>>
