@@ -83,7 +83,7 @@ auto main(int argc, const char *const argv[]) -> int {
         LINFO("num tokens {}", tokens.size());
 
         // 2 + 3 + (4.2 / 2) * 3 + y + (true / false) - 'd' * "ciao"
-        /*std::string input;
+        std::string input;
         std::getline(std::cin, input);
         LINFO("Input: {}", input);
         vnd::Parser parser{input, "input.vn"};
@@ -91,7 +91,7 @@ auto main(int argc, const char *const argv[]) -> int {
         LINFO("print interlal function\n{}", ast->print());
         LINFO("comp_print interlal function\n {}", ast->comp_print());
         LINFO("pretyPrint external function");
-        prettyPrint(*ast);*/
+        prettyPrint(*ast);
     } catch(const std::exception &e) { LERROR("Unhandled exception in main: {}", e.what()); }
     return EXIT_SUCCESS;  // Return appropriate exit code
 }
