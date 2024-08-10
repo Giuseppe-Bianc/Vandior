@@ -51,7 +51,11 @@ namespace vnd {
     Token Tokenizer::handleAlpha() {
         const auto start = position;
         auto type = TokenType::IDENTIFIER;
-        while(positionIsInText() && (TokenizerUtility::isalnumUnderscore(_input[position]))) { incPosAndColumn(); }
+        // clang-format off
+        while(positionIsInText() && (TokenizerUtility::isalnumUnderscore(_input[position]))) { 
+            incPosAndColumn(); 
+        }
+        // clang-format on
         const auto value = _input.substr(start, position - start);
         kewordType(value, type);
         return {type, value, {_filename, line, column - value.size()}};
@@ -65,39 +69,30 @@ namespace vnd {
         return {TokenType::IDENTIFIER, value, {_filename, line, column - value.size()}};
     }
 
+    // NOLINTBEGIN(*-identifier-length)
     void Tokenizer::getType(const std::string_view &value, TokenType &type) noexcept {
         using enum TokenType;
-        if(value == "i8"sv) { type = TYPE_I8; }
-        if(value == "i16"sv) { type = TYPE_I16; }
-        if(value == "i32"sv) { type = TYPE_I32; }
-        if(value == "i64"sv) { type = TYPE_I64; }
-        if(value == "u8"sv) { type = TYPE_U8; }
-        if(value == "u16"sv) { type = TYPE_U16; }
-        if(value == "u32"sv) { type = TYPE_U32; }
-        if(value == "u64"sv) { type = TYPE_U64; }
-        if(value == "f32"sv) { type = TYPE_F32; }
-        if(value == "f64"sv) { type = TYPE_F64; }
-        if(value == "c32"sv) { type = TYPE_C32; }
-        if(value == "c64"sv) { type = TYPE_C64; }
-        if(value == "char"sv) { type = TYPE_CHAR; }
-        if(value == "string"sv) { type = TYPE_STRING; }
-        if(value == "bool"sv) { type = TYPE_BOOL; }
+        static const std::unordered_map<std::string_view, TokenType> typeMap = {
+            {"i8"sv, TYPE_I8},   {"i16"sv, TYPE_I16}, {"i32"sv, TYPE_I32},   {"i64"sv, TYPE_I64},       {"u8"sv, TYPE_U8},
+            {"u16"sv, TYPE_U16}, {"u32"sv, TYPE_U32}, {"u64"sv, TYPE_U64},   {"f32"sv, TYPE_F32},       {"f64"sv, TYPE_F64},
+            {"c32"sv, TYPE_C32}, {"c64"sv, TYPE_C64}, {"char"sv, TYPE_CHAR}, {"string"sv, TYPE_STRING}, {"bool"sv, TYPE_BOOL}};
+
+        if(auto it = typeMap.find(value); it != typeMap.end()) [[likely]] { type = it->second; }
     }
     void Tokenizer::kewordType(const std::string_view &value, TokenType &type) noexcept {
         using enum TokenType;
-        if(value == "main"sv) { type = K_MAIN; }
-        if(value == "var"sv || value == "val"sv || value == "const"sv) { type = K_VAR; }
-        if(value == "if"sv) { type = K_IF; }
-        if(value == "while"sv) { type = K_WHILE; }
-        if(value == "else"sv) { type = K_ELSE; }
-        if(value == "for"sv) { type = K_FOR; }
-        if(value == "break"sv || value == "continue"sv) { type = K_BREAK; }
-        if(value == "fun"sv) { type = K_FUN; }
-        if(value == "return"sv) { type = K_RETURN; }
-        if(value == "nullptr"sv) { type = K_NULLPTR; }
-        if(value == "true"sv || value == "false"sv) { type = BOOLEAN; }
-        getType(value, type);
+        static const std::unordered_map<std::string_view, TokenType> keywordMap = {
+            {"main"sv, K_MAIN},   {"var"sv, K_VAR},       {"val"sv, K_VAR},         {"const"sv, K_VAR},   {"if"sv, K_IF},
+            {"while"sv, K_WHILE}, {"else"sv, K_ELSE},     {"for"sv, K_FOR},         {"break"sv, K_BREAK}, {"continue"sv, K_BREAK},
+            {"fun"sv, K_FUN},     {"return"sv, K_RETURN}, {"nullptr"sv, K_NULLPTR}, {"true"sv, BOOLEAN},  {"false"sv, BOOLEAN}};
+
+        if(auto it = keywordMap.find(value); it != keywordMap.end()) [[likely]] {
+            type = it->second;
+        } else [[unlikely]] {
+            getType(value, type);
+        }
     }
+    // NOLINTEND(*-identifier-length)
 
     bool Tokenizer::inTextAndE() const noexcept { return positionIsInText() && std::toupper(_input[position]) == ECR; }
     bool Tokenizer::inTextAnd(char chr) const noexcept { return positionIsInText() && _input[position] == chr; }
@@ -331,16 +326,17 @@ namespace vnd {
             Token token;
             if(value.size() > 1) {
                 auto twoCharOp = value.substr(0, 2);
-                token = {multyCharOp(twoCharOp), twoCharOp, {_filename, line, column - 2}};
+                token = {multyCharOp(twoCharOp), twoCharOp, {_filename, line, column - C_ST(value.size())}};
             }
             if(token.isType(TokenType::UNKNOWN) || value.size() == 1) {
-                auto oneCharOp = value.substr(0, 1);
-                token = Token{singoleCharOp(oneCharOp[0]), oneCharOp, {_filename, line, column - 1}};
+                std::string_view oneCharOp = value.substr(0, 1);
+                token = Token{singoleCharOp(oneCharOp[0]), oneCharOp, {_filename, line, column - C_ST(value.size())}};
             }
 
             tokens.emplace_back(token);
-            value = value.substr(token.getValue().size(), value.size() - token.getValue().size());
+            value.remove_prefix(token.getValue().size());
         }
+
         return tokens;
     }
 

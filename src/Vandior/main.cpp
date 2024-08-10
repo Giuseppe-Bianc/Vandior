@@ -34,6 +34,7 @@ namespace vnd {
 
 }  // namespace vnd
 DISABLE_WARNINGS_PUSH(26461 26821)
+static inline constexpr auto sequence = std::views::iota(0, 999'991);
 
 // NOLINTNEXTLINE(*-function-cognitive-complexity)
 auto main(int argc, const char *const argv[]) -> int {
@@ -62,23 +63,30 @@ auto main(int argc, const char *const argv[]) -> int {
         auto resultFolderCreation = vnd::FolderCreationResult::createFolderNextToFile(path.value_or(filename.data()), "vnbuild");
         const auto &vnBuildFolder = resultFolderCreation.pathcref();
         if(!resultFolderCreation.success()) { return EXIT_FAILURE; }
-        auto resultFolderCreationsrc = vnd::FolderCreationResult::createFolder("src", vnBuildFolder);
+        // NOLINTNEXTLINE(*-unchecked-optional-access)
+        auto resultFolderCreationsrc = vnd::FolderCreationResult::createFolder("src", vnBuildFolder.value());
         const auto &vnSrcFolder = resultFolderCreationsrc.pathcref();
         LINFO("{}", folderTime);
         if(!resultFolderCreationsrc.success()) {
             return EXIT_FAILURE;
         } else {
-            LINFO("build folder path {}", vnSrcFolder);
+            LINFO("build folder path {}", vnSrcFolder.value());
         }
-        auto str = vnd::readFromFile(path.value_or(filename.data()));
-        const std::string_view code(str);
-        vnd::Tokenizer tokenizer{code, path.value_or(filename.data())};
-        std::vector<vnd::Token> tokens;
-        vnd::timeTokenizer(tokenizer, tokens);
-        LINFO("num tokens {}", tokens.size());
+        vnd::Timer timers("sequence op totlal");
+        const auto porfilename = path.value_or(filename.data());
+        // NOLINTNEXTLINE(*-avoid-magic-numbers,*-magic-numbers, *-identifier-length)
+        for([[maybe_unused]] const auto &i : sequence) {
+            auto str = vnd::readFromFile(porfilename);
+            const std::string_view code(str);
+            vnd::Tokenizer tokenizer{code, porfilename};
+            std::vector<vnd::Token> tokens;
+            vnd::timeTokenizer(tokenizer, tokens);
+            LINFO("run {} num tokens {}", i, tokens.size());
+        }
+        LINFO("{}", timers);
 
         // 2 + 3 + (4.2 / 2) * 3 + y + (true / false) - 'd' * "ciao"
-        std::string input;
+        /*std::string input;
         std::getline(std::cin, input);
         LINFO("Input: {}", input);
         vnd::Parser parser{input, "input.vn"};
@@ -86,7 +94,7 @@ auto main(int argc, const char *const argv[]) -> int {
         LINFO("print interlal function\n{}", ast->print());
         LINFO("comp_print interlal function\n {}", ast->comp_print());
         LINFO("pretyPrint external function");
-        prettyPrint(*ast);
+        prettyPrint(*ast);*/
     } catch(const std::exception &e) { LERROR("Unhandled exception in main: {}", e.what()); }
     return EXIT_SUCCESS;  // Return appropriate exit code
 }
