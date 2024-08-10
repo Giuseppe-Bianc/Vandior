@@ -175,7 +175,7 @@ namespace vnd {
         } else if(currentType == TokenType::IDENTIFIER) {
             consumeToken();
             auto node = MAKE_UNIQUE(VariableNode, currentValue, currentToken);
-            parseIndex<VariableNode>(node);
+            if(!parseCall(node)) { parseIndex<VariableNode>(node); };
             return node;
         } else if(currentToken.getValue() == "(") {
             consumeToken();
@@ -186,6 +186,17 @@ namespace vnd {
             }
             // Handle error: mismatched parentheses
             throw ParserException(currentToken);
+        } else if(currentToken.getValue() == "{") {
+            auto token = getCurrentToken();
+            consumeToken();
+            if(getCurrentToken().getType() == vnd::TokenType::CLOSE_CUR_PARENTESIS) {
+                consumeToken();
+                return MAKE_UNIQUE(ArrayNode, nullptr, token);
+            }
+            auto elements = parseExpression();
+            if(getCurrentToken().getType() != vnd::TokenType::CLOSE_CUR_PARENTESIS) { throw ParserException(getCurrentToken()); }
+            consumeToken();
+            return MAKE_UNIQUE(ArrayNode, std::move(elements), token);
         } else [[unlikely]] {
             // Handle error: unexpected token
             throw ParserException(currentToken);
@@ -252,6 +263,23 @@ namespace vnd {
         if(getCurrentToken().getType() != CLOSE_CUR_PARENTESIS) { throw ParserException(getCurrentToken()); }
         consumeToken();
         node->set_array(MAKE_UNIQUE(ArrayNode, std::move(elements), token));
+        return true;
+    }
+
+    bool Parser::parseCall(std::unique_ptr<VariableNode> &node) {
+        using enum vnd::TokenType;
+        auto token = getCurrentToken();
+        if(token.getType() != OPEN_PARENTESIS) { return false; }
+        consumeToken();
+        if(getCurrentToken().getType() == CLOSE_PARENTESIS) {
+            consumeToken();
+            node->set_call();
+            return true;
+        }
+        auto elements = parseExpression();
+        if(getCurrentToken().getType() != CLOSE_PARENTESIS) { throw ParserException(getCurrentToken()); }
+        consumeToken();
+        node->set_call(std::move(elements));
         return true;
     }
 

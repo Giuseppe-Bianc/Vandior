@@ -1674,4 +1674,104 @@ TEST_CASE("Parser emit mismatched curly brackets exception", "[parser]") {
     vnd::Parser parser("string[size]{", filename);
     REQUIRE_THROWS_AS(parser.parse(), vnd::ParserException);
 }
+
+TEST_CASE("Parser emit empty index node print", "[parser]") {
+    vnd::Parser parser("i8[]", filename);
+    auto ast = parser.parse();
+    REQUIRE(ast != nullptr);
+    REQUIRE(ast->getType() == NodeType::Type);
+    const auto *typeNode = ast->as<vnd::TypeNode>();
+    REQUIRE(typeNode != nullptr);
+    REQUIRE(typeNode->get_index()->print() == "INDEX()");
+}
+
+TEST_CASE("Parser emit empty index compat print", "[parser]") {
+    vnd::Parser parser("i8[]", filename);
+    auto ast = parser.parse();
+    REQUIRE(ast != nullptr);
+    REQUIRE(ast->getType() == NodeType::Type);
+    const auto *typeNode = ast->as<vnd::TypeNode>();
+    REQUIRE(typeNode != nullptr);
+    REQUIRE(typeNode->get_index()->comp_print() == FORMAT("INDEX"));
+}
+
+TEST_CASE("Parser emit index node print", "[parser]") {
+    vnd::Parser parser("i8[1]", filename);
+    auto ast = parser.parse();
+    REQUIRE(ast != nullptr);
+    REQUIRE(ast->getType() == NodeType::Type);
+    const auto *typeNode = ast->as<vnd::TypeNode>();
+    REQUIRE(typeNode != nullptr);
+    REQUIRE(typeNode->get_index()->print() == FORMAT("INDEX({})", typeNode->get_index()->get_elements()->comp_print()));
+}
+
+TEST_CASE("Parser emit index compat print", "[parser]") {
+    vnd::Parser parser("i8[1]", filename);
+    auto ast = parser.parse();
+    REQUIRE(ast != nullptr);
+    REQUIRE(ast->getType() == NodeType::Type);
+    const auto *typeNode = ast->as<vnd::TypeNode>();
+    REQUIRE(typeNode != nullptr);
+    REQUIRE(typeNode->get_index()->comp_print() == FORMAT("INDEX"));
+}
+
+TEST_CASE("Parser emit empty array node print", "[parser]") {
+    vnd::Parser parser("{}", filename);
+    auto ast = parser.parse();
+    REQUIRE(ast != nullptr);
+    REQUIRE(ast->getType() == NodeType::Array);
+    const auto *arrayNode = ast->as<vnd::ArrayNode>();
+    REQUIRE(arrayNode != nullptr);
+    REQUIRE(arrayNode->print() == "ARRAY()");
+}
+
+TEST_CASE("Parser emit empty array compat node print", "[parser]") {
+    vnd::Parser parser("{}", filename);
+    auto ast = parser.parse();
+    REQUIRE(ast != nullptr);
+    REQUIRE(ast->getType() == NodeType::Array);
+    const auto *arrayNode = ast->as<vnd::ArrayNode>();
+    REQUIRE(arrayNode != nullptr);
+    REQUIRE(arrayNode->comp_print() == "ARRAY");
+}
+
+TEST_CASE("Parser emit array node print", "[parser]") {
+    vnd::Parser parser("{1, 2}", filename);
+    auto ast = parser.parse();
+    REQUIRE(ast != nullptr);
+    REQUIRE(ast->getType() == NodeType::Array);
+    const auto *arrayNode = ast->as<vnd::ArrayNode>();
+    REQUIRE(arrayNode != nullptr);
+    REQUIRE(arrayNode->print() == FORMAT("ARRAY({})", arrayNode->get_elements()->comp_print()));
+}
+
+TEST_CASE("Parser emit array compat node print", "[parser]") {
+    vnd::Parser parser("{1, 2}", filename);
+    auto ast = parser.parse();
+    REQUIRE(ast != nullptr);
+    REQUIRE(ast->getType() == NodeType::Array);
+    const auto *arrayNode = ast->as<vnd::ArrayNode>();
+    REQUIRE(arrayNode != nullptr);
+    REQUIRE(arrayNode->comp_print() == "ARRAY");
+}
+
+TEST_CASE("Parser emit empty callable node", "[parser]") {
+    vnd::Parser parser("function()", filename);
+    auto ast = parser.parse();
+    REQUIRE(ast != nullptr);
+    REQUIRE(ast->getType() == NodeType::Variable);
+    const auto *variableNode = ast->as<vnd::VariableNode>();
+    REQUIRE(variableNode->is_call() == true);
+    REQUIRE(variableNode->get_call() == nullptr);
+}
+
+TEST_CASE("Parser emit callable node", "[parser]") {
+    vnd::Parser parser("function(1)", filename);
+    auto ast = parser.parse();
+    REQUIRE(ast != nullptr);
+    REQUIRE(ast->getType() == NodeType::Variable);
+    const auto *variableNode = ast->as<vnd::VariableNode>();
+    REQUIRE(variableNode->is_call() == true);
+    REQUIRE(variableNode->get_call() != nullptr);
+}
 // NOLINTEND(*-include-cleaner, *-avoid-magic-numbers, *-magic-numbers, *-unchecked-optional-access)
