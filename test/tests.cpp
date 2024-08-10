@@ -1756,7 +1756,7 @@ TEST_CASE("Parser emit array compat node print", "[parser]") {
 }
 
 TEST_CASE("Parser emit empty callable node", "[parser]") {
-    vnd::Parser parser("function(1)", filename);
+    vnd::Parser parser("function()", filename);
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Variable);
