@@ -135,8 +135,13 @@ namespace vnd {
     DISABLE_WARNINGS_POP()
 }  // namespace vnd
 
+/**
+ * This function is a formatter for Token using fmt.
+ * \cond
+ */
 template <> struct fmt::formatter<vnd::ValueLabel> : fmt::formatter<std::string_view> {
     auto format(const vnd::ValueLabel &val, format_context &ctx) const -> format_context::iterator {
         return fmt::formatter<std::string_view>::format(val.toString(), ctx);
     }
 };
+/** \endcond */

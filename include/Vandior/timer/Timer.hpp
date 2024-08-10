@@ -194,11 +194,16 @@ namespace vnd {
     };
 }  // namespace vnd
 
+/**
+ * This function is a formatter for Token using fmt.
+ * \cond
+ */
 template <> struct fmt::formatter<vnd::Timer> : formatter<std::string_view> {
     auto format(const vnd::Timer &timer, format_context &ctx) const -> format_context::iterator {
         return formatter<std::string_view>::format(timer.to_string(), ctx);
     }
 };
+/** \endcond */
 
 inline std::ostream &operator<<(std::ostream &in, const vnd::Timer &timer) { return in << timer.to_string(); }
 

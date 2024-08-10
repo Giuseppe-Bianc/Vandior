@@ -26,7 +26,7 @@ namespace vnd {
             // Pre-allocate string to improve performance
             fileStream.seekg(0, std::ios::end);
             std::string buffer;
-            buffer.reserve(fileStream.tellg());
+            buffer.reserve(C_ST(fileStream.tellg()));
             fileStream.seekg(0, std::ios::beg);
 
             buffer.assign((std::istreambuf_iterator<char>(fileStream)), std::istreambuf_iterator<char>());

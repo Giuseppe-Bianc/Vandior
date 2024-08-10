@@ -34,7 +34,6 @@ namespace vnd {
 
 }  // namespace vnd
 DISABLE_WARNINGS_PUSH(26461 26821)
-static inline constexpr auto sequence = std::views::iota(0, 999'991);
 
 // NOLINTNEXTLINE(*-function-cognitive-complexity)
 auto main(int argc, const char *const argv[]) -> int {
