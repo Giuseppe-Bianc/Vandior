@@ -75,15 +75,12 @@ auto main(int argc, const char *const argv[]) -> int {
         vnd::Timer timers("sequence op totlal");
         const auto porfilename = path.value_or(filename.data());
         // NOLINTNEXTLINE(*-avoid-magic-numbers,*-magic-numbers, *-identifier-length)
-        for([[maybe_unused]] const auto &i : sequence) {
-            auto str = vnd::readFromFile(porfilename);
-            const std::string_view code(str);
-            vnd::Tokenizer tokenizer{code, porfilename};
-            std::vector<vnd::Token> tokens;
-            vnd::timeTokenizer(tokenizer, tokens);
-            LINFO("run {} num tokens {}", i, tokens.size());
-        }
-        LINFO("{}", timers);
+        auto str = vnd::readFromFile(porfilename);
+        const std::string_view code(str);
+        vnd::Tokenizer tokenizer{code, porfilename};
+        std::vector<vnd::Token> tokens;
+        vnd::timeTokenizer(tokenizer, tokens);
+        LINFO("num tokens {}", tokens.size());
 
         // 2 + 3 + (4.2 / 2) * 3 + y + (true / false) - 'd' * "ciao"
         /*std::string input;
