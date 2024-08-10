@@ -31,7 +31,10 @@ namespace vnd {
          * @brief Returns a string representation of the AST node.
          * @return String representation of the AST node.
          */
-        [[nodiscard]] std::string print() const override { return FORMAT("{}({})", getType(), m_elements->comp_print()); }
+        [[nodiscard]] std::string print() const override {
+            if(m_elements) { return FORMAT("{}({})", getType(), m_elements->comp_print()); }
+            return FORMAT("{}()", getType());
+        }
 
         /**
          * @brief Returns a compact string representation of the AST node for compilation purposes.
