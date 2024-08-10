@@ -1,4 +1,4 @@
-// NOLINTBEGIN(*-include-cleaner, *-avoid-magic-numbers, *-magic-numbers)
+// NOLINTBEGIN(*-include-cleaner, *-avoid-magic-numbers, *-magic-numbers, *-unchecked-optional-access)
 
 #include <catch2/catch_test_macros.hpp>
 #include <future>
@@ -519,7 +519,7 @@ TEST_CASE("FolderCreationResult Constructor") {
     SECTION("Default constructor") {
         vnd::FolderCreationResult result;
         REQUIRE(result.success() == false);
-        REQUIRE(result.path().empty());
+        REQUIRE(result.path().value_or("").empty());
     }
 
     SECTION("Parameterized constructor") {
@@ -539,7 +539,7 @@ TEST_CASE("FolderCreationResult Setters") {
 
     SECTION("Set path") {
         fs::path testPath("/test/path");
-        REQUIRE(result.path().empty());
+        REQUIRE(result.path().value_or("").empty());
         result.set_path(testPath);
         REQUIRE(result.path() == testPath);
     }
@@ -565,7 +565,7 @@ TEST_CASE("FolderCreationResult Folder Creation Functions") {
         std::string emptyFolderName;
         vnd::FolderCreationResult result = vnd::FolderCreationResult::createFolder(emptyFolderName, tempDir);
         REQUIRE(result.success() == false);
-        REQUIRE(result.path().empty());
+        REQUIRE(result.path()->empty());
     }
 
     SECTION("Create folder in non-existent parent directory") {
@@ -573,7 +573,7 @@ TEST_CASE("FolderCreationResult Folder Creation Functions") {
         std::string folderName = "test_folder";
         vnd::FolderCreationResult result = vnd::FolderCreationResult::createFolder(folderName, nonExistentParentDir);
         REQUIRE(result.success() == true);
-        REQUIRE(!result.path().empty());
+        REQUIRE(!result.path()->empty());
     }
 
     SECTION("Create folder existent directory") {
@@ -581,12 +581,12 @@ TEST_CASE("FolderCreationResult Folder Creation Functions") {
         std::string folderName = "test_folder";
         vnd::FolderCreationResult result = vnd::FolderCreationResult::createFolder(folderName, nonExistentParentDir);
         REQUIRE(result.success() == true);
-        REQUIRE(!result.path().empty());
+        REQUIRE(!result.path()->empty());
         fs::path ExistentParentDir = tempDir / "non_existent_dir";
         std::string folderName2 = "test_folder";
         vnd::FolderCreationResult result2 = vnd::FolderCreationResult::createFolder(folderName2, nonExistentParentDir);
         REQUIRE(result2.success() == true);
-        REQUIRE(!result2.path().empty());
+        REQUIRE(!result2.path()->empty());
     }
 
     SECTION("Create folder next to non-existent file") {
@@ -594,8 +594,8 @@ TEST_CASE("FolderCreationResult Folder Creation Functions") {
         std::string folderName = "test_folder";
         vnd::FolderCreationResult result = vnd::FolderCreationResult::createFolderNextToFile(nonExistentFilePath, folderName);
         REQUIRE(result.success() == true);
-        REQUIRE(!result.path().empty());
-        REQUIRE(!result.pathcref().empty());
+        REQUIRE(!result.path()->empty());
+        REQUIRE(!result.pathcref()->empty());
     }
 
     SECTION("Create folder next to existing file") {
@@ -1774,4 +1774,4 @@ TEST_CASE("Parser emit callable node", "[parser]") {
     REQUIRE(variableNode->is_call() == true);
     REQUIRE(variableNode->get_call() != nullptr);
 }
-// NOLINTEND(*-include-cleaner, *-avoid-magic-numbers, *-magic-numbers)
+// NOLINTEND(*-include-cleaner, *-avoid-magic-numbers, *-magic-numbers, *-unchecked-optional-access)

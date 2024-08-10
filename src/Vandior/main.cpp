@@ -62,17 +62,21 @@ auto main(int argc, const char *const argv[]) -> int {
         auto resultFolderCreation = vnd::FolderCreationResult::createFolderNextToFile(path.value_or(filename.data()), "vnbuild");
         const auto &vnBuildFolder = resultFolderCreation.pathcref();
         if(!resultFolderCreation.success()) { return EXIT_FAILURE; }
-        auto resultFolderCreationsrc = vnd::FolderCreationResult::createFolder("src", vnBuildFolder);
+        // NOLINTNEXTLINE(*-unchecked-optional-access)
+        auto resultFolderCreationsrc = vnd::FolderCreationResult::createFolder("src", vnBuildFolder.value());
         const auto &vnSrcFolder = resultFolderCreationsrc.pathcref();
         LINFO("{}", folderTime);
         if(!resultFolderCreationsrc.success()) {
             return EXIT_FAILURE;
         } else {
-            LINFO("build folder path {}", vnSrcFolder);
+            LINFO("build folder path {}", vnSrcFolder.value());
         }
-        auto str = vnd::readFromFile(path.value_or(filename.data()));
+        vnd::Timer timers("sequence op totlal");
+        const auto porfilename = path.value_or(filename.data());
+        // NOLINTNEXTLINE(*-avoid-magic-numbers,*-magic-numbers, *-identifier-length)
+        auto str = vnd::readFromFile(porfilename);
         const std::string_view code(str);
-        vnd::Tokenizer tokenizer{code, path.value_or(filename.data())};
+        vnd::Tokenizer tokenizer{code, porfilename};
         std::vector<vnd::Token> tokens;
         vnd::timeTokenizer(tokenizer, tokens);
         LINFO("num tokens {}", tokens.size());
