@@ -96,6 +96,12 @@ static inline constexpr const auto *NEWL = CNL;  // FreeBSD
 static inline constexpr const auto *NEWL = CNL;  // Default case
 #endif
 DISABLE_WARNINGS_POP()
+
+static inline constexpr std::string_view comma = ",";
+static inline constexpr std::string_view colon = ":";
+static inline constexpr auto slashcr = '/';
+static inline constexpr auto starcr = '*';
+static inline constexpr auto underore = '_';
 /**
  * @def SYSPAUSE
  * @brief A macro to pause the system and wait for user input.

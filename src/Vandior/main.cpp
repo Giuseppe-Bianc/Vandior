@@ -23,7 +23,7 @@ namespace vnd {
 
     auto timeParser(std::unique_ptr<vnd::ASTNode> &ast, vnd::Parser &parser) -> void {
         vnd::AutoTimer timer("parse");
-        ast = parser.parse();
+        ast = vnd_move_always_even_const(parser.parse());
     }
 
     [[nodiscard]] auto timeParse(Parser &parser) -> std::unique_ptr<ASTNode> {
