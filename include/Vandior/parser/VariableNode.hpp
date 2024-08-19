@@ -30,7 +30,7 @@ namespace vnd {
         [[nodiscard]] const std::string_view &getName() const noexcept { return name; }
 
 
-        [[nodiscard]] const bool is_call() const noexcept { return m_is_call; }
+        [[nodiscard]] bool is_call() const noexcept { return m_is_call; }
 
         /**
          * @brief Gets the index node of the node.
