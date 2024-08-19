@@ -6,12 +6,12 @@
 
 #include "../Log.hpp"
 #include "BinaryExpressionNode.hpp"
+#include "IndexNode.hpp"
 #include "LiteralNode.hpp"
 #include "NumberNode.hpp"
+#include "TypeNode.hpp"
 #include "UnaryExpressionNode.hpp"
 #include "VariableNode.hpp"
-#include "TypeNode.hpp"
-#include "IndexNode.hpp"
 
 /** \cond */
 DISABLE_WARNINGS_PUSH(
@@ -40,6 +40,8 @@ DISABLE_WARNINGS_PUSH(
  * and prints the appropriate information depending on the node type. It also uses recursion to
  * traverse the entire AST structure.
  */
+static inline constexpr auto PRETTYPRINT_AST_FORMAT = "{}_{}, VAL: {}){}";
+static inline constexpr auto PRETTYPRINT_AST_FORMAT2 = "{}, val: {}){}";
 // NOLINTNEXTLINE(misc-no-recursion)
 static inline void prettyPrint(const vnd::ASTNode &node, const std::string &indent = "", bool isLast = true, const std::string &lorf = "") {
     const auto &indentmark = FORMAT("{}{}{}{}", indent, isLast ? "+-" : "|-", lorf, lorf.empty() ? "" : " ");
@@ -59,38 +61,41 @@ static inline void prettyPrint(const vnd::ASTNode &node, const std::string &inde
         LINFO("{}(Type: VAR, val: {}){}", indentmark, variableNode->getName(), node.get_token().compat_to_string());
         if(variableNode->is_call()) {
             LINFO("{}()", indentmark);
-            if(variableNode->get_call()) { prettyPrint(*variableNode->get_call(), newindent, true, "CALL"); }
+            if(const auto &callNode = variableNode->get_call()) { prettyPrint(*callNode, newindent, true, "CALL"); }
         }
-        if(variableNode->get_index()) { prettyPrint(*variableNode->get_index(), newindent, true, "INDEX"); }
-    } else if(const auto *intnumberNode = node.safe_as<vnd::NumberNode<int>>()) {
-        LINFO("{}_{}, val: {}){}", imarknnum, NumNodeType_comp(intnumberNode->getNumberType()), intnumberNode->get_value(),
+        if(const auto &indexNode = variableNode->get_index()) { prettyPrint(*indexNode, newindent, true, "INDEX"); }
+    } else if(const auto *intnumberNode = node.safe_as<VND_NUM_INT>()) {
+        LINFO(PRETTYPRINT_AST_FORMAT, imarknnum, NumNodeType_comp(intnumberNode->getNumberType()), intnumberNode->get_value(),
               node.get_token().compat_to_string());
-    } else if(const auto *cflnumberNode = node.safe_as<vnd::NumberNode<std::complex<float>>>()) {
-        LINFO("{}_{}, val: {}){}", imarknnum, NumNodeType_comp(cflnumberNode->getNumberType()), cflnumberNode->get_value(),
+    } else if(const auto *cflnumberNode = node.safe_as<VND_NUM_CFLOAT>()) {
+        LINFO(PRETTYPRINT_AST_FORMAT, imarknnum, NumNodeType_comp(cflnumberNode->getNumberType()), cflnumberNode->get_value(),
               node.get_token().compat_to_string());
-    } else if(const auto *dflnumberNode = node.safe_as<vnd::NumberNode<std::complex<double>>>()) {
-        LINFO("{}_{}, val: {}){}", imarknnum, NumNodeType_comp(dflnumberNode->getNumberType()), dflnumberNode->get_value(),
+    } else if(const auto *dflnumberNode = node.safe_as<VND_NUM_CDOUBLE>()) {
+        LINFO(PRETTYPRINT_AST_FORMAT, imarknnum, NumNodeType_comp(dflnumberNode->getNumberType()), dflnumberNode->get_value(),
               node.get_token().compat_to_string());
-    } else if(const auto *flnumberNode = node.safe_as<vnd::NumberNode<float>>()) {
-        LINFO("{}_{}, val: {}){}", imarknnum, NumNodeType_comp(flnumberNode->getNumberType()), flnumberNode->get_value(),
+    } else if(const auto *flnumberNode = node.safe_as<VND_NUM_FLOAT>()) {
+        LINFO(PRETTYPRINT_AST_FORMAT, imarknnum, NumNodeType_comp(flnumberNode->getNumberType()), flnumberNode->get_value(),
               node.get_token().compat_to_string());
-    } else if(const auto *dblnumberNode = node.safe_as<vnd::NumberNode<double>>()) {
-        LINFO("{}_{}, val: {}){}", imarknnum, NumNodeType_comp(dblnumberNode->getNumberType()), dblnumberNode->get_value(),
+    } else if(const auto *dblnumberNode = node.safe_as<VND_NUM_DOUBLE>()) {
+        LINFO(PRETTYPRINT_AST_FORMAT, imarknnum, NumNodeType_comp(dblnumberNode->getNumberType()), dblnumberNode->get_value(),
               node.get_token().compat_to_string());
     } else if(const auto *blliteralNode = node.safe_as<vnd::LiteralNode<bool>>()) {
-        LINFO("{}, val: {}){}", imarknode, blliteralNode->get_value(), node.get_token().compat_to_string());
+        LINFO(PRETTYPRINT_AST_FORMAT2, imarknode, blliteralNode->get_value(), node.get_token().compat_to_string());
     } else if(const auto *chliteralNode = node.safe_as<vnd::LiteralNode<char>>()) {
-        LINFO("{}, val: {}){}", imarknode, chliteralNode->get_value(), node.get_token().compat_to_string());
+        LINFO(PRETTYPRINT_AST_FORMAT2, imarknode, chliteralNode->get_value(), node.get_token().compat_to_string());
     } else if(const auto *svliteralNode = node.safe_as<vnd::LiteralNode<std::string_view>>()) {
-        LINFO("{}, val: {}){}", imarknode, svliteralNode->get_value(), node.get_token().compat_to_string());
+        LINFO(PRETTYPRINT_AST_FORMAT2, imarknode, svliteralNode->get_value(), node.get_token().compat_to_string());
     } else if(const auto *typeNode = node.safe_as<vnd::TypeNode>()) {
         LINFO("{}, type: {}){}", imarknode, typeNode->get_value(), node.get_token().compat_to_string());
         if(typeNode->get_index()) { prettyPrint(*typeNode->get_index(), newindent, true, "INDEX"); }
     } else if(const auto *indexNode = node.safe_as<vnd::IndexNode>()) {
         LINFO("{}", indentmark, node.comp_print());
-        if(indexNode->get_elements()) { prettyPrint(*indexNode->get_elements(), newindent, true, ""); }
-        if(indexNode->get_index()) { prettyPrint(*indexNode->get_index(), newindent, true, "INDEX"); }
-        if(indexNode->get_array()) { prettyPrint(*indexNode->get_array(), newindent, true, "ELEM"); }
+        const auto &elementsNode = indexNode->get_elements();
+        const auto &elementsIndexNode = indexNode->get_index();
+        const auto &elementsArrayNode = indexNode->get_array();
+        if(elementsNode) { prettyPrint(*elementsNode, newindent, true, ""); }
+        if(elementsIndexNode) { prettyPrint(*elementsIndexNode, newindent, true, "INDEX"); }
+        if(elementsArrayNode) { prettyPrint(*elementsArrayNode, newindent, true, "ELEM"); }
     } else if(const auto *arrayNode = node.safe_as<vnd::ArrayNode>()) {
         LINFO("{}{}", indentmark, node.comp_print());
         if(arrayNode->get_elements()) { prettyPrint(*arrayNode->get_elements(), newindent, true, ""); }

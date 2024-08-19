@@ -89,8 +89,8 @@ namespace vnd {
      * @return TokenType of the value.
      */
     [[nodiscard]] static constexpr TokenType getBracketsType(const std::string_view &value) noexcept {
-        switch(value[0]) {
-            using enum TokenType;
+        using enum TokenType;
+        switch(value.front()) {
         case '(':
             return OPEN_PARENTESIS;
         case ')':

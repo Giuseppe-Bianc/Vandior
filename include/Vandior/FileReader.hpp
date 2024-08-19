@@ -10,6 +10,7 @@
 
 namespace vnd {
     inline auto readFromFile(const std::string &filename) -> std::string {
+        // NOLINTBEGIN(*-include-cleaner,  hicpp-signed-bitwise)
         static std::mutex fileReadMutex;
         std::scoped_lock lock(fileReadMutex);  // Ensure thread safety
         const auto &filePath = fs::path(filename);
@@ -20,17 +21,17 @@ namespace vnd {
         std::ifstream fileStream(filePath, std::ios::in | std::ios::binary);
         if(!fileStream.is_open()) { throw FILEREADEREERRORF("Unable to open file: {}", filePath); }
 
-        fileStream.exceptions(std::ios::failbit | std::ios::badbit);  // Ensure that the file is opened securely
+        fileStream.exceptions(std::ios::failbit | std::ios::badbit);
 
         try {
-            // Pre-allocate string to improve performance
-            fileStream.seekg(0, std::ios::end);
-            std::string buffer;
-            buffer.reserve(C_ST(fileStream.tellg()));
-            fileStream.seekg(0, std::ios::beg);
-
-            buffer.assign((std::istreambuf_iterator<char>(fileStream)), std::istreambuf_iterator<char>());
-            return buffer;
-        } catch(const std::ios_base::failure &e) { throw FILEREADEREERRORF("Unable to read file: {}. Reason: {}", filePath, e.what()); }
+            std::ostringstream buffer;
+            buffer << fileStream.rdbuf();
+            return buffer.str();
+        } catch(const std::ios_base::failure &e) {
+            throw FILEREADEREERRORF("Unable to read file: {}. Reason: {}", filePath, e.what());
+        } catch(const std::exception &e) {
+            throw FILEREADEREERRORF("An error occurred while reading the file: {}. Reason: {}", filePath, e.what());
+        }
+        // NOLINTEND(*-include-cleaner,  hicpp-signed-bitwise)
     }
 }  // namespace vnd

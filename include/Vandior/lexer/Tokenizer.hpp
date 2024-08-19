@@ -211,7 +211,7 @@ namespace vnd {
          * @return True if within text and next character is chr, false otherwise.
          */
         [[nodiscard]] bool inTextAnd(char chr) const noexcept;
-
+        [[nodiscard]] unsigned char getUnsignedCharAt(const size_t pos) const;
         /**
          * @brief Handles strings.
          * @return Token representing strings.

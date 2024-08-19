@@ -96,6 +96,12 @@ namespace vnd {
         [[nodiscard]] std::string_view getValue() const noexcept { return _value; }
 
         /**
+         * @brief Get the size of the value associated with the token.
+         * @return The value associated with the token.
+         */
+        [[nodiscard]] std::size_t getValueSize() const noexcept { return _value.size(); }
+
+        /**
          * @brief Get the file name where the token appears.
          * @return The file name.
          */

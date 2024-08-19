@@ -29,7 +29,6 @@ namespace vnd {
         [[nodiscard]] std::string comp_print() const override { return FORMAT("VAR({})", name); }
         [[nodiscard]] const std::string_view &getName() const noexcept { return name; }
 
-
         [[nodiscard]] bool is_call() const noexcept { return m_is_call; }
 
         /**
@@ -52,7 +51,7 @@ namespace vnd {
 
         /**
          * @brief Sets the call node of the node.
-         * @param index The call node of the node.
+         * @param call The call node of the node.
          */
         void set_call(std::unique_ptr<ASTNode> call = nullptr) noexcept {
             m_is_call = true;
