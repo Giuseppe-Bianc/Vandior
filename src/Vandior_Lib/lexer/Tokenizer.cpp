@@ -14,11 +14,18 @@ namespace vnd {
         {"!=", TokenType::NOTEQUAL}, {"&&", TokenType::ANDAND}, {"||", TokenType::OROR},
         {"++", TokenType::PLUSPLUS}, {"--", TokenType::MINUSMINUS}
     }};
+
     // clang-format on
+
+    /*CodeSourceLocation *Tokenizer::createLocation(const std::string_view &filename, size_t locline, size_t loccolumn) {
+        auto *location = _locationAllocator.allocate();
+        *location = {filename, locline, loccolumn};
+        return location;
+    }*/
 
     std::vector<Token> Tokenizer::tokenize() {
         std::vector<Token> tokens;
-        tokens.reserve(_inputSize / 3);
+        tokens.reserve(_inputSize);
         while(positionIsInText()) {
             const char &currentChar = _input.at(position);
             if(std::isalpha(currentChar)) [[likely]] {
@@ -87,6 +94,7 @@ namespace vnd {
         return {TokenType::IDENTIFIER, value, {_filename, line, column - value.size()}};
     }
 
+    DISABLE_WARNINGS_PUSH(26446 26447)
     // NOLINTBEGIN(*-identifier-length)
     void Tokenizer::getType(const std::string_view &value, TokenType &type) noexcept {
         using enum TokenType;
@@ -97,6 +105,7 @@ namespace vnd {
 
         if(const auto it = typeMap.find(value); it != typeMap.end()) [[likely]] { type = it->second; }
     }
+
     void Tokenizer::kewordType(const std::string_view &value, TokenType &type) noexcept {
         using enum TokenType;
         static const std::unordered_map<std::string_view, TokenType> keywordMap = {
@@ -111,6 +120,7 @@ namespace vnd {
         }
     }
     // NOLINTEND(*-identifier-length)
+    DISABLE_WARNINGS_POP()
 
     bool Tokenizer::inTextAndE() const noexcept { return positionIsInText() && std::toupper(_input[position]) == ECR; }
     bool Tokenizer::inTextAnd(char chr) const noexcept { return positionIsInText() && _input[position] == chr; }
@@ -147,7 +157,7 @@ namespace vnd {
     }
 
     Token Tokenizer::handleComment() {
-        auto nextposition = position + 1;
+        const auto nextposition = position + 1;
         if(_input[nextposition] == slashcr) { return handleSingleLineComment(); }
         if(_input[nextposition] == starcr) { return handleMultiLineComment(); }
         return {TokenType::UNKNOWN, {_filename, line, column}};
@@ -267,7 +277,7 @@ namespace vnd {
     TokenType Tokenizer::singoleCharOp(const char view) noexcept {
         switch(view) {
             using enum TokenType;
-        case '-':
+        case minuscs:
             return MINUS;
         case '=':
             return EQUAL;
@@ -277,7 +287,7 @@ namespace vnd {
             return GREATER;
         case '!':
             return NOT;
-        case '+':
+        case plusscr:
             return PLUS;
         case '*':
             return STAR;
@@ -307,18 +317,17 @@ namespace vnd {
 
     std::vector<Token> Tokenizer::handleOperators() {
         std::vector<Token> tokens;
-        tokens.reserve(_inputSize / 12);
         const auto start = position;
         extractVarLenOperator();
         auto value = _input.substr(start, position - start);
         while(!value.empty()) {
             Token token;
             if(value.size() > 1) {
-                auto twoCharOp = value.substr(0, 2);
+                const auto twoCharOp = value.substr(0, 2);
                 token = {multyCharOp(twoCharOp), twoCharOp, {_filename, line, column - twoCharOp.size()}};
             }
             if(token.isType(TokenType::UNKNOWN) || value.size() == 1) {
-                auto oneCharOp = value.substr(0, 1);
+                const auto oneCharOp = value.substr(0, 1);
                 token = Token{singoleCharOp(oneCharOp[0]), oneCharOp, {_filename, line, column - oneCharOp.size()}};
             }
 
