@@ -36,6 +36,7 @@ DISABLE_WARNINGS_PUSH(
 #include <map>
 #include <memory>
 #include <memory_resource>
+#include <new>
 #include <numbers>
 #include <ostream>
 #include <optional>
@@ -99,9 +100,15 @@ DISABLE_WARNINGS_POP()
 
 static inline constexpr std::string_view comma = ",";
 static inline constexpr std::string_view colon = ":";
+static inline constexpr auto commacr = ',';
+static inline constexpr auto coloncr = ':';
 static inline constexpr auto slashcr = '/';
 static inline constexpr auto starcr = '*';
 static inline constexpr auto underore = '_';
+static inline constexpr auto zerocr = '0';
+static inline constexpr auto sevencr = '7';
+static inline constexpr auto plusscr = '+';
+static inline constexpr auto minuscs = '-';
 /**
  * @def SYSPAUSE
  * @brief A macro to pause the system and wait for user input.

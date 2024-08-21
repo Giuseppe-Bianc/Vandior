@@ -35,6 +35,8 @@ namespace vnd {
 }  // namespace vnd
 DISABLE_WARNINGS_PUSH(26461 26821)
 
+// static inline constexpr auto sequence = std::views::iota(0, 999'999);
+
 // NOLINTNEXTLINE(*-function-cognitive-complexity)
 auto main(int argc, const char *const argv[]) -> int {
     // NOLINTNEXTLINE
@@ -56,22 +58,30 @@ auto main(int argc, const char *const argv[]) -> int {
 
         if(show_version) {
             LINFO("{}", Vandior::cmake::project_version);
-            return EXIT_SUCCESS;  // NOLINT(*-include-cleaner)
+            return EXIT_SUCCESS;
         }
-        vnd::Timer folderTime("floder creation");
+        vnd::FolderCreationResult resultFolderCreationsrc;
+        std::optional<fs::path> vnBuildFolder;
+        std::optional<fs::path> vnSrcFolder;
+        vnd::Timer folderTime("folder creation");
         auto resultFolderCreation = vnd::FolderCreationResult::createFolderNextToFile(path.value_or(filename.data()), "vnbuild");
-        const auto &vnBuildFolder = resultFolderCreation.pathcref();
-        if(!resultFolderCreation.success()) { return EXIT_FAILURE; }
-        // NOLINTNEXTLINE(*-unchecked-optional-access)
-        auto resultFolderCreationsrc = vnd::FolderCreationResult::createFolder("src", vnBuildFolder.value());
-        const auto &vnSrcFolder = resultFolderCreationsrc.pathcref();
+        vnBuildFolder = resultFolderCreation.pathcref();
+        if(!resultFolderCreation.success()) {
+            return EXIT_FAILURE;
+        } else {
+            if(vnBuildFolder.has_value()) {
+                resultFolderCreationsrc = vnd::FolderCreationResult::createFolder("src", vnBuildFolder.value());
+            } else {
+                return EXIT_FAILURE;
+            }
+            vnSrcFolder = resultFolderCreationsrc.pathcref();
+        }
         LINFO("{}", folderTime);
-        if(!resultFolderCreationsrc.success()) {
+        if(!resultFolderCreationsrc.success() && !vnSrcFolder.has_value()) {
             return EXIT_FAILURE;
         } else {
             LINFO("build folder path {}", vnSrcFolder.value());
         }
-        vnd::Timer timers("sequence op totlal");
         const auto porfilename = path.value_or(filename.data());
         // NOLINTNEXTLINE(*-avoid-magic-numbers,*-magic-numbers, *-identifier-length)
         auto str = vnd::readFromFile(porfilename);
@@ -87,9 +97,9 @@ auto main(int argc, const char *const argv[]) -> int {
         LINFO("Input: {}", input);
         vnd::Parser parser{input, "input.vn"};
         auto ast = vnd::timeParse(parser);
-        LINFO("print interlal function\n{}", ast->print());
-        LINFO("comp_print interlal function\n {}", ast->comp_print());
-        LINFO("pretyPrint external function");
+        LINFO("print internal function\n{}", ast->print());
+        LINFO("comp_print internal function\n {}", ast->comp_print());
+        LINFO("prettyPrint external function");
         prettyPrint(*ast);
     } catch(const std::exception &e) { LERROR("Unhandled exception in main: {}", e.what()); }
     return EXIT_SUCCESS;  // Return appropriate exit code

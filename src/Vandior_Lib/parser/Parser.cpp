@@ -5,7 +5,7 @@
 #include <utility>
 
 // NOLINTBEGIN(*-include-cleaner, *-no-recursion,*-avoid-magic-numbers, *-magic-numbers)
-DISABLE_WARNINGS_PUSH(26445 26481)
+DISABLE_WARNINGS_PUSH(26410 26411 26415 26445 26481)
 
 namespace vnd {
     std::unique_ptr<ASTNode> Parser::parse() { return parseExpression(); }
@@ -31,8 +31,8 @@ namespace vnd {
 
     const Token &Parser::getCurrentToken() const { return tokens.at(position); }
     std::size_t Parser::getUnaryOperatorPrecedence(const Token &token) noexcept {
-        const auto &tokenValue = token.getValue();
-        if(tokenValue == "+" || tokenValue == "-" || tokenValue == "!" || tokenValue == "++" || tokenValue == "--") {
+        if(const auto &tokenValue = token.getValue();
+           tokenValue == "+" || tokenValue == "-" || tokenValue == "!" || tokenValue == "++" || tokenValue == "--") {
             return operatorPrecedence.size() + 1;
         }
         return 0;
@@ -229,7 +229,7 @@ namespace vnd {
 
     std::unique_ptr<ASTNode> Parser::parseExpression(std::size_t parentPrecendence) { return parseBinary(parentPrecendence); }
 
-    template <typename T> void Parser::parseIndex(std::unique_ptr<T> &node) {
+    template <typename T> void Parser::parseIndex(const std::unique_ptr<T> &node) {
         using enum vnd::TokenType;
         auto token = getCurrentToken();
         if(token.getType() != OPEN_SQ_PARENTESIS) { return; }
@@ -249,7 +249,7 @@ namespace vnd {
         node->set_index(vnd_move_always_even_const(index));
     }
 
-    bool Parser::parseArray(std::unique_ptr<IndexNode> &node) {
+    bool Parser::parseArray(const std::unique_ptr<IndexNode> &node) {
         using enum vnd::TokenType;
         auto token = getCurrentToken();
         if(token.getType() != OPEN_CUR_PARENTESIS) { return false; }
@@ -266,10 +266,9 @@ namespace vnd {
         return true;
     }
 
-    bool Parser::parseCall(std::unique_ptr<VariableNode> &node) {
+    bool Parser::parseCall(const std::unique_ptr<VariableNode> &node) {
         using enum vnd::TokenType;
-        auto token = getCurrentToken();
-        if(token.getType() != OPEN_PARENTESIS) { return false; }
+        if(getCurrentToken().getType() != OPEN_PARENTESIS) { return false; }
         consumeToken();
         if(getCurrentToken().getType() == CLOSE_PARENTESIS) {
             consumeToken();
