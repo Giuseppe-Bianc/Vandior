@@ -4,6 +4,11 @@
 // NOLINTBEGIN(*-macro-usage)
 #pragma once
 
+#if defined(__GNUC__) && (__GNUC__ >= 11)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wuseless-cast"
+#endif
+
 /**
  * @defgroup TypeCastingMacros Type Casting Macros
  * @{
