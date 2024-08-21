@@ -14,6 +14,7 @@ add_library(vandior_lib vandior.cpp
         parser/TypeNode.cpp
         parser/IndexNode.cpp
         parser/ArrayNode.cpp
+        transpiler/Transpiler.cpp
 )
 
 add_library(Vandior::vandior_lib ALIAS vandior_lib)

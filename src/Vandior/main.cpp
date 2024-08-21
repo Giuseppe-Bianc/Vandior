@@ -55,32 +55,9 @@ auto main(int argc, const char *const argv[]) -> int {
         app.add_flag("--compile, -c", compile, "Compile the resulting code");
         app.add_flag("--run, -r", run, "Compile the resulting code and execute it");
         CLI11_PARSE(app, argc, argv)
-
         if(show_version) {
             LINFO("{}", Vandior::cmake::project_version);
             return EXIT_SUCCESS;
-        }
-        vnd::FolderCreationResult resultFolderCreationsrc;
-        std::optional<fs::path> vnBuildFolder;
-        std::optional<fs::path> vnSrcFolder;
-        vnd::Timer folderTime("folder creation");
-        auto resultFolderCreation = vnd::FolderCreationResult::createFolderNextToFile(path.value_or(filename.data()), "vnbuild");
-        vnBuildFolder = resultFolderCreation.pathcref();
-        if(!resultFolderCreation.success()) {
-            return EXIT_FAILURE;
-        } else {
-            if(vnBuildFolder.has_value()) {
-                resultFolderCreationsrc = vnd::FolderCreationResult::createFolder("src", vnBuildFolder.value());
-            } else {
-                return EXIT_FAILURE;
-            }
-            vnSrcFolder = resultFolderCreationsrc.pathcref();
-        }
-        LINFO("{}", folderTime);
-        if(!resultFolderCreationsrc.success() && !vnSrcFolder.has_value()) {
-            return EXIT_FAILURE;
-        } else {
-            LINFO("build folder path {}", vnSrcFolder.value());
         }
         const auto porfilename = path.value_or(filename.data());
         // NOLINTNEXTLINE(*-avoid-magic-numbers,*-magic-numbers, *-identifier-length)
@@ -101,6 +78,8 @@ auto main(int argc, const char *const argv[]) -> int {
         LINFO("comp_print internal function\n {}", ast->comp_print());
         LINFO("prettyPrint external function");
         prettyPrint(*ast);
+        vnd::Transpiler transpiler{input, "input.vn"};
+        transpiler.transpile();
     } catch(const std::exception &e) { LERROR("Unhandled exception in main: {}", e.what()); }
     return EXIT_SUCCESS;  // Return appropriate exit code
 }
