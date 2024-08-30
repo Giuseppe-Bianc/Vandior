@@ -78,7 +78,7 @@ auto main(int argc, const char *const argv[]) -> int {
         LINFO("comp_print internal function\n {}", ast->comp_print());
         LINFO("prettyPrint external function");
         prettyPrint(*ast);
-        vnd::Transpiler transpiler{input, "input.vn"};
+        vnd::Transpiler transpiler{input, filename};
         transpiler.transpile();
     } catch(const std::exception &e) { LERROR("Unhandled exception in main: {}", e.what()); }
     return EXIT_SUCCESS;  // Return appropriate exit code
