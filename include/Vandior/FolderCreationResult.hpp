@@ -165,8 +165,17 @@ namespace vnd {
 
                 // Construct the path for the new directory
                 return vnd::FolderCreationResult::createFolder(folderName, parentDir);
+            } catch(const fs::filesystem_error &e) {
+                // Handle specific filesystem errors
+                LERROR("Filesystem error: {} (Path1: '{}', Path2: '{}', Error code: {})", e.what(), e.path1(), e.path2(), e.code().value());
+                return {false, {}};
             } catch(const std::exception &e) {
+                // Handle all other standard exceptions
                 LERROR("Exception occurred: {}", e.what());
+                return {false, {}};
+            } catch(...) {
+                // Handle any other types of exceptions
+                LERROR("An unknown error occurred while creating the folder.");
                 return {false, {}};
             }
         }

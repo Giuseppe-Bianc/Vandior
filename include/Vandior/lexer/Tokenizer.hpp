@@ -35,15 +35,6 @@ namespace vnd {
         // ArenaAllocator<CodeSourceLocation> _locationAllocator;  ///< Allocator for CodeSourceLocation objects.
 
         /**
-         * @brief Creates a new CodeSourceLocation object.
-         * @param filename The name of the file.
-         * @param locline The line number.
-         * @param loccolumn The column number.
-         * @return Pointer to the created CodeSourceLocation object.
-         */
-        //[[nodiscard]] CodeSourceLocation *createLocation(const std::string_view &filename, size_t locline, size_t loccolumn);
-
-        /**
          * @brief Check if the current position is within the text.
          * @return True if the position is within the text, false otherwise.
          */

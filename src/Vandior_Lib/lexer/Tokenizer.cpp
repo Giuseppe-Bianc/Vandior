@@ -17,12 +17,6 @@ namespace vnd {
 
     // clang-format on
 
-    /*CodeSourceLocation *Tokenizer::createLocation(const std::string_view &filename, size_t locline, size_t loccolumn) {
-        auto *location = _locationAllocator.allocate();
-        *location = {filename, locline, loccolumn};
-        return location;
-    }*/
-
     std::vector<Token> Tokenizer::tokenize() {
         std::vector<Token> tokens;
         tokens.reserve(_inputSize);

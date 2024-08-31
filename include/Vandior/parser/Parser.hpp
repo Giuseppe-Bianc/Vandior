@@ -114,6 +114,7 @@ namespace vnd {
          */
         std::unique_ptr<ASTNode> parseExpression(std::size_t parentPrecendence = 0);
 
+        // FIXME: Function parameters should not be of type "std::unique_ptr<T> const &"
         /**
          * @brief Parses an index expression.
          * @tparam T The type of the node.
@@ -121,6 +122,7 @@ namespace vnd {
          */
         template <typename T> void parseIndex(const std::unique_ptr<T> &node);
 
+        // FIXME: Function parameters should not be of type "std::unique_ptr<T> const &"
         /**
          * @brief Parses an array expression.
          * @param node The node to parse the array for.
@@ -128,6 +130,7 @@ namespace vnd {
          */
         [[nodiscard]] bool parseArray(const std::unique_ptr<IndexNode> &node);
 
+        // FIXME: Function parameters should not be of type "std::unique_ptr<T> const/**
         /**
          * @brief Parses a function call expression.
          * @param node The node to parse the function call for.

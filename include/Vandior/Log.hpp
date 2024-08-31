@@ -174,7 +174,11 @@ inline void my_error_handler(const std::string &msg) {
         spdlog::set_pattern(R"(%^[%T %l] %v%$)");                                                                                          \
         const auto console = spdlog::stdout_color_mt(R"(console)");                                                                        \
         spdlog::set_default_logger(console);                                                                                               \
-    } catch(const spdlog::spdlog_ex &ex) { std::cerr << "Logger initialization failed: " << ex.what() << std::endl; }
+    } catch(const spdlog::spdlog_ex &ex) {                                                                                                 \
+        std::cerr << "Logger initialization failed: " << ex.what() << std::endl;                                                           \
+    } catch(const std::exception &e) { std::cerr << "Unhandled exception: " << e.what() << std::endl; } catch(...) {                       \
+        std::cerr << "An unknown error occurred Logger initialization failed.\n";                                                          \
+    }
 
 /// @}
 // NOLINTEND
