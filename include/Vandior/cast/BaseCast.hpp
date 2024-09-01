@@ -1,8 +1,13 @@
 //
 // Created by gbian on 01/06/2024.
 //
-
+// NOLINTBEGIN(*-macro-usage)
 #pragma once
+
+#if defined(__GNUC__) && (__GNUC__ >= 11)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wuseless-cast"
+#endif
 
 /**
  * @defgroup TypeCastingMacros Type Casting Macros
@@ -388,3 +393,5 @@
  */
 #define C_CPCU32T(x) static_cast<const uint32_t *>(static_cast<const void *>(x))
 /** @} */  // end of TypeCastingMacros group
+
+// NOLINTEND(*-macro-usage)

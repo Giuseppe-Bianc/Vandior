@@ -1,4 +1,5 @@
 #pragma once
+// NOLINTBEGIN(*-include-cleaner)
 
 #include "Vandior/lexer/Token.hpp"
 #include "Vandior/lexer/TokenizerUtility.hpp"
@@ -16,7 +17,7 @@ namespace vnd {
          * @param fileName The name of the file being tokenized (default: "unknown.vn").
          */
         explicit Tokenizer(const std::string_view &input, const std::string_view &fileName = "unknown.vn") noexcept
-          : _input(input), _filename(fileName), _inputSize(input.size()) {}  // NOLINT(*-include-cleaner)
+          : _input(input), _filename(fileName), _inputSize(input.size()) /*_locationAllocator(_inputSize)*/ {}
 
         /**
          * @brief Tokenize the input string.
@@ -31,6 +32,7 @@ namespace vnd {
         std::size_t position = 0;    ///< Current position in the input string.
         std::size_t line = 1;        ///< Current line number.
         std::size_t column = 1;      ///< Current column number.
+        // ArenaAllocator<CodeSourceLocation> _locationAllocator;  ///< Allocator for CodeSourceLocation objects.
 
         /**
          * @brief Check if the current position is within the text.
@@ -80,7 +82,13 @@ namespace vnd {
          */
         [[nodiscard]] Token handleDot();
 
+        /**
+         * @brief Sets the TokenType based on the value.
+         * @param value The value to check.
+         * @param type The TokenType to set.
+         */
         static void getType(const std::string_view &value, TokenType &type) noexcept;
+
         /**
          * @brief Sets TokenType based on the keyword.
          * @param value The keyword.
@@ -92,6 +100,7 @@ namespace vnd {
          * @brief Handles white space characters.
          */
         void handleWhiteSpace() noexcept;
+
         /**
          * @brief Finds the start of the current line.
          * @return Position of the start of the current line.
@@ -115,7 +124,7 @@ namespace vnd {
          * @brief Retrieves the context.
          * @param lineStart Position of the start of the context.
          * @param lineEnd Position of the end of the context.
-         * @return Contex.
+         * @return Context.
          */
         [[nodiscard]] std::string extract_context(const std::size_t &lineStart, const std::size_t &lineEnd) const;
 
@@ -131,7 +140,7 @@ namespace vnd {
          * @brief Retrieves the highlighting for error messages.
          * @param lineStart Starting position of the highlight.
          * @param lineEnd End position of the highlight.
-         * @param value the value to highlight.
+         * @param value The value to highlight.
          * @return Highlighted string.
          */
         [[nodiscard]] std::string getHighlighting(const std::size_t &lineStart, const std::size_t &lineEnd,
@@ -148,6 +157,7 @@ namespace vnd {
         template <StringOrStringView T>
         [[nodiscard]] std::string getErrorMessage(const T &value, const std::string_view &errMsg, const std::string &contextLine,
                                                   const std::string &highlighting);
+
         /**
          * @brief Extracts digits from the input.
          */
@@ -205,12 +215,20 @@ namespace vnd {
          * @return True if within text and next character is 'e', false otherwise.
          */
         [[nodiscard]] bool inTextAndE() const noexcept;
+
         /**
          * @brief Checks if the current position is within the text and the next character.
-         * @param chr the caracter to check.
+         * @param chr The character to check.
          * @return True if within text and next character is chr, false otherwise.
          */
         [[nodiscard]] bool inTextAnd(char chr) const noexcept;
+
+        /**
+         * @brief Gets the unsigned character at the specified position.
+         * @param pos The position.
+         * @return The unsigned character.
+         */
+        [[nodiscard]] unsigned char getUnsignedCharAt(const size_t pos) const;
 
         /**
          * @brief Handles strings.
@@ -226,3 +244,5 @@ namespace vnd {
     };
 
 }  // namespace vnd
+
+// NOLINTEND(*-include-cleaner)

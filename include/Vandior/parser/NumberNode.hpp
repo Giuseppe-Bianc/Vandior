@@ -45,7 +45,7 @@ namespace vnd {
 
         friend void swap(NumberNode &lhs, NumberNode &rhs) noexcept {
             using std::swap;
-            swap(static_cast<NumberNode &>(lhs), static_cast<NumberNode &>(rhs));
+            swap(static_cast<LiteralNode<T> &>(lhs), static_cast<LiteralNode<T> &>(rhs));
             swap(lhs.m_number_type, rhs.m_number_type);
         }
 
@@ -54,3 +54,9 @@ namespace vnd {
     };
 
 }  // namespace vnd
+
+#define VND_NUM_INT vnd::NumberNode<int>
+#define VND_NUM_FLOAT vnd::NumberNode<float>
+#define VND_NUM_DOUBLE vnd::NumberNode<double>
+#define VND_NUM_CFLOAT vnd::NumberNode<std::complex<float>>
+#define VND_NUM_CDOUBLE vnd::NumberNode<std::complex<double>>

@@ -4,8 +4,22 @@ using namespace std::literals::string_view_literals;
 // NOLINTBEGIN(*-include-cleaner, *-easily-swappable-parameters, *-avoid-magic-numbers, *-magic-numbers)
 DISABLE_WARNINGS_PUSH(26446)
 namespace vnd {
+    static inline constexpr auto icr = 'i';
+    static inline constexpr auto fcr = 'f';
+    // clang-format off
+    static constexpr std::array<std::pair<std::string_view, TokenType>, 14> multiCharOperators = {{
+        {"+=", TokenType::PLUSEQUAL}, {"-=", TokenType::MINUSEQUAL}, {"*=", TokenType::STAREQUAL},
+        {"/=", TokenType::DIVIDEEQUAL}, {"^=", TokenType::XOREQUAL}, {"%=", TokenType::PERCENTEQUAL},
+        {"==", TokenType::EQUALEQUAL}, {">=", TokenType::GREATEREQUAL}, {"<=", TokenType::LESSEQUAL},
+        {"!=", TokenType::NOTEQUAL}, {"&&", TokenType::ANDAND}, {"||", TokenType::OROR},
+        {"++", TokenType::PLUSPLUS}, {"--", TokenType::MINUSMINUS}
+    }};
+
+    // clang-format on
+
     std::vector<Token> Tokenizer::tokenize() {
         std::vector<Token> tokens;
+        tokens.reserve(_inputSize);
         while(positionIsInText()) {
             const char &currentChar = _input.at(position);
             if(std::isalpha(currentChar)) [[likely]] {
@@ -33,10 +47,10 @@ namespace vnd {
             } else if(TokenizerUtility::isQuotation(currentChar)) [[likely]] {
                 tokens.emplace_back(handleString());
             } else if(TokenizerUtility::isComma(currentChar)) {
-                tokens.emplace_back(TokenType::COMMA, ","sv, CodeSourceLocation{_filename, line, column - 1});
+                tokens.emplace_back(TokenType::COMMA, comma, CodeSourceLocation{_filename, line, column - 1});
                 incPosAndColumn();
             } else if(TokenizerUtility::isColon(currentChar)) {
-                tokens.emplace_back(TokenType::COLON, ":"sv, CodeSourceLocation{_filename, line, column - 1});
+                tokens.emplace_back(TokenType::COLON, colon, CodeSourceLocation{_filename, line, column - 1});
                 incPosAndColumn();
             } else [[unlikely]] {
                 handleError(std::string(1, currentChar), "Unknown Character");
@@ -48,10 +62,19 @@ namespace vnd {
 
     bool Tokenizer::positionIsInText() const noexcept { return position < _inputSize; }
 
+    unsigned char Tokenizer::getUnsignedCharAt(const size_t pos) const {
+        if(pos >= _inputSize) { throw std::out_of_range(FORMAT("Position {} out of range 0-{}", pos, _inputSize)); }
+        return C_UC(_input[pos]);
+    }
+
     Token Tokenizer::handleAlpha() {
         const auto start = position;
         auto type = TokenType::IDENTIFIER;
-        while(positionIsInText() && (TokenizerUtility::isalnumUnderscore(_input[position]))) { incPosAndColumn(); }
+        // clang-format off
+        while(positionIsInText() && (TokenizerUtility::isalnumUnderscore(_input[position]))) {
+            incPosAndColumn();
+        }
+        // clang-format on
         const auto value = _input.substr(start, position - start);
         kewordType(value, type);
         return {type, value, {_filename, line, column - value.size()}};
@@ -65,39 +88,33 @@ namespace vnd {
         return {TokenType::IDENTIFIER, value, {_filename, line, column - value.size()}};
     }
 
+    DISABLE_WARNINGS_PUSH(26446 26447)
+    // NOLINTBEGIN(*-identifier-length)
     void Tokenizer::getType(const std::string_view &value, TokenType &type) noexcept {
         using enum TokenType;
-        if(value == "i8"sv) { type = TYPE_I8; }
-        if(value == "i16"sv) { type = TYPE_I16; }
-        if(value == "i32"sv) { type = TYPE_I32; }
-        if(value == "i64"sv) { type = TYPE_I64; }
-        if(value == "u8"sv) { type = TYPE_U8; }
-        if(value == "u16"sv) { type = TYPE_U16; }
-        if(value == "u32"sv) { type = TYPE_U32; }
-        if(value == "u64"sv) { type = TYPE_U64; }
-        if(value == "f32"sv) { type = TYPE_F32; }
-        if(value == "f64"sv) { type = TYPE_F64; }
-        if(value == "c32"sv) { type = TYPE_C32; }
-        if(value == "c64"sv) { type = TYPE_C64; }
-        if(value == "char"sv) { type = TYPE_CHAR; }
-        if(value == "string"sv) { type = TYPE_STRING; }
-        if(value == "bool"sv) { type = TYPE_BOOL; }
+        static const std::unordered_map<std::string_view, TokenType> typeMap = {
+            {"i8"sv, TYPE_I8},   {"i16"sv, TYPE_I16}, {"i32"sv, TYPE_I32},   {"i64"sv, TYPE_I64},       {"u8"sv, TYPE_U8},
+            {"u16"sv, TYPE_U16}, {"u32"sv, TYPE_U32}, {"u64"sv, TYPE_U64},   {"f32"sv, TYPE_F32},       {"f64"sv, TYPE_F64},
+            {"c32"sv, TYPE_C32}, {"c64"sv, TYPE_C64}, {"char"sv, TYPE_CHAR}, {"string"sv, TYPE_STRING}, {"bool"sv, TYPE_BOOL}};
+
+        if(const auto it = typeMap.find(value); it != typeMap.end()) [[likely]] { type = it->second; }
     }
+
     void Tokenizer::kewordType(const std::string_view &value, TokenType &type) noexcept {
         using enum TokenType;
-        if(value == "main"sv) { type = K_MAIN; }
-        if(value == "var"sv || value == "val"sv || value == "const"sv) { type = K_VAR; }
-        if(value == "if"sv) { type = K_IF; }
-        if(value == "while"sv) { type = K_WHILE; }
-        if(value == "else"sv) { type = K_ELSE; }
-        if(value == "for"sv) { type = K_FOR; }
-        if(value == "break"sv || value == "continue"sv) { type = K_BREAK; }
-        if(value == "fun"sv) { type = K_FUN; }
-        if(value == "return"sv) { type = K_RETURN; }
-        if(value == "nullptr"sv) { type = K_NULLPTR; }
-        if(value == "true"sv || value == "false"sv) { type = BOOLEAN; }
-        getType(value, type);
+        static const std::unordered_map<std::string_view, TokenType> keywordMap = {
+            {"main"sv, K_MAIN},   {"var"sv, K_VAR},       {"val"sv, K_VAR},         {"const"sv, K_VAR},   {"if"sv, K_IF},
+            {"while"sv, K_WHILE}, {"else"sv, K_ELSE},     {"for"sv, K_FOR},         {"break"sv, K_BREAK}, {"continue"sv, K_BREAK},
+            {"fun"sv, K_FUN},     {"return"sv, K_RETURN}, {"nullptr"sv, K_NULLPTR}, {"true"sv, BOOLEAN},  {"false"sv, BOOLEAN}};
+
+        if(const auto it = keywordMap.find(value); it != keywordMap.end()) [[likely]] {
+            type = it->second;
+        } else [[unlikely]] {
+            getType(value, type);
+        }
     }
+    // NOLINTEND(*-identifier-length)
+    DISABLE_WARNINGS_POP()
 
     bool Tokenizer::inTextAndE() const noexcept { return positionIsInText() && std::toupper(_input[position]) == ECR; }
     bool Tokenizer::inTextAnd(char chr) const noexcept { return positionIsInText() && _input[position] == chr; }
@@ -121,11 +138,11 @@ namespace vnd {
             extractExponent();
             tokenType = DOUBLE;
         }
-        if(inTextAnd('i')) {
+        if(inTextAnd(icr)) {
             incPosAndColumn();
             tokenType = DOUBLE;
         }
-        if(inTextAnd('f')) {
+        if(inTextAnd(fcr)) {
             incPosAndColumn();
             tokenType = DOUBLE;
         }
@@ -134,9 +151,9 @@ namespace vnd {
     }
 
     Token Tokenizer::handleComment() {
-        auto nextposition = position + 1;
-        if(_input[nextposition] == '/') { return handleSingleLineComment(); }
-        if(_input[nextposition] == '*') { return handleMultiLineComment(); }
+        const auto nextposition = position + 1;
+        if(_input[nextposition] == slashcr) { return handleSingleLineComment(); }
+        if(_input[nextposition] == starcr) { return handleMultiLineComment(); }
         return {TokenType::UNKNOWN, {_filename, line, column}};
     }
 
@@ -150,7 +167,7 @@ namespace vnd {
     Token Tokenizer::handleMultiLineComment() {
         const auto start = position;
         const auto startColumn = column;
-        while(_input[position] != '*' || _input[position + 1] != '/') {
+        while(_input[position] != starcr || _input[position + 1] != slashcr) {
             if(position + 2 == _inputSize) {
                 const auto value = _input.substr(start, position - start + 1);
                 return {TokenType::UNKNOWN, value, {_filename, line, startColumn}};
@@ -167,15 +184,15 @@ namespace vnd {
         const auto start = position;
         auto type = TokenType::DOT;
         incPosAndColumn();
-        if(positionIsInText() && std::isdigit(_input[position])) {
+        if(positionIsInText() && std::isdigit(getUnsignedCharAt(position))) {
             type = TokenType::DOUBLE;
             extractDigits();
             if(inTextAndE()) {
                 incPosAndColumn();
                 extractExponent();
             }
-            if(inTextAnd('i')) { incPosAndColumn(); }
-            if(inTextAnd('f')) { incPosAndColumn(); }
+            if(inTextAnd(icr)) { incPosAndColumn(); }
+            if(inTextAnd(fcr)) { incPosAndColumn(); }
         }
         const auto value = _input.substr(start, position - start);
         return {type, value, {_filename, line, column - value.size()}};
@@ -196,13 +213,11 @@ namespace vnd {
     }
 
     void Tokenizer::handleWhiteSpace() noexcept {
-        if(_input[position] == '\n') [[unlikely]] {
+        if(_input[position] == NL) [[unlikely]] {
             ++line;
-            column = 1;
-        } else {
-            ++column;
+            column = 0;
         }
-        ++position;
+        incPosAndColumn();
     }
 
     Token Tokenizer::handleBrackets() {
@@ -256,7 +271,7 @@ namespace vnd {
     TokenType Tokenizer::singoleCharOp(const char view) noexcept {
         switch(view) {
             using enum TokenType;
-        case '-':
+        case minuscs:
             return MINUS;
         case '=':
             return EQUAL;
@@ -266,7 +281,7 @@ namespace vnd {
             return GREATER;
         case '!':
             return NOT;
-        case '+':
+        case plusscr:
             return PLUS;
         case '*':
             return STAR;
@@ -286,40 +301,12 @@ namespace vnd {
     }
 
     TokenType Tokenizer::multyCharOp(const std::string_view &view) noexcept {
-        using enum TokenType;
-        if(view == "+="sv) {
-            return PLUSEQUAL;
-        } else if(view == "-="sv) {
-            return MINUSEQUAL;
-        } else if(view == "*="sv) {
-            return STAREQUAL;
-        } else if(view == "/="sv) {
-            return DIVIDEEQUAL;
-        } else if(view == "^="sv) {
-            return XOREQUAL;
-        } else if(view == "%="sv) {
-            return PERCENTEQUAL;
+        // NOLINTNEXTLINE(*-identifier-length)
+        if(const auto it = std::ranges::find_if(multiCharOperators, [&](const auto &pair) { return pair.first == view; });
+           it != multiCharOperators.end()) {
+            return it->second;
         }
-        if(view == "=="sv) {
-            return EQUALEQUAL;
-        } else if(view == ">="sv) {
-            return GREATEREQUAL;
-        } else if(view == "<="sv) {
-            return LESSEQUAL;
-        } else if(view == "!="sv) {
-            return NOTEQUAL;
-        }
-        if(view == "&&"sv) {
-            return ANDAND;
-        } else if(view == "||"sv) {
-            return OROR;
-        }
-        if(view == "++"sv) {
-            return PLUSPLUS;
-        } else if(view == "--"sv) {
-            return MINUSMINUS;
-        }
-        return UNKNOWN;
+        return TokenType::UNKNOWN;
     }
 
     std::vector<Token> Tokenizer::handleOperators() {
@@ -330,17 +317,18 @@ namespace vnd {
         while(!value.empty()) {
             Token token;
             if(value.size() > 1) {
-                auto twoCharOp = value.substr(0, 2);
-                token = {multyCharOp(twoCharOp), twoCharOp, {_filename, line, column - 2}};
+                const auto twoCharOp = value.substr(0, 2);
+                token = {multyCharOp(twoCharOp), twoCharOp, {_filename, line, column - twoCharOp.size()}};
             }
             if(token.isType(TokenType::UNKNOWN) || value.size() == 1) {
-                auto oneCharOp = value.substr(0, 1);
-                token = Token{singoleCharOp(oneCharOp[0]), oneCharOp, {_filename, line, column - 1}};
+                const auto oneCharOp = value.substr(0, 1);
+                token = Token{singoleCharOp(oneCharOp[0]), oneCharOp, {_filename, line, column - oneCharOp.size()}};
             }
 
             tokens.emplace_back(token);
-            value = value.substr(token.getValue().size(), value.size() - token.getValue().size());
+            value.remove_prefix(token.getValueSize());
         }
+
         return tokens;
     }
 
@@ -426,13 +414,13 @@ namespace vnd {
     Token Tokenizer::handleHexadecimalOrOctal() {
         const auto start = position;
         incPosAndColumn();
-        if(positionIsInText() && std::tolower(_input[position]) == 'o') {
+        if(positionIsInText() && std::tolower(getUnsignedCharAt(position)) == 'o') {
             // Gestione dei numeri ottali
             incPosAndColumn();
             while(positionIsInText() && TokenizerUtility::isOctalDigit(_input[position])) { incPosAndColumn(); }
-        } else if(positionIsInText() && std::isxdigit(_input[position])) {
+        } else if(positionIsInText() && std::isxdigit(getUnsignedCharAt(position))) {
             // Gestione dei numeri esadecimali
-            while(positionIsInText() && std::isxdigit(_input[position])) { incPosAndColumn(); }
+            while(positionIsInText() && std::isxdigit(getUnsignedCharAt(position))) { incPosAndColumn(); }
         } else [[unlikely]] {
             const auto error_value = _input.substr(start, position);
             handleError(error_value, "malformed exadecimal number or octal number");

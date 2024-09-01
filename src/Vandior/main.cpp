@@ -14,15 +14,28 @@ DISABLE_WARNINGS_POP()
 
 #define HIDE_SYSTEM_OUTPUT
 
-namespace {
-    auto timeTokenizer(vnd::Tokenizer &tokenizer, std::vector<vnd::Token> &tokens) -> void {
+namespace vnd {
+    auto timeTokenizer(Tokenizer &tokenizer, std::vector<Token> &tokens) -> void {
         tokens.clear();
-        vnd::AutoTimer timer("tokenization");
+        AutoTimer timer("tokenization");
         tokens = tokenizer.tokenize();
     }
 
-}  // namespace
+    auto timeParser(std::unique_ptr<vnd::ASTNode> &ast, vnd::Parser &parser) -> void {
+        vnd::AutoTimer timer("parse");
+        ast = vnd_move_always_even_const(parser.parse());
+    }
+
+    [[nodiscard]] auto timeParse(Parser &parser) -> std::unique_ptr<ASTNode> {
+        std::unique_ptr<ASTNode> ast;
+        timeParser(ast, parser);
+        return ast;
+    }
+
+}  // namespace vnd
 DISABLE_WARNINGS_PUSH(26461 26821)
+
+// static inline constexpr auto sequence = std::views::iota(0, 999'999);
 
 // NOLINTNEXTLINE(*-function-cognitive-complexity)
 auto main(int argc, const char *const argv[]) -> int {
@@ -42,26 +55,17 @@ auto main(int argc, const char *const argv[]) -> int {
         app.add_flag("--compile, -c", compile, "Compile the resulting code");
         app.add_flag("--run, -r", run, "Compile the resulting code and execute it");
         CLI11_PARSE(app, argc, argv)
-
         if(show_version) {
             LINFO("{}", Vandior::cmake::project_version);
-            return EXIT_SUCCESS;  // NOLINT(*-include-cleaner)
+            return EXIT_SUCCESS;
         }
-        auto resultFolderCreation = vnd::FolderCreationResult::createFolderNextToFile(path.value_or(filename.data()), "vnbuild");
-        const auto &vnBuildFolder = resultFolderCreation.pathcref();
-        if(!resultFolderCreation.success()) { return EXIT_FAILURE; }
-        auto resultFolderCreationsrc = vnd::FolderCreationResult::createFolder("src", vnBuildFolder);
-        auto vnSrcFolder = resultFolderCreationsrc.pathcref();
-        if(!resultFolderCreationsrc.success()) {
-            return EXIT_FAILURE;
-        } else {
-            LINFO("build folder path {}", vnSrcFolder);
-        }
-        auto str = vnd::readFromFile(path.value_or(filename.data()));
+        const auto porfilename = path.value_or(filename.data());
+        // NOLINTNEXTLINE(*-avoid-magic-numbers,*-magic-numbers, *-identifier-length)
+        auto str = vnd::readFromFile(porfilename);
         const std::string_view code(str);
-        vnd::Tokenizer tokenizer{code, path.value_or(filename.data())};
+        vnd::Tokenizer tokenizer{code, porfilename};
         std::vector<vnd::Token> tokens;
-        timeTokenizer(tokenizer, tokens);
+        vnd::timeTokenizer(tokenizer, tokens);
         LINFO("num tokens {}", tokens.size());
 
         // 2 + 3 + (4.2 / 2) * 3 + y + (true / false) - 'd' * "ciao"
@@ -69,13 +73,13 @@ auto main(int argc, const char *const argv[]) -> int {
         std::getline(std::cin, input);
         LINFO("Input: {}", input);
         vnd::Parser parser{input, "input.vn"};
-        auto ast = parser.parse();
-        LINFO("print interlal function");
-        LINFO("{}", ast->print());
-        LINFO("comp_print interlal function");
-        LINFO("{}", ast->comp_print());
-        LINFO("pretyPrint external function");
+        auto ast = vnd::timeParse(parser);
+        LINFO("print internal function\n{}", ast->print());
+        LINFO("comp_print internal function\n {}", ast->comp_print());
+        LINFO("prettyPrint external function");
         prettyPrint(*ast);
+        vnd::Transpiler transpiler{input, filename};
+        transpiler.transpile();
     } catch(const std::exception &e) { LERROR("Unhandled exception in main: {}", e.what()); }
     return EXIT_SUCCESS;  // Return appropriate exit code
 }

@@ -33,8 +33,10 @@
 // NOLINTBEGIN
 
 // clang-format off
-#include <Vandior/vandior_export.hpp>
 #include "disableWarn.hpp"
+#include <source_location>
+#include <iostream>
+#include "format.hpp"
 // clang-format on
 
 /** \cond */
@@ -136,6 +138,23 @@ DISABLE_WARNINGS_POP()
  */
 #define LCRITICAL(...) SPDLOG_CRITICAL(__VA_ARGS__)
 
+inline std::string get_current_timestamp() {
+    const auto now = std::chrono::system_clock::now();
+    const auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()) % 1000;
+
+    return FORMAT("{}.{:03d}", std::chrono::system_clock::from_time_t(std::chrono::system_clock::to_time_t(now)), ms.count());
+}
+
+// Hypothetical implementation using C++23-like features
+inline void my_error_handler(const std::string &msg) {
+    const std::source_location &location = std::source_location::current();
+    std::cerr << FORMAT("Error occurred:\n  Timestamp: {}\n", get_current_timestamp());
+    std::cerr << FORMAT("  Thread ID: {}\n", std::this_thread::get_id());
+    std::cerr << FORMAT("  Message: {}\n", msg);
+    std::cerr << FORMAT("  Function: {}, File: {}, Line: {}, Column: {}\n", location.function_name(), location.file_name(), location.line(),
+                        location.column());
+}
+// C:\Users\gbian\AppData\Local\Programs\CLion
 /**
  * @brief Initialize the logging system with default configurations.
  * @details This macro initializes the logging system with a default pattern and creates a console logger.
@@ -150,11 +169,16 @@ DISABLE_WARNINGS_POP()
  * @see spdlog::set_default_logger
  */
 #define INIT_LOG()                                                                                                                         \
+    spdlog::set_error_handler(my_error_handler);                                                                                           \
     try {                                                                                                                                  \
         spdlog::set_pattern(R"(%^[%T %l] %v%$)");                                                                                          \
         const auto console = spdlog::stdout_color_mt(R"(console)");                                                                        \
         spdlog::set_default_logger(console);                                                                                               \
-    } catch(const spdlog::spdlog_ex &ex) { std::cerr << "Logger initialization failed: " << ex.what() << std::endl; }
+    } catch(const spdlog::spdlog_ex &ex) {                                                                                                 \
+        std::cerr << "Logger initialization failed: " << ex.what() << std::endl;                                                           \
+    } catch(const std::exception &e) { std::cerr << "Unhandled exception: " << e.what() << std::endl; } catch(...) {                       \
+        std::cerr << "An unknown error occurred Logger initialization failed.\n";                                                          \
+    }
 
 /// @}
 // NOLINTEND

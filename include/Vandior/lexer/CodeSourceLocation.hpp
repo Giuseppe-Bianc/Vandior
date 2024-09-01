@@ -32,7 +32,7 @@ namespace vnd {
          * @param line The line number in the source file.
          * @param column The column number in the source file.
          */
-        CodeSourceLocation(const std::string_view &fileName, std::size_t line, std::size_t column) noexcept
+        CodeSourceLocation(const std::string_view fileName, std::size_t line, std::size_t column) noexcept
           : _fileName(fileName), _line(line), _column(column) {}
 
         /**
@@ -96,18 +96,21 @@ namespace vnd {
 
         /**
          * @brief Setter method for file name.
+         * @param fileName The name of the source file.
          */
-        void setFileName(const std::string_view &fileName) noexcept { _fileName = fileName; }
+        void setFileName(std::string_view fileName) noexcept { _fileName = fileName; }
 
         /**
          * @brief Setter method for line number.
+         * @param line The line number in the source file.
          */
-        void setLine(size_t line) noexcept { _line = line; }
+        void setLine(std::size_t line) noexcept { _line = line; }
 
         /**
          * @brief Setter method for column number.
+         * @param column The column number in the source file.
          */
-        void setColumn(size_t column) noexcept { _column = column; }
+        void setColumn(std::size_t column) noexcept { _column = column; }
 
         /**
          * @brief Creates a CodeSourceLocation object representing an unknown location.
@@ -136,8 +139,8 @@ namespace vnd {
          */
         auto operator<=>(const CodeSourceLocation &other) const noexcept = default;
 
-        std::string toString() const noexcept { return FORMAT("(file:{}, line:{}, column:{})", _fileName, _line, _column); }
-        std::string compat_to_string() const noexcept { return FORMAT("(f:{}, l:{}, c:{})", _fileName, _line, _column); }
+        [[nodiscard]] std::string toString() const noexcept { return FORMAT("(file:{}, line:{}, column:{})", _fileName, _line, _column); }
+        [[nodiscard]] std::string compat_to_string() const noexcept { return FORMAT("(f:{}, l:{}, c:{})", _fileName, _line, _column); }
 
     private:
         std::string_view _fileName;  ///< The name of the source file.
@@ -155,7 +158,7 @@ DISABLE_WARNINGS_POP()
  */
 // NOLINTNEXTLINE
 template <> struct fmt::formatter<vnd::CodeSourceLocation> : fmt::formatter<std::string_view> {
-    template <typename FormatContext> auto format(const vnd::CodeSourceLocation &val, FormatContext &ctx) {
+    auto format(const vnd::CodeSourceLocation &val, format_context &ctx) const -> format_context::iterator {
         return fmt::formatter<std::string_view>::format(val.toString(), ctx);
     }
 };

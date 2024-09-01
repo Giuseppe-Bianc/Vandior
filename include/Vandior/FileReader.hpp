@@ -10,28 +10,28 @@
 
 namespace vnd {
     inline auto readFromFile(const std::string &filename) -> std::string {
+        // NOLINTBEGIN(*-include-cleaner,  hicpp-signed-bitwise)
+        static std::mutex fileReadMutex;
+        std::scoped_lock lock(fileReadMutex);  // Ensure thread safety
         const auto &filePath = fs::path(filename);
         if(!fs::exists(filePath)) { throw FILEREADEREERRORF("File not found: {}", filePath); }
         if(!fs::is_regular_file(filePath)) { throw FILEREADEREERRORF("Path is not a regular file: {}", filePath); }
 
         AutoTimer timer(FORMAT("reading file {}", filename));
-        std::stringstream buffer;
-        // NOLINTNEXTLINE(*-include-cleaner,  hicpp-signed-bitwise)
-        if(std::ifstream fileStream{filePath, std::ios::in | std::ios::binary}; fileStream.is_open()) {
-            // Ensure
-            // that the file is opened securely
-            fileStream.exceptions(std::ios::failbit | std::ios::badbit);  // NOLINT(hicpp-signed-bitwise)
+        std::ifstream fileStream(filePath, std::ios::in | std::ios::binary);
+        if(!fileStream.is_open()) { throw FILEREADEREERRORF("Unable to open file: {}", filePath); }
 
-            try {
-                buffer << fileStream.rdbuf();
-            } catch(const std::ios_base::failure &e) { throw FILEREADEREERRORF("Unable to read file: {}. Reason: {}", filePath, e.what()); }
-        } else {
-            // Handle the case when the file cannot be opened,
-            // You might throw an exception or return an error indicator
-            throw FILEREADEREERRORF("Unable to open file: {}", filePath);
+        fileStream.exceptions(std::ios::failbit | std::ios::badbit);
+
+        try {
+            std::ostringstream buffer;
+            buffer << fileStream.rdbuf();
+            return buffer.str();
+        } catch(const std::ios_base::failure &e) {
+            throw FILEREADEREERRORF("Unable to read file: {}. Reason: {}", filePath, e.what());
+        } catch(const std::exception &e) {
+            throw FILEREADEREERRORF("An error occurred while reading the file: {}. Reason: {}", filePath, e.what());
         }
-
-        // Extract the content as a string
-        return buffer.str();
+        // NOLINTEND(*-include-cleaner,  hicpp-signed-bitwise)
     }
 }  // namespace vnd

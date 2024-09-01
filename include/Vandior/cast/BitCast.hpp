@@ -2,8 +2,8 @@
 // Created by gbian on 01/06/2024.
 //
 
+// NOLINTBEGIN(*-macro-usage)
 #pragma once
-// NOLINTBEGIN
 #include <bit>
 
 /**
@@ -176,4 +176,4 @@
 #define BC_LLDIVT(x) std::bit_cast<std::lldiv_t>(x)
 
 /** @} */  // end of TypeCastingMacros group
-// NOLINTEND
+// NOLINTEND(*-macro-usage)

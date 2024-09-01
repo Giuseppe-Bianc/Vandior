@@ -5,7 +5,7 @@
 #include <utility>
 
 // NOLINTBEGIN(*-include-cleaner, *-no-recursion,*-avoid-magic-numbers, *-magic-numbers)
-DISABLE_WARNINGS_PUSH(26445 26481)
+DISABLE_WARNINGS_PUSH(26410 26411 26415 26445 26481)
 
 namespace vnd {
     std::unique_ptr<ASTNode> Parser::parse() { return parseExpression(); }
@@ -24,16 +24,15 @@ namespace vnd {
                                                                 {"*", "/"},
                                                                 {"^", "%"},
                                                                 {"."}};
-    const std::vector<TokenType> Parser::types = {
-        TokenType::TYPE_I8,   TokenType::TYPE_I16,    TokenType::TYPE_I32,  TokenType::TYPE_I64,   TokenType::TYPE_U8,  TokenType::TYPE_U16,
-        TokenType::TYPE_U32,  TokenType::TYPE_U64,    TokenType::TYPE_F32,  TokenType::TYPE_F64,   TokenType::TYPE_C32, TokenType::TYPE_C64,
-        TokenType::TYPE_CHAR, TokenType::TYPE_STRING, TokenType::TYPE_BOOL, TokenType::IDENTIFIER,
-    };
+    const std::vector<TokenType> Parser::types = {TokenType::TYPE_I8,   TokenType::TYPE_I16,    TokenType::TYPE_I32, TokenType::TYPE_I64,
+                                                  TokenType::TYPE_U8,   TokenType::TYPE_U16,    TokenType::TYPE_U32, TokenType::TYPE_U64,
+                                                  TokenType::TYPE_F32,  TokenType::TYPE_F64,    TokenType::TYPE_C32, TokenType::TYPE_C64,
+                                                  TokenType::TYPE_CHAR, TokenType::TYPE_STRING, TokenType::TYPE_BOOL};
 
     const Token &Parser::getCurrentToken() const { return tokens.at(position); }
     std::size_t Parser::getUnaryOperatorPrecedence(const Token &token) noexcept {
-        const auto &tokenValue = token.getValue();
-        if(tokenValue == "+" || tokenValue == "-" || tokenValue == "!" || tokenValue == "++" || tokenValue == "--") {
+        if(const auto &tokenValue = token.getValue();
+           tokenValue == "+" || tokenValue == "-" || tokenValue == "!" || tokenValue == "++" || tokenValue == "--") {
             return operatorPrecedence.size() + 1;
         }
         return 0;
@@ -134,10 +133,11 @@ namespace vnd {
         const auto &currentValue = currentToken.getValue();
         auto cval = std::string{currentValue};
 
-        if(isPreviusColon()) {
-            if(std::ranges::find(types, currentType) == types.end()) { throw ParserException(currentToken); }
+        if(std::ranges::find(types, currentType) != types.end()) {
             consumeToken();
-            return MAKE_UNIQUE(TypeNode, currentToken);
+            auto node = MAKE_UNIQUE(TypeNode, currentToken);
+            parseIndex<TypeNode>(node);
+            return node;
         } else if(currentType == TokenType::INTEGER) {
             consumeToken();
             if(currentValue.starts_with("#o") || currentValue.starts_with("#O")) {
@@ -174,17 +174,29 @@ namespace vnd {
             return MAKE_UNIQUE(LiteralNode<std::string_view>, currentValue, currentToken, NodeType::String);
         } else if(currentType == TokenType::IDENTIFIER) {
             consumeToken();
-            return MAKE_UNIQUE(VariableNode, currentValue, currentToken);
+            auto node = MAKE_UNIQUE(VariableNode, currentValue, currentToken);
+            if(!parseCall(node)) { parseIndex<VariableNode>(node); };
+            return node;
         } else if(currentToken.getValue() == "(") {
             consumeToken();
             auto expression = parseExpression();
             if(getCurrentToken().getValue() == ")") {
                 consumeToken();
                 return expression;
-            } else {
-                // Handle error: mismatched parentheses
-                throw ParserException(currentToken);
             }
+            // Handle error: mismatched parentheses
+            throw ParserException(currentToken);
+        } else if(currentToken.getValue() == "{") {
+            auto token = getCurrentToken();
+            consumeToken();
+            if(getCurrentToken().getType() == vnd::TokenType::CLOSE_CUR_PARENTESIS) {
+                consumeToken();
+                return MAKE_UNIQUE(ArrayNode, nullptr, token);
+            }
+            auto elements = parseExpression();
+            if(getCurrentToken().getType() != vnd::TokenType::CLOSE_CUR_PARENTESIS) { throw ParserException(getCurrentToken()); }
+            consumeToken();
+            return MAKE_UNIQUE(ArrayNode, std::move(elements), token);
         } else [[unlikely]] {
             // Handle error: unexpected token
             throw ParserException(currentToken);
@@ -217,7 +229,59 @@ namespace vnd {
 
     std::unique_ptr<ASTNode> Parser::parseExpression(std::size_t parentPrecendence) { return parseBinary(parentPrecendence); }
 
-    bool Parser::isPreviusColon() const noexcept { return position > 0 && tokens.at(position - 1).getType() == TokenType::COLON; }
+    template <typename T> void Parser::parseIndex(const std::unique_ptr<T> &node) {
+        using enum vnd::TokenType;
+        auto token = getCurrentToken();
+        if(token.getType() != OPEN_SQ_PARENTESIS) { return; }
+        consumeToken();
+        if(getCurrentToken().getType() == CLOSE_SQ_PARENTESIS) {
+            consumeToken();
+            auto index = MAKE_UNIQUE(IndexNode, nullptr, token);
+            if(!parseArray(index)) { parseIndex<IndexNode>(index); }
+            node->set_index(vnd_move_always_even_const(index));
+            return;
+        }
+        auto elements = parseExpression();
+        if(getCurrentToken().getType() != CLOSE_SQ_PARENTESIS) { throw ParserException(getCurrentToken()); }
+        consumeToken();
+        auto index = MAKE_UNIQUE(IndexNode, std::move(elements), token);
+        if(!parseArray(index)) { parseIndex<IndexNode>(index); }
+        node->set_index(vnd_move_always_even_const(index));
+    }
+
+    bool Parser::parseArray(const std::unique_ptr<IndexNode> &node) {
+        using enum vnd::TokenType;
+        auto token = getCurrentToken();
+        if(token.getType() != OPEN_CUR_PARENTESIS) { return false; }
+        consumeToken();
+        if(getCurrentToken().getType() == CLOSE_CUR_PARENTESIS) {
+            consumeToken();
+            node->set_array(MAKE_UNIQUE(ArrayNode, nullptr, token));
+            return true;
+        }
+        auto elements = parseExpression();
+        if(getCurrentToken().getType() != CLOSE_CUR_PARENTESIS) { throw ParserException(getCurrentToken()); }
+        consumeToken();
+        node->set_array(MAKE_UNIQUE(ArrayNode, std::move(elements), token));
+        return true;
+    }
+
+    bool Parser::parseCall(const std::unique_ptr<VariableNode> &node) {
+        using enum vnd::TokenType;
+        if(getCurrentToken().getType() != OPEN_PARENTESIS) { return false; }
+        consumeToken();
+        if(getCurrentToken().getType() == CLOSE_PARENTESIS) {
+            consumeToken();
+            node->set_call();
+            return true;
+        }
+        auto elements = parseExpression();
+        if(getCurrentToken().getType() != CLOSE_PARENTESIS) { throw ParserException(getCurrentToken()); }
+        consumeToken();
+        node->set_call(std::move(elements));
+        return true;
+    }
+
 }  // namespace vnd
 DISABLE_WARNINGS_POP()
 // NOLINTEND(*-include-cleaner,*-no-recursion, *-avoid-magic-numbers,*-magic-numbers)

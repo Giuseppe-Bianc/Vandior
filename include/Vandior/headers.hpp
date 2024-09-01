@@ -36,6 +36,7 @@ DISABLE_WARNINGS_PUSH(
 #include <map>
 #include <memory>
 #include <memory_resource>
+#include <new>
 #include <numbers>
 #include <ostream>
 #include <optional>
@@ -96,6 +97,18 @@ static inline constexpr const auto *NEWL = CNL;  // FreeBSD
 static inline constexpr const auto *NEWL = CNL;  // Default case
 #endif
 DISABLE_WARNINGS_POP()
+
+static inline constexpr std::string_view comma = ",";
+static inline constexpr std::string_view colon = ":";
+static inline constexpr auto commacr = ',';
+static inline constexpr auto coloncr = ':';
+static inline constexpr auto slashcr = '/';
+static inline constexpr auto starcr = '*';
+static inline constexpr auto underore = '_';
+static inline constexpr auto zerocr = '0';
+static inline constexpr auto sevencr = '7';
+static inline constexpr auto plusscr = '+';
+static inline constexpr auto minuscs = '-';
 /**
  * @def SYSPAUSE
  * @brief A macro to pause the system and wait for user input.
@@ -200,7 +213,7 @@ template <typename T, glm::length_t L, glm::qualifier Q> struct fmt::formatter<g
      * @param ctx The format context.
      * @return The formatted string.
      */
-    template <typename FormatContext> auto format(const glm::vec<L, T, Q> &vector, FormatContext &ctx) {
+    auto format(const glm::vec<L, T, Q> &vector, format_context &ctx) const -> format_context::iterator {
         return formatter<std::string_view>::format(glmp::to_string(vector), ctx);
     }
 };
@@ -216,7 +229,7 @@ struct fmt::formatter<glm::mat<C, R, T, Q>> : formatter<std::string_view> {
      * @param ctx The format context.
      * @return The formatted string.
      */
-    template <typename FormatContext> auto format(const glm::mat<C, R, T, Q> &matrix, FormatContext &ctx) {
+    auto format(const glm::mat<C, R, T, Q> &matrix, format_context &ctx) const -> format_context::iterator {
         return formatter<std::string_view>::format(glmp::to_string(matrix), ctx);
     }
 };
@@ -231,23 +244,8 @@ template <typename T, glm::qualifier Q> struct fmt::formatter<glm::qua<T, Q>> : 
      * @param ctx The format context.
      * @return The formatted string.
      */
-    template <typename FormatContext> auto format(const glm::qua<T, Q> &quaternion, FormatContext &ctx) {
+    template <typename FormatContext> auto format(const glm::qua<T, Q> &quaternion, format_context &ctx) const -> format_context::iterator {
         return formatter<std::string_view>::format(glmp::to_string(quaternion), ctx);
-    }
-};
-
-/**
- * @brief Specialization of fmt::formatter for nlohmann::json.
- */
-template <> struct fmt::formatter<nlohmann::basic_json<>> : formatter<std::string_view> {
-    /**
-     * @brief Format function for std::filesystem::path.
-     * @param path The path to be formatted.
-     * @param ctx The format context.
-     * @return The formatted string.
-     */
-    template <typename FormatContext> auto format(const nlohmann::basic_json<> &json, FormatContext &ctx) {
-        return formatter<std::string_view>::format(json.dump(4), ctx);
     }
 };
 
@@ -261,7 +259,7 @@ template <typename T> struct fmt::formatter<std::complex<T>> : fmt::formatter<st
      * @param ctx The formatting context.
      * @return The formatted string.
      */
-    template <typename FormatContext> auto format(std::complex<T> num, FormatContext &ctx) {
+    auto format(const std::complex<T> &num, format_context &ctx) const -> format_context::iterator {
         std::string name = FORMAT("({}, {})", std::real(num), std::imag(num));
         return fmt::formatter<std::string_view>::format(name, ctx);
     }

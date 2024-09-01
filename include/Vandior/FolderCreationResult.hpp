@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Log.hpp"
 #include "headers.hpp"
 
 namespace vnd {
@@ -20,19 +21,19 @@ namespace vnd {
          * @brief Returns the path of the created folder.
          * @return The path of the created folder.
          */
-        [[nodiscard]] std::filesystem::path path() const { return path_; }
+        [[nodiscard]] std::optional<std::filesystem::path> path() const { return path_; }
 
         /**
          * @brief Returns a reference to the path of the created folder.
          * @return A reference to the path of the created folder.
          */
-        [[nodiscard]] std::filesystem::path &pathref() noexcept { return path_; }
+        [[nodiscard]] std::optional<std::filesystem::path> &pathref() noexcept { return path_; }
 
         /**
          * @brief Returns a const reference to the path of the created folder.
          * @return A const reference to the path of the created folder.
          */
-        [[nodiscard]] const std::filesystem::path &pathcref() const noexcept { return path_; }
+        [[nodiscard]] const std::optional<std::filesystem::path> &pathcref() const noexcept { return path_; }
 
         /**
          * @brief Sets the success status of the folder creation.
@@ -109,11 +110,11 @@ namespace vnd {
 #ifdef __llvm__
             std::hash<bool> bool_hasher;
             std::hash<std::string> string_hasher;
-            return bool_hasher(obj.success_) ^ (string_hasher(obj.path_.string()) << 1);
+            return bool_hasher(obj.success_) ^ (string_hasher(obj.path_.value_or("").string()) << 1);
 #else
             std::hash<bool> bool_hasher;
             std::hash<std::filesystem::path> path_hasher;
-            return bool_hasher(obj.success_) ^ (path_hasher(obj.path_) << 1);
+            return bool_hasher(obj.success_) ^ (path_hasher(obj.path_.value_or("")) << 1);
 #endif
         }
 
@@ -124,14 +125,14 @@ namespace vnd {
          * @return The output stream after writing the FolderCreationResult object.
          */
         friend std::ostream &operator<<(std::ostream &os, const FolderCreationResult &obj) {
-            return os << "success_: " << obj.success_ << " path_: " << obj.path_;
+            return os << "success_: " << obj.success_ << " path_: " << obj.path_.value_or("");
         }
 
-        [[nodiscard]] static auto createFolder(const std::string &folderName, const fs::path &parentDir) -> FolderCreationResult {
+        [[nodiscard]] static auto createFolder(std::string_view folderName, const fs::path &parentDir) -> FolderCreationResult {
             // Validate the parameters
             if(folderName.empty()) {
                 LERROR("Invalid parameters: parentPath or folderName is empty.");
-                return {false, fs ::path()};
+                return {false, {}};
             }
 
             auto newDirPath = parentDir / folderName;
@@ -153,27 +154,36 @@ namespace vnd {
                 } else {
                     LERROR("Failed to create folder '{}' at '{}' for an unknown error", folderName, newDirPath);
                 }
-                return {false, fs ::path()};
+                return {false, {}};
             }
         }
 
-        [[nodiscard]] static auto createFolderNextToFile(const fs::path &filePath, const std::string &folderName) -> FolderCreationResult {
+        [[nodiscard]] static auto createFolderNextToFile(const fs::path &filePath, std::string_view folderName) -> FolderCreationResult {
             try {
                 // Get the parent directory of the file
                 auto parentDir = filePath.parent_path();
 
                 // Construct the path for the new directory
                 return vnd::FolderCreationResult::createFolder(folderName, parentDir);
+            } catch(const fs::filesystem_error &e) {
+                // Handle specific filesystem errors
+                LERROR("Filesystem error: {} (Path1: '{}', Path2: '{}', Error code: {})", e.what(), e.path1(), e.path2(), e.code().value());
+                return {false, {}};
             } catch(const std::exception &e) {
+                // Handle all other standard exceptions
                 LERROR("Exception occurred: {}", e.what());
-                return {false, fs ::path()};
+                return {false, {}};
+            } catch(...) {
+                // Handle any other types of exceptions
+                LERROR("An unknown error occurred while creating the folder.");
+                return {false, {}};
             }
         }
 
         // Add the to_json and from_json functions here:
         friend void to_json(nlohmann::json &j, const FolderCreationResult &result) {
             j = nlohmann::json{
-                {"success", result.success()}, {"path", result.path().string()}  // Convert path to string for JSON
+                {"success", result.success()}, {"path", result.path().value_or("").string()}  // Convert path to string for JSON
             };
         }
 
@@ -183,8 +193,8 @@ namespace vnd {
         }
 
     private:
-        bool success_ = false;        ///< The success status of the folder creation.
-        std::filesystem::path path_;  ///< The path of the created folder.
+        bool success_ = false;                       ///< The success status of the folder creation.
+        std::optional<std::filesystem::path> path_;  ///< The path of the created folder.
     };
 
 }  // namespace vnd

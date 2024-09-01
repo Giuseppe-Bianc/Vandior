@@ -40,7 +40,7 @@ template <> struct fmt::formatter<NumberNodeType> : fmt::formatter<std::string_v
      * @param ctx The formatting context.
      * @return The formatted string.
      */
-    template <typename FormatContext> auto format(NumberNodeType nodeType, FormatContext &ctx) {
+    auto format(NumberNodeType nodeType, format_context &ctx) const -> format_context::iterator {
         using enum NumberNodeType;
         std::string_view name;
         switch(nodeType) {

@@ -1,6 +1,7 @@
-// NOLINTBEGIN(*-include-cleaner, *-avoid-magic-numbers, *-magic-numbers)
+// NOLINTBEGIN(*-include-cleaner, *-avoid-magic-numbers, *-magic-numbers, *-unchecked-optional-access)
 
 #include <catch2/catch_test_macros.hpp>
+#include <future>
 
 #include <Vandior/vandior.hpp>
 
@@ -40,6 +41,73 @@ static inline constexpr long long int timerSleap2 = 5;
 static inline constexpr std::size_t timerCicles = 1000000;
 static inline constexpr long double timerResolution = 5.0L;
 #define REQ_FORMAT(type, string) REQUIRE(FORMAT("{}", type) == (string));  // NOLINT(*-macro-usage)
+
+// NOLINTNEXTLINE(*-function-cognitive-complexity)
+TEST_CASE("get_current_timestamp() tests", "[timestamp]") {
+    SECTION("Basic test") {
+        auto timestamp = get_current_timestamp();
+        REQUIRE(timestamp.size() >= 24);
+    }
+
+    SECTION("Repeatability test") {
+        auto timestamp1 = get_current_timestamp();
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        auto timestamp2 = get_current_timestamp();
+        REQUIRE(timestamp1 != timestamp2);
+    }
+
+    SECTION("Concurrency test") {
+        constexpr int num_threads = 4;
+        std::vector<std::future<std::string>> futures;
+        for(int i = 0; i < num_threads; ++i) {
+            // NOLINTNEXTLINE(*-inefficient-vector-operation)
+            futures.emplace_back(std::async(std::launch::async, []() { return get_current_timestamp(); }));
+        }
+        for(auto &future : futures) {
+            auto timestamp = future.get();
+            REQUIRE(timestamp.size() >= 24);
+        }
+    }
+}
+
+TEST_CASE("my_error_handler(const std::string&) tests", "[error_handler]") {
+    SECTION("Basic error handling") {
+        std::stringstream sss;
+        auto *original = std::cerr.rdbuf(sss.rdbuf());  // Redirect cerr to stringstream
+        my_error_handler("Sample error message");
+        std::cerr.rdbuf(original);  // Restore cerr
+
+        auto output = sss.str();
+        REQUIRE(output.find("Error occurred:") != std::string::npos);
+        REQUIRE(output.find("Timestamp: ") != std::string::npos);
+        REQUIRE(output.find("Thread ID: ") != std::string::npos);
+        REQUIRE(output.find("Message: Sample error message") != std::string::npos);
+    }
+
+    SECTION("Error handler with different messages") {
+        std::stringstream sss;
+        auto *original = std::cerr.rdbuf(sss.rdbuf());  // Redirect cerr to stringstream
+        my_error_handler("Error 1");
+        my_error_handler("Another error");
+        std::cerr.rdbuf(original);  // Restore cerr
+
+        auto output = sss.str();
+        REQUIRE(output.find("Message: Error 1") != std::string::npos);
+        REQUIRE(output.find("Message: Another error") != std::string::npos);
+    }
+
+    SECTION("Location information") {
+        std::stringstream sss;
+        auto *original = std::cerr.rdbuf(sss.rdbuf());  // Redirect cerr to stringstream
+        my_error_handler("Location test");
+        std::cerr.rdbuf(original);  // Restore cerr
+
+        auto output = sss.str();
+        REQUIRE(output.find("File: ") != std::string::npos);
+        REQUIRE(output.find("Line: ") != std::string::npos);
+        REQUIRE(output.find("Column: ") != std::string::npos);
+    }
+}
 
 TEST_CASE("std::filesystem::path formater", "[FMT]") { REQ_FORMAT(std::filesystem::path("../ssss"), "../ssss"); }
 TEST_CASE("glm::vec formater", "[FMT]") {
@@ -451,7 +519,7 @@ TEST_CASE("FolderCreationResult Constructor") {
     SECTION("Default constructor") {
         vnd::FolderCreationResult result;
         REQUIRE(result.success() == false);
-        REQUIRE(result.path().empty());
+        REQUIRE(result.path().value_or("").empty());
     }
 
     SECTION("Parameterized constructor") {
@@ -471,7 +539,7 @@ TEST_CASE("FolderCreationResult Setters") {
 
     SECTION("Set path") {
         fs::path testPath("/test/path");
-        REQUIRE(result.path().empty());
+        REQUIRE(result.path().value_or("").empty());
         result.set_path(testPath);
         REQUIRE(result.path() == testPath);
     }
@@ -497,7 +565,7 @@ TEST_CASE("FolderCreationResult Folder Creation Functions") {
         std::string emptyFolderName;
         vnd::FolderCreationResult result = vnd::FolderCreationResult::createFolder(emptyFolderName, tempDir);
         REQUIRE(result.success() == false);
-        REQUIRE(result.path().empty());
+        REQUIRE(result.path()->empty());
     }
 
     SECTION("Create folder in non-existent parent directory") {
@@ -505,7 +573,7 @@ TEST_CASE("FolderCreationResult Folder Creation Functions") {
         std::string folderName = "test_folder";
         vnd::FolderCreationResult result = vnd::FolderCreationResult::createFolder(folderName, nonExistentParentDir);
         REQUIRE(result.success() == true);
-        REQUIRE(!result.path().empty());
+        REQUIRE(!result.path()->empty());
     }
 
     SECTION("Create folder existent directory") {
@@ -513,12 +581,12 @@ TEST_CASE("FolderCreationResult Folder Creation Functions") {
         std::string folderName = "test_folder";
         vnd::FolderCreationResult result = vnd::FolderCreationResult::createFolder(folderName, nonExistentParentDir);
         REQUIRE(result.success() == true);
-        REQUIRE(!result.path().empty());
+        REQUIRE(!result.path()->empty());
         fs::path ExistentParentDir = tempDir / "non_existent_dir";
         std::string folderName2 = "test_folder";
         vnd::FolderCreationResult result2 = vnd::FolderCreationResult::createFolder(folderName2, nonExistentParentDir);
         REQUIRE(result2.success() == true);
-        REQUIRE(!result2.path().empty());
+        REQUIRE(!result2.path()->empty());
     }
 
     SECTION("Create folder next to non-existent file") {
@@ -526,8 +594,8 @@ TEST_CASE("FolderCreationResult Folder Creation Functions") {
         std::string folderName = "test_folder";
         vnd::FolderCreationResult result = vnd::FolderCreationResult::createFolderNextToFile(nonExistentFilePath, folderName);
         REQUIRE(result.success() == true);
-        REQUIRE(!result.path().empty());
-        REQUIRE(!result.pathcref().empty());
+        REQUIRE(!result.path()->empty());
+        REQUIRE(!result.pathcref()->empty());
     }
 
     SECTION("Create folder next to existing file") {
@@ -958,7 +1026,7 @@ TEST_CASE("Parser emit integer number node", "[parser]") {
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Number);
-    const auto *number = ast->as<vnd::NumberNode<int>>();
+    const auto *number = ast->as<VND_NUM_INT>();
     REQUIRE(number != nullptr);
     REQUIRE(number->get_value() == 1);
 }
@@ -968,7 +1036,7 @@ TEST_CASE("Parser emit complex number node", "[parser]") {
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Number);
-    const auto *number = ast->as<vnd::NumberNode<std::complex<double>>>();
+    const auto *number = ast->as<VND_NUM_CDOUBLE>();
     REQUIRE(number != nullptr);
     REQUIRE(number->print() == "NUMBER_IMAGINARY((0, 1))");
     REQUIRE(number->comp_print() == "NUM_IMG((0, 1))");
@@ -980,7 +1048,7 @@ TEST_CASE("Parser emit complex float number node", "[parser]") {
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Number);
-    const auto *number = ast->as<vnd::NumberNode<std::complex<float>>>();
+    const auto *number = ast->as<VND_NUM_CFLOAT>();
     REQUIRE(number != nullptr);
     REQUIRE(number->print() == "NUMBER_IMAGINARY_F((0, 1))");
     REQUIRE(number->comp_print() == "NUM_IMF((0, 1))");
@@ -1144,7 +1212,7 @@ TEST_CASE("Parser emit integer number node form exadecimal", "[parser]") {
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Number);
-    const auto *number = ast->as<vnd::NumberNode<int>>();
+    const auto *number = ast->as<VND_NUM_INT>();
     REQUIRE(number != nullptr);
 #ifdef __linux__
     REQUIRE(number->getTypeIDName() == "i");
@@ -1159,7 +1227,7 @@ TEST_CASE("Parser emit integer number node form exadecimal max int -1", "[parser
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Number);
-    const auto *number = ast->as<vnd::NumberNode<int>>();
+    const auto *number = ast->as<VND_NUM_INT>();
     REQUIRE(number != nullptr);
 #ifdef __linux__
     REQUIRE(number->getTypeIDName() == "i");
@@ -1174,7 +1242,7 @@ TEST_CASE("Parser emit integer number node form octal", "[parser]") {
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Number);
-    const auto *number = ast->as<vnd::NumberNode<int>>();
+    const auto *number = ast->as<VND_NUM_INT>();
     REQUIRE(number != nullptr);
 #ifdef __linux__
     REQUIRE(number->getTypeIDName() == "i");
@@ -1189,7 +1257,7 @@ TEST_CASE("Parser emit integer number node form octal max int -1", "[parser]") {
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Number);
-    const auto *number = ast->as<vnd::NumberNode<int>>();
+    const auto *number = ast->as<VND_NUM_INT>();
     REQUIRE(number != nullptr);
 #ifdef __linux__
     REQUIRE(number->getTypeIDName() == "i");
@@ -1204,7 +1272,7 @@ TEST_CASE("Parser emit integer number node print", "[parser]") {
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Number);
-    const auto *number = ast->as<vnd::NumberNode<int>>();
+    const auto *number = ast->as<VND_NUM_INT>();
     REQUIRE(number != nullptr);
     REQUIRE(number->get_value() == 1);
 #ifdef __linux__
@@ -1220,7 +1288,7 @@ TEST_CASE("Parser emit integer number node compat print", "[parser]") {
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Number);
-    const auto *number = ast->as<vnd::NumberNode<int>>();
+    const auto *number = ast->as<VND_NUM_INT>();
     REQUIRE(number != nullptr);
     REQUIRE(number->get_value() == 1);
 #ifdef __linux__
@@ -1246,7 +1314,7 @@ TEST_CASE("Parser emit double number node double", "[parser]") {
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Number);
-    const auto *number = ast->as<vnd::NumberNode<double>>();
+    const auto *number = ast->as<VND_NUM_DOUBLE>();
     REQUIRE(number != nullptr);
 #ifdef __linux__
     REQUIRE(number->getTypeIDName() == "d");
@@ -1261,7 +1329,7 @@ TEST_CASE("Parser emit flaot number node float", "[parser]") {
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Number);
-    const auto *number = ast->as<vnd::NumberNode<float>>();
+    const auto *number = ast->as<VND_NUM_FLOAT>();
     REQUIRE(number != nullptr);
 #ifdef __linux__
     REQUIRE(number->getTypeIDName() == "f");
@@ -1276,7 +1344,7 @@ TEST_CASE("Parser emit double number node double print", "[parser]") {
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Number);
-    const auto *number = ast->as<vnd::NumberNode<double>>();
+    const auto *number = ast->as<VND_NUM_DOUBLE>();
     REQUIRE(number != nullptr);
 #ifdef __linux__
     REQUIRE(number->getTypeIDName() == "d");
@@ -1292,7 +1360,7 @@ TEST_CASE("Parser emit flaot number node float print", "[parser]") {
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Number);
-    const auto *number = ast->as<vnd::NumberNode<float>>();
+    const auto *number = ast->as<VND_NUM_FLOAT>();
     REQUIRE(number != nullptr);
 #ifdef __linux__
     REQUIRE(number->getTypeIDName() == "f");
@@ -1307,7 +1375,7 @@ TEST_CASE("Parser emit double number node double compat print", "[parser]") {
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Number);
-    const auto *number = ast->as<vnd::NumberNode<double>>();
+    const auto *number = ast->as<VND_NUM_DOUBLE>();
     REQUIRE(number != nullptr);
 #ifdef __linux__
     REQUIRE(number->getTypeIDName() == "d");
@@ -1322,7 +1390,7 @@ TEST_CASE("Parser emit flaot number node float compat print", "[parser]") {
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Number);
-    const auto *number = ast->as<vnd::NumberNode<float>>();
+    const auto *number = ast->as<VND_NUM_FLOAT>();
     REQUIRE(number != nullptr);
 #ifdef __linux__
     REQUIRE(number->getTypeIDName() == "f");
@@ -1433,8 +1501,8 @@ TEST_CASE("Parser emit binary expression node", "[parser]") {
     REQUIRE(binaryNode->getOp() == "+");
 
     // Check the left and right operands
-    const auto *leftNumber = binaryNode->getLeft()->as<vnd::NumberNode<int>>();
-    const auto *rightNumber = binaryNode->getRight()->as<vnd::NumberNode<int>>();
+    const auto *leftNumber = binaryNode->getLeft()->as<VND_NUM_INT>();
+    const auto *rightNumber = binaryNode->getRight()->as<VND_NUM_INT>();
 
     REQUIRE(leftNumber != nullptr);
     REQUIRE(rightNumber != nullptr);
@@ -1463,8 +1531,8 @@ TEST_CASE("Parser emit binary expression node print", "[parser]") {
     REQUIRE(binaryNode->getOp() == "+");
 
     // Check the left and right operands
-    const auto *leftNumber = binaryNode->getLeft()->as<vnd::NumberNode<int>>();
-    const auto *rightNumber = binaryNode->getRight()->as<vnd::NumberNode<int>>();
+    const auto *leftNumber = binaryNode->getLeft()->as<VND_NUM_INT>();
+    const auto *rightNumber = binaryNode->getRight()->as<VND_NUM_INT>();
 
     REQUIRE(leftNumber != nullptr);
     REQUIRE(rightNumber != nullptr);
@@ -1494,8 +1562,8 @@ TEST_CASE("Parser emit binary expression node compact print", "[parser]") {
     REQUIRE(binaryNode->getOp() == "+");
 
     // Check the left and right operands
-    const auto *leftNumber = binaryNode->getLeft()->as<vnd::NumberNode<int>>();
-    const auto *rightNumber = binaryNode->getRight()->as<vnd::NumberNode<int>>();
+    const auto *leftNumber = binaryNode->getLeft()->as<VND_NUM_INT>();
+    const auto *rightNumber = binaryNode->getRight()->as<VND_NUM_INT>();
 
     REQUIRE(leftNumber != nullptr);
     REQUIRE(rightNumber != nullptr);
@@ -1538,39 +1606,172 @@ TEST_CASE("Parser emit exception for nonexistent unary operator", "[parser]") {
 }
 
 TEST_CASE("Parser emit i8 TypeNode node", "[parser]") {
-    vnd::Parser parser("a: i8", filename);
+    vnd::Parser parser("i8", filename);
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
-    REQUIRE(ast->getType() == NodeType::BinaryExpression);
-    const auto *binaryNode = ast->as<vnd::BinaryExpressionNode>();
-    REQUIRE(binaryNode != nullptr);
-    REQUIRE(binaryNode->getOp() == ":");
-    const auto *typeNode = binaryNode->getRight()->as<vnd::TypeNode>();
+    REQUIRE(ast->getType() == NodeType::Type);
+    const auto *typeNode = ast->as<vnd::TypeNode>();
     REQUIRE(typeNode != nullptr);
-    REQUIRE(typeNode->getType() == NodeType::Type);
     REQUIRE(typeNode->comp_print() == "TYPE(i8)");
     REQUIRE(typeNode->print() == "TYPE_I8_TYPE(i8)");
     REQUIRE(typeNode->getVariableType() == vnd::TokenType::TYPE_I8);
     REQUIRE(typeNode->get_value() == "i8");
+    REQUIRE(typeNode->get_index() == nullptr);
 }
 
-TEST_CASE("Parser emit identifier TypeNode node", "[parser]") {
-    vnd::Parser parser("a: type", filename);
+TEST_CASE("Parser emit array", "[parser]") {
+    vnd::Parser parser("i8[size][]{1, 2}", filename);
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
-    REQUIRE(ast->getType() == NodeType::BinaryExpression);
-    const auto *binaryNode = ast->as<vnd::BinaryExpressionNode>();
-    REQUIRE(binaryNode != nullptr);
-    REQUIRE(binaryNode->getOp() == ":");
-    const auto *typeNode = binaryNode->getRight()->as<vnd::TypeNode>();
+    REQUIRE(ast->getType() == NodeType::Type);
+    const auto *typeNode = ast->as<vnd::TypeNode>();
     REQUIRE(typeNode != nullptr);
-    REQUIRE(typeNode->getVariableType() == vnd::TokenType::IDENTIFIER);
-    REQUIRE(typeNode->get_value() == "type");
+    REQUIRE(typeNode->get_index() != nullptr);
+    REQUIRE(typeNode->get_index()->getType() == NodeType::Index);
+    REQUIRE(typeNode->get_index()->get_elements() != nullptr);
+    REQUIRE(typeNode->get_index()->get_index() != nullptr);
+    REQUIRE(typeNode->get_index()->get_array() == nullptr);
+    REQUIRE(typeNode->get_index()->get_index()->get_elements() == nullptr);
+    REQUIRE(typeNode->get_index()->get_index()->get_index() == nullptr);
+    REQUIRE(typeNode->get_index()->get_index()->get_array() != nullptr);
+    REQUIRE(typeNode->get_index()->get_index()->get_array()->getType() == NodeType::Array);
+    REQUIRE(typeNode->get_index()->get_index()->get_array()->get_elements() != nullptr);
 }
 
-TEST_CASE("Parser emit exception for impossibile TypeNode node", "[parser]") {
-    vnd::Parser parser("a: 1", filename);
+TEST_CASE("Parser emit empty array", "[parser]") {
+    vnd::Parser parser("Object[]{}", filename);
+    auto ast = parser.parse();
+    REQUIRE(ast != nullptr);
+    REQUIRE(ast->getType() == NodeType::Variable);
+    const auto *variable = ast->as<vnd::VariableNode>();
+    REQUIRE(variable != nullptr);
+    REQUIRE(variable->get_index() != nullptr);
+    REQUIRE(variable->get_index()->get_array() != nullptr);
+    REQUIRE(variable->get_index()->get_array()->getType() == NodeType::Array);
+    REQUIRE(variable->get_index()->get_array()->get_elements() == nullptr);
+}
+
+TEST_CASE("Parser emit array type", "[parser]") {
+    vnd::Parser parser("i8[]", filename);
+    auto ast = parser.parse();
+    REQUIRE(ast != nullptr);
+    REQUIRE(ast->getType() == NodeType::Type);
+    const auto *typeNode = ast->as<vnd::TypeNode>();
+    REQUIRE(typeNode != nullptr);
+    REQUIRE(typeNode->get_index() != nullptr);
+    REQUIRE(typeNode->get_index()->getType() == NodeType::Index);
+    REQUIRE(typeNode->get_index()->get_elements() == nullptr);
+    REQUIRE(typeNode->get_index()->get_index() == nullptr);
+    REQUIRE(typeNode->get_index()->get_array() == nullptr);
+}
+
+TEST_CASE("Parser emit mismatched square brackets exception", "[parser]") {
+    vnd::Parser parser("Object[size", filename);
     REQUIRE_THROWS_AS(parser.parse(), vnd::ParserException);
 }
 
-// NOLINTEND(*-include-cleaner, *-avoid-magic-numbers, *-magic-numbers)
+TEST_CASE("Parser emit mismatched curly brackets exception", "[parser]") {
+    vnd::Parser parser("string[size]{", filename);
+    REQUIRE_THROWS_AS(parser.parse(), vnd::ParserException);
+}
+
+TEST_CASE("Parser emit empty index node print", "[parser]") {
+    vnd::Parser parser("i8[]", filename);
+    auto ast = parser.parse();
+    REQUIRE(ast != nullptr);
+    REQUIRE(ast->getType() == NodeType::Type);
+    const auto *typeNode = ast->as<vnd::TypeNode>();
+    REQUIRE(typeNode != nullptr);
+    REQUIRE(typeNode->get_index()->print() == "INDEX()");
+}
+
+TEST_CASE("Parser emit empty index compat print", "[parser]") {
+    vnd::Parser parser("i8[]", filename);
+    auto ast = parser.parse();
+    REQUIRE(ast != nullptr);
+    REQUIRE(ast->getType() == NodeType::Type);
+    const auto *typeNode = ast->as<vnd::TypeNode>();
+    REQUIRE(typeNode != nullptr);
+    REQUIRE(typeNode->get_index()->comp_print() == FORMAT("INDEX"));
+}
+
+TEST_CASE("Parser emit index node print", "[parser]") {
+    vnd::Parser parser("i8[1]", filename);
+    auto ast = parser.parse();
+    REQUIRE(ast != nullptr);
+    REQUIRE(ast->getType() == NodeType::Type);
+    const auto *typeNode = ast->as<vnd::TypeNode>();
+    REQUIRE(typeNode != nullptr);
+    REQUIRE(typeNode->get_index()->print() == FORMAT("INDEX({})", typeNode->get_index()->get_elements()->comp_print()));
+}
+
+TEST_CASE("Parser emit index compat print", "[parser]") {
+    vnd::Parser parser("i8[1]", filename);
+    auto ast = parser.parse();
+    REQUIRE(ast != nullptr);
+    REQUIRE(ast->getType() == NodeType::Type);
+    const auto *typeNode = ast->as<vnd::TypeNode>();
+    REQUIRE(typeNode != nullptr);
+    REQUIRE(typeNode->get_index()->comp_print() == FORMAT("INDEX"));
+}
+
+TEST_CASE("Parser emit empty array node print", "[parser]") {
+    vnd::Parser parser("{}", filename);
+    auto ast = parser.parse();
+    REQUIRE(ast != nullptr);
+    REQUIRE(ast->getType() == NodeType::Array);
+    const auto *arrayNode = ast->as<vnd::ArrayNode>();
+    REQUIRE(arrayNode != nullptr);
+    REQUIRE(arrayNode->print() == "ARRAY()");
+}
+
+TEST_CASE("Parser emit empty array compat node print", "[parser]") {
+    vnd::Parser parser("{}", filename);
+    auto ast = parser.parse();
+    REQUIRE(ast != nullptr);
+    REQUIRE(ast->getType() == NodeType::Array);
+    const auto *arrayNode = ast->as<vnd::ArrayNode>();
+    REQUIRE(arrayNode != nullptr);
+    REQUIRE(arrayNode->comp_print() == "ARRAY");
+}
+
+TEST_CASE("Parser emit array node print", "[parser]") {
+    vnd::Parser parser("{1, 2}", filename);
+    auto ast = parser.parse();
+    REQUIRE(ast != nullptr);
+    REQUIRE(ast->getType() == NodeType::Array);
+    const auto *arrayNode = ast->as<vnd::ArrayNode>();
+    REQUIRE(arrayNode != nullptr);
+    REQUIRE(arrayNode->print() == FORMAT("ARRAY({})", arrayNode->get_elements()->comp_print()));
+}
+
+TEST_CASE("Parser emit array compat node print", "[parser]") {
+    vnd::Parser parser("{1, 2}", filename);
+    auto ast = parser.parse();
+    REQUIRE(ast != nullptr);
+    REQUIRE(ast->getType() == NodeType::Array);
+    const auto *arrayNode = ast->as<vnd::ArrayNode>();
+    REQUIRE(arrayNode != nullptr);
+    REQUIRE(arrayNode->comp_print() == "ARRAY");
+}
+
+TEST_CASE("Parser emit empty callable node", "[parser]") {
+    vnd::Parser parser("function()", filename);
+    auto ast = parser.parse();
+    REQUIRE(ast != nullptr);
+    REQUIRE(ast->getType() == NodeType::Variable);
+    const auto *variableNode = ast->as<vnd::VariableNode>();
+    REQUIRE(variableNode->is_call() == true);
+    REQUIRE(variableNode->get_call() == nullptr);
+}
+
+TEST_CASE("Parser emit callable node", "[parser]") {
+    vnd::Parser parser("function(1)", filename);
+    auto ast = parser.parse();
+    REQUIRE(ast != nullptr);
+    REQUIRE(ast->getType() == NodeType::Variable);
+    const auto *variableNode = ast->as<vnd::VariableNode>();
+    REQUIRE(variableNode->is_call() == true);
+    REQUIRE(variableNode->get_call() != nullptr);
+}
+// NOLINTEND(*-include-cleaner, *-avoid-magic-numbers, *-magic-numbers, *-unchecked-optional-access)

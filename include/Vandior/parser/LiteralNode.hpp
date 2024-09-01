@@ -3,7 +3,9 @@
 //
 
 #pragma once
+
 #include "ASTNode.hpp"
+
 namespace vnd {
 
     /**
@@ -30,9 +32,7 @@ namespace vnd {
          * @brief Gets the demangled name of the type T.
          * @return Demangled name of the type T if using GCC/Clang, otherwise mangled name.
          */
-        [[nodiscard]] std::string_view getTypeIDName() const noexcept {
-            return typeid(T).name();
-        }
+        [[nodiscard]] std::string_view getTypeIDName() const noexcept { return typeid(T).name(); }
 
         /**
          * @brief Returns a string representation of the AST node.
@@ -52,9 +52,14 @@ namespace vnd {
          */
         [[nodiscard]] T get_value() const noexcept { return m_value; }
 
+        /**
+         * @brief Swaps the contents of two LiteralNode objects.
+         * @param lhs The first LiteralNode.
+         * @param rhs The second LiteralNode.
+         */
         friend void swap(LiteralNode &lhs, LiteralNode &rhs) noexcept {
             using std::swap;
-            swap(static_cast<LiteralNode &>(lhs), static_cast<LiteralNode &>(rhs));
+            swap(static_cast<ASTNode &>(lhs), static_cast<ASTNode &>(rhs));
             swap(lhs.m_value, rhs.m_value);
             swap(lhs.m_type, rhs.m_type);
         }
