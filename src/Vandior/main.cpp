@@ -35,7 +35,7 @@ namespace vnd {
 }  // namespace vnd
 DISABLE_WARNINGS_PUSH(26461 26821)
 
-// static inline constexpr auto sequence = std::views::iota(0, 999'999);
+//static inline constexpr auto sequence = std::views::iota(0, 9999);
 
 // NOLINTNEXTLINE(*-function-cognitive-complexity)
 auto main(int argc, const char *const argv[]) -> int {
@@ -80,7 +80,13 @@ auto main(int argc, const char *const argv[]) -> int {
         prettyPrint(*ast);
         vnd::Transpiler transpiler{input, filename};
         transpiler.transpile();
-    } catch(const std::exception &e) { LERROR("Unhandled exception in main: {}", e.what()); }
+    } catch(const std::exception &e) {
+        // Handle any other types of exceptions
+        LERROR("Unhandled exception in main: {}", e.what());
+    } catch(...) {
+        // Handle any other types of exceptions
+        LERROR("An unknown error occurred while creating the folder.");
+    }
     return EXIT_SUCCESS;  // Return appropriate exit code
 }
 DISABLE_WARNINGS_POP()
