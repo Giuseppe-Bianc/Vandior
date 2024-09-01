@@ -301,7 +301,7 @@ namespace vnd {
     }
 
     TokenType Tokenizer::multyCharOp(const std::string_view &view) noexcept {
-        // NOLINTNEXTLINE(*-identifier-length)
+        // NOLINTNEXTLINE(*-identifier-length, *-qualified-auto)
         if(const auto it = std::ranges::find_if(multiCharOperators, [&](const auto &pair) { return pair.first == view; });
            it != multiCharOperators.end()) {
             return it->second;
