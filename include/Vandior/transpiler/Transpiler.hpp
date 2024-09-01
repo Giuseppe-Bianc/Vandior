@@ -8,9 +8,10 @@ namespace vnd {
     class Transpiler {
     public:
         Transpiler(const std::string_view &input, const std::string_view &filename);
-        void transpile() const;
+        void transpile();
 
     private:
+        std::string transpileNode(const ASTNode &node);
         std::string_view _filename;
         Parser _parser;
         fs::path _vnBuildSrcFolder;

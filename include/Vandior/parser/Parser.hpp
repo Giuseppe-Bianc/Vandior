@@ -61,7 +61,7 @@ namespace vnd {
          */
         const Token &getCurrentToken() const;
         /**
-         * @brief Gets the precedence of a unary operator.
+         * @brief Gets the precedence of an unary operator.
          * @param token The token representing the unary operator.
          * @return The precedence level of the unary operator.
          */
@@ -130,7 +130,7 @@ namespace vnd {
          */
         [[nodiscard]] bool parseArray(const std::unique_ptr<IndexNode> &node);
 
-        // FIXME: Function parameters should not be of type "std::unique_ptr<T> const/**
+        // FIXME: Function parameters should not be of type "std::unique_ptr<T> const &"
         /**
          * @brief Parses a function call expression.
          * @param node The node to parse the function call for.
