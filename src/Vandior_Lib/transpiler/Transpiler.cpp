@@ -62,7 +62,6 @@ namespace vnd {
     // Main code generation function
     std::string Transpiler::transpileNode(const vnd::ASTNode &node) {
         std::ostringstream code;
-        LINFO("transpileNode");
 
         // Determine the type of node and transpile code accordingly using helper functions
         if(const auto *binaryNode = node.safe_as<vnd::BinaryExpressionNode>()) {
@@ -104,31 +103,34 @@ namespace vnd {
     std::string Transpiler::transpileBinaryExpressionNode(const vnd::BinaryExpressionNode *binaryNode) {
         std::ostringstream code;
         LINFO("transpileBinaryExpressionNode");
-        if(binaryNode->getOp() == ":") {
+        const auto op = binaryNode->getOp();
+        if(op == ":") {
             code << transpileNode(*binaryNode->getRight());
             code << " ";
             code << transpileNode(*binaryNode->getLeft());
         } else {
             code << transpileNode(*binaryNode->getLeft());
-            code << " " << binaryNode->getOp() << " ";
+            code << FORMAT(" {} ", op);
             code << transpileNode(*binaryNode->getRight());
         }
         return code.str();
     }
 
+    /* std::string Transpiler::BinaryExpressionOrdered(const vnd::BinaryExpressionNode *binaryNode, bool leftFirst) {
+        if(leftFirst) {
+            return FORMAT("{} {} {}", transpileNode(*binaryNode->getLeft()), binaryNode->getOp(), transpileNode(*binaryNode->getRight()));
+        } else {
+            return FORMAT("{} {} {}", transpileNode(*binaryNode->getRight()), binaryNode->getOp(), transpileNode(*binaryNode->getLeft()));
+        }
+    }*/
     // Helper function to transpile code for UnaryExpressionNode
     std::string Transpiler::transpileUnaryExpressionNode(const vnd::UnaryExpressionNode *unaryNode) {
-        std::ostringstream code;
-        LINFO("transpileUnaryExpressionNode");
-        code << unaryNode->getOp();
-        code << transpileNode(*unaryNode->getOperand());
-        return code.str();
+        return FORMAT("{}{}", unaryNode->getOp(), transpileNode(*unaryNode->getOperand()));
     }
 
     // Helper function to transpile code for VariableNode
     std::string Transpiler::transpileVariableNode(const vnd::VariableNode *variableNode) {
         std::ostringstream code;
-        LINFO("transpileVariableNode");
         code << variableNode->getName();
         if(variableNode->is_call()) {
             code << "(";
@@ -146,21 +148,18 @@ namespace vnd {
 
     // Helper function to transpile code for LiteralNode
     template <typename T> std::string Transpiler::transpileLiteralNode(const LiteralNode<T> *literalNode) {
-        LINFO("transpileLietralNode");
-        std::ostringstream code;
         if constexpr(std::is_same_v<T, bool>) {
-            code << literalNode->get_value() ? "true" : "false";
+            return literalNode->get_value() ? "true" : "false";
         } else if constexpr(std::is_same_v<T, char>) {
-            code << FORMAT("'{}'", literalNode->get_value());
+            return FORMAT("'{}'", literalNode->get_value());
         } else if constexpr(std::is_same_v<T, std::string_view>) {
-            code << FORMAT("\"{}\"", literalNode->get_value());
+            return FORMAT("\"{}\"", literalNode->get_value());
         }
-        return code.str();
+        return "";
     }
 
     // Helper function to transpile code for TypeNode
     std::string Transpiler::transpileTypeNode(const vnd::TypeNode *typeNode) {
-        LINFO("transpileTypeNode");
         std::ostringstream code;
         // code << typeNode.getName();
         code << typeNode->get_value();
@@ -170,7 +169,6 @@ namespace vnd {
 
     // Helper function to transpile code for IndexNode
     std::string Transpiler::transpileIndexNode(const vnd::IndexNode *indexNode) {
-        LINFO("transpileIndexNode");
         std::ostringstream code;
         if(const auto &elementsNode = indexNode->get_elements()) { code << transpileNode(*elementsNode); }
         if(const auto &elementsIndexNode = indexNode->get_index()) { code << FORMAT("[{}]", transpileNode(*elementsIndexNode)); }
@@ -180,7 +178,6 @@ namespace vnd {
 
     // Helper function to transpile code for ArrayNode
     std::string Transpiler::transpileArrayNode(const vnd::ArrayNode *arrayNode) {
-        LINFO("transpileArrayNode");
         std::ostringstream code;
         code << "{ ";
         if(arrayNode->get_elements()) { code << transpileNode(*arrayNode->get_elements()); }

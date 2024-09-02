@@ -13,6 +13,7 @@ namespace vnd {
     private:
         std::string transpileNode(const ASTNode &node);
         std::string transpileBinaryExpressionNode(const BinaryExpressionNode *binaryNode);
+        //std::string BinaryExpressionOrdered(const BinaryExpressionNode *binaryNode, bool leftFirst = true);
         std::string transpileUnaryExpressionNode(const UnaryExpressionNode *unaryNode);
         std::string transpileVariableNode(const VariableNode *variableNode);
         template <typename T> std::string transpileNumericNode(const NumberNode<T> *numberNode);
