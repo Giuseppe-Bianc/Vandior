@@ -1,5 +1,6 @@
-// NOLINTBEGIN(*-include-cleaner, *-avoid-magic-numbers, *-magic-numbers, *-unchecked-optional-access)
-
+// clang-format off
+// NOLINTBEGIN(*-include-cleaner, *-avoid-magic-numbers, *-magic-numbers, *-unchecked-optional-access, *-avoid-do-while, *-use-anonymous-namespace, *-qualified-auto)
+// clang-format on
 #include <catch2/catch_test_macros.hpp>
 #include <future>
 
@@ -28,6 +29,7 @@ static inline constexpr std::string_view filename = R"(.\unknown.vn)";
 #else
 static inline constexpr std::string_view filename = R"(./unknown.vn)";
 #endif
+static inline constexpr std::string_view ffilename = "file1.cpp";
 static inline constexpr std::string_view filename2 = "example.cpp";
 static inline constexpr std::string_view filename3 = "new_file.cpp";
 static inline constexpr std::string_view filename4 = "unknown";
@@ -70,9 +72,10 @@ TEST_CASE("get_current_timestamp() tests", "[timestamp]") {
     }
 }
 
+// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("my_error_handler(const std::string&) tests", "[error_handler]") {
     SECTION("Basic error handling") {
-        std::stringstream sss;
+        const std::stringstream sss;
         auto *original = std::cerr.rdbuf(sss.rdbuf());  // Redirect cerr to stringstream
         my_error_handler("Sample error message");
         std::cerr.rdbuf(original);  // Restore cerr
@@ -85,7 +88,7 @@ TEST_CASE("my_error_handler(const std::string&) tests", "[error_handler]") {
     }
 
     SECTION("Error handler with different messages") {
-        std::stringstream sss;
+        const std::stringstream sss;
         auto *original = std::cerr.rdbuf(sss.rdbuf());  // Redirect cerr to stringstream
         my_error_handler("Error 1");
         my_error_handler("Another error");
@@ -97,7 +100,7 @@ TEST_CASE("my_error_handler(const std::string&) tests", "[error_handler]") {
     }
 
     SECTION("Location information") {
-        std::stringstream sss;
+        const std::stringstream sss;
         auto *original = std::cerr.rdbuf(sss.rdbuf());  // Redirect cerr to stringstream
         my_error_handler("Location test");
         std::cerr.rdbuf(original);  // Restore cerr
@@ -110,6 +113,8 @@ TEST_CASE("my_error_handler(const std::string&) tests", "[error_handler]") {
 }
 
 TEST_CASE("std::filesystem::path formater", "[FMT]") { REQ_FORMAT(std::filesystem::path("../ssss"), "../ssss"); }
+
+// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("glm::vec formater", "[FMT]") {
     REQ_FORMAT(glm::vec2(0.0F, 0.0F), "vec2(0, 0)");
     REQ_FORMAT(glm::dvec2(0.0, 0.0), "dvec2(0, 0)");
@@ -123,6 +128,7 @@ TEST_CASE("glm::vec formater", "[FMT]") {
 }
 
 // clang-format off
+// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("glm::mat formater", "[FMT]") {
     REQ_FORMAT(glm::mat2(0.0F, 0.0F, 0.0F, 0.0F), "mat2x2((0,0), (0,0))");
     REQ_FORMAT(glm::dmat2(0.0, 0.0, 0.0, 0.0), "dmat2x2((0,0), (0,0))");
@@ -158,42 +164,46 @@ TEST_CASE("std::complex formater 2", "[FMT]") {
 // clang-format on
 
 TEST_CASE("Timer: MSTimes", "[timer]") {
-    vnd::Timer timer{timerName.data()};
+    const auto timerNameData = timerName.data();
+    vnd::Timer timer{timerNameData};
     std::this_thread::sleep_for(std::chrono::milliseconds(timerSleap));
-    std::string output = timer.to_string();
-    std::string new_output = (timer / timerCicles).to_string();
-    REQUIRE(output.find(timerName.data()) != std::string::npos);
+    const std::string output = timer.to_string();
+    const std::string new_output = (timer / timerCicles).to_string();
+    REQUIRE(output.find(timerNameData) != std::string::npos);
     REQUIRE(output.find(timerTime1) != std::string::npos);
     REQUIRE(new_output.find(timerTime2) != std::string::npos);
 }
 
 TEST_CASE("Timer: MSTimes FMT", "[timer]") {
-    vnd::Timer timer{timerName.data()};
+    const auto timerNameData = timerName.data();
+    vnd::Timer timer{timerNameData};
     std::this_thread::sleep_for(std::chrono::milliseconds(timerSleap));
-    std::string output = FORMAT("{}", timer);
-    std::string new_output = FORMAT("{}", (timer / timerCicles));
-    REQUIRE(output.find(timerName.data()) != std::string::npos);
+    const std::string output = FORMAT("{}", timer);
+    const std::string new_output = FORMAT("{}", (timer / timerCicles));
+    REQUIRE(output.find(timerNameData) != std::string::npos);
     REQUIRE(output.find(timerTime1) != std::string::npos);
     REQUIRE(new_output.find(timerTime2) != std::string::npos);
 }
 
 TEST_CASE("Timer: BigTimer", "[timer]") {
-    vnd::Timer timer{timerName.data(), vnd::Timer::Big};
-    std::string output = timer.to_string();
-    REQUIRE(output.find(timerName.data()) != std::string::npos);
+    const auto timerNameData = timerName.data();
+    vnd::Timer timer{timerNameData, vnd::Timer::Big};
+    const std::string output = timer.to_string();
+    REQUIRE(output.find(timerNameData) != std::string::npos);
     REQUIRE(output.find(timerBigs) != std::string::npos);
 }
 
 TEST_CASE("Timer: BigTimer FMT", "[timer]") {
-    vnd::Timer timer{timerName.data(), vnd::Timer::Big};
-    std::string output = FORMAT("{}", timer);
-    REQUIRE(output.find(timerName.data()) != std::string::npos);
+    const auto timerNameData = timerName.data();
+    vnd::Timer timer{timerNameData, vnd::Timer::Big};
+    const std::string output = FORMAT("{}", timer);
+    REQUIRE(output.find(timerNameData) != std::string::npos);
     REQUIRE(output.find(timerBigs) != std::string::npos);
 }
 
 TEST_CASE("Timer: AutoTimer", "[timer]") {
     vnd::Timer timer;
-    std::string output = timer.to_string();
+    const std::string output = timer.to_string();
     REQUIRE(output.find("Timer") != std::string::npos);
 }
 
@@ -201,31 +211,32 @@ TEST_CASE("Timer: PrintTimer", "[timer]") {
     std::stringstream out;
     vnd::Timer timer;
     out << timer;
-    std::string output = out.str();
+    const std::string output = out.str();
     REQUIRE(output.find("Timer") != std::string::npos);
 }
 
 TEST_CASE("Timer: PrintTimer FMT", "[timer]") {
     vnd::Timer timer;
-    std::string output = FORMAT("{}", timer);
+    const std::string output = FORMAT("{}", timer);
     REQUIRE(output.find("Timer") != std::string::npos);
 }
 
 TEST_CASE("Timer: TimeItTimer", "[timer]") {
     vnd::Timer timer;
-    std::string output = timer.time_it([]() { std::this_thread::sleep_for(std::chrono::milliseconds(timerSleap2)); }, timerResolution);
+    const std::string output = timer.time_it([]() { std::this_thread::sleep_for(std::chrono::milliseconds(timerSleap2)); },
+                                             timerResolution);
     REQUIRE(output.find(timerTime1) != std::string::npos);
 }
 
 TEST_CASE("CodeSourceLocation default constructor sets default values", "[CodeSourceLocation]") {
-    vnd::CodeSourceLocation location;
+    const vnd::CodeSourceLocation location;
     REQUIRE(location.getFileName().empty());
     REQUIRE(location.getLine() == 0);
     REQUIRE(location.getColumn() == 0);
 }
 
 TEST_CASE("CodeSourceLocation constructor sets values correctly", "[CodeSourceLocation]") {
-    vnd::CodeSourceLocation location(filename2, t_line2, t_colum6);
+    const vnd::CodeSourceLocation location(filename2, t_line2, t_colum6);
     REQUIRE(location.getFileName() == filename2);
     REQUIRE(location.getLine() == t_line2);
     REQUIRE(location.getColumn() == t_colum6);
@@ -242,15 +253,15 @@ TEST_CASE("CodeSourceLocation setters update values", "[CodeSourceLocation]") {
 }
 
 TEST_CASE("CodeSourceLocation unknown() creates object with default values", "[CodeSourceLocation]") {
-    vnd::CodeSourceLocation location = vnd::CodeSourceLocation::unknown();
+    const vnd::CodeSourceLocation location = vnd::CodeSourceLocation::unknown();
     REQUIRE(location.getFileName() == filename4);
     REQUIRE(location.getLine() == 0);
     REQUIRE(location.getColumn() == 0);
 }
 
 TEST_CASE("CodeSourceLocation equality and inequality operators work correctly", "[CodeSourceLocation]") {
-    vnd::CodeSourceLocation location1("file1.cpp", t_line4, t_colum2);
-    vnd::CodeSourceLocation location2("file1.cpp", t_line4, t_colum2);
+    vnd::CodeSourceLocation location1(ffilename, t_line4, t_colum2);
+    vnd::CodeSourceLocation location2(ffilename, t_line4, t_colum2);
     vnd::CodeSourceLocation location3("file2.cpp", t_line4, t_colum2);
 
     REQUIRE(location1 == location2);
@@ -258,10 +269,11 @@ TEST_CASE("CodeSourceLocation equality and inequality operators work correctly",
 }
 
 TEST_CASE("CodeSourceLocation toString() produces expected string", "[CodeSourceLocation]") {
-    vnd::CodeSourceLocation location(filename2, t_line2, t_colum6);
+    const vnd::CodeSourceLocation location(filename2, t_line2, t_colum6);
     REQUIRE(location.toString() == "(file:example.cpp, line:42, column:10)");
 }
 
+// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("corrected format for Tokentype", "[token_type]") {
     using enum vnd::TokenType;
     REQ_FORMAT(INTEGER, "INTEGER")
@@ -334,6 +346,7 @@ TEST_CASE("corrected format for Tokentype", "[token_type]") {
     REQ_FORMAT(UNKNOWN, "UNKNOWN")
 }
 
+// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("corrected format for Tokentype compat to string", "[token_type]") {
     using enum vnd::TokenType;
     REQ_FORMAT(comp_tokType(INTEGER), "INT")
@@ -436,6 +449,7 @@ TEST_CASE("default constructed token toString", "[token]") {
     REQUIRE(token.to_string() == "(type: UNKNOWN, value: '', source location:(file:unknown, line:0, column:0))");
 }
 
+// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("default constructed token format", "[token]") {
     vnd::Token token{};
     REQUIRE(token.getType() == vnd::TokenType::UNKNOWN);
@@ -447,6 +461,7 @@ TEST_CASE("default constructed token format", "[token]") {
     REQUIRE(token.compat_to_string() == "(typ: UNKNOWN, val: '', sl:(f:unknown, l:0, c:0))");
 }
 
+// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("default constructed token set propriety", "[token]") {
     using enum vnd::TokenType;
     vnd::Token token{};
@@ -463,6 +478,7 @@ TEST_CASE("default constructed token set propriety", "[token]") {
     REQUIRE(token.getColumn() == 1);
 }
 
+// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("default constructed token isType", "[token]") {
     using enum vnd::TokenType;
     vnd::Token token{};
@@ -480,6 +496,8 @@ TEST_CASE("default constructed token isType", "[token]") {
     REQUIRE(token.getLine() == 1);
     REQUIRE(token.getColumn() == 1);
 }
+
+// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("default constructed token set propriety tostring", "[token]") {
     using enum vnd::TokenType;
     vnd::Token token{};
@@ -503,6 +521,7 @@ TEST_CASE("default constructed token set propriety tostring", "[token]") {
 #endif
 }
 
+// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("construct a empty value token", "[token]") {
     using enum vnd::TokenType;
     vnd::Token token{UNKNOWN, vnd::CodeSourceLocation{}};
@@ -515,20 +534,22 @@ TEST_CASE("construct a empty value token", "[token]") {
     REQUIRE(token.compat_to_string() == "(typ: UNKNOWN, val: '', sl:(f:, l:0, c:0))");
 }
 
+// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("FolderCreationResult Constructor") {
     SECTION("Default constructor") {
-        vnd::FolderCreationResult result;
+        const vnd::FolderCreationResult result;
         REQUIRE(result.success() == false);
         REQUIRE(result.path().value_or("").empty());
     }
 
     SECTION("Parameterized constructor") {
-        vnd::FolderCreationResult result(true, fs::path("/test/path"));
+        const vnd::FolderCreationResult result(true, fs::path("/test/path"));
         REQUIRE(result.success() == true);
         REQUIRE(result.path() == fs::path("/test/path"));
     }
 }
 
+// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("FolderCreationResult Setters") {
     vnd::FolderCreationResult result;
 
@@ -547,52 +568,53 @@ TEST_CASE("FolderCreationResult Setters") {
     SECTION("Set path with empty string") { REQUIRE_THROWS_AS(result.set_path(fs::path()), std::invalid_argument); }
 }
 
+// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("FolderCreationResult Folder Creation Functions") {
     // Create a temporary directory for testing
     auto tempDir = fs::temp_directory_path() / "vnd_test";
     fs::create_directories(tempDir);
 
     SECTION("Create folder with valid parameters") {
-        std::string folderName = "test_folder";
-        vnd::FolderCreationResult result = vnd::FolderCreationResult::createFolder(folderName, tempDir);
+        const std::string folderName = "test_folder";
+        const vnd::FolderCreationResult result = vnd::FolderCreationResult::createFolder(folderName, tempDir);
         REQUIRE(result.success() == true);
         REQUIRE(result.path() == tempDir / folderName);
         // Clean up
-        fs::remove_all(tempDir / folderName);
+        [[maybe_unused]] auto unused = fs::remove_all(tempDir / folderName);
     }
 
     SECTION("Create folder with empty folder name") {
-        std::string emptyFolderName;
-        vnd::FolderCreationResult result = vnd::FolderCreationResult::createFolder(emptyFolderName, tempDir);
+        const std::string emptyFolderName;
+        const vnd::FolderCreationResult result = vnd::FolderCreationResult::createFolder(emptyFolderName, tempDir);
         REQUIRE(result.success() == false);
         REQUIRE(result.path()->empty());
     }
 
     SECTION("Create folder in non-existent parent directory") {
-        fs::path nonExistentParentDir = tempDir / "non_existent_dir";
-        std::string folderName = "test_folder";
-        vnd::FolderCreationResult result = vnd::FolderCreationResult::createFolder(folderName, nonExistentParentDir);
+        const fs::path nonExistentParentDir = tempDir / "non_existent_dir";
+        const std::string folderName = "test_folder";
+        const vnd::FolderCreationResult result = vnd::FolderCreationResult::createFolder(folderName, nonExistentParentDir);
         REQUIRE(result.success() == true);
         REQUIRE(!result.path()->empty());
     }
 
     SECTION("Create folder existent directory") {
-        fs::path nonExistentParentDir = tempDir / "non_existent_dir";
-        std::string folderName = "test_folder";
-        vnd::FolderCreationResult result = vnd::FolderCreationResult::createFolder(folderName, nonExistentParentDir);
+        const fs::path nonExistentParentDir = tempDir / "non_existent_dir";
+        const std::string folderName = "test_folder";
+        const vnd::FolderCreationResult result = vnd::FolderCreationResult::createFolder(folderName, nonExistentParentDir);
         REQUIRE(result.success() == true);
         REQUIRE(!result.path()->empty());
-        fs::path ExistentParentDir = tempDir / "non_existent_dir";
-        std::string folderName2 = "test_folder";
-        vnd::FolderCreationResult result2 = vnd::FolderCreationResult::createFolder(folderName2, nonExistentParentDir);
+        // const fs::path ExistentParentDir = tempDir / "non_existent_dir";
+        const std::string folderName2 = "test_folder";
+        const vnd::FolderCreationResult result2 = vnd::FolderCreationResult::createFolder(folderName2, nonExistentParentDir);
         REQUIRE(result2.success() == true);
         REQUIRE(!result2.path()->empty());
     }
 
     SECTION("Create folder next to non-existent file") {
-        fs::path nonExistentFilePath = tempDir / "non_existent_file.txt";
-        std::string folderName = "test_folder";
-        vnd::FolderCreationResult result = vnd::FolderCreationResult::createFolderNextToFile(nonExistentFilePath, folderName);
+        const fs::path nonExistentFilePath = tempDir / "non_existent_file.txt";
+        const std::string folderName = "test_folder";
+        const vnd::FolderCreationResult result = vnd::FolderCreationResult::createFolderNextToFile(nonExistentFilePath, folderName);
         REQUIRE(result.success() == true);
         REQUIRE(!result.path()->empty());
         REQUIRE(!result.pathcref()->empty());
@@ -600,22 +622,22 @@ TEST_CASE("FolderCreationResult Folder Creation Functions") {
 
     SECTION("Create folder next to existing file") {
         // Create a file in the temporary directory
-        fs::path filePath = tempDir / "test_file.txt";
+        const fs::path filePath = tempDir / "test_file.txt";
         std::ofstream ofs(filePath);
         ofs.close();
 
-        std::string folderName = "test_folder";
-        vnd::FolderCreationResult result = vnd::FolderCreationResult::createFolderNextToFile(filePath, folderName);
+        const std::string folderName = "test_folder";
+        const vnd::FolderCreationResult result = vnd::FolderCreationResult::createFolderNextToFile(filePath, folderName);
         REQUIRE(result.success() == true);
         REQUIRE(result.path() == tempDir / folderName);
 
         // Clean up
-        fs::remove(filePath);
-        fs::remove_all(tempDir / folderName);
+        [[maybe_unused]] auto unused = fs::remove(filePath);
+        [[maybe_unused]] auto unuseds = fs::remove_all(tempDir / folderName);
     }
 
     // Clean up the temporary directory
-    fs::remove_all(tempDir);
+    [[maybe_unused]] auto unused = fs::remove_all(tempDir);
 }
 
 /*TEST_CASE("FolderCreationResult Serialization") {
@@ -630,6 +652,7 @@ TEST_CASE("FolderCreationResult Folder Creation Functions") {
     REQUIRE(deserializedResult.path() == fs::path("/test/path"));
 }*/
 
+// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("default constructed token set propriety format", "[token]") {
     using enum vnd::TokenType;
     vnd::Token token{};
@@ -732,6 +755,7 @@ TEST_CASE("tokenizer emit integer token new line", "[tokenizer]") {
     REQUIRE(tokens[3] == vnd::Token(inte, "34000000", vnd::CodeSourceLocation(filename, 2, 5)));
 }
 
+// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("tokenizer emit double token", "[tokenizer]") {
     vnd::Tokenizer tokenizer{"1. 1.0 1e+1 1E+1 1.1e+1 1.1E+1 1e-1 1E-1 1.1e-1 1.1E-1 .4e12 4i 5.4if .7f", filename};
     std::vector<vnd::Token> tokens = tokenizer.tokenize();
@@ -752,6 +776,7 @@ TEST_CASE("tokenizer emit double token", "[tokenizer]") {
     REQUIRE(tokens[13] == vnd::Token(doub, ".7f", vnd::CodeSourceLocation(filename, 1, 71)));
 }
 
+// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("tokenizer emit operator token", "[tokenizer]") {
     using enum vnd::TokenType;
     vnd::Tokenizer tokenizer{"* / = , : < > ! | & + - ^ . %", filename};
@@ -950,6 +975,7 @@ TEST_CASE("Parser emit boolean literal node", "[parser]") {
     REQUIRE(number->get_value() == true);
 }
 
+// NOLINT(*-function-cognitive-complexity)
 TEST_CASE("boolean node swap", "[parser]") {
     auto token1 = vnd::Token{vnd::TokenType::BOOLEAN, "true", vnd::CodeSourceLocation{filename, t_line, t_colum4}};
     auto token2 = vnd::Token{vnd::TokenType::BOOLEAN, "false", vnd::CodeSourceLocation{filename, t_line, t_colum2}};
@@ -978,6 +1004,7 @@ TEST_CASE("Parser emit string literal node", "[parser]") {
     REQUIRE(number->get_value() == "tr");
 }
 
+// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("string node swap", "[parser]") {
     auto token1 = vnd::Token{vnd::TokenType::STRING, "tr", vnd::CodeSourceLocation{filename, t_line, t_colum4}};
     auto token2 = vnd::Token{vnd::TokenType::STRING, "sr", vnd::CodeSourceLocation{filename, t_line, t_colum2}};
@@ -1006,6 +1033,7 @@ TEST_CASE("Parser emit char literal node", "[parser]") {
     REQUIRE(number->get_value() == 'c');
 }
 
+// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("char node swap", "[parser]") {
     auto token1 = vnd::Token{vnd::TokenType::CHAR, "c", vnd::CodeSourceLocation{filename, t_line, t_colum4}};
     auto token2 = vnd::Token{vnd::TokenType::CHAR, "d", vnd::CodeSourceLocation{filename, t_line, t_colum2}};
@@ -1055,6 +1083,7 @@ TEST_CASE("Parser emit complex float number node", "[parser]") {
     REQUIRE(number->get_value() == std::complex<float>(0, 1));
 }
 
+// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("integer number node swap", "[parser]") {
     auto token1 = vnd::Token{vnd::TokenType::INTEGER, "2", vnd::CodeSourceLocation{filename, t_line, t_colum}};
     auto token2 = vnd::Token{vnd::TokenType::INTEGER, "3", vnd::CodeSourceLocation{filename, t_line, t_colum2}};
@@ -1071,6 +1100,7 @@ TEST_CASE("integer number node swap", "[parser]") {
     REQUIRE(intb.get_token() == token1);
 }
 
+// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("Imaginary number node swap", "[parser]") {
     auto token1 = vnd::Token{vnd::TokenType::DOUBLE, "2if", vnd::CodeSourceLocation{filename, t_line, t_colum}};
     auto token2 = vnd::Token{vnd::TokenType::DOUBLE, "3if", vnd::CodeSourceLocation{filename, t_line, t_colum3}};
@@ -1099,6 +1129,7 @@ TEST_CASE("double number node swap", "[parser]") {
     REQUIRE(doubb.get_value() == 2.3);
 }
 
+// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("unary node swap", "[parser]") {
     using enum vnd::TokenType;
     auto token1 = vnd::Token{MINUS, "-", vnd::CodeSourceLocation{filename, t_line, t_colum}};
@@ -1126,6 +1157,7 @@ TEST_CASE("unary node swap", "[parser]") {
     REQUIRE(unarb.getOperand()->as<vnd::VariableNode>()->get_token() == token2);
 }
 
+// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("binary node swap", "[parser]") {
     using enum vnd::TokenType;
     auto token1 = vnd::Token{MINUS, "-", vnd::CodeSourceLocation{filename, t_line, t_colum5}};
@@ -1162,6 +1194,7 @@ TEST_CASE("binary node swap", "[parser]") {
     REQUIRE(unarb.getLeft()->as<vnd::VariableNode>()->get_token() == token2);
     REQUIRE(unarb.getRight()->as<vnd::VariableNode>()->get_token() == token3);
 }
+// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("Parser::convertToInt tests", "[parser]") {
     SECTION("Valid integer conversion") {
         REQUIRE(vnd::Parser::convertToInt("123") == 123);
@@ -1177,6 +1210,7 @@ TEST_CASE("Parser::convertToInt tests", "[parser]") {
     SECTION("Trailing characters throws exception") { REQUIRE_THROWS_AS(vnd::Parser::convertToInt("123a"), std::invalid_argument); }
 }
 
+// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("Parser::convertToIntformExa tests") {
     SECTION("Valid hexadecimal conversion") {
         REQUIRE(vnd::Parser::convertToIntformExa("1A") == 26);     // 0x1A = 26 in decimal
@@ -1192,6 +1226,7 @@ TEST_CASE("Parser::convertToIntformExa tests") {
     SECTION("Trailing characters throws exception") { REQUIRE_THROWS_AS(vnd::Parser::convertToIntformExa("1A a"), std::invalid_argument); }
 }
 
+// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("Parser::convertToIntformOct tests") {
     SECTION("Valid octal conversion") {
         REQUIRE(vnd::Parser::convertToIntformOct("77") == 63);   // 077 = 63 in decimal
@@ -1423,6 +1458,7 @@ TEST_CASE("Parser emit variable node compat print", "[parser]") {
     REQUIRE(variable->comp_print() == "VAR(y)");
 }
 
+// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("Parser emit unary expression node", "[parser]") {
     vnd::Parser parser("-x", filename);
     auto ast = parser.parse();
@@ -1444,6 +1480,7 @@ TEST_CASE("Parser emit unary expression node", "[parser]") {
     REQUIRE(variableNode->getName() == "x");
 }
 
+// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("Parser emit unary expression node print", "[parser]") {
     vnd::Parser parser("-x", filename);
     auto ast = parser.parse();
@@ -1466,6 +1503,7 @@ TEST_CASE("Parser emit unary expression node print", "[parser]") {
     REQUIRE(unaryNode->print() == "UNARY_EXPRESION(op:\"-\" operand:VARIABLE(x))");
 }
 
+// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("Parser emit unary expression node compat print", "[parser]") {
     vnd::Parser parser("-x", filename);
     auto ast = parser.parse();
@@ -1488,6 +1526,7 @@ TEST_CASE("Parser emit unary expression node compat print", "[parser]") {
     REQUIRE(unaryNode->comp_print() == "UNE(op:\"-\" opr:VAR(x))");
 }
 
+// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("Parser emit binary expression node", "[parser]") {
     vnd::Parser parser("1 + 2", filename);
     auto ast = parser.parse();
@@ -1519,6 +1558,7 @@ TEST_CASE("Parser emit binary expression node", "[parser]") {
     REQUIRE(rightNumber->get_value() == 2);
 }
 
+// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("Parser emit binary expression node print", "[parser]") {
     vnd::Parser parser("1 + 2", filename);
     auto ast = parser.parse();
@@ -1550,6 +1590,7 @@ TEST_CASE("Parser emit binary expression node print", "[parser]") {
     REQUIRE(binaryNode->print() == R"(BINARY_EXPRESION(op:"+" left:NUMBER_INTEGER(1), right:NUMBER_INTEGER(2)))");
 }
 
+// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("Parser emit binary expression node compact print", "[parser]") {
     vnd::Parser parser("1 + 2", filename);
     auto ast = parser.parse();
@@ -1605,6 +1646,7 @@ TEST_CASE("Parser emit exception for nonexistent unary operator", "[parser]") {
     REQUIRE_THROWS_AS(tokenizer.parse(), vnd::ParserException);
 }
 
+// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("Parser emit i8 TypeNode node", "[parser]") {
     vnd::Parser parser("i8", filename);
     auto ast = parser.parse();
@@ -1619,6 +1661,7 @@ TEST_CASE("Parser emit i8 TypeNode node", "[parser]") {
     REQUIRE(typeNode->get_index() == nullptr);
 }
 
+// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("Parser emit array", "[parser]") {
     vnd::Parser parser("i8[size][]{1, 2}", filename);
     auto ast = parser.parse();
@@ -1638,6 +1681,7 @@ TEST_CASE("Parser emit array", "[parser]") {
     REQUIRE(typeNode->get_index()->get_index()->get_array()->get_elements() != nullptr);
 }
 
+// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("Parser emit empty array", "[parser]") {
     vnd::Parser parser("Object[]{}", filename);
     auto ast = parser.parse();
@@ -1651,6 +1695,7 @@ TEST_CASE("Parser emit empty array", "[parser]") {
     REQUIRE(variable->get_index()->get_array()->get_elements() == nullptr);
 }
 
+// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("Parser emit array type", "[parser]") {
     vnd::Parser parser("i8[]", filename);
     auto ast = parser.parse();
@@ -1774,4 +1819,6 @@ TEST_CASE("Parser emit callable node", "[parser]") {
     REQUIRE(variableNode->is_call() == true);
     REQUIRE(variableNode->get_call() != nullptr);
 }
-// NOLINTEND(*-include-cleaner, *-avoid-magic-numbers, *-magic-numbers, *-unchecked-optional-access)
+// clang-format off
+// NOLINTEND(*-include-cleaner, *-avoid-magic-numbers, *-magic-numbers, *-unchecked-optional-access, *-avoid-do-while, *-use-anonymous-namespace, *-qualified-auto)
+// clang-format on
