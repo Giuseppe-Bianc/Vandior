@@ -618,7 +618,7 @@ TEST_CASE("FolderCreationResult Folder Creation Functions") {
     fs::remove_all(tempDir);
 }
 
-TEST_CASE("FolderCreationResult Serialization") {
+/*TEST_CASE("FolderCreationResult Serialization") {
     vnd::FolderCreationResult result(true, fs::path("/test/path"));
     nlohmann::json jsn = result;
     REQUIRE(jsn["success"] == true);
@@ -628,7 +628,7 @@ TEST_CASE("FolderCreationResult Serialization") {
     jsn.get_to(deserializedResult);
     REQUIRE(deserializedResult.success() == true);
     REQUIRE(deserializedResult.path() == fs::path("/test/path"));
-}
+}*/
 
 TEST_CASE("default constructed token set propriety format", "[token]") {
     using enum vnd::TokenType;

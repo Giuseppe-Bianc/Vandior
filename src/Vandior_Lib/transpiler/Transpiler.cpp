@@ -1,4 +1,6 @@
-// NOLINTBEGIN(*-include-cleaner, *-easily-swappable-parameters, *-unused-variable, *-branch-clone, *-no-recursion)
+// clang-format off
+// NOLINTBEGIN(*-include-cleaner, *-easily-swappable-parameters, *-unused-variable, *-branch-clone, *-no-recursion,*-identifier-length)
+// clang-format on
 #include "Vandior/transpiler/Transpiler.hpp"
 
 namespace vnd {
@@ -101,6 +103,7 @@ namespace vnd {
 
     // Helper function to transpile code for BinaryExpressionNode
     std::string Transpiler::transpileBinaryExpressionNode(const vnd::BinaryExpressionNode *binaryNode) {
+        if(!binaryNode) { return ""; }
         std::ostringstream code;
         LINFO("transpileBinaryExpressionNode");
         const auto op = binaryNode->getOp();
@@ -125,11 +128,13 @@ namespace vnd {
     }*/
     // Helper function to transpile code for UnaryExpressionNode
     std::string Transpiler::transpileUnaryExpressionNode(const vnd::UnaryExpressionNode *unaryNode) {
+        if(!unaryNode) { return ""; }
         return FORMAT("{}{}", unaryNode->getOp(), transpileNode(*unaryNode->getOperand()));
     }
 
     // Helper function to transpile code for VariableNode
     std::string Transpiler::transpileVariableNode(const vnd::VariableNode *variableNode) {
+        if(!variableNode) { return ""; }
         std::ostringstream code;
         code << variableNode->getName();
         if(variableNode->is_call()) {
@@ -143,11 +148,13 @@ namespace vnd {
 
     // Helper function to transpile code for Numeric nodes
     template <typename T> std::string Transpiler::transpileNumericNode(const NumberNode<T> *numberNode) {
+        if(!numberNode) { return ""; }
         return FORMAT("{}", numberNode->get_value());
     }
 
     // Helper function to transpile code for LiteralNode
     template <typename T> std::string Transpiler::transpileLiteralNode(const LiteralNode<T> *literalNode) {
+        if(!literalNode) { return ""; }
         if constexpr(std::is_same_v<T, bool>) {
             return literalNode->get_value() ? "true" : "false";
         } else if constexpr(std::is_same_v<T, char>) {
@@ -160,6 +167,7 @@ namespace vnd {
 
     // Helper function to transpile code for TypeNode
     std::string Transpiler::transpileTypeNode(const vnd::TypeNode *typeNode) {
+        if(!typeNode) { return ""; }
         std::ostringstream code;
         // code << typeNode.getName();
         code << typeNode->get_value();
@@ -169,6 +177,7 @@ namespace vnd {
 
     // Helper function to transpile code for IndexNode
     std::string Transpiler::transpileIndexNode(const vnd::IndexNode *indexNode) {
+        if(!indexNode) { return ""; }
         std::ostringstream code;
         if(const auto &elementsNode = indexNode->get_elements()) { code << transpileNode(*elementsNode); }
         if(const auto &elementsIndexNode = indexNode->get_index()) { code << FORMAT("[{}]", transpileNode(*elementsIndexNode)); }
@@ -178,6 +187,7 @@ namespace vnd {
 
     // Helper function to transpile code for ArrayNode
     std::string Transpiler::transpileArrayNode(const vnd::ArrayNode *arrayNode) {
+        if(!arrayNode) { return ""; }
         std::ostringstream code;
         code << "{ ";
         if(arrayNode->get_elements()) { code << transpileNode(*arrayNode->get_elements()); }
@@ -187,4 +197,6 @@ namespace vnd {
 
 }  // namespace vnd
 
-// NOLINTEND(*-include-cleaner, *-easily-swappable-parameters, *-unused-variable, *-branch-clone, *-no-recursion)
+// clang-format off
+// NOLINTEND(*-include-cleaner, *-easily-swappable-parameters, *-unused-variable, *-branch-clone, *-no-recursion, *-identifier-length)
+// clang-format on
