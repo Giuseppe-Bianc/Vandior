@@ -57,7 +57,7 @@ namespace vnd {
         outfile.close();
         LINFO("File {} creato con successo!", _mainOutputFilePath);
         const auto ast = _parser.parse();
-        //prettyPrint(*ast);
+        // prettyPrint(*ast);
         LINFO("transpiled code");
         LINFO(transpileNode(*ast));
     }
@@ -162,7 +162,6 @@ namespace vnd {
         } else if constexpr(std::is_same_v<T, std::string_view>) {
             return FORMAT("\"{}\"", literalNode->get_value());
         }
-        return "";
     }
 
     // Helper function to transpile code for TypeNode
