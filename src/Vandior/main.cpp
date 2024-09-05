@@ -13,7 +13,7 @@ DISABLE_WARNINGS_POP()
 #include <internal_use_only/config.hpp>
 
 #define HIDE_SYSTEM_OUTPUT
-
+// NOLINTBEGIN(*-const-correctness)
 namespace vnd {
     auto timeTokenizer(Tokenizer &tokenizer, std::vector<Token> &tokens) -> void {
         tokens.clear();
@@ -32,6 +32,7 @@ namespace vnd {
         return ast;
     }
 }  // namespace vnd
+// NOLINTEND(*-const-correctness)
 DISABLE_WARNINGS_PUSH(26461 26821)
 
 /*static inline constexpr auto sequence = std::views::iota(0, 9999);
