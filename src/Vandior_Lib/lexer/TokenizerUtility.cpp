@@ -31,8 +31,10 @@ namespace vnd {
         return position != inputSpan.size() && inputSpan[position] == slashcr &&
                (inputSpan[nextpos] == slashcr || inputSpan[nextpos] == starcr);
     }
-    bool TokenizerUtility::isalnumUnderscore(const char cha) noexcept { return std::isalnum(C_UC(cha)) || cha == underore; }
-    bool TokenizerUtility::isOctalDigit(const char cha) noexcept { return std::isdigit(C_UC(cha)) && cha >= zerocr && cha <= sevencr; }
+    bool TokenizerUtility::isalnumUnderscore(const char cha) noexcept { return C_BOOL(std::isalnum(C_UC(cha))) || cha == underore; }
+    bool TokenizerUtility::isOctalDigit(const char cha) noexcept {
+        return C_BOOL(std::isdigit(C_UC(cha))) && cha >= zerocr && cha <= sevencr;
+    }
     bool TokenizerUtility::isHasterisc(const char cha) noexcept { return cha == '#'; }
     bool TokenizerUtility::isUnderscore(const char cha) noexcept { return cha == underore; }
 }  // namespace vnd

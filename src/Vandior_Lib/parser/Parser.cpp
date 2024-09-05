@@ -4,7 +4,7 @@
 #include <system_error>
 #include <utility>
 
-// NOLINTBEGIN(*-include-cleaner, *-no-recursion,*-avoid-magic-numbers, *-magic-numbers)
+// NOLINTBEGIN(*-include-cleaner, *-no-recursion,*-avoid-magic-numbers, *-magic-numbers, *-err58-cpp)
 DISABLE_WARNINGS_PUSH(26410 26411 26415 26445 26481)
 
 namespace vnd {
@@ -284,4 +284,4 @@ namespace vnd {
 
 }  // namespace vnd
 DISABLE_WARNINGS_POP()
-// NOLINTEND(*-include-cleaner,*-no-recursion, *-avoid-magic-numbers,*-magic-numbers)
+// NOLINTEND(*-include-cleaner, *-no-recursion,*-avoid-magic-numbers, *-magic-numbers, *-err58-cpp)

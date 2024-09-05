@@ -22,15 +22,15 @@ namespace vnd {
         tokens.reserve(_inputSize);
         while(positionIsInText()) {
             const char &currentChar = _input.at(position);
-            if(std::isalpha(currentChar)) [[likely]] {
+            if(C_BOOL(std::isalpha(currentChar))) [[likely]] {
                 tokens.emplace_back(handleAlpha());
-            } else if(std::isdigit(currentChar)) [[likely]] {
+            } else if(C_BOOL(std::isdigit(currentChar))) [[likely]] {
                 tokens.emplace_back(handleDigits());
             } else if(TokenizerUtility::isUnderscore(currentChar)) [[likely]] {
                 tokens.emplace_back(handleUnderscoreAlpha());
             } else if(TokenizerUtility::isHasterisc(currentChar)) [[likely]] {
                 tokens.emplace_back(handleHexadecimalOrOctal());
-            } else if(std::isspace(currentChar)) [[likely]] {
+            } else if(C_BOOL(std::isspace(currentChar))) [[likely]] {
                 handleWhiteSpace();
                 continue;  // Continue the loop to get the next token
             } else if(TokenizerUtility::isComment(_input, position)) {
@@ -184,7 +184,7 @@ namespace vnd {
         const auto start = position;
         auto type = TokenType::DOT;
         incPosAndColumn();
-        if(positionIsInText() && std::isdigit(getUnsignedCharAt(position))) {
+        if(positionIsInText() && C_BOOL(std::isdigit(getUnsignedCharAt(position)))) {
             type = TokenType::DOUBLE;
             extractDigits();
             if(inTextAndE()) {
@@ -204,7 +204,7 @@ namespace vnd {
     }
 
     void Tokenizer::extractDigits() noexcept {
-        while(positionIsInText() && isdigit(_input[position])) { incPosAndColumn(); }
+        while(positionIsInText() && C_BOOL(std::isdigit(_input[position]))) { incPosAndColumn(); }
     }
 
     void Tokenizer::incPosAndColumn() noexcept {
@@ -418,9 +418,9 @@ namespace vnd {
             // Gestione dei numeri ottali
             incPosAndColumn();
             while(positionIsInText() && TokenizerUtility::isOctalDigit(_input[position])) { incPosAndColumn(); }
-        } else if(positionIsInText() && std::isxdigit(getUnsignedCharAt(position))) {
+        } else if(positionIsInText() && C_BOOL(std::isxdigit(getUnsignedCharAt(position)))) {
             // Gestione dei numeri esadecimali
-            while(positionIsInText() && std::isxdigit(getUnsignedCharAt(position))) { incPosAndColumn(); }
+            while(positionIsInText() && C_BOOL(std::isxdigit(getUnsignedCharAt(position)))) { incPosAndColumn(); }
         } else [[unlikely]] {
             const auto error_value = _input.substr(start, position);
             handleError(error_value, "malformed exadecimal number or octal number");
