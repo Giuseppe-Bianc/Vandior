@@ -1668,22 +1668,40 @@ TEST_CASE("Parser pars complex expression", "[parser]") {
 
 TEST_CASE("Parser emit exception for mismacted  paren", "[parser]") {
     vnd::Parser tokenizer{"1 + 2 +( 2+3*3", filename};
+#ifdef _WIN32  // Windows
     REQUIRE_THROWS_MATCHES(
         tokenizer.parse(), vnd::ParserException,
-        Message("Unexpected token: (type: OPEN_PARENTESIS, value: '(', source location:(file:.\\unknown.vn, line:1, column:8))"));
+        Message(R"(Unexpected token: (type: OPEN_PARENTESIS, value: '(', source location:(file:.\unknown.vn, line:1, column:8)))"));
+#else
+    REQUIRE_THROWS_MATCHES(
+        tokenizer.parse(), vnd::ParserException,
+        Message(R"(Unexpected token: (type: OPEN_PARENTESIS, value: '(', source location:(file:./unknown.vn, line:1, column:8)))"));
+
+#endif
 }
 
 TEST_CASE("Parser emit exception for uncomplete expression", "[parser]") {
     vnd::Parser tokenizer{"1 + 2 *", filename};
+#ifdef _WIN32  // Windows
     REQUIRE_THROWS_MATCHES(tokenizer.parse(), vnd::ParserException,
-                           Message("Unexpected token: (type: EOF, source location:(file:.\\unknown.vn, line:1, column:8))"));
+                           Message(R"(Unexpected token: (type: EOF, source location:(file:.\unknown.vn, line:1, column:8)))"));
+#else
+    REQUIRE_THROWS_MATCHES(tokenizer.parse(), vnd::ParserException,
+                           Message(R"(Unexpected token: (type: EOF, source location:(file:./unknown.vn, line:1, column:8)))"));
+#endif
 }
 
 TEST_CASE("Parser emit exception for nonexistent unary operator", "[parser]") {
     vnd::Parser tokenizer{"*2", filename};
+#ifdef _WIN32  // Windows
     REQUIRE_THROWS_MATCHES(
         tokenizer.parse(), vnd::ParserException,
-        Message("Unexpected token: (type: STAR_OPERATOR, value: '*', source location:(file:.\\unknown.vn, line:1, column:1))"));
+        Message(R"(Unexpected token: (type: STAR_OPERATOR, value: '*', source location:(file:.\unknown.vn, line:1, column:1)))"));
+#else
+    REQUIRE_THROWS_MATCHES(
+        tokenizer.parse(), vnd::ParserException,
+        Message(R"(Unexpected token: (type: STAR_OPERATOR, value: '*', source location:(file:./unknown.vn, line:1, column:1)))"));
+#endif
 }
 
 // NOLINTNEXTLINE(*-function-cognitive-complexity)
@@ -1752,14 +1770,24 @@ TEST_CASE("Parser emit array type", "[parser]") {
 
 TEST_CASE("Parser emit mismatched square brackets exception", "[parser]") {
     vnd::Parser parser("Object[size", filename);
+#ifdef _WIN32  // Windows
     REQUIRE_THROWS_MATCHES(parser.parse(), vnd::ParserException,
-                           Message("Unexpected token: (type: EOF, source location:(file:.\\unknown.vn, line:1, column:12))"));
+                           Message(R"(Unexpected token: (type: EOF, source location:(file:.\unknown.vn, line:1, column:12)))"));
+#else
+    REQUIRE_THROWS_MATCHES(parser.parse(), vnd::ParserException,
+                           Message(R"(Unexpected token: (type: EOF, source location:(file:./unknown.vn, line:1, column:12)))"));
+#endif
 }
 
 TEST_CASE("Parser emit mismatched curly brackets exception", "[parser]") {
     vnd::Parser parser("string[size]{", filename);
+#ifdef _WIN32  // Windows
     REQUIRE_THROWS_MATCHES(parser.parse(), vnd::ParserException,
-                           Message("Unexpected token: (type: EOF, source location:(file:.\\unknown.vn, line:1, column:14))"));
+                           Message(R"(Unexpected token: (type: EOF, source location:(file:.\unknown.vn, line:1, column:14)))"));
+#else
+    REQUIRE_THROWS_MATCHES(parser.parse(), vnd::ParserException,
+                           Message(R"(Unexpected token: (type: EOF, source location:(file:./unknown.vn, line:1, column:14)))"));
+#endif
 }
 
 TEST_CASE("Parser emit empty index node print", "[parser]") {
