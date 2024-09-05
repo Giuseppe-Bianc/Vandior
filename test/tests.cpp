@@ -1,10 +1,19 @@
 // clang-format off
 // NOLINTBEGIN(*-include-cleaner, *-avoid-magic-numbers, *-magic-numbers, *-unchecked-optional-access, *-avoid-do-while, *-use-anonymous-namespace, *-qualified-auto)
 // clang-format on
+
 #include <catch2/catch_test_macros.hpp>
+#include <catch2/matchers/catch_matchers.hpp>
+#include <catch2/matchers/catch_matchers_exception.hpp>
+#include <catch2/matchers/catch_matchers_string.hpp>
 #include <future>
 
 #include <Vandior/vandior.hpp>
+
+// using Catch::Matchers::EndsWith;
+using Catch::Matchers::ContainsSubstring;
+using Catch::Matchers::Message;
+using Catch::Matchers::MessageMatches;
 
 static inline constexpr std::size_t t_line = 5;
 static inline constexpr std::size_t t_line2 = 42;
@@ -29,15 +38,19 @@ static inline constexpr std::string_view filename = R"(.\unknown.vn)";
 #else
 static inline constexpr std::string_view filename = R"(./unknown.vn)";
 #endif
+static inline constexpr auto pIntInvArg = "parse_integer: invalid argument";
+static inline constexpr auto pIntOutRng = "parse_integer: result out of range";
+static inline constexpr auto pIntTrlChr = "parse_integer: trailing characters";
 static inline constexpr std::string_view ffilename = "file1.cpp";
 static inline constexpr std::string_view filename2 = "example.cpp";
 static inline constexpr std::string_view filename3 = "new_file.cpp";
 static inline constexpr std::string_view filename4 = "unknown";
 static inline constexpr std::string_view timerName = "My Timer";
+static inline constexpr std::string_view timerName2 = "Timer";
 static inline constexpr std::string_view timerBigs = "-----------";
 static inline constexpr std::string_view timerTime1 = "ms";
 static inline constexpr std::string_view timerTime2 = "ns";
-
+static inline constexpr std::string_view testPaths = "/test/path";
 static inline constexpr long long int timerSleap = 12;
 static inline constexpr long long int timerSleap2 = 5;
 static inline constexpr std::size_t timerCicles = 1000000;
@@ -46,9 +59,10 @@ static inline constexpr long double timerResolution = 5.0L;
 
 // NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("get_current_timestamp() tests", "[timestamp]") {
+    const std::size_t timestampSize = 24;
     SECTION("Basic test") {
         auto timestamp = get_current_timestamp();
-        REQUIRE(timestamp.size() >= 24);
+        REQUIRE(timestamp.size() >= timestampSize);
     }
 
     SECTION("Repeatability test") {
@@ -67,7 +81,7 @@ TEST_CASE("get_current_timestamp() tests", "[timestamp]") {
         }
         for(auto &future : futures) {
             auto timestamp = future.get();
-            REQUIRE(timestamp.size() >= 24);
+            REQUIRE(timestamp.size() >= timestampSize);
         }
     }
 }
@@ -81,10 +95,10 @@ TEST_CASE("my_error_handler(const std::string&) tests", "[error_handler]") {
         std::cerr.rdbuf(original);  // Restore cerr
 
         auto output = sss.str();
-        REQUIRE(output.find("Error occurred:") != std::string::npos);
-        REQUIRE(output.find("Timestamp: ") != std::string::npos);
-        REQUIRE(output.find("Thread ID: ") != std::string::npos);
-        REQUIRE(output.find("Message: Sample error message") != std::string::npos);
+        REQUIRE_THAT(output, ContainsSubstring("Error occurred:"));
+        REQUIRE_THAT(output, ContainsSubstring("Timestamp: "));
+        REQUIRE_THAT(output, ContainsSubstring("Thread ID: "));
+        REQUIRE_THAT(output, ContainsSubstring("Message: Sample error message"));
     }
 
     SECTION("Error handler with different messages") {
@@ -95,8 +109,8 @@ TEST_CASE("my_error_handler(const std::string&) tests", "[error_handler]") {
         std::cerr.rdbuf(original);  // Restore cerr
 
         auto output = sss.str();
-        REQUIRE(output.find("Message: Error 1") != std::string::npos);
-        REQUIRE(output.find("Message: Another error") != std::string::npos);
+        REQUIRE_THAT(output, ContainsSubstring("Message: Error 1"));
+        REQUIRE_THAT(output, ContainsSubstring("Message: Another error"));
     }
 
     SECTION("Location information") {
@@ -106,9 +120,9 @@ TEST_CASE("my_error_handler(const std::string&) tests", "[error_handler]") {
         std::cerr.rdbuf(original);  // Restore cerr
 
         auto output = sss.str();
-        REQUIRE(output.find("File: ") != std::string::npos);
-        REQUIRE(output.find("Line: ") != std::string::npos);
-        REQUIRE(output.find("Column: ") != std::string::npos);
+        REQUIRE_THAT(output, ContainsSubstring("File: "));
+        REQUIRE_THAT(output, ContainsSubstring("Line: "));
+        REQUIRE_THAT(output, ContainsSubstring("Column: "));
     }
 }
 
@@ -161,6 +175,7 @@ TEST_CASE("std::complex formater 2", "[FMT]") {
     REQ_FORMAT(complexDouble, "(3.1, 4.1)");
     REQ_FORMAT(complexLongDouble, "(5.1, 6.1)");
 }
+
 // clang-format on
 
 TEST_CASE("Timer: MSTimes", "[timer]") {
@@ -169,9 +184,10 @@ TEST_CASE("Timer: MSTimes", "[timer]") {
     std::this_thread::sleep_for(std::chrono::milliseconds(timerSleap));
     const std::string output = timer.to_string();
     const std::string new_output = (timer / timerCicles).to_string();
-    REQUIRE(output.find(timerNameData) != std::string::npos);
-    REQUIRE(output.find(timerTime1) != std::string::npos);
-    REQUIRE(new_output.find(timerTime2) != std::string::npos);
+    REQUIRE_THAT(output, ContainsSubstring(timerNameData));
+    REQUIRE_THAT(output, ContainsSubstring(timerNameData));
+    REQUIRE_THAT(output, ContainsSubstring(timerTime1.data()));
+    REQUIRE_THAT(new_output, ContainsSubstring(timerTime2.data()));
 }
 
 TEST_CASE("Timer: MSTimes FMT", "[timer]") {
@@ -180,31 +196,31 @@ TEST_CASE("Timer: MSTimes FMT", "[timer]") {
     std::this_thread::sleep_for(std::chrono::milliseconds(timerSleap));
     const std::string output = FORMAT("{}", timer);
     const std::string new_output = FORMAT("{}", (timer / timerCicles));
-    REQUIRE(output.find(timerNameData) != std::string::npos);
-    REQUIRE(output.find(timerTime1) != std::string::npos);
-    REQUIRE(new_output.find(timerTime2) != std::string::npos);
+    REQUIRE_THAT(output, ContainsSubstring(timerNameData));
+    REQUIRE_THAT(output, ContainsSubstring(timerTime1.data()));
+    REQUIRE_THAT(new_output, ContainsSubstring(timerTime2.data()));
 }
 
 TEST_CASE("Timer: BigTimer", "[timer]") {
     const auto timerNameData = timerName.data();
     vnd::Timer timer{timerNameData, vnd::Timer::Big};
     const std::string output = timer.to_string();
-    REQUIRE(output.find(timerNameData) != std::string::npos);
-    REQUIRE(output.find(timerBigs) != std::string::npos);
+    REQUIRE_THAT(output, ContainsSubstring(timerNameData));
+    REQUIRE_THAT(output, ContainsSubstring(timerBigs.data()));
 }
 
 TEST_CASE("Timer: BigTimer FMT", "[timer]") {
     const auto timerNameData = timerName.data();
     vnd::Timer timer{timerNameData, vnd::Timer::Big};
     const std::string output = FORMAT("{}", timer);
-    REQUIRE(output.find(timerNameData) != std::string::npos);
-    REQUIRE(output.find(timerBigs) != std::string::npos);
+    REQUIRE_THAT(output, ContainsSubstring(timerNameData));
+    REQUIRE_THAT(output, ContainsSubstring(timerBigs.data()));
 }
 
 TEST_CASE("Timer: AutoTimer", "[timer]") {
     vnd::Timer timer;
     const std::string output = timer.to_string();
-    REQUIRE(output.find("Timer") != std::string::npos);
+    REQUIRE_THAT(output, ContainsSubstring("Timer"));
 }
 
 TEST_CASE("Timer: PrintTimer", "[timer]") {
@@ -212,20 +228,20 @@ TEST_CASE("Timer: PrintTimer", "[timer]") {
     vnd::Timer timer;
     out << timer;
     const std::string output = out.str();
-    REQUIRE(output.find("Timer") != std::string::npos);
+    REQUIRE_THAT(output, ContainsSubstring(timerName2.data()));
 }
 
 TEST_CASE("Timer: PrintTimer FMT", "[timer]") {
     vnd::Timer timer;
     const std::string output = FORMAT("{}", timer);
-    REQUIRE(output.find("Timer") != std::string::npos);
+    REQUIRE_THAT(output, ContainsSubstring(timerName2.data()));
 }
 
 TEST_CASE("Timer: TimeItTimer", "[timer]") {
     vnd::Timer timer;
     const std::string output = timer.time_it([]() { std::this_thread::sleep_for(std::chrono::milliseconds(timerSleap2)); },
                                              timerResolution);
-    REQUIRE(output.find(timerTime1) != std::string::npos);
+    REQUIRE_THAT(output, ContainsSubstring(timerTime1.data()));
 }
 
 TEST_CASE("CodeSourceLocation default constructor sets default values", "[CodeSourceLocation]") {
@@ -431,7 +447,7 @@ namespace {
 }  // namespace
 
 TEST_CASE("default constructed token", "[token]") {
-    vnd::Token token{};
+    const vnd::Token token{};
     REQUIRE(token.getType() == vnd::TokenType::UNKNOWN);
     REQUIRE(token.getValue().empty() == true);
     REQUIRE(token.getFileName() == filename4);
@@ -440,7 +456,7 @@ TEST_CASE("default constructed token", "[token]") {
 }
 
 TEST_CASE("default constructed token toString", "[token]") {
-    vnd::Token token{};
+    const vnd::Token token{};
     REQUIRE(token.getType() == vnd::TokenType::UNKNOWN);
     REQUIRE(token.getValue().empty() == true);
     REQUIRE(token.getFileName() == filename4);
@@ -524,7 +540,7 @@ TEST_CASE("default constructed token set propriety tostring", "[token]") {
 // NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("construct a empty value token", "[token]") {
     using enum vnd::TokenType;
-    vnd::Token token{UNKNOWN, vnd::CodeSourceLocation{}};
+    const vnd::Token token{UNKNOWN, vnd::CodeSourceLocation{}};
     REQUIRE(token.getType() == UNKNOWN);
     REQUIRE(token.getValue().empty() == true);
     REQUIRE(token.getLine() == 0);
@@ -538,14 +554,14 @@ TEST_CASE("construct a empty value token", "[token]") {
 TEST_CASE("FolderCreationResult Constructor") {
     SECTION("Default constructor") {
         const vnd::FolderCreationResult result;
-        REQUIRE(result.success() == false);
+        REQUIRE_FALSE(result.success());
         REQUIRE(result.path().value_or("").empty());
     }
 
     SECTION("Parameterized constructor") {
-        const vnd::FolderCreationResult result(true, fs::path("/test/path"));
+        const vnd::FolderCreationResult result(true, fs::path(testPaths));
         REQUIRE(result.success() == true);
-        REQUIRE(result.path() == fs::path("/test/path"));
+        REQUIRE(result.path() == fs::path(testPaths));
     }
 }
 
@@ -559,23 +575,25 @@ TEST_CASE("FolderCreationResult Setters") {
     }
 
     SECTION("Set path") {
-        fs::path testPath("/test/path");
+        fs::path testPath(testPaths);
         REQUIRE(result.path().value_or("").empty());
-        result.set_path(testPath);
+        result.set_path(testPaths);
         REQUIRE(result.path() == testPath);
     }
 
-    SECTION("Set path with empty string") { REQUIRE_THROWS_AS(result.set_path(fs::path()), std::invalid_argument); }
+    SECTION("Set path with empty string") {
+        REQUIRE_THROWS_MATCHES(result.set_path(fs::path()), std::invalid_argument, Message("Path cannot be empty"));
+    }
 }
 
 // NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("FolderCreationResult Folder Creation Functions") {
     // Create a temporary directory for testing
     auto tempDir = fs::temp_directory_path() / "vnd_test";
+    const std::string folderName = "test_folder";
     fs::create_directories(tempDir);
 
     SECTION("Create folder with valid parameters") {
-        const std::string folderName = "test_folder";
         const vnd::FolderCreationResult result = vnd::FolderCreationResult::createFolder(folderName, tempDir);
         REQUIRE(result.success() == true);
         REQUIRE(result.path() == tempDir / folderName);
@@ -592,7 +610,6 @@ TEST_CASE("FolderCreationResult Folder Creation Functions") {
 
     SECTION("Create folder in non-existent parent directory") {
         const fs::path nonExistentParentDir = tempDir / "non_existent_dir";
-        const std::string folderName = "test_folder";
         const vnd::FolderCreationResult result = vnd::FolderCreationResult::createFolder(folderName, nonExistentParentDir);
         REQUIRE(result.success() == true);
         REQUIRE(!result.path()->empty());
@@ -600,7 +617,6 @@ TEST_CASE("FolderCreationResult Folder Creation Functions") {
 
     SECTION("Create folder existent directory") {
         const fs::path nonExistentParentDir = tempDir / "non_existent_dir";
-        const std::string folderName = "test_folder";
         const vnd::FolderCreationResult result = vnd::FolderCreationResult::createFolder(folderName, nonExistentParentDir);
         REQUIRE(result.success() == true);
         REQUIRE(!result.path()->empty());
@@ -613,7 +629,6 @@ TEST_CASE("FolderCreationResult Folder Creation Functions") {
 
     SECTION("Create folder next to non-existent file") {
         const fs::path nonExistentFilePath = tempDir / "non_existent_file.txt";
-        const std::string folderName = "test_folder";
         const vnd::FolderCreationResult result = vnd::FolderCreationResult::createFolderNextToFile(nonExistentFilePath, folderName);
         REQUIRE(result.success() == true);
         REQUIRE(!result.path()->empty());
@@ -626,7 +641,6 @@ TEST_CASE("FolderCreationResult Folder Creation Functions") {
         std::ofstream ofs(filePath);
         ofs.close();
 
-        const std::string folderName = "test_folder";
         const vnd::FolderCreationResult result = vnd::FolderCreationResult::createFolderNextToFile(filePath, folderName);
         REQUIRE(result.success() == true);
         REQUIRE(result.path() == tempDir / folderName);
@@ -722,7 +736,8 @@ TEST_CASE("tokenizer emit integer token for hexadecimals numbers", "[tokenizer]"
 
 TEST_CASE("tokenizer emit exception on  malformed exadecimal number or octal number", "[tokenizer]") {
     vnd::Tokenizer tokenizer{"#", filename};
-    REQUIRE_THROWS_AS(tokenizer.tokenize(), std::runtime_error);
+    REQUIRE_THROWS_MATCHES(tokenizer.tokenize(), std::runtime_error,
+                           MessageMatches(ContainsSubstring("malformed exadecimal number or octal number '#' (line 1, column 2):")));
 }
 
 TEST_CASE("tokenizer emit integer token for octal numbers", "[tokenizer]") {
@@ -875,7 +890,8 @@ TEST_CASE("Tokenizer emit char token", "[Tokenizer]") {
 
 TEST_CASE("Tokenizer emit exception for unknown char", "[Tokenizer]") {
     vnd::Tokenizer tokenizer{";", filename};
-    REQUIRE_THROWS_AS(tokenizer.tokenize(), std::runtime_error);
+    REQUIRE_THROWS_MATCHES(tokenizer.tokenize(), std::runtime_error,
+                           MessageMatches(ContainsSubstring("Unknown Character ';' (line 1, column 1):")));
 }
 
 TEST_CASE("Tokenizer emit string token", "[Tokenizer]") {
@@ -911,10 +927,10 @@ TEST_CASE("tokenizer emit multiline comment token", "[tokenizer]") {
     std::vector<vnd::Token> tokens = tokenizer.tokenize();
     REQUIRE(tokens.size() == 2);
     REQUIRE(tokens[0] == vnd::Token(vnd::TokenType::COMMENT, R"(/*multi\nline\ncomment*/)", vnd::CodeSourceLocation(filename, 1, 1)));
-}  // namespace
+}
 
 TEST_CASE("ASTNode type conversion using as<T>()", "[ast]") {
-    vnd::Token token{vnd::TokenType::IDENTIFIER, "id", vnd::CodeSourceLocation{filename, t_line, t_colum}};
+    const vnd::Token token{vnd::TokenType::IDENTIFIER, "id", vnd::CodeSourceLocation{filename, t_line, t_colum}};
     vnd::VariableNode dummyNode("id", token);
 
     // Test conversion to base type (should work)
@@ -1049,6 +1065,7 @@ TEST_CASE("char node swap", "[parser]") {
     REQUIRE(boola.get_token() == token2);
     REQUIRE(boolb.get_token() == token1);
 }
+
 TEST_CASE("Parser emit integer number node", "[parser]") {
     vnd::Parser parser("1", filename);
     auto ast = parser.parse();
@@ -1194,6 +1211,7 @@ TEST_CASE("binary node swap", "[parser]") {
     REQUIRE(unarb.getLeft()->as<vnd::VariableNode>()->get_token() == token2);
     REQUIRE(unarb.getRight()->as<vnd::VariableNode>()->get_token() == token3);
 }
+
 // NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("Parser::convertToInt tests", "[parser]") {
     SECTION("Valid integer conversion") {
@@ -1201,13 +1219,18 @@ TEST_CASE("Parser::convertToInt tests", "[parser]") {
         REQUIRE(vnd::Parser::convertToInt("-456") == -456);
     }
 
-    SECTION("Invalid argument throws exception") { REQUIRE_THROWS_AS(vnd::Parser::convertToInt("abc"), std::invalid_argument); }
-
-    SECTION("Result out of range throws exception") {
-        REQUIRE_THROWS_AS(vnd::Parser::convertToInt("2147483648"), std::out_of_range);  // Assuming int is 32-bit
+    SECTION("Invalid argument throws exception") {
+        REQUIRE_THROWS_MATCHES(vnd::Parser::convertToInt("abc"), std::invalid_argument, Message(pIntInvArg));
     }
 
-    SECTION("Trailing characters throws exception") { REQUIRE_THROWS_AS(vnd::Parser::convertToInt("123a"), std::invalid_argument); }
+    SECTION("Result out of range throws exception") {
+        // Assuming int is 32-bit
+        REQUIRE_THROWS_MATCHES(vnd::Parser::convertToInt("2147483648"), std::out_of_range, Message(pIntOutRng));
+    }
+
+    SECTION("Trailing characters throws exception") {
+        REQUIRE_THROWS_MATCHES(vnd::Parser::convertToInt("123a"), std::invalid_argument, Message(pIntTrlChr));
+    }
 }
 
 // NOLINTNEXTLINE(*-function-cognitive-complexity)
@@ -1217,13 +1240,18 @@ TEST_CASE("Parser::convertToIntformExa tests") {
         REQUIRE(vnd::Parser::convertToIntformExa("-FF") == -255);  // 0xFF = -255 in decimal
     }
 
-    SECTION("Invalid argument throws exception") { REQUIRE_THROWS_AS(vnd::Parser::convertToIntformExa("xyz"), std::invalid_argument); }
-
-    SECTION("Result out of range throws exception") {
-        REQUIRE_THROWS_AS(vnd::Parser::convertToIntformExa("80000000"), std::out_of_range);  // Assuming int is 32-bit
+    SECTION("Invalid argument throws exception") {
+        REQUIRE_THROWS_MATCHES(vnd::Parser::convertToIntformExa("xyz"), std::invalid_argument, Message(pIntInvArg));
     }
 
-    SECTION("Trailing characters throws exception") { REQUIRE_THROWS_AS(vnd::Parser::convertToIntformExa("1A a"), std::invalid_argument); }
+    SECTION("Result out of range throws exception") {
+        // Assuming int is 32-bit
+        REQUIRE_THROWS_MATCHES(vnd::Parser::convertToIntformExa("80000000"), std::out_of_range, Message(pIntOutRng));
+    }
+
+    SECTION("Trailing characters throws exception") {
+        REQUIRE_THROWS_MATCHES(vnd::Parser::convertToIntformExa("1A a"), std::invalid_argument, Message(pIntTrlChr));
+    }
 }
 
 // NOLINTNEXTLINE(*-function-cognitive-complexity)
@@ -1233,13 +1261,18 @@ TEST_CASE("Parser::convertToIntformOct tests") {
         REQUIRE(vnd::Parser::convertToIntformOct("-10") == -8);  // -010 = -8 in decimal
     }
 
-    SECTION("Invalid argument throws exception") { REQUIRE_THROWS_AS(vnd::Parser::convertToIntformOct("xyz"), std::invalid_argument); }
-
-    SECTION("Result out of range throws exception") {
-        REQUIRE_THROWS_AS(vnd::Parser::convertToIntformOct("20000000000"), std::out_of_range);  // Assuming int is 32-bit
+    SECTION("Invalid argument throws exception") {
+        REQUIRE_THROWS_MATCHES(vnd::Parser::convertToIntformOct("xyz"), std::invalid_argument, Message(pIntInvArg));
     }
 
-    SECTION("Trailing characters throws exception") { REQUIRE_THROWS_AS(vnd::Parser::convertToIntformOct("77a"), std::invalid_argument); }
+    SECTION("Result out of range throws exception") {
+        // Assuming int is 32-bit
+        REQUIRE_THROWS_MATCHES(vnd::Parser::convertToIntformOct("20000000000"), std::out_of_range, Message(pIntOutRng));
+    }
+
+    SECTION("Trailing characters throws exception") {
+        REQUIRE_THROWS_MATCHES(vnd::Parser::convertToIntformOct("77a"), std::invalid_argument, Message(pIntTrlChr));
+    }
 }
 
 TEST_CASE("Parser emit integer number node form exadecimal", "[parser]") {
@@ -1405,6 +1438,7 @@ TEST_CASE("Parser emit flaot number node float print", "[parser]") {
     REQUIRE(number->get_value() == 1.5F);
     REQUIRE(number->print() == "NUMBER_FLOAT(1.5)");
 }
+
 TEST_CASE("Parser emit double number node double compat print", "[parser]") {
     vnd::Parser parser("1.5", filename);
     auto ast = parser.parse();
@@ -1420,6 +1454,7 @@ TEST_CASE("Parser emit double number node double compat print", "[parser]") {
     REQUIRE(number->get_value() == 1.5);
     REQUIRE(number->comp_print() == "NUM_DBL(1.5)");
 }
+
 TEST_CASE("Parser emit flaot number node float compat print", "[parser]") {
     vnd::Parser parser("1.5f", filename);
     auto ast = parser.parse();
@@ -1633,17 +1668,22 @@ TEST_CASE("Parser pars complex expression", "[parser]") {
 
 TEST_CASE("Parser emit exception for mismacted  paren", "[parser]") {
     vnd::Parser tokenizer{"1 + 2 +( 2+3*3", filename};
-    REQUIRE_THROWS_AS(tokenizer.parse(), vnd::ParserException);
+    REQUIRE_THROWS_MATCHES(
+        tokenizer.parse(), vnd::ParserException,
+        Message("Unexpected token: (type: OPEN_PARENTESIS, value: '(', source location:(file:.\\unknown.vn, line:1, column:8))"));
 }
 
 TEST_CASE("Parser emit exception for uncomplete expression", "[parser]") {
     vnd::Parser tokenizer{"1 + 2 *", filename};
-    REQUIRE_THROWS_AS(tokenizer.parse(), vnd::ParserException);
+    REQUIRE_THROWS_MATCHES(tokenizer.parse(), vnd::ParserException,
+                           Message("Unexpected token: (type: EOF, source location:(file:.\\unknown.vn, line:1, column:8))"));
 }
 
 TEST_CASE("Parser emit exception for nonexistent unary operator", "[parser]") {
     vnd::Parser tokenizer{"*2", filename};
-    REQUIRE_THROWS_AS(tokenizer.parse(), vnd::ParserException);
+    REQUIRE_THROWS_MATCHES(
+        tokenizer.parse(), vnd::ParserException,
+        Message("Unexpected token: (type: STAR_OPERATOR, value: '*', source location:(file:.\\unknown.vn, line:1, column:1))"));
 }
 
 // NOLINTNEXTLINE(*-function-cognitive-complexity)
@@ -1712,12 +1752,14 @@ TEST_CASE("Parser emit array type", "[parser]") {
 
 TEST_CASE("Parser emit mismatched square brackets exception", "[parser]") {
     vnd::Parser parser("Object[size", filename);
-    REQUIRE_THROWS_AS(parser.parse(), vnd::ParserException);
+    REQUIRE_THROWS_MATCHES(parser.parse(), vnd::ParserException,
+                           Message("Unexpected token: (type: EOF, source location:(file:.\\unknown.vn, line:1, column:12))"));
 }
 
 TEST_CASE("Parser emit mismatched curly brackets exception", "[parser]") {
     vnd::Parser parser("string[size]{", filename);
-    REQUIRE_THROWS_AS(parser.parse(), vnd::ParserException);
+    REQUIRE_THROWS_MATCHES(parser.parse(), vnd::ParserException,
+                           Message("Unexpected token: (type: EOF, source location:(file:.\\unknown.vn, line:1, column:14))"));
 }
 
 TEST_CASE("Parser emit empty index node print", "[parser]") {
@@ -1819,6 +1861,7 @@ TEST_CASE("Parser emit callable node", "[parser]") {
     REQUIRE(variableNode->is_call() == true);
     REQUIRE(variableNode->get_call() != nullptr);
 }
+
 // clang-format off
 // NOLINTEND(*-include-cleaner, *-avoid-magic-numbers, *-magic-numbers, *-unchecked-optional-access, *-avoid-do-while, *-use-anonymous-namespace, *-qualified-auto)
 // clang-format on

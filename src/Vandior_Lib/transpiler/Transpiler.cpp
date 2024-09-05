@@ -55,10 +55,11 @@ namespace vnd {
 
         // Chiude il file
         outfile.close();
-        const auto ast = _parser.parse();
-        prettyPrint(*ast);
-        LINFO(transpileNode(*ast));
         LINFO("File {} creato con successo!", _mainOutputFilePath);
+        const auto ast = _parser.parse();
+        //prettyPrint(*ast);
+        LINFO("transpiled code");
+        LINFO(transpileNode(*ast));
     }
 
     // Main code generation function
@@ -105,7 +106,6 @@ namespace vnd {
     std::string Transpiler::transpileBinaryExpressionNode(const vnd::BinaryExpressionNode *binaryNode) {
         if(!binaryNode) { return ""; }
         std::ostringstream code;
-        LINFO("transpileBinaryExpressionNode");
         const auto op = binaryNode->getOp();
         if(op == ":") {
             code << transpileNode(*binaryNode->getRight());

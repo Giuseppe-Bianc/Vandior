@@ -31,12 +31,24 @@ namespace vnd {
         timeParser(ast, parser);
         return ast;
     }
-
 }  // namespace vnd
 DISABLE_WARNINGS_PUSH(26461 26821)
 
-//static inline constexpr auto sequence = std::views::iota(0, 9999);
+/*static inline constexpr auto sequence = std::views::iota(0, 9999);
 
+static inline constexpr std::array<std::string_view, 12> transpilerInputs = {"asd",
+                                                                             "123",
+                                                                             "123.3333",
+                                                                             "i32",
+                                                                             "asd:i32",
+                                                                             "asd:i32[]",
+                                                                             "asd:i32[2]",
+                                                                             "asd = 123",
+                                                                             "asd = 123.3333",
+                                                                             "asd:i32[]={1232}",
+                                                                             "asd:i32[2]={1232, 2333}",
+                                                                             "asd:i32[2][2]={{1232, 33333}, {2333, 44444}}"};
+*/
 // NOLINTNEXTLINE(*-function-cognitive-complexity)
 auto main(int argc, const char *const argv[]) -> int {
     // NOLINTNEXTLINE
@@ -89,5 +101,6 @@ auto main(int argc, const char *const argv[]) -> int {
     }
     return EXIT_SUCCESS;  // Return appropriate exit code
 }
+
 DISABLE_WARNINGS_POP()
 // NOLINTEND(*-include-cleaner, *-env33-c)
