@@ -12,7 +12,8 @@
 
 #include <Vandior/vandior.hpp>
 
-// using Catch::Matchers::EndsWith;
+using Catch::Matchers::EndsWith;
+using Catch::Matchers::StartsWith;
 using Catch::Matchers::ContainsSubstring;
 using Catch::Matchers::Message;
 using Catch::Matchers::MessageMatches;
@@ -1819,6 +1820,8 @@ TEST_CASE("Parser emit mismatched curly brackets exception", "[parser]") {
 #endif
 }
 
+
+
 TEST_CASE("Parser emit empty index node print", "[parser]") {
     vnd::Parser parser("i8[]", filename);
     auto ast = parser.parse();
@@ -1917,6 +1920,49 @@ TEST_CASE("Parser emit callable node", "[parser]") {
     const auto *variableNode = ast->as<vnd::VariableNode>();
     REQUIRE(variableNode->is_call() == true);
     REQUIRE(variableNode->get_call() != nullptr);
+}
+
+TEST_CASE("Transpiler creates correct folders and files", "[transpiler]") {
+    const std::string input = "x:i32 = 10";
+    const std::string transpilerfilename = "testfile.vnd";
+
+    // Create a Transpiler instance
+    vnd::Transpiler transpiler(input, transpilerfilename);
+
+    // Test folder and file creation
+    SECTION("Folder and file creation") {
+        transpiler.transpile();
+
+        // Verify that the folders were created
+        fs::path buildFolder("vnbuild");
+        fs::path srcFolder = buildFolder / "src";
+        REQUIRE(fs::exists(buildFolder));
+        REQUIRE(fs::exists(srcFolder));
+
+        // Verify that the .cpp file is created
+        fs::path cppFile = srcFolder / "testfile.cpp";
+        REQUIRE(fs::exists(cppFile));
+
+        // Check that the content of the file is correct
+        std::ifstream file(cppFile);
+        std::string fileContent((std::istreambuf_iterator<char>(file)),
+                                std::istreambuf_iterator<char>());
+
+        // Using Catch2 Matchers for string checks
+        REQUIRE_THAT(fileContent, ContainsSubstring("Hello, World!"));  // Check for the presence of "Hello, World!"
+        REQUIRE_THAT(fileContent, StartsWith("// Questo è un file generato automaticamente"));
+        REQUIRE_THAT(fileContent, EndsWith("return 0;\n}\n"));
+    }
+
+    // Clean up after the test
+    SECTION("Clean up") {
+        transpiler.transpile();
+
+        // Ensure the files and folders are deleted after the test
+        fs::path buildFolder("vnbuild");
+        fs::remove_all(buildFolder);
+        REQUIRE_FALSE(fs::exists(buildFolder));  // Folder should not exist
+    }
 }
 
 // clang-format off
