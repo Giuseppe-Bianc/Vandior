@@ -1775,7 +1775,7 @@ TEST_CASE("Parser emit array type", "[parser]") {
 
 TEST_CASE("Parser emit exception on comment", "[parser]") {
     vnd::Parser parser("// comment", filename);
-#ifdef _WIN32  // Windows
+ #ifdef _WIN32  // Windows
     REQUIRE_THROWS_MATCHES(parser.parse(), vnd::ParserException,
                            Message(R"(Unexpected token: (type: COMMENT, value: '// comment', source location:(file:.\unknown.vn, line:1, column:1)))"));
 #else
@@ -1783,6 +1783,19 @@ TEST_CASE("Parser emit exception on comment", "[parser]") {
                            Message(R"(Unexpected token: (type: COMMENT, value: '// comment', source location:(file:./unknown.vn, line:1, column:1)))"));
 #endif
 }
+
+TEST_CASE("Parser emit exception on multiline comment", "[parser]") {
+    vnd::Parser parser(R"(/*multi\nline\ncomment*/)", filename);
+#ifdef _WIN32  // Windows
+    REQUIRE_THROWS_MATCHES(parser.parse(), vnd::ParserException,
+                           Message(R"(Unexpected token: (type: COMMENT, value: '/*multi\nline\ncomment*/', source location:(file:.\unknown.vn, line:1, column:1)))"));
+#else
+    REQUIRE_THROWS_MATCHES(parser.parse(), vnd::ParserException,
+                           Message(R"(Unexpected token: (type: COMMENT, value: '/*multi\nline\ncomment*/', source location:(file:./unknown.vn, line:1, column:1)))"));
+#endif
+}
+
+// constexpr std::string_view code2 = R"(/*multi\nline\ncomment*/)";
 
 TEST_CASE("Parser emit mismatched square brackets exception", "[parser]") {
     vnd::Parser parser("Object[size", filename);
