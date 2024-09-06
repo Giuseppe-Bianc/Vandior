@@ -1,11 +1,13 @@
 // clang-format off
-// NOLINTBEGIN(*-include-cleaner, *-avoid-magic-numbers, *-magic-numbers, *-unchecked-optional-access, *-avoid-do-while, *-use-anonymous-namespace, *-qualified-auto)
+// NOLINTBEGIN(*-include-cleaner, *-avoid-magic-numbers, *-magic-numbers, *-unchecked-optional-access, *-avoid-do-while, *-use-anonymous-namespace, *-qualified-auto, *-suspicious-stringview-data-usage)
 // clang-format on
+
 
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers.hpp>
 #include <catch2/matchers/catch_matchers_exception.hpp>
 #include <catch2/matchers/catch_matchers_string.hpp>
+#include <catch2/matchers/catch_matchers_container_properties.hpp>
 #include <future>
 
 #include <Vandior/vandior.hpp>
@@ -14,6 +16,8 @@
 using Catch::Matchers::ContainsSubstring;
 using Catch::Matchers::Message;
 using Catch::Matchers::MessageMatches;
+//using Catch::Matchers::SizeIs;
+//using Catch::Matchers::Equals;
 
 static inline constexpr std::size_t t_line = 5;
 static inline constexpr std::size_t t_line2 = 42;
@@ -55,11 +59,12 @@ static inline constexpr long long int timerSleap = 12;
 static inline constexpr long long int timerSleap2 = 5;
 static inline constexpr std::size_t timerCicles = 1000000;
 static inline constexpr long double timerResolution = 5.0L;
+static inline constexpr std::size_t timestampSize = 24;
 #define REQ_FORMAT(type, string) REQUIRE(FORMAT("{}", type) == (string));  // NOLINT(*-macro-usage)
 
 // NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("get_current_timestamp() tests", "[timestamp]") {
-    const std::size_t timestampSize = 24;
+
     SECTION("Basic test") {
         auto timestamp = get_current_timestamp();
         REQUIRE(timestamp.size() >= timestampSize);
@@ -604,7 +609,7 @@ TEST_CASE("FolderCreationResult Folder Creation Functions") {
     SECTION("Create folder with empty folder name") {
         const std::string emptyFolderName;
         const vnd::FolderCreationResult result = vnd::FolderCreationResult::createFolder(emptyFolderName, tempDir);
-        REQUIRE(result.success() == false);
+        REQUIRE_FALSE(result.success());
         REQUIRE(result.path()->empty());
     }
 
@@ -975,7 +980,7 @@ TEST_CASE("ASTNode type conversion using safe_as<T>()", "[ast]") {
 
 TEST_CASE("ASTNode get token", "[ast]") {
     vnd::Token token{vnd::TokenType::IDENTIFIER, "id", vnd::CodeSourceLocation{filename, t_line, t_colum}};
-    vnd::VariableNode dummyNode("id", token);
+    const vnd::VariableNode dummyNode("id", token);
     REQUIRE(dummyNode.get_token() == token);
 }
 
@@ -991,7 +996,7 @@ TEST_CASE("Parser emit boolean literal node", "[parser]") {
     REQUIRE(number->get_value() == true);
 }
 
-// NOLINT(*-function-cognitive-complexity)
+// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("boolean node swap", "[parser]") {
     auto token1 = vnd::Token{vnd::TokenType::BOOLEAN, "true", vnd::CodeSourceLocation{filename, t_line, t_colum4}};
     auto token2 = vnd::Token{vnd::TokenType::BOOLEAN, "false", vnd::CodeSourceLocation{filename, t_line, t_colum2}};
@@ -1768,6 +1773,17 @@ TEST_CASE("Parser emit array type", "[parser]") {
     REQUIRE(typeNode->get_index()->get_array() == nullptr);
 }
 
+TEST_CASE("Parser emit exception on comment", "[parser]") {
+    vnd::Parser parser("// comment", filename);
+#ifdef _WIN32  // Windows
+    REQUIRE_THROWS_MATCHES(parser.parse(), vnd::ParserException,
+                           Message(R"(Unexpected token: (type: COMMENT, value: '// comment', source location:(file:.\unknown.vn, line:1, column:1)))"));
+#else
+    REQUIRE_THROWS_MATCHES(parser.parse(), vnd::ParserException,
+                           Message(R"(Unexpected token: (type: COMMENT, value: '// comment', source location:(file:./unknown.vn, line:1, column:1)))"));
+#endif
+}
+
 TEST_CASE("Parser emit mismatched square brackets exception", "[parser]") {
     vnd::Parser parser("Object[size", filename);
 #ifdef _WIN32  // Windows
@@ -1891,5 +1907,5 @@ TEST_CASE("Parser emit callable node", "[parser]") {
 }
 
 // clang-format off
-// NOLINTEND(*-include-cleaner, *-avoid-magic-numbers, *-magic-numbers, *-unchecked-optional-access, *-avoid-do-while, *-use-anonymous-namespace, *-qualified-auto)
+// NOLINTEND(*-include-cleaner, *-avoid-magic-numbers, *-magic-numbers, *-unchecked-optional-access, *-avoid-do-while, *-use-anonymous-namespace, *-qualified-auto, *-suspicious-stringview-data-usage)
 // clang-format on

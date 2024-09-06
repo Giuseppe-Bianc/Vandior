@@ -284,4 +284,4 @@ namespace vnd {
 
 }  // namespace vnd
 DISABLE_WARNINGS_POP()
-// NOLINTEND(*-include-cleaner, *-no-recursion,*-avoid-magic-numbers, *-magic-numbers, *-err58-cpp)
+// NOLINTEND(*-include-cleaner, *-no-recursion,*-avoid-magic-numbers, *-magic-numbers, *-err58-cpp)e
