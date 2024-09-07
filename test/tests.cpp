@@ -209,7 +209,7 @@ TEST_CASE("Timer: MSTimes FMT", "[timer]") {
 
 TEST_CASE("Timer: BigTimer", "[timer]") {
     const auto timerNameData = timerName.data();
-    vnd::Timer timer{timerNameData, vnd::Timer::Big};
+    const vnd::Timer timer{timerNameData, vnd::Timer::Big};
     const std::string output = timer.to_string();
     REQUIRE_THAT(output, ContainsSubstring(timerNameData));
     REQUIRE_THAT(output, ContainsSubstring(timerBigs.data()));
@@ -224,14 +224,14 @@ TEST_CASE("Timer: BigTimer FMT", "[timer]") {
 }
 
 TEST_CASE("Timer: AutoTimer", "[timer]") {
-    vnd::Timer timer;
+    const vnd::Timer timer;
     const std::string output = timer.to_string();
     REQUIRE_THAT(output, ContainsSubstring("Timer"));
 }
 
 TEST_CASE("Timer: PrintTimer", "[timer]") {
     std::stringstream out;
-    vnd::Timer timer;
+    const vnd::Timer timer;
     out << timer;
     const std::string output = out.str();
     REQUIRE_THAT(output, ContainsSubstring(timerName2.data()));
@@ -958,7 +958,7 @@ TEST_CASE("ASTNode type conversion using as<T>()", "[ast]") {
 }
 
 TEST_CASE("ASTNode type conversion using safe_as<T>()", "[ast]") {
-    vnd::Token token{vnd::TokenType::IDENTIFIER, "id", vnd::CodeSourceLocation{filename, t_line, t_colum}};
+    const vnd::Token token{vnd::TokenType::IDENTIFIER, "id", vnd::CodeSourceLocation{filename, t_line, t_colum}};
     vnd::VariableNode dummyNode("id", token);
 
     // Test conversion to base type (should work)
@@ -1922,6 +1922,7 @@ TEST_CASE("Parser emit callable node", "[parser]") {
     REQUIRE(variableNode->get_call() != nullptr);
 }
 
+// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("Transpiler creates correct folders and files", "[transpiler]") {
     const std::string input = "x:i32 = 10";
     const std::string transpilerfilename = "testfile.vnd";
@@ -1934,13 +1935,13 @@ TEST_CASE("Transpiler creates correct folders and files", "[transpiler]") {
         transpiler.transpile();
 
         // Verify that the folders were created
-        fs::path buildFolder("vnbuild");
-        fs::path srcFolder = buildFolder / "src";
+        const fs::path buildFolder("vnbuild");
+        const fs::path srcFolder = buildFolder / "src";
         REQUIRE(fs::exists(buildFolder));
         REQUIRE(fs::exists(srcFolder));
 
         // Verify that the .cpp file is created
-        fs::path cppFile = srcFolder / "testfile.cpp";
+        const fs::path cppFile = srcFolder / "testfile.cpp";
         REQUIRE(fs::exists(cppFile));
 
         // Check that the content of the file is correct
@@ -1959,8 +1960,8 @@ TEST_CASE("Transpiler creates correct folders and files", "[transpiler]") {
         transpiler.transpile();
 
         // Ensure the files and folders are deleted after the test
-        fs::path buildFolder("vnbuild");
-        fs::remove_all(buildFolder);
+        const fs::path buildFolder("vnbuild");
+        [[maybe_unused]] auto unused = fs::remove_all(buildFolder);
         REQUIRE_FALSE(fs::exists(buildFolder));  // Folder should not exist
     }
 }
