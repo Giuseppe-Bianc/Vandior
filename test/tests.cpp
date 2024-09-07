@@ -556,6 +556,18 @@ TEST_CASE("construct a empty value token", "[token]") {
     REQUIRE(token.compat_to_string() == "(typ: UNKNOWN, val: '', sl:(f:, l:0, c:0))");
 }
 
+TEST_CASE("construct a EOFT token", "[token]") {
+    using enum vnd::TokenType;
+    const vnd::Token token{EOFT, vnd::CodeSourceLocation{}};
+    REQUIRE(token.getType() == EOFT);
+    REQUIRE(token.getValue().empty() == true);
+    REQUIRE(token.getLine() == 0);
+    REQUIRE(token.getColumn() == 0);
+    REQUIRE(token.getFileName().empty() == true);
+    REQUIRE(token.to_string() == "(type: EOF, source location:(file:, line:0, column:0))");
+    REQUIRE(token.compat_to_string() == "(typ: EOF, sl:(f:, l:0, c:0))");
+}
+
 // NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("FolderCreationResult Constructor") {
     SECTION("Default constructor") {
