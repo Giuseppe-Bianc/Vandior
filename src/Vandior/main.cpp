@@ -12,27 +12,8 @@ DISABLE_WARNINGS_POP()
 // the source template at `configured_files/config.hpp.in`.
 #include <internal_use_only/config.hpp>
 
-#define HIDE_SYSTEM_OUTPUT
-// NOLINTBEGIN(*-const-correctness)
-namespace vnd {
-    auto timeTokenizer(Tokenizer &tokenizer, std::vector<Token> &tokens) -> void {
-        tokens.clear();
-        AutoTimer timer("tokenization");
-        tokens = tokenizer.tokenize();
-    }
+//#define HIDE_SYSTEM_OUTPUT
 
-    auto timeParser(std::unique_ptr<vnd::ASTNode> &ast, vnd::Parser &parser) -> void {
-        vnd::AutoTimer timer("parse");
-        ast = vnd_move_always_even_const(parser.parse());
-    }
-
-    [[nodiscard]] auto timeParse(Parser &parser) -> std::unique_ptr<ASTNode> {
-        std::unique_ptr<ASTNode> ast;
-        timeParser(ast, parser);
-        return ast;
-    }
-}  // namespace vnd
-// NOLINTEND(*-const-correctness)
 DISABLE_WARNINGS_PUSH(26461 26821)
 
 /*static inline constexpr auto sequence = std::views::iota(0, 9999);
