@@ -450,6 +450,13 @@ namespace {
         token.setLine(1);
         token.setColumn(1);
     }
+    // Helper function to create a file with content
+    // NOLINTNEXTLINE(*-easily-swappable-parameters)
+    void createFile(const std::string &infilename, const std::string &content) {
+        std::ofstream ofs(infilename, std::ios::out | std::ios::binary); // NOLINT(*-signed-bitwise)
+        ofs << content;
+        ofs.close();
+    }
 }  // namespace
 
 TEST_CASE("default constructed token", "[token]") {
@@ -602,6 +609,75 @@ TEST_CASE("FolderCreationResult Setters") {
     SECTION("Set path with empty string") {
         REQUIRE_THROWS_MATCHES(result.set_path(fs::path()), std::invalid_argument, Message("Path cannot be empty"));
     }
+}
+
+TEST_CASE("vnd::readFromFile - Valid File", "[file]") {
+    const std::string infilename = "testfile.txt";
+    const std::string content = "This is a test.";
+
+    // Create the test file
+    createFile(infilename, content);
+
+    SECTION("Read from valid file") {
+        auto result = vnd::readFromFile(infilename);
+        REQUIRE(result == content);  // Ensure the content matches
+    }
+
+    // Clean up after test
+    [[maybe_unused]]auto unsed = fs::remove(infilename);
+}
+
+TEST_CASE("vnd::readFromFile - Non-existent File", "[file]") {
+    const std::string nonExistentFile = "nonexistent.txt";
+
+    SECTION("Read from non-existent file") {
+        REQUIRE_THROWS_MATCHES(vnd::readFromFile(nonExistentFile), std::runtime_error, Message(FORMAT("File not found: {}", nonExistentFile)));
+    }
+}
+
+TEST_CASE("vnd::readFromFile - Non-regular File", "[file]") {
+    const std::string dirName = "testdir";
+
+    // Create a directory (not a file)
+    fs::create_directory(dirName);
+
+    SECTION("Read from a directory") {
+        REQUIRE_THROWS_MATCHES(vnd::readFromFile(dirName), std::runtime_error, Message(FORMAT("Path is not a regular file: {}", dirName)));
+    }
+
+    // Clean up after test
+    [[maybe_unused]]auto unsed = fs::remove(dirName);
+}
+
+TEST_CASE("vnd::readFromFile - Empty File", "[file]") {
+    const std::string emtfilename = "emptyfile.txt";
+
+    // Create an empty file
+    createFile(emtfilename, "");
+
+    SECTION("Read from an empty file") {
+        auto result = vnd::readFromFile(emtfilename);
+        REQUIRE(result.empty());  // Ensure the result is empty
+    }
+
+    // Clean up after test
+    [[maybe_unused]]auto unsed = fs::remove(emtfilename);
+}
+
+TEST_CASE("vnd::readFromFile - Large File", "[file]") {
+    const std::string lrgfilename = "largefile.txt";
+    const std::string largeContent(C_ST(1024 * 1024) * 10, 'a');  // 10 MB of 'a'
+
+    // Create a large file
+    createFile(lrgfilename, largeContent);
+
+    SECTION("Read from a large file") {
+        auto result = vnd::readFromFile(lrgfilename);
+        REQUIRE(result == largeContent);  // Ensure content matches
+    }
+
+    // Clean up after test
+    [[maybe_unused]]auto unsed = fs::remove(lrgfilename);
 }
 
 // NOLINTNEXTLINE(*-function-cognitive-complexity)
