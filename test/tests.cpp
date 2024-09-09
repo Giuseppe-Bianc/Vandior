@@ -2039,7 +2039,7 @@ TEST_CASE("Transpiler creates correct folders and files", "[transpiler]") {
 
         // Using Catch2 Matchers for string checks
         REQUIRE_THAT(fileContent, ContainsSubstring("Hello, World!"));  // Check for the presence of "Hello, World!"
-        REQUIRE_THAT(fileContent, StartsWith("// Questo è un file generato automaticamente"));
+        REQUIRE_THAT(fileContent, StartsWith("// This is an automatically generated file by Vandior"));
         REQUIRE_THAT(fileContent, EndsWith("return 0;\n}\n"));
     }
 

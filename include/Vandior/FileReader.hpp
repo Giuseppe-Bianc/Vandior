@@ -17,7 +17,9 @@ namespace vnd {
         if(!fs::exists(filePath)) { throw FILEREADEREERRORF("File not found: {}", filePath); }
         if(!fs::is_regular_file(filePath)) { throw FILEREADEREERRORF("Path is not a regular file: {}", filePath); }
 
-        AutoTimer timer(FORMAT("reading file {}", filename));
+#ifdef INDEPT
+        const AutoTimer timer(FORMAT("reading file {}", filename));
+#endif
         std::ifstream fileStream(filePath, std::ios::in | std::ios::binary);
         if(!fileStream.is_open()) { throw FILEREADEREERRORF("Unable to open file: {}", filePath); }
 

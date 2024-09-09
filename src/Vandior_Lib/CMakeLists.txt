@@ -15,6 +15,8 @@ add_library(vandior_lib vandior.cpp
         parser/IndexNode.cpp
         parser/ArrayNode.cpp
         transpiler/Transpiler.cpp
+        transpiler/ProjectBuilder.cpp
+        ../../include/Vandior/transpiler/ProjectBuilder.hpp
 )
 
 add_library(Vandior::vandior_lib ALIAS vandior_lib)
@@ -35,6 +37,7 @@ else ()
     message(STATUS "Impossible to set SIMD instructions to AVX2 for target '${target_name}' with '${CMAKE_CXX_COMPILER_ID}' compiler.")
 endif ()
 
+target_compile_definitions(vandior_lib PRIVATE INDEPT)
 
 target_link_libraries(vandior_lib PRIVATE
         Vandior_options
@@ -48,6 +51,7 @@ target_link_libraries(vandior_lib PUBLIC
 
 target_include_directories(vandior_lib ${WARNING_GUARD} PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
         $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include>)
+target_include_directories(vandior_lib ${WARNING_GUARD} PUBLIC "${CMAKE_BINARY_DIR}/configured_files/include")
 target_compile_features(vandior_lib PUBLIC cxx_std_23)
 
 

@@ -7,11 +7,6 @@ DISABLE_WARNINGS_PUSH(
 
 DISABLE_WARNINGS_POP()
 
-// This file will be generated automatically when cur_you run the CMake
-// configuration step. It creates a namespace called `Vandior`. You can modify
-// the source template at `configured_files/config.hpp.in`.
-#include <internal_use_only/config.hpp>
-
 //#define HIDE_SYSTEM_OUTPUT
 
 DISABLE_WARNINGS_PUSH(26461 26821)

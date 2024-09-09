@@ -59,6 +59,10 @@ DISABLE_WARNINGS_PUSH(
 #include "glm_matld.hpp"
 #include "glm_prety_string_cast.hpp"
 #include "move.hpp"
+// This file will be generated automatically when cur_you run the CMake
+// configuration step. It creates a namespace called `Vandior`. You can modify
+// the source template at `configured_files/config.hpp.in`.
+#include <internal_use_only/config.hpp>
 // Restore warning levels.
 DISABLE_WARNINGS_POP()
 // DISABLE_WARNINGS_PUSH(26476 26446 26482 26497 26472 26440 26447 26490 26481 26429 26493 26438 26455 26432 26496 26485 26819)
@@ -110,7 +114,6 @@ static inline constexpr auto sevencr = '7';
 static inline constexpr auto plusscr = '+';
 static inline constexpr auto minuscs = '-';
 /**
- * @def SYSPAUSE
  * @brief A macro to pause the system and wait for user input.
  * This macro outputs a message to the user and waits for them to press
  * the enter key before continuing. It is useful for pausing the execution
@@ -201,6 +204,31 @@ template <std::integral T> [[nodiscard]] constexpr auto find_divisors(T num) noe
  * @return The value of the specified type stored in the variant.
  */
 #define GET_VARIANT_TYPE(var, type) std::get<type>(var)
+
+/**
+ * @brief Generates the full name of the generator.
+ * This macro formats the generator's name, version, and git short SHA.
+ * @return A formatted string containing the generator's full name.<br>
+ * Usage example:
+ * @code
+ * std::string fullName = GENERATOR_FULLNAME;
+ * @endcode
+ */
+#define GENERATOR_FULLNAME                                                                                                                 \
+    FORMAT("{} v{} git sha: {}", Vandior::cmake::project_name, Vandior::cmake::project_version, Vandior::cmake::git_short_sha)
+
+/**
+ * @brief Generates the version of the generator.
+ * This macro formats the generator's version and git short SHA.
+ * @return A formatted string containing the generator's version.<br>
+ * Usage example:
+ * @code
+ * std::string version = GENERATOR_VERSION;
+ * @endcode
+ */
+#define GENERATOR_VERSION                                                                                                                  \
+    FORMAT("v{} git sha: {}", Vandior::cmake::project_name, Vandior::cmake::project_version, Vandior::cmake::git_short_sha)
+
 /** \cond */
 
 /**

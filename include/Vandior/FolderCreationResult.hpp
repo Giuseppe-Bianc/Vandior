@@ -137,14 +137,18 @@ namespace vnd {
 
             auto newDirPath = parentDir / folderName;
             if(fs::exists(newDirPath)) {
+#ifdef INDEPT
                 LWARN("The folder already exists: {}", newDirPath);
+#endif
                 return {true, newDirPath};  // Return true since the folder already exists
             }
 
             // Create the new directory
             std::error_code error_codec;
             if(fs::create_directories(newDirPath, error_codec)) {
+#ifdef INDEPT
                 LINFO("Folder '{}' created successfully at '{}'", folderName, newDirPath);
+#endif
                 return {true, newDirPath};
             } else {
                 if(error_codec) {

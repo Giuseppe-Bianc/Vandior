@@ -2,64 +2,59 @@
 // NOLINTBEGIN(*-include-cleaner, *-easily-swappable-parameters, *-unused-variable, *-branch-clone, *-no-recursion,*-identifier-length)
 // clang-format on
 #include "Vandior/transpiler/Transpiler.hpp"
+using namespace std::string_view_literals;
 
+static inline constexpr auto fileContent = R"(
+#include <iostream>
+
+int main() {
+    std::cout << "Hello, World!" << std::endl;
+    return 0;
+}
+)"sv;
 namespace vnd {
 
     Transpiler::Transpiler(const std::string_view &input, const std::string_view &filename)
-      : _filename(filename), _parser(input, _filename) {
-        vnd::FolderCreationResult resultFolderCreationsrc;
-        std::optional<fs::path> vnBuildFolder;
-        std::optional<fs::path> vnSrcFolder;
-        vnd::Timer folderTime("folder creation");
-        auto resultFolderCreation = vnd::FolderCreationResult::createFolderNextToFile(filename.data(), "vnbuild");
-        vnBuildFolder = resultFolderCreation.pathcref();
-        if(!resultFolderCreation.success()) {
-            return;
+      : _filename(filename), _projectBuilder(filename), _parser(input, _filename) {
+        _projectBuilder.buildProject();
+        if(auto src_folderpo = _projectBuilder.getSrcFolderPath(); src_folderpo.has_value()) {
+            _vnBuildSrcFolder = src_folderpo.value();
         } else {
-            if(vnBuildFolder.has_value()) {
-                resultFolderCreationsrc = vnd::FolderCreationResult::createFolder("src", vnBuildFolder.value());
-            } else {
-                return;
-            }
-            vnSrcFolder = resultFolderCreationsrc.pathcref();
+            LERROR("Failed to get src folder path.");
         }
-        LINFO("{}", folderTime);
-        if(!resultFolderCreationsrc.success() && !vnSrcFolder.has_value()) { return; }
-        if(vnSrcFolder.has_value()) {
-            const vnd::AutoTimer timer("main file path creation");
-            auto filecpp = fs::path(filename).replace_extension(".cpp").filename();
-            _vnBuildSrcFolder = vnSrcFolder.value();
-            _mainOutputFilePath = _vnBuildSrcFolder / filecpp;
+        if(auto mainOutputFilePathpo = _projectBuilder.getMainOutputFilePath(); mainOutputFilePathpo.has_value()) {
+            _mainOutputFilePath = mainOutputFilePathpo.value();
         } else {
-            return;
+            LERROR("Failed to get main output file path");
         }
-        LINFO("build folder path {}", _vnBuildSrcFolder);
     }
-    void Transpiler::transpile() {
+    void Transpiler::createMockfile() {
+        // Apre il file in modalità scrittura con RAII, nessuna necessità di close() manuale
         std::ofstream outfile(_mainOutputFilePath);
 
         // Verifica se il file è stato aperto correttamente
-        if(!outfile) {
+        if(!outfile.is_open()) {
             LERROR("Errore nell'aprire il file {}", _mainOutputFilePath);
             return;
         }
 
-        // Scrive del contenuto nel file
-        outfile << "// Questo è un file generato automaticamente non modificare.\n";
-        outfile << "#include <iostream>\n";
-        outfile << "\n";
-        outfile << "int main() {\n";
-        outfile << "    std::cout << \"Hello, World!\" << std::endl;\n";
-        outfile << "    return 0;\n";
-        outfile << "}\n";
+        auto generatorName = GENERATOR_FULLNAME;
 
-        // Chiude il file
-        outfile.close();
+        outfile << FORMAT("// This is an automatically generated file by {}, do not modify.", generatorName);
+        outfile << fileContent;
+
+        // Il file viene chiuso automaticamente qui
+
+#ifdef INDEPT
+        // Usa std::format per la formattazione delle stringhe (C++20)
         LINFO("File {} creato con successo!", _mainOutputFilePath);
+#endif  // INDEPT
+    }
+    void Transpiler::transpile() {
+        createMockfile();
         const auto ast = _parser.parse();
         // prettyPrint(*ast);
-        LINFO("transpiled code");
-        LINFO(transpileNode(*ast));
+        LINFO("transpiled code: {}", transpileNode(*ast));
     }
 
     // Main code generation function
@@ -119,13 +114,6 @@ namespace vnd {
         return code.str();
     }
 
-    /* std::string Transpiler::BinaryExpressionOrdered(const vnd::BinaryExpressionNode *binaryNode, bool leftFirst) {
-        if(leftFirst) {
-            return FORMAT("{} {} {}", transpileNode(*binaryNode->getLeft()), binaryNode->getOp(), transpileNode(*binaryNode->getRight()));
-        } else {
-            return FORMAT("{} {} {}", transpileNode(*binaryNode->getRight()), binaryNode->getOp(), transpileNode(*binaryNode->getLeft()));
-        }
-    }*/
     // Helper function to transpile code for UnaryExpressionNode
     std::string Transpiler::transpileUnaryExpressionNode(const vnd::UnaryExpressionNode *unaryNode) {
         if(unaryNode == nullptr) { return ""; }
