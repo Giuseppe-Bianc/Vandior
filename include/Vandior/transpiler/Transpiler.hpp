@@ -1,3 +1,4 @@
+// NOLINTBEGIN(*-include-cleaner)
 #pragma once
 
 #include "../parser/Parser.hpp"
@@ -11,15 +12,16 @@ namespace vnd {
 
     private:
         void createMockfile();
-        std::string transpileNode(const ASTNode &node);
-        std::string transpileBinaryExpressionNode(const BinaryExpressionNode *binaryNode);
-        std::string transpileUnaryExpressionNode(const UnaryExpressionNode *unaryNode);
-        std::string transpileVariableNode(const VariableNode *variableNode);
-        template <typename T> std::string transpileNumericNode(const NumberNode<T> *numberNode);
-        template <typename T> std::string transpileLiteralNode(const LiteralNode<T> *literalNode);
-        std::string transpileTypeNode(const TypeNode *typeNode);
-        std::string transpileIndexNode(const IndexNode *indexNode);
-        std::string transpileArrayNode(const ArrayNode *arrayNode);
+        auto mapType(const std::string_view type) -> std::string_view;
+        auto transpileNode(const ASTNode &node) -> std::string;
+        auto transpileBinaryExpressionNode(const BinaryExpressionNode *binaryNode) -> std::string;
+        auto transpileUnaryExpressionNode(const UnaryExpressionNode *unaryNode) -> std::string;
+        auto transpileVariableNode(const VariableNode *variableNode) -> std::string;
+        template <typename T> auto transpileNumericNode(const NumberNode<T> *numberNode) -> std::string;
+        template <typename T> auto transpileLiteralNode(const LiteralNode<T> *literalNode) -> std::string;
+        auto transpileTypeNode(const TypeNode *typeNode) -> std::string;
+        auto transpileIndexNode(const IndexNode *indexNode) -> std::string;
+        auto transpileArrayNode(const ArrayNode *arrayNode) -> std::string;
         std::string_view _filename;
         ProjectBuilder _projectBuilder;
         Parser _parser;
@@ -27,3 +29,5 @@ namespace vnd {
         fs::path _mainOutputFilePath;
     };
 }  // namespace vnd
+
+// NOLINTEND(*-include-cleaner)

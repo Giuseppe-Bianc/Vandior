@@ -8,7 +8,7 @@
 
 namespace vnd {
     // Costruttore che prende il nome del file come parametro
-    ProjectBuilder::ProjectBuilder(const std::string_view &filename) : _filename(filename) {}
+    ProjectBuilder::ProjectBuilder(const std::string_view &filename) noexcept : _filename(filename) {}
 
     // Metodo pubblico per avviare la costruzione del progetto
     void ProjectBuilder::buildProject() {
@@ -28,7 +28,6 @@ namespace vnd {
 #ifdef INDEPT
         LINFO("{}", folderTime);
 #endif
-
 
         if(!createMainFile()) {
             LERROR("Failed to create main file.");
