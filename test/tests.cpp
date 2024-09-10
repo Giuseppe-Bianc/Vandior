@@ -1,24 +1,23 @@
 // clang-format off
-// NOLINTBEGIN(*-include-cleaner, *-avoid-magic-numbers, *-magic-numbers, *-unchecked-optional-access, *-avoid-do-while, *-use-anonymous-namespace, *-qualified-auto, *-suspicious-stringview-data-usage)
+// NOLINTBEGIN(*-include-cleaner, *-avoid-magic-numbers, *-magic-numbers, *-unchecked-optional-access, *-avoid-do-while, *-use-anonymous-namespace, *-qualified-auto, *-suspicious-stringview-data-usage, *-err58-cpp)
 // clang-format on
-
 
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers.hpp>
+#include <catch2/matchers/catch_matchers_container_properties.hpp>
 #include <catch2/matchers/catch_matchers_exception.hpp>
 #include <catch2/matchers/catch_matchers_string.hpp>
-#include <catch2/matchers/catch_matchers_container_properties.hpp>
 #include <future>
 
 #include <Vandior/vandior.hpp>
 
-using Catch::Matchers::EndsWith;
-using Catch::Matchers::StartsWith;
 using Catch::Matchers::ContainsSubstring;
+using Catch::Matchers::EndsWith;
 using Catch::Matchers::Message;
 using Catch::Matchers::MessageMatches;
-//using Catch::Matchers::SizeIs;
-//using Catch::Matchers::Equals;
+using Catch::Matchers::StartsWith;
+// using Catch::Matchers::SizeIs;
+// using Catch::Matchers::Equals;
 
 static inline constexpr std::size_t t_line = 5;
 static inline constexpr std::size_t t_line2 = 42;
@@ -62,10 +61,10 @@ static inline constexpr std::size_t timerCicles = 1000000;
 static inline constexpr long double timerResolution = 5.0L;
 static inline constexpr std::size_t timestampSize = 24;
 #define REQ_FORMAT(type, string) REQUIRE(FORMAT("{}", type) == (string));  // NOLINT(*-macro-usage)
+#define REQ_FORMAT_COMPTOK(type, string) REQUIRE(FORMAT("{}", comp_tokType(type)) == (string)); // NOLINT(*-macro-usage)
 
 // NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("get_current_timestamp() tests", "[timestamp]") {
-
     SECTION("Basic test") {
         auto timestamp = get_current_timestamp();
         REQUIRE(timestamp.size() >= timestampSize);
@@ -371,75 +370,75 @@ TEST_CASE("corrected format for Tokentype", "[token_type]") {
 // NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("corrected format for Tokentype compat to string", "[token_type]") {
     using enum vnd::TokenType;
-    REQ_FORMAT(comp_tokType(INTEGER), "INT")
-    REQ_FORMAT(comp_tokType(DOUBLE), "DBL")
-    REQ_FORMAT(comp_tokType(BOOLEAN), "BOOL")
-    REQ_FORMAT(comp_tokType(PLUS), "PLUS_OP")
-    REQ_FORMAT(comp_tokType(MINUS), "MINUS_OP")
-    REQ_FORMAT(comp_tokType(EQUAL), "EQUAL_OP")
-    REQ_FORMAT(comp_tokType(DOT), "DOT_OP")
-    REQ_FORMAT(comp_tokType(STAR), "STAR_OP")
-    REQ_FORMAT(comp_tokType(DIVIDE), "DIVIDE_OP")
-    REQ_FORMAT(comp_tokType(XOR), "XOR_OP")
-    REQ_FORMAT(comp_tokType(PERCENT), "PERCENT_OP")
-    REQ_FORMAT(comp_tokType(OR), "OR_OP")
-    REQ_FORMAT(comp_tokType(AND), "AND_OP")
-    REQ_FORMAT(comp_tokType(LESS), "LESS_OP")
-    REQ_FORMAT(comp_tokType(GREATER), "GREATER_OP")
-    REQ_FORMAT(comp_tokType(PLUSPLUS), "PLUSPLUS_OP")
-    REQ_FORMAT(comp_tokType(MINUSMINUS), "MINUSMINUS_OP")
-    REQ_FORMAT(comp_tokType(PLUSEQUAL), "PLUSEQUAL_OP")
-    REQ_FORMAT(comp_tokType(MINUSEQUAL), "MINUSEQUAL_OP")
-    REQ_FORMAT(comp_tokType(NOTEQUAL), "NOTEQUAL_OP")
-    REQ_FORMAT(comp_tokType(STAREQUAL), "STAREQUAL_OP")
-    REQ_FORMAT(comp_tokType(DIVIDEEQUAL), "DIVIDEEQUAL_OP")
-    REQ_FORMAT(comp_tokType(XOREQUAL), "XOREQUAL_OP")
-    REQ_FORMAT(comp_tokType(PERCENTEQUAL), "PERCENTEQUAL_OP")
-    REQ_FORMAT(comp_tokType(OROR), "OROR_OP")
-    REQ_FORMAT(comp_tokType(ANDAND), "ANDAND_OP")
-    REQ_FORMAT(comp_tokType(EQUALEQUAL), "EQUALEQUAL_OP")
-    REQ_FORMAT(comp_tokType(LESSEQUAL), "LESSEQUAL_OP")
-    REQ_FORMAT(comp_tokType(GREATEREQUAL), "GREATEREQUAL_OP")
-    REQ_FORMAT(comp_tokType(IDENTIFIER), "IDENT")
-    REQ_FORMAT(comp_tokType(CHAR), "CH")
-    REQ_FORMAT(comp_tokType(STRING), "STR")
-    REQ_FORMAT(comp_tokType(EOFT), "EOF")
-    REQ_FORMAT(comp_tokType(K_MAIN), "K_MAIN")
-    REQ_FORMAT(comp_tokType(K_VAR), "K_VAR")
-    REQ_FORMAT(comp_tokType(K_IF), "K_IF")
-    REQ_FORMAT(comp_tokType(K_WHILE), "K_WHILE")
-    REQ_FORMAT(comp_tokType(K_ELSE), "K_ELSE")
-    REQ_FORMAT(comp_tokType(K_FOR), "K_FOR")
-    REQ_FORMAT(comp_tokType(K_BREAK), "BREAK")
-    REQ_FORMAT(comp_tokType(K_FUN), "K_FUN")
-    REQ_FORMAT(comp_tokType(K_RETURN), "K_RETURN")
-    REQ_FORMAT(comp_tokType(K_NULLPTR), "K_NULLPTR")
-    REQ_FORMAT(comp_tokType(OPEN_PARENTESIS), "OPEN_PAR")
-    REQ_FORMAT(comp_tokType(OPEN_SQ_PARENTESIS), "OPEN_SQ_PAR")
-    REQ_FORMAT(comp_tokType(OPEN_CUR_PARENTESIS), "OPEN_CUR_PAR")
-    REQ_FORMAT(comp_tokType(CLOSE_PARENTESIS), "CLOSE_PAR")
-    REQ_FORMAT(comp_tokType(CLOSE_SQ_PARENTESIS), "CLOSE_SQ_PAR")
-    REQ_FORMAT(comp_tokType(CLOSE_CUR_PARENTESIS), "CLOSE_CUR_PAR")
-    REQ_FORMAT(comp_tokType(NOT), "NOT_OP")
-    REQ_FORMAT(comp_tokType(COMMA), "COMMA")
-    REQ_FORMAT(comp_tokType(COLON), "COLON")
-    REQ_FORMAT(comp_tokType(TYPE_I8), "I8")
-    REQ_FORMAT(comp_tokType(TYPE_I16), "I16")
-    REQ_FORMAT(comp_tokType(TYPE_I32), "I32")
-    REQ_FORMAT(comp_tokType(TYPE_I64), "I64")
-    REQ_FORMAT(comp_tokType(TYPE_U8), "U8")
-    REQ_FORMAT(comp_tokType(TYPE_U16), "U16")
-    REQ_FORMAT(comp_tokType(TYPE_U32), "U32")
-    REQ_FORMAT(comp_tokType(TYPE_U64), "U64")
-    REQ_FORMAT(comp_tokType(TYPE_F32), "F32")
-    REQ_FORMAT(comp_tokType(TYPE_F64), "F64")
-    REQ_FORMAT(comp_tokType(TYPE_C32), "C32")
-    REQ_FORMAT(comp_tokType(TYPE_C64), "C64")
-    REQ_FORMAT(comp_tokType(TYPE_CHAR), "CHAR")
-    REQ_FORMAT(comp_tokType(TYPE_STRING), "STRING")
-    REQ_FORMAT(comp_tokType(TYPE_BOOL), "BOOL")
-    REQ_FORMAT(comp_tokType(COMMENT), "COMMENT")
-    REQ_FORMAT(comp_tokType(UNKNOWN), "UNKNOWN")
+    REQ_FORMAT_COMPTOK(INTEGER,"INT")
+    REQ_FORMAT_COMPTOK(DOUBLE,"DBL")
+    REQ_FORMAT_COMPTOK(BOOLEAN,"BOOL")
+    REQ_FORMAT_COMPTOK(PLUS,"PLUS_OP")
+    REQ_FORMAT_COMPTOK(MINUS,"MINUS_OP")
+    REQ_FORMAT_COMPTOK(EQUAL,"EQUAL_OP")
+    REQ_FORMAT_COMPTOK(DOT,"DOT_OP")
+    REQ_FORMAT_COMPTOK(STAR,"STAR_OP")
+    REQ_FORMAT_COMPTOK(DIVIDE,"DIVIDE_OP")
+    REQ_FORMAT_COMPTOK(XOR,"XOR_OP")
+    REQ_FORMAT_COMPTOK(PERCENT,"PERCENT_OP")
+    REQ_FORMAT_COMPTOK(OR,"OR_OP")
+    REQ_FORMAT_COMPTOK(AND,"AND_OP")
+    REQ_FORMAT_COMPTOK(LESS,"LESS_OP")
+    REQ_FORMAT_COMPTOK(GREATER,"GREATER_OP")
+    REQ_FORMAT_COMPTOK(PLUSPLUS,"PLUSPLUS_OP")
+    REQ_FORMAT_COMPTOK(MINUSMINUS,"MINUSMINUS_OP")
+    REQ_FORMAT_COMPTOK(PLUSEQUAL,"PLUSEQUAL_OP")
+    REQ_FORMAT_COMPTOK(MINUSEQUAL,"MINUSEQUAL_OP")
+    REQ_FORMAT_COMPTOK(NOTEQUAL,"NOTEQUAL_OP")
+    REQ_FORMAT_COMPTOK(STAREQUAL,"STAREQUAL_OP")
+    REQ_FORMAT_COMPTOK(DIVIDEEQUAL,"DIVIDEEQUAL_OP")
+    REQ_FORMAT_COMPTOK(XOREQUAL,"XOREQUAL_OP")
+    REQ_FORMAT_COMPTOK(PERCENTEQUAL,"PERCENTEQUAL_OP")
+    REQ_FORMAT_COMPTOK(OROR,"OROR_OP")
+    REQ_FORMAT_COMPTOK(ANDAND,"ANDAND_OP")
+    REQ_FORMAT_COMPTOK(EQUALEQUAL,"EQUALEQUAL_OP")
+    REQ_FORMAT_COMPTOK(LESSEQUAL,"LESSEQUAL_OP")
+    REQ_FORMAT_COMPTOK(GREATEREQUAL,"GREATEREQUAL_OP")
+    REQ_FORMAT_COMPTOK(IDENTIFIER,"IDENT")
+    REQ_FORMAT_COMPTOK(CHAR,"CH")
+    REQ_FORMAT_COMPTOK(STRING,"STR")
+    REQ_FORMAT_COMPTOK(EOFT,"EOF")
+    REQ_FORMAT_COMPTOK(K_MAIN,"K_MAIN")
+    REQ_FORMAT_COMPTOK(K_VAR,"K_VAR")
+    REQ_FORMAT_COMPTOK(K_IF,"K_IF")
+    REQ_FORMAT_COMPTOK(K_WHILE,"K_WHILE")
+    REQ_FORMAT_COMPTOK(K_ELSE,"K_ELSE")
+    REQ_FORMAT_COMPTOK(K_FOR,"K_FOR")
+    REQ_FORMAT_COMPTOK(K_BREAK,"BREAK")
+    REQ_FORMAT_COMPTOK(K_FUN,"K_FUN")
+    REQ_FORMAT_COMPTOK(K_RETURN,"K_RETURN")
+    REQ_FORMAT_COMPTOK(K_NULLPTR,"K_NULLPTR")
+    REQ_FORMAT_COMPTOK(OPEN_PARENTESIS,"OPEN_PAR")
+    REQ_FORMAT_COMPTOK(OPEN_SQ_PARENTESIS,"OPEN_SQ_PAR")
+    REQ_FORMAT_COMPTOK(OPEN_CUR_PARENTESIS,"OPEN_CUR_PAR")
+    REQ_FORMAT_COMPTOK(CLOSE_PARENTESIS,"CLOSE_PAR")
+    REQ_FORMAT_COMPTOK(CLOSE_SQ_PARENTESIS,"CLOSE_SQ_PAR")
+    REQ_FORMAT_COMPTOK(CLOSE_CUR_PARENTESIS,"CLOSE_CUR_PAR")
+    REQ_FORMAT_COMPTOK(NOT,"NOT_OP")
+    REQ_FORMAT_COMPTOK(COMMA,"COMMA")
+    REQ_FORMAT_COMPTOK(COLON,"COLON")
+    REQ_FORMAT_COMPTOK(TYPE_I8,"I8")
+    REQ_FORMAT_COMPTOK(TYPE_I16,"I16")
+    REQ_FORMAT_COMPTOK(TYPE_I32,"I32")
+    REQ_FORMAT_COMPTOK(TYPE_I64,"I64")
+    REQ_FORMAT_COMPTOK(TYPE_U8,"U8")
+    REQ_FORMAT_COMPTOK(TYPE_U16,"U16")
+    REQ_FORMAT_COMPTOK(TYPE_U32,"U32")
+    REQ_FORMAT_COMPTOK(TYPE_U64,"U64")
+    REQ_FORMAT_COMPTOK(TYPE_F32,"F32")
+    REQ_FORMAT_COMPTOK(TYPE_F64,"F64")
+    REQ_FORMAT_COMPTOK(TYPE_C32,"C32")
+    REQ_FORMAT_COMPTOK(TYPE_C64,"C64")
+    REQ_FORMAT_COMPTOK(TYPE_CHAR,"CHAR")
+    REQ_FORMAT_COMPTOK(TYPE_STRING,"STRING")
+    REQ_FORMAT_COMPTOK(TYPE_BOOL,"BOOL")
+    REQ_FORMAT_COMPTOK(COMMENT,"COMMENT")
+    REQ_FORMAT_COMPTOK(UNKNOWN,"UNKNOWN")
 }
 
 namespace {
@@ -453,7 +452,7 @@ namespace {
     // Helper function to create a file with content
     // NOLINTNEXTLINE(*-easily-swappable-parameters)
     void createFile(const std::string &infilename, const std::string &content) {
-        std::ofstream ofs(infilename, std::ios::out | std::ios::binary); // NOLINT(*-signed-bitwise)
+        std::ofstream ofs(infilename, std::ios::out | std::ios::binary);  // NOLINT(*-signed-bitwise)
         ofs << content;
         ofs.close();
     }
@@ -563,7 +562,7 @@ TEST_CASE("construct a empty value token", "[token]") {
     REQUIRE(token.compat_to_string() == "(typ: UNKNOWN, val: '', sl:(f:, l:0, c:0))");
 }
 
-TEST_CASE("construct a EOFT token", "[token]") { // NOLINT(*-function-cognitive-complexity)
+TEST_CASE("construct a EOFT token", "[token]") {  // NOLINT(*-function-cognitive-complexity)
     using enum vnd::TokenType;
     const vnd::Token token{EOFT, vnd::CodeSourceLocation{}};
     REQUIRE(token.getType() == EOFT);
@@ -624,14 +623,15 @@ TEST_CASE("vnd::readFromFile - Valid File", "[file]") {
     }
 
     // Clean up after test
-    [[maybe_unused]]auto unsed = fs::remove(infilename);
+    [[maybe_unused]] auto unsed = fs::remove(infilename);
 }
 
 TEST_CASE("vnd::readFromFile - Non-existent File", "[file]") {
     const std::string nonExistentFile = "nonexistent.txt";
 
     SECTION("Read from non-existent file") {
-        REQUIRE_THROWS_MATCHES(vnd::readFromFile(nonExistentFile), std::runtime_error, Message(FORMAT("File not found: {}", nonExistentFile)));
+        REQUIRE_THROWS_MATCHES(vnd::readFromFile(nonExistentFile), std::runtime_error,
+                               Message(FORMAT("File not found: {}", nonExistentFile)));
     }
 }
 
@@ -646,7 +646,7 @@ TEST_CASE("vnd::readFromFile - Non-regular File", "[file]") {
     }
 
     // Clean up after test
-    [[maybe_unused]]auto unsed = fs::remove(dirName);
+    [[maybe_unused]] auto unsed = fs::remove(dirName);
 }
 
 TEST_CASE("vnd::readFromFile - Empty File", "[file]") {
@@ -661,7 +661,7 @@ TEST_CASE("vnd::readFromFile - Empty File", "[file]") {
     }
 
     // Clean up after test
-    [[maybe_unused]]auto unsed = fs::remove(emtfilename);
+    [[maybe_unused]] auto unsed = fs::remove(emtfilename);
 }
 
 TEST_CASE("vnd::readFromFile - Large File", "[file]") {
@@ -677,7 +677,7 @@ TEST_CASE("vnd::readFromFile - Large File", "[file]") {
     }
 
     // Clean up after test
-    [[maybe_unused]]auto unsed = fs::remove(lrgfilename);
+    [[maybe_unused]] auto unsed = fs::remove(lrgfilename);
 }
 
 // NOLINTNEXTLINE(*-function-cognitive-complexity)
@@ -1864,23 +1864,29 @@ TEST_CASE("Parser emit array type", "[parser]") {
 
 TEST_CASE("Parser emit exception on comment", "[parser]") {
     vnd::Parser parser("// comment", filename);
- #ifdef _WIN32  // Windows
-    REQUIRE_THROWS_MATCHES(parser.parse(), vnd::ParserException,
-                           Message(R"(Unexpected token: (type: COMMENT, value: '// comment', source location:(file:.\unknown.vn, line:1, column:1)))"));
+#ifdef _WIN32  // Windows
+    REQUIRE_THROWS_MATCHES(
+        parser.parse(), vnd::ParserException,
+        Message(R"(Unexpected token: (type: COMMENT, value: '// comment', source location:(file:.\unknown.vn, line:1, column:1)))"));
 #else
-    REQUIRE_THROWS_MATCHES(parser.parse(), vnd::ParserException,
-                           Message(R"(Unexpected token: (type: COMMENT, value: '// comment', source location:(file:./unknown.vn, line:1, column:1)))"));
+    REQUIRE_THROWS_MATCHES(
+        parser.parse(), vnd::ParserException,
+        Message(R"(Unexpected token: (type: COMMENT, value: '// comment', source location:(file:./unknown.vn, line:1, column:1)))"));
 #endif
 }
 
 TEST_CASE("Parser emit exception on multiline comment", "[parser]") {
     vnd::Parser parser(R"(/*multi\nline\ncomment*/)", filename);
 #ifdef _WIN32  // Windows
-    REQUIRE_THROWS_MATCHES(parser.parse(), vnd::ParserException,
-                           Message(R"(Unexpected token: (type: COMMENT, value: '/*multi\nline\ncomment*/', source location:(file:.\unknown.vn, line:1, column:1)))"));
+    REQUIRE_THROWS_MATCHES(
+        parser.parse(), vnd::ParserException,
+        Message(
+            R"(Unexpected token: (type: COMMENT, value: '/*multi\nline\ncomment*/', source location:(file:.\unknown.vn, line:1, column:1)))"));
 #else
-    REQUIRE_THROWS_MATCHES(parser.parse(), vnd::ParserException,
-                           Message(R"(Unexpected token: (type: COMMENT, value: '/*multi\nline\ncomment*/', source location:(file:./unknown.vn, line:1, column:1)))"));
+    REQUIRE_THROWS_MATCHES(
+        parser.parse(), vnd::ParserException,
+        Message(
+            R"(Unexpected token: (type: COMMENT, value: '/*multi\nline\ncomment*/', source location:(file:./unknown.vn, line:1, column:1)))"));
 #endif
 }
 
@@ -1907,8 +1913,6 @@ TEST_CASE("Parser emit mismatched curly brackets exception", "[parser]") {
                            Message(R"(Unexpected token: (type: EOF, source location:(file:./unknown.vn, line:1, column:14)))"));
 #endif
 }
-
-
 
 TEST_CASE("Parser emit empty index node print", "[parser]") {
     vnd::Parser parser("i8[]", filename);
@@ -2034,8 +2038,7 @@ TEST_CASE("Transpiler creates correct folders and files", "[transpiler]") {
 
         // Check that the content of the file is correct
         std::ifstream file(cppFile);
-        std::string fileContent((std::istreambuf_iterator<char>(file)),
-                                std::istreambuf_iterator<char>());
+        std::string fileContent((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
 
         // Using Catch2 Matchers for string checks
         REQUIRE_THAT(fileContent, ContainsSubstring("Hello, World!"));  // Check for the presence of "Hello, World!"
@@ -2054,7 +2057,7 @@ TEST_CASE("Transpiler creates correct folders and files", "[transpiler]") {
     }
 }
 
-TEST_CASE("Vandior TimerTokenizer","[Vandior]") {
+TEST_CASE("Vandior TimerTokenizer", "[Vandior]") {
     vnd::Tokenizer tokenizer{"token1 + variable2", filename};
     const vnd::Token token1(vnd::TokenType::PLUS, "+", vnd::CodeSourceLocation(filename, t_line, t_colum));
     const vnd::Token token2(identf, "variable2", vnd::CodeSourceLocation(filename, t_line, t_colum));
@@ -2063,17 +2066,17 @@ TEST_CASE("Vandior TimerTokenizer","[Vandior]") {
     SECTION("tokenization is successful") {
         vnd::timeTokenizer(tokenizer, tokens);
 
-        REQUIRE(tokens.size() == 4); // Expecting 3 tokens based on the mock
+        REQUIRE(tokens.size() == 4);  // Expecting 3 tokens based on the mock
     }
 
     SECTION("tokens vector is cleared before tokenization") {
         tokens.emplace_back(token1);
         tokens.emplace_back(token2);
-        REQUIRE(tokens.size() == 2); // Initially contains one token
+        REQUIRE(tokens.size() == 2);  // Initially contains one token
 
         vnd::timeTokenizer(tokenizer, tokens);
 
-        REQUIRE(tokens.size() == 4); // After tokenization, it should contain 3 new tokens
+        REQUIRE(tokens.size() == 4);  // After tokenization, it should contain 3 new tokens
     }
 }
 
@@ -2085,12 +2088,12 @@ TEST_CASE("vnd::timeParser", "[Vandior]") {
     SECTION("parse is successful") {
         vnd::timeParser(ast, parser);
 
-        REQUIRE(ast != nullptr); // AST should be a valid object
+        REQUIRE(ast != nullptr);  // AST should be a valid object
     }
 
     SECTION("returns a unique_ptr to ASTNode") {
         const vnd::Token token{vnd::TokenType::IDENTIFIER, "id", vnd::CodeSourceLocation{filename, t_line, t_colum}};
-        //vnd::VariableNode dummyNode("id", token);
+        // vnd::VariableNode dummyNode("id", token);
         ast = std::make_unique<vnd::VariableNode>("id", token);
         vnd::timeParser(ast, parser);
 
@@ -2108,5 +2111,5 @@ TEST_CASE("vnd::timeParse", "[Vandior]") {
     }
 }
 // clang-format off
-// NOLINTEND(*-include-cleaner, *-avoid-magic-numbers, *-magic-numbers, *-unchecked-optional-access, *-avoid-do-while, *-use-anonymous-namespace, *-qualified-auto, *-suspicious-stringview-data-usage)
+// NOLINTEND(*-include-cleaner, *-avoid-magic-numbers, *-magic-numbers, *-unchecked-optional-access, *-avoid-do-while, *-use-anonymous-namespace, *-qualified-auto, *-suspicious-stringview-data-usage, *-err58-cpp)
 // clang-format on

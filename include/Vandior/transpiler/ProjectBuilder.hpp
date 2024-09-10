@@ -12,7 +12,7 @@ namespace vnd {
     class ProjectBuilder {
     public:
         // Costruttore che prende il nome del file come parametro
-        explicit ProjectBuilder(const std::string_view &filename);
+        explicit ProjectBuilder(const std::string_view &filename) noexcept;
 
         // Metodo pubblico per avviare la costruzione del progetto
         void buildProject();
