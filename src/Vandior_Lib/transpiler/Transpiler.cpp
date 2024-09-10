@@ -130,7 +130,7 @@ namespace vnd {
             if(const auto &callNode = variableNode->get_call()) { code << transpileNode(*callNode); }
             code << ")";
         }
-        if(const auto &indexNode = variableNode->get_index()) { code << FORMAT("[{}]", transpileNode(*indexNode)); }
+        if(const auto &indexNode = variableNode->get_index()) { code << FORMAT("{}", transpileNode(*indexNode)); }
         return code.str();
     }
 
@@ -158,7 +158,7 @@ namespace vnd {
         std::ostringstream code;
         // code << typeNode.getName();
         code << typeNode->get_value();
-        if(typeNode->get_index()) { code << FORMAT("[{}]", transpileNode(*typeNode->get_index())); }
+        if(typeNode->get_index()) { code << FORMAT("{}", transpileNode(*typeNode->get_index())); }
         return code.str();
     }
 
@@ -166,9 +166,11 @@ namespace vnd {
     std::string Transpiler::transpileIndexNode(const vnd::IndexNode *indexNode) {
         if(indexNode == nullptr) { return ""; }
         std::ostringstream code;
-        if(const auto &elementsNode = indexNode->get_elements()) { code << transpileNode(*elementsNode); }
-        if(const auto &elementsIndexNode = indexNode->get_index()) { code << FORMAT("[{}]", transpileNode(*elementsIndexNode)); }
-        if(const auto &elementsArrayNode = indexNode->get_array()) { code << FORMAT("{{{}}}", transpileNode(*elementsArrayNode)); }
+        code << "[";
+        if(const auto &elementsNode = indexNode->get_elements()) { code << FORMAT("{}", transpileNode(*elementsNode)); }
+        code << "]";
+        if(const auto &elementsIndexNode = indexNode->get_index()) { code << FORMAT("{}", transpileNode(*elementsIndexNode)); }
+        if(const auto &elementsArrayNode = indexNode->get_array()) { code << FORMAT("{}", transpileNode(*elementsArrayNode)); }
         return code.str();
     }
 
@@ -176,7 +178,7 @@ namespace vnd {
     std::string Transpiler::transpileArrayNode(const vnd::ArrayNode *arrayNode) {
         if(arrayNode == nullptr) { return ""; }
         std::ostringstream code;
-        code << "{ ";
+        code << "{";
         if(arrayNode->get_elements()) { code << transpileNode(*arrayNode->get_elements()); }
         code << "}";
         return code.str();
