@@ -103,9 +103,18 @@ namespace vnd {
         std::ostringstream code;
         const auto op = binaryNode->getOp();
         if(op == ":") {
-            code << transpileNode(*binaryNode->getRight());
+            const auto *binaryRight = (*binaryNode->getRight()).safe_as<BinaryExpressionNode>();
+            if(binaryRight) {
+                code << transpileNode(*binaryRight->getLeft());
+            } else {
+                code << transpileNode(*binaryNode->getRight());
+            }
             code << " ";
             code << transpileNode(*binaryNode->getLeft());
+            if(binaryRight) {
+                code << FORMAT(" {} ", binaryRight->getOp());
+                code << transpileNode(*binaryRight->getRight());
+            }
         } else if(op == ",") {
             code << transpileNode(*binaryNode->getLeft());
             code << FORMAT("{} ", op);
