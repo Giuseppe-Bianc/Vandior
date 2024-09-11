@@ -12,7 +12,7 @@ namespace vnd {
 
     private:
         void createMockfile();
-        auto mapType(const std::string_view type) -> std::string_view;
+        static auto mapType(const std::string_view type) -> std::string_view;
         auto transpileNode(const ASTNode &node) -> std::string;
         auto transpileBinaryExpressionNode(const BinaryExpressionNode *binaryNode) -> std::string;
         auto transpileUnaryExpressionNode(const UnaryExpressionNode *unaryNode) -> std::string;
