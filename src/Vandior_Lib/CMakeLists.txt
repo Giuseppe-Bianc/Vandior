@@ -16,7 +16,6 @@ add_library(vandior_lib vandior.cpp
         parser/ArrayNode.cpp
         transpiler/Transpiler.cpp
         transpiler/ProjectBuilder.cpp
-        ../../include/Vandior/transpiler/ProjectBuilder.hpp
 )
 
 add_library(Vandior::vandior_lib ALIAS vandior_lib)
