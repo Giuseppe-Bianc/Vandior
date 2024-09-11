@@ -2016,7 +2016,7 @@ TEST_CASE("Parser emit callable node", "[parser]") {
 
 // NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("Transpiler creates correct folders and files", "[transpiler]") {
-    const std::string input = "x:i32 = 10";
+    const std::string input = "x:i32[2] =  {{-22, 23}, function(1, 2)}, c:char = 'c' ,c:string = \"ssssss\", b:bool = true";
     const std::string transpilerfilename = "testfile.vnd";
 
     // Create a Transpiler instance

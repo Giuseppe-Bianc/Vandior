@@ -178,17 +178,18 @@ namespace vnd {
     // Helper function to transpile code for TypeNode
     auto Transpiler::transpileTypeNode(const TypeNode *typeNode) -> std::string {
         if(typeNode == nullptr) { return ""; }
-        std::ostringstream code;
         // code << typeNode.getName();
         const auto initaltype = typeNode->get_value();
         const auto mappedType = mapType(initaltype);
-        if(mappedType == "unknown"sv) {
-            code << initaltype;
-        } else {
+        if(mappedType == "unknown"sv) [[unlikely]] {
+            return std::string(initaltype);
+        } else [[likely]] {
+            std::ostringstream code;
             code << mappedType;
+            if(typeNode->get_index()) { code << FORMAT("[{}]", transpileNode(*typeNode->get_index())); }
+            return code.str();
         }
-        if(typeNode->get_index()) { code << FORMAT("[{}]", transpileNode(*typeNode->get_index())); }
-        return code.str();
+
     }
 
     // Helper function to transpile code for IndexNode
@@ -205,7 +206,7 @@ namespace vnd {
     auto Transpiler::transpileArrayNode(const ArrayNode *arrayNode) -> std::string {
         if(arrayNode == nullptr) { return ""; }
         std::ostringstream code;
-        code << "{ ";
+        code << "{";
         if(arrayNode->get_elements()) { code << transpileNode(*arrayNode->get_elements()); }
         code << "}";
         return code.str();
