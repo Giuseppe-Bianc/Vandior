@@ -162,9 +162,10 @@ namespace vnd {
             return FORMAT("'{}'", literalNode->get_value());
         } else if constexpr(std::is_same_v<T, std::string_view>) {
             return FORMAT("\"{}\"", literalNode->get_value());
+        } else {
+            return "";
         }
     }
-
     auto Transpiler::mapType(const std::string_view type) -> std::string_view {
         static const std::unordered_map<std::string_view, std::string_view> typeMap = {
             {"i32"sv, "int"sv},
@@ -178,26 +179,25 @@ namespace vnd {
             {"string"sv, "std::string"sv},
         };
 
-        if (const auto it = typeMap.find(type); it != typeMap.end()) {
-            return it->second;
+        if (typeMap.contains(type)) {
+            return typeMap.at(type);
         }
-        return "unknown"sv;  // Default case if type is not found
+        return "unknown"sv; // Default case if type is not found
     }
     // Helper function to transpile code for TypeNode
     auto Transpiler::transpileTypeNode(const TypeNode *typeNode) -> std::string {
         if(typeNode == nullptr) { return ""; }
-        std::ostringstream code;
         // code << typeNode.getName();
-        LINFO("TypeNode: {}", typeNode->print());
         const auto initaltype = typeNode->get_value();
         const auto mappedType = mapType(initaltype);
-        if(mappedType == "unknown"sv) {
-            code << initaltype;
-        } else {
+        if(mappedType == "unknown"sv) [[unlikely]] {
+            return std::string(initaltype);
+        } else [[likely]] {
+            std::ostringstream code;
             code << mappedType;
+            if(typeNode->get_index()) { code << FORMAT("{}", transpileNode(*typeNode->get_index())); }
+            return code.str();
         }
-        if(typeNode->get_index()) { code << FORMAT("{}", transpileNode(*typeNode->get_index())); }
-        return code.str();
     }
 
     // Helper function to transpile code for IndexNode
