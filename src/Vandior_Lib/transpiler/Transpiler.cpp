@@ -103,9 +103,18 @@ namespace vnd {
         std::ostringstream code;
         const auto op = binaryNode->getOp();
         if(op == ":") {
-            code << transpileNode(*binaryNode->getRight());
+            const auto *binaryRight = (*binaryNode->getRight()).safe_as<BinaryExpressionNode>();
+            if(binaryRight) {
+                code << transpileNode(*binaryRight->getLeft());
+            } else {
+                code << transpileNode(*binaryNode->getRight());
+            }
             code << " ";
             code << transpileNode(*binaryNode->getLeft());
+            if(binaryRight) {
+                code << FORMAT(" {} ", binaryRight->getOp());
+                code << transpileNode(*binaryRight->getRight());
+            }
         } else if(op == ",") {
             code << transpileNode(*binaryNode->getLeft());
             code << FORMAT("{} ", op);
@@ -134,7 +143,7 @@ namespace vnd {
             if(const auto &callNode = variableNode->get_call()) { code << transpileNode(*callNode); }
             code << ")";
         }
-        if(const auto &indexNode = variableNode->get_index()) { code << FORMAT("[{}]", transpileNode(*indexNode)); }
+        if(const auto &indexNode = variableNode->get_index()) { code << FORMAT("{}", transpileNode(*indexNode)); }
         return code.str();
     }
 
@@ -186,19 +195,20 @@ namespace vnd {
         } else [[likely]] {
             std::ostringstream code;
             code << mappedType;
-            if(typeNode->get_index()) { code << FORMAT("[{}]", transpileNode(*typeNode->get_index())); }
+            if(typeNode->get_index()) { code << FORMAT("{}", transpileNode(*typeNode->get_index())); }
             return code.str();
         }
-
     }
 
     // Helper function to transpile code for IndexNode
     auto Transpiler::transpileIndexNode(const IndexNode *indexNode) -> std::string {
         if(indexNode == nullptr) { return ""; }
         std::ostringstream code;
-        if(const auto &elementsNode = indexNode->get_elements()) { code << transpileNode(*elementsNode); }
-        if(const auto &elementsIndexNode = indexNode->get_index()) { code << FORMAT("[{}]", transpileNode(*elementsIndexNode)); }
-        if(const auto &elementsArrayNode = indexNode->get_array()) { code << FORMAT("{{{}}}", transpileNode(*elementsArrayNode)); }
+        code << "[";
+        if(const auto &elementsNode = indexNode->get_elements()) { code << FORMAT("{}", transpileNode(*elementsNode)); }
+        code << "]";
+        if(const auto &elementsIndexNode = indexNode->get_index()) { code << FORMAT("{}", transpileNode(*elementsIndexNode)); }
+        if(const auto &elementsArrayNode = indexNode->get_array()) { code << FORMAT("{}", transpileNode(*elementsArrayNode)); }
         return code.str();
     }
 
