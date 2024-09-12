@@ -63,9 +63,9 @@ auto main(int argc, const char *const argv[]) -> int {
         LINFO("Input: {}", input);
         vnd::Parser parser{input, "input.vn"};
         auto ast = vnd::timeParse(parser);
-        LINFO("print internal function\n{}", ast->print());
+        /*LINFO("print internal function\n{}", ast->print());
         LINFO("comp_print internal function\n {}", ast->comp_print());
-        LINFO("prettyPrint external function");
+        LINFO("prettyPrint external function");*/
         prettyPrint(*ast);
         vnd::Transpiler transpiler{input, filename};
         transpiler.transpile();

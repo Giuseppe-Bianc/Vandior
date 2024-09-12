@@ -44,23 +44,22 @@ static inline constexpr auto PRETTYPRINT_AST_FORMAT = "{}_{}, VAL: {}){}";
 static inline constexpr auto PRETTYPRINT_AST_FORMAT2 = "{}, val: {}){}";
 // NOLINTNEXTLINE(misc-no-recursion)
 static inline void prettyPrint(const vnd::ASTNode &node, const std::string &indent = "", bool isLast = true, const std::string &lorf = "") {
-    const auto &indentmark = FORMAT("{}{}{}{}", indent, isLast ? "+-" : "|-", lorf, lorf.empty() ? "" : " ");
+    const auto &indentmark = FORMAT("{}{}{}", indent, isLast ? "+-" : "|-", lorf);
     const auto &newindent = FORMAT("{}{}", indent, isLast ? "  " : "| ");
-    const auto &imarknode = FORMAT("{}(Type: {}", indentmark, node.getType());
-    const auto &imarknnum = FORMAT("{}(Type: NUM", indentmark);
+    const auto &imarknode = FORMAT("{}(Type:{}", indentmark, node.getType());
+    const auto &imarknnum = FORMAT("{}(Type:NUM", indentmark);
 
     // Determine the type of node and print information
     if(const auto *binaryNode = node.safe_as<vnd::BinaryExpressionNode>()) {
-        LINFO("{}(Type: BIN_EXPR, op:\"{}\"){}", indentmark, binaryNode->getOp(), node.get_token().compat_to_string());
-        prettyPrint(*binaryNode->getLeft(), newindent, false, "LEFT");
-        prettyPrint(*binaryNode->getRight(), newindent, true, "RIGHT");
+        LINFO("{}(Type:BIN_EXPR, op:\"{}\"){}", indentmark, binaryNode->getOp(), node.get_token().compat_to_string());
+        prettyPrint(*binaryNode->getLeft(), newindent, false, "L");
+        prettyPrint(*binaryNode->getRight(), newindent, true, "R");
     } else if(const auto *unaryNode = node.safe_as<vnd::UnaryExpressionNode>()) {
-        LINFO("{}(Type: UNA_EXPR, op:\"{}\"){}", indentmark, unaryNode->getOp(), node.get_token().compat_to_string());
-        prettyPrint(*unaryNode->getOperand(), newindent, true, "OPERAND");
+        LINFO("{}(Type:UNA_EXPR, op:\"{}\"){}", indentmark, unaryNode->getOp(), node.get_token().compat_to_string());
+        prettyPrint(*unaryNode->getOperand(), newindent, true, "OPR");
     } else if(const auto *variableNode = node.safe_as<vnd::VariableNode>()) {
-        LINFO("{}(Type: VAR, val: {}){}", indentmark, variableNode->getName(), node.get_token().compat_to_string());
+        LINFO("{}(Type:VAR, val: {}){}", indentmark, variableNode->getName(), node.get_token().compat_to_string());
         if(variableNode->is_call()) {
-            LINFO("{}()", indentmark);
             if(const auto &callNode = variableNode->get_call()) { prettyPrint(*callNode, newindent, true, "CALL"); }
         }
         if(const auto &indexNode = variableNode->get_index()) { prettyPrint(*indexNode, newindent, true, "INDEX"); }
@@ -97,7 +96,7 @@ static inline void prettyPrint(const vnd::ASTNode &node, const std::string &inde
         if(elementsIndexNode) { prettyPrint(*elementsIndexNode, newindent, true, "INDEX"); }
         if(elementsArrayNode) { prettyPrint(*elementsArrayNode, newindent, true, "ELEM"); }
     } else if(const auto *arrayNode = node.safe_as<vnd::ArrayNode>()) {
-        LINFO("{}{}", indentmark, node.comp_print());
+        LINFO("{} {}", indentmark, node.comp_print());
         if(arrayNode->get_elements()) { prettyPrint(*arrayNode->get_elements(), newindent, true, ""); }
     } else {
         LERROR("Unknown or not handled node type: {}", node.getType());
