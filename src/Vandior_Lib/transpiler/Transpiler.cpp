@@ -53,8 +53,8 @@ namespace vnd {
     void Transpiler::transpile() {
         createMockfile();
         const auto ast = _parser.parse();
-        // prettyPrint(*ast);
-        LINFO("transpiled code: {}", transpileNode(*ast));
+        const auto transpiledCode = transpileNode(*ast);
+        LINFO("transpiled code: {}", transpiledCode);
     }
 
     // Main code generation function
@@ -97,45 +97,46 @@ namespace vnd {
         return code.str();
     }
 
+    void Transpiler::transpileBinaryExpressionNodeWhitFormat(const BinaryExpressionNode *binaryNode, std::ostringstream &code,
+                                                             const std::string &format) {
+        code << transpileNode(*binaryNode->getLeft());
+        code << format;
+        code << transpileNode(*binaryNode->getRight());
+    }
     // Helper function to transpile code for BinaryExpressionNode
     auto Transpiler::transpileBinaryExpressionNode(const BinaryExpressionNode *binaryNode) -> std::string {
         if(binaryNode == nullptr) { return ""; }
         std::ostringstream code;
         const auto op = binaryNode->getOp();
         if(op == ":") {
-            const auto *binaryRight = (*binaryNode->getRight()).safe_as<BinaryExpressionNode>();
-            if(binaryRight) {
+            const auto *binaryRight = binaryNode->getRight()->safe_as<BinaryExpressionNode>();
+            if(binaryRight != nullptr) [[likely]] {
                 code << transpileNode(*binaryRight->getLeft());
-            } else {
+            } else [[unlikely]] {
                 code << transpileNode(*binaryNode->getRight());
             }
-            code << " ";
-            code << transpileNode(*binaryNode->getLeft());
-            if(binaryRight) {
+            code << FORMAT(" {}", transpileNode(*binaryNode->getLeft()));
+            if(binaryRight != nullptr) [[likely]] {
                 code << FORMAT(" {} ", binaryRight->getOp());
                 code << transpileNode(*binaryRight->getRight());
             }
         } else if(op == ",") {
-            code << transpileNode(*binaryNode->getLeft());
-            code << FORMAT("{} ", op);
-            code << transpileNode(*binaryNode->getRight());
+            transpileBinaryExpressionNodeWhitFormat(binaryNode, code, FORMAT("{} ", op));
         } else {
-            code << transpileNode(*binaryNode->getLeft());
-            code << FORMAT(" {} ", op);
-            code << transpileNode(*binaryNode->getRight());
+            transpileBinaryExpressionNodeWhitFormat(binaryNode, code, FORMAT(" {} ", op));
         }
         return code.str();
     }
 
     // Helper function to transpile code for UnaryExpressionNode
     auto Transpiler::transpileUnaryExpressionNode(const UnaryExpressionNode *unaryNode) -> std::string {
-        if(unaryNode == nullptr) { return ""; }
+        if(unaryNode == nullptr) [[unlikely]] { return ""; }
         return FORMAT("{}{}", unaryNode->getOp(), transpileNode(*unaryNode->getOperand()));
     }
 
     // Helper function to transpile code for VariableNode
     auto Transpiler::transpileVariableNode(const VariableNode *variableNode) -> std::string {
-        if(variableNode == nullptr) { return ""; }
+        if(variableNode == nullptr) [[unlikely]] { return ""; }
         std::ostringstream code;
         code << variableNode->getName();
         if(variableNode->is_call()) {
@@ -149,13 +150,13 @@ namespace vnd {
 
     // Helper function to transpile code for Numeric nodes
     template <typename T> auto Transpiler::transpileNumericNode(const NumberNode<T> *numberNode) -> std::string {
-        if(!numberNode) { return ""; }
+        if(numberNode == nullptr) [[unlikely]] { return ""; }
         return FORMAT("{}", numberNode->get_value());
     }
 
     // Helper function to transpile code for LiteralNode
     template <typename T> auto Transpiler::transpileLiteralNode(const LiteralNode<T> *literalNode) -> std::string {
-        if(!literalNode) { return ""; }
+        if(literalNode == nullptr) [[unlikely]] { return ""; }
         if constexpr(std::is_same_v<T, bool>) {
             return literalNode->get_value() ? "true" : "false";
         } else if constexpr(std::is_same_v<T, char>) {
@@ -176,17 +177,15 @@ namespace vnd {
             {"c64"sv, "std::complex<double>"sv},
             {"bool"sv, "bool"sv},
             {"char"sv, "char"sv},
-            {"string"sv, "std::string"sv},
+            {"string"sv, "std::string_view"sv},
         };
 
-        if (typeMap.contains(type)) {
-            return typeMap.at(type);
-        }
-        return "unknown"sv; // Default case if type is not found
+        if(typeMap.contains(type)) { return typeMap.at(type); }
+        return "unknown"sv;  // Default case if type is not found
     }
     // Helper function to transpile code for TypeNode
     auto Transpiler::transpileTypeNode(const TypeNode *typeNode) -> std::string {
-        if(typeNode == nullptr) { return ""; }
+        if(typeNode == nullptr) [[unlikely]] { return ""; }
         // code << typeNode.getName();
         const auto initaltype = typeNode->get_value();
         const auto mappedType = mapType(initaltype);
@@ -202,7 +201,7 @@ namespace vnd {
 
     // Helper function to transpile code for IndexNode
     auto Transpiler::transpileIndexNode(const IndexNode *indexNode) -> std::string {
-        if(indexNode == nullptr) { return ""; }
+        if(indexNode == nullptr) [[unlikely]] { return ""; }
         std::ostringstream code;
         code << "[";
         if(const auto &elementsNode = indexNode->get_elements()) { code << FORMAT("{}", transpileNode(*elementsNode)); }
@@ -214,10 +213,10 @@ namespace vnd {
 
     // Helper function to transpile code for ArrayNode
     auto Transpiler::transpileArrayNode(const ArrayNode *arrayNode) -> std::string {
-        if(arrayNode == nullptr) { return ""; }
+        if(arrayNode == nullptr) [[unlikely]] { return ""; }
         std::ostringstream code;
         code << "{";
-        if(arrayNode->get_elements()) { code << transpileNode(*arrayNode->get_elements()); }
+        if(const auto &elementsNode = arrayNode->get_elements()) { code << transpileNode(*elementsNode); }
         code << "}";
         return code.str();
     }

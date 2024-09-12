@@ -29,6 +29,19 @@ namespace vnd {
          * @return The transpiled string representation of the node.
          */
         auto transpileNode(const ASTNode &node) -> std::string;
+
+        /**
+         * @brief Transpiles a binary expression node with a specific format.
+         *
+         * This function takes a binary expression node and an output stream, and transpiles the node
+         * into a string representation using the specified format.
+         *
+         * @param binaryNode The binary expression node to transpile.
+         * @param code The output stream to write the transpiled code to.
+         * @param format The format to use for transpiling the binary expression node.
+         */
+        void transpileBinaryExpressionNodeWhitFormat(const BinaryExpressionNode *binaryNode, std::ostringstream &code,
+                                                     const std::string &format);
         /**
          * Transpiles a binary expression node.
          *
@@ -52,10 +65,10 @@ namespace vnd {
         auto transpileVariableNode(const VariableNode *variableNode) -> std::string;
         /**
          * @brief Transpiles a numeric node.
-         * 
+         *
          * This function takes a pointer to a NumberNode and transpiles it into a string representation.
          * The transpiled string is returned.
-         * 
+         *
          * @tparam T The type of the numeric value.
          * @param numberNode Pointer to the NumberNode to be transpiled.
          * @return The transpiled string representation of the numeric node.
@@ -63,10 +76,10 @@ namespace vnd {
         template <typename T> auto transpileNumericNode(const NumberNode<T> *numberNode) -> std::string;
         /**
          * @brief Transpiles a literal node to a string representation.
-         * 
+         *
          * This function takes a literal node as input and returns a string representation of the node.
          * The template parameter `T` specifies the type of the literal value.
-         * 
+         *
          * @param literalNode A pointer to the literal node to be transpiled.
          * @return The string representation of the transpiled literal node.
          */
