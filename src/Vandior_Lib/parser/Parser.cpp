@@ -48,6 +48,7 @@ namespace vnd {
         return 0;
     }
 
+#ifndef __llvm__
     template <typename T> T Parser::handle_from_chars_error(const std::from_chars_result &result, std::string_view str) {
         if(result.ec == std::errc::invalid_argument) {
             throw std::invalid_argument("parse_integer: invalid argument");
@@ -80,6 +81,48 @@ namespace vnd {
         handle_from_chars_error<int>(fcharRes, str);
         return result;
     }
+#else
+    int Parser::convertToInt(std::string_view str) {
+        int result{};
+        const auto [ptr, ec] = std::from_chars(str.data(), str.data() + str.size(), result);
+        if(ec == std::errc::invalid_argument) {
+            throw std::invalid_argument("parse_integer: invalid argument");
+        } else if(ec == std::errc::result_out_of_range) {
+            throw std::out_of_range("parse_integer: result out of range");
+        }
+        if(ptr != str.data() + str.size()) { throw std::invalid_argument("parse_integer: trailing characters"); }
+
+        return result;
+    }
+
+    int Parser::convertToIntformExa(std::string_view str) {
+        int result{};
+        // NOLINTNEXTLINE(*-avoid-magic-numbers, *-magic-numbers)
+        const auto [ptr, ec] = std::from_chars(str.data(), str.data() + str.size(), result, 16);
+        if(ec == std::errc::invalid_argument) {
+            throw std::invalid_argument("parse_integer: invalid argument");
+        } else if(ec == std::errc::result_out_of_range) {
+            throw std::out_of_range("parse_integer: result out of range");
+        }
+        if(ptr != str.data() + str.size()) { throw std::invalid_argument("parse_integer: trailing characters"); }
+
+        return result;
+    }
+
+    int Parser::convertToIntformOct(std::string_view str) {
+        int result{};
+        // NOLINTNEXTLINE(*-avoid-magic-numbers, *-magic-numbers)
+        const auto [ptr, ec] = std::from_chars(str.data(), str.data() + str.size(), result, 8);
+        if(ec == std::errc::invalid_argument) {
+            throw std::invalid_argument("parse_integer: invalid argument");
+        } else if(ec == std::errc::result_out_of_range) {
+            throw std::out_of_range("parse_integer: result out of range");
+        }
+        if(ptr != str.data() + str.size()) { throw std::invalid_argument("parse_integer: trailing characters"); }
+
+        return result;
+    }
+#endif
 
     template <typename T> T Parser::convertToDouble(std::string_view str) {
         T result{};

@@ -50,8 +50,9 @@ namespace vnd {
         static const std::vector<StrViewVec> operatorPrecedence;  ///< Operator precedence levels.
         static const std::vector<TokenType> types;                ///< Token types.
 
-
+#ifndef __llvm__
         template <typename T> static T handle_from_chars_error(const std::from_chars_result &result, std::string_view str);
+#endif
 
         /**
          * @brief Consumes the current token and advances to the next token.

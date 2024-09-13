@@ -74,7 +74,7 @@ namespace vnd {
          * @tparam T The type to convert the ASTNode to.
          * @return A pointer to the specified type if conversion is possible; otherwise, returns nullptr.
          */
-        template <typename T> [[nodiscard]] T *safe_as() noexcept {
+        template <typename T> [[nodiscard]] T *safe_as() {
             // Check if the type T is a derived type of ASTNode
             if(std::is_base_of_v<ASTNode, T>) {
                 return dynamic_cast<T *>(this);
@@ -89,7 +89,7 @@ namespace vnd {
          * @tparam T The type to convert the ASTNode to.
          * @return A constant pointer to the specified type if conversion is possible; otherwise, returns nullptr.
          */
-        template <typename T> [[nodiscard]] const T *safe_as() const noexcept {
+        template <typename T> [[nodiscard]] const T *safe_as() const {
             // Check if the type T is a derived type of ASTNode
             if(std::is_base_of_v<ASTNode, T>) {
                 return dynamic_cast<const T *>(this);

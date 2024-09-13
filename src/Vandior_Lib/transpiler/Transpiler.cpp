@@ -97,12 +97,14 @@ namespace vnd {
         return code.str();
     }
 
+    DISABLE_WARNINGS_PUSH(26429)
     void Transpiler::transpileBinaryExpressionNodeWhitFormat(const BinaryExpressionNode *binaryNode, std::ostringstream &code,
                                                              const std::string &format) {
         code << transpileNode(*binaryNode->getLeft());
         code << format;
         code << transpileNode(*binaryNode->getRight());
     }
+    DISABLE_WARNINGS_POP()
     // Helper function to transpile code for BinaryExpressionNode
     auto Transpiler::transpileBinaryExpressionNode(const BinaryExpressionNode *binaryNode) -> std::string {
         if(binaryNode == nullptr) { return ""; }
