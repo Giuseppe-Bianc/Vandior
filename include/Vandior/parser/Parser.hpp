@@ -50,6 +50,9 @@ namespace vnd {
         static const std::vector<StrViewVec> operatorPrecedence;  ///< Operator precedence levels.
         static const std::vector<TokenType> types;                ///< Token types.
 
+
+        template <typename T> static T handle_from_chars_error(const std::from_chars_result &result, std::string_view str);
+
         /**
          * @brief Consumes the current token and advances to the next token.
          */
@@ -79,7 +82,7 @@ namespace vnd {
          * @param str The string view to convert.
          * @return The double representation of the string view.
          */
-        template <typename T> static T convertToDouble(std::string_view str) noexcept;
+        template <typename T> static T convertToDouble(std::string_view str);
 
         /**
          * @brief Converts a string view to a complex number.
@@ -87,7 +90,22 @@ namespace vnd {
          * @param str The string view to convert.
          * @return The complex number representation of the string view.
          */
-        template <typename T> static std::complex<T> convertToImg(std::string_view str) noexcept;
+        template <typename T> static std::complex<T> convertToImg(std::string_view str);
+
+        /**
+         * @brief Parses a primary integer expression.
+         * @param currentToken The current token being parsed.
+         * @param currentValue The string view of the current token's value.
+         * @return A unique pointer to the parsed AST node representing the integer.
+         */
+        std::unique_ptr<ASTNode> parsePrimaryInteger(const Token &currentToken, std::string_view currentValue);
+        /**
+         * @brief Parses a primary double expression.
+         * @param currentToken The current token being parsed.
+         * @param currentValue The string view of the current token's value.
+         * @return A unique pointer to the parsed AST node representing the double.
+         */
+        std::unique_ptr<ASTNode> parsePrimaryDouble(const Token &currentToken, const std::string_view &currentValue);
         /**
          * @brief Parses a primary expression.
          * @return A unique pointer to the parsed AST node.

@@ -47,91 +47,96 @@ namespace vnd {
         }
         return 0;
     }
+
+    template <typename T> T Parser::handle_from_chars_error(const std::from_chars_result &result, std::string_view str) {
+        if(result.ec == std::errc::invalid_argument) {
+            throw std::invalid_argument("parse_integer: invalid argument");
+        } else if(result.ec == std::errc::result_out_of_range) {
+            throw std::out_of_range("parse_integer: result out of range");
+        }
+        if(result.ptr != str.data() + str.size()) { throw std::invalid_argument("parse_integer: trailing characters"); }
+
+        return {};
+    }
     int Parser::convertToInt(std::string_view str) {
         int result{};
-        auto [ptr, ec] = std::from_chars(str.data(), str.data() + str.size(), result);
-
-        if(ec == std::errc::invalid_argument) {
-            throw std::invalid_argument("parse_integer: invalid argument");
-        } else if(ec == std::errc::result_out_of_range) {
-            throw std::out_of_range("parse_integer: result out of range");
-        } else if(ec != std::errc()) {
-            throw std::runtime_error("parse_integer: unknown error");
-        }
-
-        if(ptr != str.data() + str.size()) { throw std::invalid_argument("parse_integer: trailing characters"); }
-
+        const auto fcharRes = std::from_chars(str.data(), str.data() + str.size(), result);
+        handle_from_chars_error<int>(fcharRes, str);
         return result;
     }
 
     int Parser::convertToIntformExa(std::string_view str) {
         int result{};
         // NOLINTNEXTLINE(*-avoid-magic-numbers, *-magic-numbers)
-        auto [ptr, ec] = std::from_chars(str.data(), str.data() + str.size(), result, 16);
-
-        if(ec == std::errc::invalid_argument) {
-            throw std::invalid_argument("parse_integer: invalid argument");
-        } else if(ec == std::errc::result_out_of_range) {
-            throw std::out_of_range("parse_integer: result out of range");
-        } else if(ec != std::errc()) {
-            throw std::runtime_error("parse_integer: unknown error");
-        }
-
-        if(ptr != str.data() + str.size()) { throw std::invalid_argument("parse_integer: trailing characters"); }
-
+        const auto fcharRes = std::from_chars(str.data(), str.data() + str.size(), result, 16);
+        handle_from_chars_error<int>(fcharRes, str);
         return result;
     }
 
     int Parser::convertToIntformOct(std::string_view str) {
         int result{};
         // NOLINTNEXTLINE(*-avoid-magic-numbers, *-magic-numbers)
-        auto [ptr, ec] = std::from_chars(str.data(), str.data() + str.size(), result, 8);
+        const auto fcharRes = std::from_chars(str.data(), str.data() + str.size(), result, 8);
+        handle_from_chars_error<int>(fcharRes, str);
+        return result;
+    }
+
+    template <typename T> T Parser::convertToDouble(std::string_view str) {
+        T result{};
+        auto [ptr, ec] = std::from_chars(str.data(), str.data() + str.size(), result);
 
         if(ec == std::errc::invalid_argument) {
-            throw std::invalid_argument("parse_integer: invalid argument");
+            throw std::invalid_argument("parse_double: invalid argument");
         } else if(ec == std::errc::result_out_of_range) {
-            throw std::out_of_range("parse_integer: result out of range");
-        } else if(ec != std::errc()) {
-            throw std::runtime_error("parse_integer: unknown error");
+            throw std::out_of_range("parse_double: result out of range");
         }
-
-        if(ptr != str.data() + str.size()) { throw std::invalid_argument("parse_integer: trailing characters"); }
 
         return result;
     }
 
-    template <typename T> T Parser::convertToDouble(std::string_view str) noexcept {
-        T result{};
-        auto [ptr, ec] = std::from_chars(str.data(), str.data() + str.size(), result);
-
-        if(ec == std::errc()) [[likely]] {
-            return result;
-        } else if(ec == std::errc::invalid_argument || ec == std::errc::result_out_of_range) [[unlikely]] {
-            // Handle error
-            return 0.0;
-        }
-
-        return 0.0;
-    }
-
-    template <typename T> std::complex<T> Parser::convertToImg(std::string_view str) noexcept {
-        std::string_view doubleStr;
-
-        if(str.ends_with("f")) {
-            doubleStr = str.substr(0, str.size() - 2);
+    template <typename T> std::complex<T> Parser::convertToImg(std::string_view str) {
+        if(str.ends_with('f')) {
+            str.remove_suffix(2);
         } else {
-            doubleStr = str.substr(0, str.size() - 1);
+            str.remove_suffix(1);
         }
-        return std::complex<T>(0, convertToDouble<T>(doubleStr));
+
+        return std::complex<T>(0, convertToDouble<T>(str));
     }
 
+    std::unique_ptr<ASTNode> Parser::parsePrimaryInteger(const Token &currentToken, std::string_view currentValue) {
+        consumeToken();
+        if(currentValue.starts_with("#o") || currentValue.starts_with("#O")) {
+            currentValue.remove_prefix(2);
+            return MAKE_UNIQUE(NumberNode<int>, convertToIntformOct(currentValue), currentToken, NumberNodeType::Integer);
+        }
+        if(currentValue.starts_with("#")) {
+            currentValue.remove_prefix(1);
+            return MAKE_UNIQUE(NumberNode<int>, convertToIntformExa(currentValue), currentToken, NumberNodeType::Integer);
+        }
+        return MAKE_UNIQUE(NumberNode<int>, convertToInt(currentValue), currentToken, NumberNodeType::Integer);
+    }
+    std::unique_ptr<ASTNode> Parser::parsePrimaryDouble(const Token &currentToken, const std::string_view &currentValue) {
+        consumeToken();
+        if(currentValue.ends_with("if")) {
+            return MAKE_UNIQUE(NumberNode<std::complex<float>>, convertToImg<float>(currentValue), currentToken,
+                               NumberNodeType::ImaginaryFloat);
+        }
+        if(currentValue.ends_with("i")) {
+            return MAKE_UNIQUE(NumberNode<std::complex<double>>, convertToImg<double>(currentValue), currentToken,
+                               NumberNodeType::Imaginary);
+        }
+        if(currentValue.ends_with("f")) {
+            return MAKE_UNIQUE(NumberNode<float>, convertToDouble<float>(currentValue), currentToken, NumberNodeType::Float);
+        }
+        return MAKE_UNIQUE(NumberNode<double>, convertToDouble<double>(currentValue), currentToken, NumberNodeType::Double);
+    }
     // NOLINTNEXTLINE(*-function-cognitive-complexity)
     std::unique_ptr<ASTNode> Parser::parsePrimary() {
         using enum NumberNodeType;
         const Token &currentToken = getCurrentToken();
         const auto &currentType = currentToken.getType();
         const auto &currentValue = currentToken.getValue();
-        auto cval = std::string{currentValue};
 
         if(std::ranges::find(types, currentType) != types.end()) {
             consumeToken();
@@ -139,28 +144,9 @@ namespace vnd {
             parseIndex<TypeNode>(node);
             return node;
         } else if(currentType == TokenType::INTEGER) {
-            consumeToken();
-            if(currentValue.starts_with("#o") || currentValue.starts_with("#O")) {
-                cval.erase(0, 2);
-                return MAKE_UNIQUE(NumberNode<int>, convertToIntformOct(cval), currentToken, Integer);
-            }
-            if(currentValue.starts_with("#")) {
-                cval.erase(0, 1);
-                return MAKE_UNIQUE(NumberNode<int>, convertToIntformExa(cval), currentToken, Integer);
-            }
-            return MAKE_UNIQUE(NumberNode<int>, convertToInt(currentValue), currentToken, Integer);
+            return parsePrimaryInteger(currentToken, currentValue);
         } else if(currentType == TokenType::DOUBLE) {
-            consumeToken();
-            if(currentValue.ends_with("if")) {
-                return MAKE_UNIQUE(NumberNode<std::complex<float>>, convertToImg<float>(currentValue), currentToken, ImaginaryFloat);
-            }
-            if(currentValue.ends_with("i")) {
-                return MAKE_UNIQUE(NumberNode<std::complex<double>>, convertToImg<double>(currentValue), currentToken, Imaginary);
-            }
-            if(currentValue.ends_with("f")) {
-                return MAKE_UNIQUE(NumberNode<float>, convertToDouble<float>(currentValue), currentToken, Float);
-            }
-            return MAKE_UNIQUE(NumberNode<double>, convertToDouble<double>(currentValue), currentToken, Double);
+            return parsePrimaryDouble(currentToken, currentValue);
         } else if(currentType == TokenType::BOOLEAN) {
             consumeToken();
             auto value = true;
