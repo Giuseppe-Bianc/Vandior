@@ -1,12 +1,24 @@
 // NOLINTBEGIN(*-include-cleaner, *-env33-c)
+
 #include "Costanti.hpp"
 
 DISABLE_WARNINGS_PUSH(
     4005 4201 4459 4514 4625 4626 4820 6244 6285 6385 6386 26408 26409 26415 26418 26426 26429 26432 26437 26438 26440 26446 26447 26450 26451 26455 26457 26459 26460 26461 26462 26467 26472 26473 26474 26475 26481 26482 26485 26490 26491 26493 26494 26495 26496 26497 26498 26800 26814 26818 26821 26826 26827)
 #include <CLI/CLI.hpp>
+#include <string>
+#include <iostream>
 
 DISABLE_WARNINGS_POP()
 
+namespace vnd {
+    inline auto timeTokenizer(Tokenizer &tokenizer, std::vector<Token> &tokens) -> void {
+        tokens.clear();
+#ifdef INDEPT
+        const AutoTimer timer("tokenization");
+#endif
+        tokens = tokenizer.tokenize();
+    }
+}
 //#define HIDE_SYSTEM_OUTPUT
 
 DISABLE_WARNINGS_PUSH(26461 26821)

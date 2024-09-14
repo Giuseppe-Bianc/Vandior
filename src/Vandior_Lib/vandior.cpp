@@ -2,13 +2,6 @@
 #include "Vandior/vandior.hpp"
 
 namespace vnd {
-    auto timeTokenizer(Tokenizer &tokenizer, std::vector<Token> &tokens) -> void {
-        tokens.clear();
-#ifdef INDEPT
-        const AutoTimer timer("tokenization");
-#endif
-        tokens = tokenizer.tokenize();
-    }
 
     auto timeParser(std::unique_ptr<vnd::ASTNode> &ast, vnd::Parser &parser) -> void {
 #ifdef INDEPT
@@ -22,6 +15,6 @@ namespace vnd {
         timeParser(ast, parser);
         return ast;
     }
-}
+}  // namespace vnd
 
 // NOLINTEND(*-include-cleaner)

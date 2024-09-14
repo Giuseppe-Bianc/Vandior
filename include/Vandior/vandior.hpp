@@ -13,8 +13,6 @@
 
 // NOLINTBEGIN(*-const-correctness)
 namespace vnd {
-    auto timeTokenizer(Tokenizer &tokenizer, std::vector<Token> &tokens) -> void;
-
     auto timeParser(std::unique_ptr<vnd::ASTNode> &ast, vnd::Parser &parser) -> void;
 
     [[nodiscard]] auto timeParse(Parser &parser) -> std::unique_ptr<ASTNode>;

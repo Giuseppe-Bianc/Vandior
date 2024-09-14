@@ -2057,29 +2057,6 @@ TEST_CASE("Transpiler creates correct folders and files", "[transpiler]") {
     }
 }
 
-TEST_CASE("Vandior TimerTokenizer", "[Vandior]") {
-    vnd::Tokenizer tokenizer{"token1 + variable2", filename};
-    const vnd::Token token1(vnd::TokenType::PLUS, "+", vnd::CodeSourceLocation(filename, t_line, t_colum));
-    const vnd::Token token2(identf, "variable2", vnd::CodeSourceLocation(filename, t_line, t_colum));
-    std::vector<vnd::Token> tokens;
-
-    SECTION("tokenization is successful") {
-        vnd::timeTokenizer(tokenizer, tokens);
-
-        REQUIRE(tokens.size() == 4);  // Expecting 3 tokens based on the mock
-    }
-
-    SECTION("tokens vector is cleared before tokenization") {
-        tokens.emplace_back(token1);
-        tokens.emplace_back(token2);
-        REQUIRE(tokens.size() == 2);  // Initially contains one token
-
-        vnd::timeTokenizer(tokenizer, tokens);
-
-        REQUIRE(tokens.size() == 4);  // After tokenization, it should contain 3 new tokens
-    }
-}
-
 // Test for timeParser
 TEST_CASE("vnd::timeParser", "[Vandior]") {
     vnd::Parser parser{"asdf", filename};
