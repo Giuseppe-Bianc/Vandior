@@ -1,7 +1,7 @@
 //
 // Created by gbian on 29/04/2024.
 //
-
+// NOLINTBEGIN(*-include-cleaner)
 #pragma once
 #include "../headers.hpp"
 /**
@@ -65,3 +65,5 @@ template <> struct fmt::formatter<NodeType> : fmt::formatter<std::string_view> {
     }
 };
 /** \endcond */
+
+// NOLINTEND(*-include-cleaner)
