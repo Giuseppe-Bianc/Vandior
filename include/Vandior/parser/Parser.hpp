@@ -1,7 +1,7 @@
 //
 // Created by gbian on 01/01/2024.
 //
-
+// NOLINTBEGIN(*-include-cleaner)
 #pragma once
 #include "AST.hpp"
 #include "Vandior/lexer/Tokenizer.hpp"
@@ -163,3 +163,5 @@ namespace vnd {
         std::size_t position{};       ///< The current position in the token list.
     };
 }  // namespace vnd
+
+// NOLINTEND(*-include-cleaner)

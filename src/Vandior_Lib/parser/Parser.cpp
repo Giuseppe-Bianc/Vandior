@@ -204,7 +204,7 @@ namespace vnd {
         } else if(currentType == TokenType::IDENTIFIER) {
             consumeToken();
             auto node = MAKE_UNIQUE(VariableNode, currentValue, currentToken);
-            if(!parseCall(node)) { parseIndex<VariableNode>(node); };
+            if(!parseCall(node)) { parseIndex<VariableNode>(node); }
             return node;
         } else if(currentToken.getValue() == "(") {
             consumeToken();
