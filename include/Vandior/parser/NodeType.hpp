@@ -27,6 +27,9 @@ template <> struct fmt::formatter<NodeType> : fmt::formatter<std::string_view> {
         using enum NodeType;
         std::string_view name;
         switch(nodeType) {
+        case TypeAssignment:
+            name = "TYPE_ASSIGNMENT";
+            break;
         case BinaryExpression:
             name = "BINARY_EXPRESION";
             break;
