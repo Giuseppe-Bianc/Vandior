@@ -7,8 +7,6 @@ get_target_property(target_name vandior NAME)
 include("${CMAKE_SOURCE_DIR}/cmake/Simd.cmake")
 set_simd_instructions(${target_name})
 
-target_compile_definitions(vandior PRIVATE INDEPT)
-
 target_link_libraries(
         vandior
         PRIVATE Vandior::Vandior_options
