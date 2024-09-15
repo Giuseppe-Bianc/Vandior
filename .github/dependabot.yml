@@ -6,7 +6,14 @@
 version: 2
 updates:
   - package-ecosystem: "github-actions"
-    directory: "/"
+    directory: "/"  # This covers the root directory
+    schedule:
+      interval: "daily"
+    commit-message:
+      prefix: "[github] "
+      
+  - package-ecosystem: "github-actions"
+    directory: "/.github/actions/setup_cache"  # Tracks the .github/actions/setup_cache directory
     schedule:
       interval: "daily"
     commit-message:
