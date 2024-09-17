@@ -4,7 +4,6 @@
 
 #pragma once
 
-#include "../FolderCreationResult.hpp"
 #include "../headers.hpp"
 
 namespace vnd {

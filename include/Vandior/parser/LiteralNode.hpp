@@ -32,7 +32,7 @@ namespace vnd {
          * @brief Gets the demangled name of the type T.
          * @return Demangled name of the type T if using GCC/Clang, otherwise mangled name.
          */
-        [[nodiscard]] std::string_view getTypeIDName() const noexcept { return typeid(T).name(); }
+        [[nodiscard]] static std::string_view getTypeIDName() noexcept { return typeid(T).name(); }
 
         /**
          * @brief Returns a string representation of the AST node.

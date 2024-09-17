@@ -1,7 +1,7 @@
 //
 // Created by gbian on 30/04/2024.
 //
-
+// NOLINTBEGIN(*-include-cleaner)
 #pragma once
 #include "ASTNode.hpp"
 #include "IndexNode.hpp"
@@ -56,6 +56,7 @@ namespace vnd {
         void set_call(std::unique_ptr<ASTNode> call = nullptr) noexcept {
             m_is_call = true;
             m_call = vnd_move_always_even_const(call);
+            m_call->set_parent(this);
         }
 
         friend void swap(VariableNode &lhs, VariableNode &rhs) noexcept {
@@ -66,7 +67,7 @@ namespace vnd {
         }
 
     private:
-        std::string_view name;
+        std::string_view name;               ///< The name of the variable.
         bool m_is_call;                      ///< A bool indicates if the indentifier is a call to a function.
         std::unique_ptr<IndexNode> m_index;  ///< The possible index node of an array type.
         std::unique_ptr<ASTNode> m_call;     ///< The possible call node of an array type.
@@ -74,3 +75,5 @@ namespace vnd {
 
 }  // namespace vnd
 DISABLE_WARNINGS_POP()
+
+// NOLINTEND(*-include-cleaner)

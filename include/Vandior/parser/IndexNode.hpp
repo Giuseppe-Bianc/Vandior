@@ -1,7 +1,3 @@
-//
-// Created by potex02 on 06/07/2024.
-//
-
 #pragma once
 
 #include "ASTNode.hpp"
@@ -20,7 +16,9 @@ namespace vnd {
          * @param token The token correspondent to the node.
          */
         [[nodiscard]] IndexNode(std::unique_ptr<ASTNode> elements, const Token &token) noexcept
-          : ASTNode(token), m_elements(vnd_move_always_even_const(elements)), m_index(nullptr), m_array(nullptr) {}
+          : ASTNode(token), m_elements(vnd_move_always_even_const(elements)), m_index(nullptr), m_array(nullptr) {
+            if(m_elements) m_elements->set_parent(this);
+        }
 
         /**
          * @brief Gets the type of the AST node.
@@ -59,7 +57,10 @@ namespace vnd {
          * @brief Sets the index node of the node.
          * @param index The index node of the node.
          */
-        void set_index(std::unique_ptr<IndexNode> index) noexcept { m_index = vnd_move_always_even_const(index); }
+        void set_index(std::unique_ptr<IndexNode> index) noexcept {
+            m_index = vnd_move_always_even_const(index);
+            if(m_index) m_index->set_parent(this);
+        }
 
         /**
          * @brief Gets the array node of the node.
@@ -71,7 +72,10 @@ namespace vnd {
          * @brief Sets the array node of the node.
          * @param _array The array node of the node.
          */
-        void set_array(std::unique_ptr<ArrayNode> _array) noexcept { m_array = vnd_move_always_even_const(_array); }
+        void set_array(std::unique_ptr<ArrayNode> _array) noexcept {
+            m_array = vnd_move_always_even_const(_array);
+            if(m_array) m_array->set_parent(this);
+        }
 
         /**
          * @brief Swaps the contents of two LiteralNode objects.

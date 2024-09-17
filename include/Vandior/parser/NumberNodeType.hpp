@@ -1,13 +1,14 @@
 //
 // Created by gbian on 02/05/2024.
 //
-
+// NOLINTBEGIN(*-include-cleaner)
 #pragma once
 
 #include "../headers.hpp"
 /**
  * @brief Enum representing different types of AST nodes.
  */
+// NOLINTNEXTLINE(*-enum-size)
 enum class NumberNodeType { Integer, Float, Double, ImaginaryFloat, Imaginary };
 [[nodiscard]] inline std::string NumNodeType_comp(NumberNodeType type) {
     using enum NumberNodeType;
@@ -67,3 +68,5 @@ template <> struct fmt::formatter<NumberNodeType> : fmt::formatter<std::string_v
     }
 };
 /** \endcond */
+
+// NOLINTEND(*-include-cleaner)

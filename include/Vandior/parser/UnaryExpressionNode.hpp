@@ -1,7 +1,7 @@
 //
 // Created by gbian on 30/04/2024.
 //
-
+// NOLINTBEGIN(*-include-cleaner)
 #pragma once
 
 #include "ASTNode.hpp"
@@ -22,7 +22,9 @@ namespace vnd {
          * @param _operand Operand of the unary expression.
          */
         [[nodiscard]] UnaryExpressionNode(std::string_view _op, const Token &op_Token, std::unique_ptr<ASTNode> _operand) noexcept
-          : ASTNode(op_Token), op(_op), operand(vnd_move_always_even_const(_operand)) {}
+          : ASTNode(op_Token), op(_op), operand(vnd_move_always_even_const(_operand)) {
+            if(operand) operand->set_parent(this);
+        }
 
         /**
          * @brief Constructor for UnaryExpressionNode.
@@ -30,13 +32,28 @@ namespace vnd {
          * @param _operand Operand of the unary expression.
          */
         [[nodiscard]] UnaryExpressionNode(const Token &op_Token, std::unique_ptr<ASTNode> _operand) noexcept
-          : ASTNode(op_Token), op(op_Token.getValue()), operand(vnd_move_always_even_const(_operand)) {}
+          : ASTNode(op_Token), op(op_Token.getValue()), operand(vnd_move_always_even_const(_operand)) {
+            if(operand) operand->set_parent(this);
+        }
 
         [[nodiscard]] NodeType getType() const noexcept override { return NodeType::UnaryExpression; }
         [[nodiscard]] std::string print() const override { return FORMAT("{}(op:\"{}\" operand:{})", getType(), op, operand->print()); }
         [[nodiscard]] std::string comp_print() const override { return FORMAT("UNE(op:\"{}\" opr:{})", op, operand->comp_print()); }
+
+        /**
+         * @brief Gets the operator for the unary expression.
+         * @return The operator for the unary expression.
+         */
         [[nodiscard]] const std::string_view &getOp() const noexcept { return op; }
+        /**
+         * @brief Gets the operand of the unary expression.
+         * @return The operand of the unary expression.
+         */
         [[nodiscard]] const std::unique_ptr<ASTNode> &getOperand() const noexcept { return operand; }
+        /**
+         * @brief Gets the operand of the unary expression.
+         * @return The operand of the unary expression.
+         */
         [[nodiscard]] const ASTNode &getOperandr() const noexcept { return *operand.get(); }
 
         friend void swap(UnaryExpressionNode &lhs, UnaryExpressionNode &rhs) noexcept {
@@ -47,10 +64,12 @@ namespace vnd {
         }
 
     private:
-        std::string_view op;
-        std::unique_ptr<ASTNode> operand;
+        std::string_view op;               ///< Operator for the unary expression.
+        std::unique_ptr<ASTNode> operand;  ///< Operand of the unary expression.
     };
 
 }  // namespace vnd
 
 DISABLE_WARNINGS_POP()
+
+// NOLINTEND(*-include-cleaner)

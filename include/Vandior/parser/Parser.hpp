@@ -58,7 +58,6 @@ namespace vnd {
          * @brief Consumes the current token and advances to the next token.
          */
         void consumeToken() noexcept;
-        // const Token &getNextToken();
         /**
          * @brief Gets the current token.
          * @return A reference to the current token.

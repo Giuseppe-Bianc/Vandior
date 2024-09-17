@@ -24,7 +24,10 @@ namespace vnd {
          */
         [[nodiscard]] BinaryExpressionNode(std::string_view _op, const Token &op_Token, std::unique_ptr<ASTNode> _left,
                                            std::unique_ptr<ASTNode> _right) noexcept
-          : ASTNode(op_Token), op(_op), left(vnd_move_always_even_const(_left)), right(vnd_move_always_even_const(_right)) {}
+          : ASTNode(op_Token), op(_op), left(vnd_move_always_even_const(_left)), right(vnd_move_always_even_const(_right)) {
+            if(left) left->set_parent(this);
+            if(right) right->set_parent(this);
+        }
 
         /**
          * @brief Constructor for BinaryExpressionNode.
@@ -34,6 +37,8 @@ namespace vnd {
          */
         [[nodiscard]] BinaryExpressionNode(const Token &op_Token, std::unique_ptr<ASTNode> _left, std::unique_ptr<ASTNode> _right) noexcept
           : ASTNode(op_Token), op(op_Token.getValue()), left(vnd_move_always_even_const(_left)), right(vnd_move_always_even_const(_right)) {
+            if(left) left->set_parent(this);
+            if(right) right->set_parent(this);
         }
 
         /**

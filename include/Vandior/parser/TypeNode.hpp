@@ -1,7 +1,7 @@
 //
 // Created by potex02 on 14/05/2024.
 //
-
+// NOLINTBEGIN(*-include-cleaner)
 #pragma once
 
 #include "IndexNode.hpp"
@@ -54,7 +54,10 @@ namespace vnd {
          * @brief Sets the index node of the node.
          * @param index The index node of the node.
          */
-        void set_index(std::unique_ptr<IndexNode> index) noexcept { m_index = vnd_move_always_even_const(index); }
+        void set_index(std::unique_ptr<IndexNode> index) noexcept {
+            m_index = vnd_move_always_even_const(index);
+            if(m_index) { m_index->set_parent(this); }
+        }
 
         /**
          * @brief Gets the variable type of the node.
@@ -77,3 +80,5 @@ namespace vnd {
     };
 
 }  // namespace vnd
+
+// NOLINTEND(*-include-cleaner)

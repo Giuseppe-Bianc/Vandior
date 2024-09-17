@@ -5,7 +5,7 @@
 #pragma once
 
 #include "../lexer/Token.hpp"
-#include "NodeType.hpp"
+#include "CompNodeType.hpp"
 
 #include <Vandior/Log.hpp>
 
@@ -16,13 +16,13 @@ namespace vnd {
      *
      * This class serves as the base for all AST nodes in the system.
      */
-    class ASTNode {
+    class ASTNode { // NOLINT(*-special-member-functions)
     public:
         /**
          * @brief Constructor for ASTNode.
          * @param token The token associated with this AST node.
          */
-        [[nodiscard]] explicit ASTNode(const Token &token) noexcept : m_token(token) {}
+        [[nodiscard]] explicit ASTNode(const Token &token) noexcept : m_token(token), parent(nullptr) {}
 
         /**
          * @brief Destructor for ASTNode.
@@ -106,14 +106,33 @@ namespace vnd {
         [[nodiscard]] const Token &get_token() const noexcept { return m_token; }
 
         /**
+         * @brief Get the parent node of the current ASTNode.
+         *
+         * @return The parent node of the current ASTNode.
+         */
+        [[nodiscard]] ASTNode *get_parent() const noexcept { return parent; }
+        /**
+         * @brief Sets the parent of the ASTNode.
+         *
+         * This function sets the parent of the ASTNode to the given pointer.
+         *
+         * @param p A pointer to the parent ASTNode.
+         */
+        void set_parent(ASTNode *p) noexcept { parent = p; }
+
+        /**
          * @brief Swaps two ASTNode objects.
          * @param lhs The first ASTNode.
          * @param rhs The second ASTNode.
          */
-        friend void swap(ASTNode &lhs, ASTNode &rhs) noexcept { std::swap(lhs.m_token, rhs.m_token); }
+        friend void swap(ASTNode &lhs, ASTNode &rhs) noexcept {
+            std::swap(lhs.m_token, rhs.m_token);
+            std::swap(lhs.parent, rhs.parent);
+        }
 
     private:
-        Token m_token;  ///< The token associated with this AST node.
+        Token m_token;
+        ASTNode *parent;  // Parent node reference
     };
 
 }  // namespace vnd

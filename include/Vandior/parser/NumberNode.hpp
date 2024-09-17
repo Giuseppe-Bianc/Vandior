@@ -1,7 +1,7 @@
 //
 // Created by gbian on 30/04/2024.
 //
-
+// NOLINTBEGIN(*-include-cleaner)
 #pragma once
 #include "LiteralNode.hpp"
 #include "NumberNodeType.hpp"
@@ -54,6 +54,8 @@ namespace vnd {
     };
 
 }  // namespace vnd
+
+// NOLINTEND(*-include-cleaner)
 
 #define VND_NUM_INT vnd::NumberNode<int>
 #define VND_NUM_FLOAT vnd::NumberNode<float>

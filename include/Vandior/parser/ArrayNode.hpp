@@ -19,7 +19,9 @@ namespace vnd {
          * @param token The token correspondent to the node.
          */
         [[nodiscard]] ArrayNode(std::unique_ptr<ASTNode> elements, const Token &token) noexcept
-          : ASTNode(token), m_elements(vnd_move_always_even_const(elements)) {}
+          : ASTNode(token), m_elements(vnd_move_always_even_const(elements)) {
+            if(m_elements) m_elements->set_parent(this);
+        }
 
         /**
          * @brief Gets the type of the AST node.
