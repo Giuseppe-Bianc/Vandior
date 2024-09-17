@@ -7,10 +7,10 @@
  */
 #pragma once
 
+// NOLINTBEGIN(*-include-cleaner)
 #ifdef __cpp_lib_format
 #include <format>
 #endif
-// NOLINTBEGIN(*-include-cleaner)
 #if defined(__GNUC__) && (__GNUC__ >= 11)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wstringop-overflow"
@@ -44,14 +44,13 @@
 #else
 /**
  * @def FORMATST(...)
- * @brief Macro for formatting strings using the fmt library in stead of std::format.
+ * @brief Macro for formatting strings using the fmt library instead of std::format.
  * This macro wraps the format function for convenient string formatting.
  * @param ... The format string and arguments.
  * @return The formatted string.
  */
-#define FORMATST(...) fmt::format(__VA_ARGS__)
+#define FORMATST(...) (__VA_ARGS__)
 #endif
-
 
 /**
  * @def FMT_PTR(ptr)
