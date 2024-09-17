@@ -41,7 +41,10 @@ namespace vnd {
          * @brief Sets the index node of the node.
          * @param index The index node of the node.
          */
-        void set_index(std::unique_ptr<IndexNode> index) noexcept { m_index = vnd_move_always_even_const(index); }
+        void set_index(std::unique_ptr<IndexNode> index) noexcept {
+            m_index = vnd_move_always_even_const(index);
+            if(m_index) { m_index->set_parent(this); }
+        }
 
         /**
          * @brief Gets the call node of the node.
@@ -56,7 +59,7 @@ namespace vnd {
         void set_call(std::unique_ptr<ASTNode> call = nullptr) noexcept {
             m_is_call = true;
             m_call = vnd_move_always_even_const(call);
-            m_call->set_parent(this);
+            if(m_call) { m_call->set_parent(this); }
         }
 
         friend void swap(VariableNode &lhs, VariableNode &rhs) noexcept {

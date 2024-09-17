@@ -1606,6 +1606,7 @@ TEST_CASE("Parser emit unary expression node", "[parser]") {
 
     const auto *variableNode = operand->as<vnd::VariableNode>();
     REQUIRE(variableNode != nullptr);
+    REQUIRE(variableNode->get_parent() != nullptr);
     REQUIRE(variableNode->getName() == "x");
 }
 
@@ -1628,6 +1629,7 @@ TEST_CASE("Parser emit unary expression node print", "[parser]") {
 
     const auto *variableNode = operand->as<vnd::VariableNode>();
     REQUIRE(variableNode != nullptr);
+    REQUIRE(variableNode->get_parent() != nullptr);
     REQUIRE(variableNode->getName() == "x");
     REQUIRE(unaryNode->print() == "UNARY_EXPRESION(op:\"-\" operand:VARIABLE(x))");
 }
@@ -1651,6 +1653,7 @@ TEST_CASE("Parser emit unary expression node compat print", "[parser]") {
 
     const auto *variableNode = operand->as<vnd::VariableNode>();
     REQUIRE(variableNode != nullptr);
+    REQUIRE(variableNode->get_parent() != nullptr);
     REQUIRE(variableNode->getName() == "x");
     REQUIRE(unaryNode->comp_print() == "UNE(op:\"-\" opr:VAR(x))");
 }
@@ -1674,6 +1677,8 @@ TEST_CASE("Parser emit binary expression node", "[parser]") {
 
     REQUIRE(leftNumber != nullptr);
     REQUIRE(rightNumber != nullptr);
+    REQUIRE(leftNumber->get_parent() != nullptr);
+    REQUIRE(rightNumber->get_parent() != nullptr);
 #ifdef __linux__
     REQUIRE(leftNumber->getTypeIDName() == "i");
     REQUIRE(rightNumber->getTypeIDName() == "i");
@@ -1705,6 +1710,8 @@ TEST_CASE("Parser emit binary expression node print", "[parser]") {
 
     REQUIRE(leftNumber != nullptr);
     REQUIRE(rightNumber != nullptr);
+    REQUIRE(leftNumber->get_parent() != nullptr);
+    REQUIRE(rightNumber->get_parent() != nullptr);
 #ifdef __linux__
     REQUIRE(leftNumber->getTypeIDName() == "i");
     REQUIRE(rightNumber->getTypeIDName() == "i");
@@ -1737,6 +1744,8 @@ TEST_CASE("Parser emit binary expression node compact print", "[parser]") {
 
     REQUIRE(leftNumber != nullptr);
     REQUIRE(rightNumber != nullptr);
+    REQUIRE(leftNumber->get_parent() != nullptr);
+    REQUIRE(rightNumber->get_parent() != nullptr);
 #ifdef __linux__
     REQUIRE(leftNumber->getTypeIDName() == "i");
     REQUIRE(rightNumber->getTypeIDName() == "i");
@@ -1804,6 +1813,7 @@ TEST_CASE("Parser emit i8 TypeNode node", "[parser]") {
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Type);
+    REQUIRE(ast->get_parent() == nullptr);
     const auto *typeNode = ast->as<vnd::TypeNode>();
     REQUIRE(typeNode != nullptr);
     REQUIRE(typeNode->comp_print() == "TYPE(i8)");
@@ -1819,6 +1829,7 @@ TEST_CASE("Parser emit array", "[parser]") {
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Type);
+    REQUIRE(ast->get_parent() == nullptr);
     const auto *typeNode = ast->as<vnd::TypeNode>();
     REQUIRE(typeNode != nullptr);
     REQUIRE(typeNode->get_index() != nullptr);
@@ -1839,6 +1850,7 @@ TEST_CASE("Parser emit empty array", "[parser]") {
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Variable);
+    REQUIRE(ast->get_parent() == nullptr);
     const auto *variable = ast->as<vnd::VariableNode>();
     REQUIRE(variable != nullptr);
     REQUIRE(variable->get_index() != nullptr);
@@ -1853,6 +1865,7 @@ TEST_CASE("Parser emit array type", "[parser]") {
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Type);
+    REQUIRE(ast->get_parent() == nullptr);
     const auto *typeNode = ast->as<vnd::TypeNode>();
     REQUIRE(typeNode != nullptr);
     REQUIRE(typeNode->get_index() != nullptr);
@@ -1919,6 +1932,7 @@ TEST_CASE("Parser emit empty index node print", "[parser]") {
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Type);
+    REQUIRE(ast->get_parent() == nullptr);
     const auto *typeNode = ast->as<vnd::TypeNode>();
     REQUIRE(typeNode != nullptr);
     REQUIRE(typeNode->get_index()->print() == "INDEX()");
@@ -1929,6 +1943,7 @@ TEST_CASE("Parser emit empty index compat print", "[parser]") {
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Type);
+    REQUIRE(ast->get_parent() == nullptr);
     const auto *typeNode = ast->as<vnd::TypeNode>();
     REQUIRE(typeNode != nullptr);
     REQUIRE(typeNode->get_index()->comp_print() == FORMAT("INDEX"));
@@ -1939,6 +1954,7 @@ TEST_CASE("Parser emit index node print", "[parser]") {
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Type);
+    REQUIRE(ast->get_parent() == nullptr);
     const auto *typeNode = ast->as<vnd::TypeNode>();
     REQUIRE(typeNode != nullptr);
     REQUIRE(typeNode->get_index()->print() == FORMAT("INDEX({})", typeNode->get_index()->get_elements()->comp_print()));
@@ -1949,6 +1965,7 @@ TEST_CASE("Parser emit index compat print", "[parser]") {
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Type);
+    REQUIRE(ast->get_parent() == nullptr);
     const auto *typeNode = ast->as<vnd::TypeNode>();
     REQUIRE(typeNode != nullptr);
     REQUIRE(typeNode->get_index()->comp_print() == FORMAT("INDEX"));
@@ -1959,6 +1976,7 @@ TEST_CASE("Parser emit empty array node print", "[parser]") {
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Array);
+    REQUIRE(ast->get_parent() == nullptr);
     const auto *arrayNode = ast->as<vnd::ArrayNode>();
     REQUIRE(arrayNode != nullptr);
     REQUIRE(arrayNode->print() == "ARRAY()");
@@ -1969,6 +1987,7 @@ TEST_CASE("Parser emit empty array compat node print", "[parser]") {
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Array);
+    REQUIRE(ast->get_parent() == nullptr);
     const auto *arrayNode = ast->as<vnd::ArrayNode>();
     REQUIRE(arrayNode != nullptr);
     REQUIRE(arrayNode->comp_print() == "ARRAY");
@@ -1979,6 +1998,7 @@ TEST_CASE("Parser emit array node print", "[parser]") {
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Array);
+    REQUIRE(ast->get_parent() == nullptr);
     const auto *arrayNode = ast->as<vnd::ArrayNode>();
     REQUIRE(arrayNode != nullptr);
     REQUIRE(arrayNode->print() == FORMAT("ARRAY({})", arrayNode->get_elements()->comp_print()));
@@ -1989,6 +2009,7 @@ TEST_CASE("Parser emit array compat node print", "[parser]") {
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Array);
+    REQUIRE(ast->get_parent() == nullptr);
     const auto *arrayNode = ast->as<vnd::ArrayNode>();
     REQUIRE(arrayNode != nullptr);
     REQUIRE(arrayNode->comp_print() == "ARRAY");
@@ -1999,6 +2020,7 @@ TEST_CASE("Parser emit empty callable node", "[parser]") {
     auto ast = parser.parse();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Variable);
+    REQUIRE(ast->get_parent() == nullptr);
     const auto *variableNode = ast->as<vnd::VariableNode>();
     REQUIRE(variableNode->is_call() == true);
     REQUIRE(variableNode->get_call() == nullptr);
