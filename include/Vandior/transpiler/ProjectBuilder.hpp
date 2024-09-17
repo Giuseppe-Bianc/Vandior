@@ -1,9 +1,10 @@
 /*
  * Created by gbian on 09/09/2024.
  */
-
+// NOLINTBEGIN(*-include-cleaner)
 #pragma once
 
+#include "../FolderCreationResult.hpp"
 #include "../headers.hpp"
 
 namespace vnd {
@@ -42,3 +43,5 @@ namespace vnd {
     };
 
 }  // namespace vnd
+
+// NOLINTEND(*-include-cleaner)
