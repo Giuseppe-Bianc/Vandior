@@ -62,7 +62,7 @@ auto main(int argc, const char *const argv[]) -> int {
         }
         const auto porfilename = path.value_or(filename.data());
         // NOLINTNEXTLINE(*-avoid-magic-numbers,*-magic-numbers, *-identifier-length)
-        auto str = vnd::readFromFile(porfilename);
+        const auto str = vnd::readFromFile(porfilename);
         const std::string_view code(str);
         vnd::Tokenizer tokenizer{code, porfilename};
         std::vector<vnd::Token> tokens;
@@ -74,7 +74,7 @@ auto main(int argc, const char *const argv[]) -> int {
         std::getline(std::cin, input);
         LINFO("Input: {}", input);
         vnd::Parser parser{input, "input.vn"};
-        auto ast = vnd::timeParse(parser);
+        const auto ast = vnd::timeParse(parser);
         /*LINFO("print internal function\n{}", ast->print());
         LINFO("comp_print internal function\n {}", ast->comp_print());
         LINFO("prettyPrint external function");*/

@@ -45,7 +45,7 @@ static inline constexpr auto PRETTYPRINT_AST_FORMAT2 = "{}, val: {})";
 static inline constexpr auto PRETTYPRINT_AST_FORMAT3 = "{}_{}, val: {})";
 
 static inline void printParentNode(const vnd::ASTNode &node, const std::string &indentmark) {
-    const auto nodeParent = node.get_parent();
+    const auto *const nodeParent = node.get_parent();
     if(nodeParent != nullptr) {
         const auto nodeParentType = nodeParent->getType();
         const auto nodeParentTypeStr = comp_NodeType(nodeParentType);

@@ -1,6 +1,5 @@
 #pragma once
-// NOLINTBEGIN
-
+// NOLINTBEGIN(*-include-cleaner, *-identifier-length)
 #include "disableWarn.hpp"
 // clang-format off
 /** \cond */
@@ -69,21 +68,21 @@ DISABLE_WARNINGS_POP()
 // #include <nlohmann/json.hpp>
 // DISABLE_WARNINGS_POP()
 
-namespace fs = std::filesystem;
+namespace fs = std::filesystem;  // NOLINT(*-unused-alias-decls)
 
 DISABLE_WARNINGS_PUSH(26481)
 static inline constexpr long double NINFINITY = std::numeric_limits<long double>::infinity();
-static inline constexpr long double PI = std::numbers::pi_v<long double>;
+static inline constexpr long double PI = std::numbers::pi_v<long double>;  // NOLINT(*-confusable-identifiers)
 static inline constexpr long double TWO_PI = 2 * PI;
 static inline constexpr long double HALF_PI = PI / 2;
 static inline constexpr const auto *CNL = "\n";
 static inline constexpr const auto *CCR = "\r";
-static inline constexpr auto NL = CNL[0];
-static inline constexpr auto CR = CCR[0];
+static inline constexpr auto NL = '\n';
+static inline constexpr auto CR = '\r';
 static inline constexpr char PNT = '.';
 static inline constexpr char ECR = 'E';
 static inline constexpr const auto *CRNL = "\r\n";
-static inline constexpr char ctab = '\t';
+static inline constexpr char CTAB = '\t';
 
 #ifdef _WIN32                                     // Windows
 static inline constexpr const auto *NEWL = CRNL;  // Windows
@@ -113,11 +112,13 @@ static inline constexpr auto zerocr = '0';
 static inline constexpr auto sevencr = '7';
 static inline constexpr auto plusscr = '+';
 static inline constexpr auto minuscs = '-';
+
+// NOLINTBEGIN(*-macro-usage)
 /**
  * @brief A macro to pause the system and wait for user input.
  * This macro outputs a message to the user and waits for them to press
  * the enter key before continuing. It is useful for pausing the execution
- * of a console application to allow the user to read any final output
+ * of a console application to allow t user to read any final output
  * before the program exits.
  * Usage example:
  * @code
@@ -130,7 +131,7 @@ static inline constexpr auto minuscs = '-';
         std::cin.ignore();                                                                                                                 \
     } while(0);
 
-[[nodiscard]] inline constexpr auto is_divisor(std::integral auto n, std::integral auto d) noexcept -> bool { return n % d == 0; }
+[[nodiscard]] static inline constexpr auto is_divisor(std::integral auto n, std::integral auto d) noexcept -> bool { return n % d == 0; }
 
 template <std::integral T> [[nodiscard]] constexpr auto find_divisors(T num) noexcept -> std::vector<T> {
     if(num < 1) {
@@ -152,6 +153,7 @@ template <std::integral T> [[nodiscard]] constexpr auto find_divisors(T num) noe
 
     return divisors;
 }
+
 /**
  * @brief Converts the given parameter into a string literal.
  * This macro converts the provided parameter into a string literal.
@@ -231,6 +233,8 @@ template <std::integral T> [[nodiscard]] constexpr auto find_divisors(T num) noe
 
 /** \cond */
 
+// NOLINTEND(*-macro-usage)
+
 /**
  * @brief Specialization of fmt::formatter for glm::vec.
  */
@@ -283,7 +287,7 @@ template <typename T, glm::qualifier Q> struct fmt::formatter<glm::qua<T, Q>> : 
 template <typename T> struct fmt::formatter<std::complex<T>> : fmt::formatter<std::string_view> {
     /**
      * @brief Formats the std::complex for printing.
-     * @param nodeType The value to be formatted.
+     * @param num The value to be formatted.
      * @param ctx The formatting context.
      * @return The formatted string.
      */
@@ -368,4 +372,4 @@ concept StringOrStringView = std::same_as<std::remove_cvref_t<T>, std::string> |
                                  { t.size() } -> std::integral;
                                  { t.length() } -> std::integral;
                              });
-// NOLINTEND
+// NOLINTEND(*-include-cleaner, *-identifier-length)

@@ -656,7 +656,7 @@ TEST_CASE("vnd::readFromFile - Empty File", "[file]") {
     createFile(emtfilename, "");
 
     SECTION("Read from an empty file") {
-        auto result = vnd::readFromFile(emtfilename);
+        const auto result = vnd::readFromFile(emtfilename);
         REQUIRE(result.empty());  // Ensure the result is empty
     }
 
@@ -1763,7 +1763,7 @@ TEST_CASE("Parser emit binary expression node compact print", "[parser]") {
 TEST_CASE("Parser pars complex expression", "[parser]") {
     // clang-format off
     vnd::Parser parser{"2 + 3 + (4.2 / 2) * 3 + y", "input.vn"};
-    auto ast = parser.parse();
+    const auto ast = parser.parse();
     REQUIRE(ast->print() == R"(BINARY_EXPRESION(op:"+" left:BINARY_EXPRESION(op:"+" left:BINARY_EXPRESION(op:"+" left:NUMBER_INTEGER(2), right:NUMBER_INTEGER(3)), right:BINARY_EXPRESION(op:"*" left:BINARY_EXPRESION(op:"/" left:NUMBER_DOUBLE(4.2), right:NUMBER_INTEGER(2)), right:NUMBER_INTEGER(3))), right:VARIABLE(y)))");
     REQUIRE(ast->comp_print() == R"(BINE(op:"+" l:BINE(op:"+" l:BINE(op:"+" l:NUM_INT(2), r:NUM_INT(3)), r:BINE(op:"*" l:BINE(op:"/" l:NUM_DBL(4.2), r:NUM_INT(2)), r:NUM_INT(3))), r:VAR(y)))");
     // clang-format on

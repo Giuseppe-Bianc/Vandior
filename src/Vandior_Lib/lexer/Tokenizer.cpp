@@ -378,7 +378,7 @@ namespace vnd {
      */
     [[nodiscard]] std::string_view extractTabs(const std::string_view &input) noexcept {
         // Find the position of the first character that is not a tab
-        const auto pos = input.find_first_not_of(ctab);
+        const auto pos = input.find_first_not_of(CTAB);
 
         // Return a substring starting from the beginning of the input string view
         // up to the position of the first non-tab character found.

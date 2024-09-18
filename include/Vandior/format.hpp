@@ -7,7 +7,7 @@
  */
 #pragma once
 
-// NOLINTBEGIN(*-include-cleaner)
+// NOLINTBEGIN(*-include-cleaner, *-macro-usage)
 #ifdef __cpp_lib_format
 #include <format>
 #endif
@@ -70,4 +70,4 @@
  * @return The joined string.
  */
 #define FMT_JOIN(container, delimiter) fmt::join(container, delimiter)
-// NOLINTEND(*-include-cleaner)
+// NOLINTEND(*-include-cleaner, *-macro-usage)

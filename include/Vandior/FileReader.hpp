@@ -1,7 +1,7 @@
 //
 // Created by gbian on 15/05/2024.
 //
-
+// NOLINTBEGIN(*-include-cleaner)
 #pragma once
 
 #include "FileReaderError.hpp"
@@ -12,7 +12,7 @@ namespace vnd {
     inline auto readFromFile(const std::string &filename) -> std::string {
         // NOLINTBEGIN(*-include-cleaner,  hicpp-signed-bitwise)
         static std::mutex fileReadMutex;
-        std::scoped_lock lock(fileReadMutex);  // Ensure thread safety
+        const std::scoped_lock lock(fileReadMutex);  // Ensure thread safety
         const auto &filePath = fs::path(filename);
         if(!fs::exists(filePath)) { throw FILEREADEREERRORF("File not found: {}", filePath); }
         if(!fs::is_regular_file(filePath)) { throw FILEREADEREERRORF("Path is not a regular file: {}", filePath); }
@@ -37,3 +37,5 @@ namespace vnd {
         // NOLINTEND(*-include-cleaner,  hicpp-signed-bitwise)
     }
 }  // namespace vnd
+
+// NOLINTEND(*-include-cleaner)

@@ -1,4 +1,4 @@
-// NOLINTBEGIN(*-include-cleaner)
+// NOLINTBEGIN(*-include-cleaner, *-use-anonymous-namespace)
 #include <catch2/catch_test_macros.hpp>
 
 #include <Vandior/vandior.hpp>
@@ -60,4 +60,4 @@ TEST_CASE("the constexpr paretesis tokenType", "[tokenType]") {
     STATIC_REQUIRE(vnd::getBracketsType("}") == vnd::TokenType::CLOSE_CUR_PARENTESIS);
 }
 
-// NOLINTEND(*-include-cleaner)
+// NOLINTEND(*-include-cleaner, *-use-anonymous-namespace)

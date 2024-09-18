@@ -1,7 +1,7 @@
 //
 // Created by gbian on 15/05/2024.
 //
-
+// NOLINTBEGIN(*-include-cleaner)
 #pragma once
 
 #include "Vandior/vandior.hpp"
@@ -19,3 +19,5 @@ constexpr std::string_view filename = R"(..\..\..\input.vn)";
 // constexpr std::string_view filename = "../../../../input.vn";  // Linux and Unix  form editor
 constexpr std::string_view filename = "../../../input.vn";  // Linux and Unix
 #endif
+
+// NOLINTEND(*-include-cleaner)

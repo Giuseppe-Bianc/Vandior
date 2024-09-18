@@ -3,7 +3,7 @@
 
 namespace vnd {
 
-    auto timeParser(std::unique_ptr<vnd::ASTNode> &ast, vnd::Parser &parser) -> void {
+    auto timeParser(std::unique_ptr<ASTNode> &ast, Parser &parser) -> void {
 #ifdef INDEPT
         const AutoTimer timer("parse");
 #endif
