@@ -85,8 +85,7 @@ namespace vnd {
         const auto [ptr, ec] = std::from_chars(str.data(), str.data() + str.size(), result);
         if(ec == std::errc::invalid_argument) { throw std::invalid_argument("parse_integer: invalid argument"); }
         if(ec == std::errc::result_out_of_range) { throw std::out_of_range("parse_integer: result out of range"); }
-        const std::string_view parsed_view(str.data(), C_ST(result.ptr - str.data()));
-        if(parsed_view != str) { throw std::invalid_argument("parse_integer: trailing characters"); }
+        if(result.ptr != str.data() + str.size()) { throw std::invalid_argument("parse_integer: trailing characters"); }
 
         return result;
     }
@@ -97,8 +96,7 @@ namespace vnd {
         const auto [ptr, ec] = std::from_chars(str.data(), str.data() + str.size(), result, 16);
         if(ec == std::errc::invalid_argument) { throw std::invalid_argument("parse_integer: invalid argument"); }
         if(ec == std::errc::result_out_of_range) { throw std::out_of_range("parse_integer: result out of range"); }
-        const std::string_view parsed_view(str.data(), C_ST(result.ptr - str.data()));
-        if(parsed_view != str) { throw std::invalid_argument("parse_integer: trailing characters"); }
+        if(result.ptr != str.data() + str.size()) { throw std::invalid_argument("parse_integer: trailing characters"); }
 
         return result;
     }
@@ -109,8 +107,7 @@ namespace vnd {
         const auto [ptr, ec] = std::from_chars(str.data(), str.data() + str.size(), result, 8);
         if(ec == std::errc::invalid_argument) { throw std::invalid_argument("parse_integer: invalid argument"); }
         if(ec == std::errc::result_out_of_range) { throw std::out_of_range("parse_integer: result out of range"); }
-        const std::string_view parsed_view(str.data(), C_ST(result.ptr - str.data()));
-        if(parsed_view != str) { throw std::invalid_argument("parse_integer: trailing characters"); }
+        if(result.ptr != str.data() + str.size()) { throw std::invalid_argument("parse_integer: trailing characters"); }
 
         return result;
     }
