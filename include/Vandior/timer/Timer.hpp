@@ -28,7 +28,7 @@ namespace vnd {
     static inline constexpr auto blockFormat = "\n{0}\n{2: ^{1}}\n{0}\n{3: ^{1}}\n{0}";
     static inline constexpr auto minimalFormat = "{} - {}";
     static inline constexpr auto timeItFormat = "{} for {} tries";
-    DISABLE_WARNINGS_PUSH(6005 26447 26455 26496)
+    DISABLE_WARNINGS_PUSH(26447 26455)
 
     /**
      * @brief Timer class for measuring the execution time of code.
@@ -117,7 +117,7 @@ namespace vnd {
             std::size_t n = 0;
             do {
                 f();
-                nanolld elapsed = clock::now() - start_;
+                const nanolld elapsed = clock::now() - start_;
                 total_time = elapsed.count();
             } while(n++ < MFACTOR && total_time < target_time);
             const auto total_timef = C_LD(total_time / C_LD(n));
@@ -190,7 +190,13 @@ namespace vnd {
         AutoTimer(AutoTimer &&other) = delete;
         AutoTimer &operator=(AutoTimer &&other) = delete;
 
-        ~AutoTimer() { LINFO(to_string()); }
+        ~AutoTimer() noexcept {
+            try {
+                LINFO(to_string());
+            } catch(...) {
+                // Handle or log the exception as needed
+            }
+        }
     };
 }  // namespace vnd
 

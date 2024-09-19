@@ -19,14 +19,14 @@ namespace vnd {
          * @param token The token correspondent to the node.
          * @param number_type NumberNodeType of the node.
          */
-        [[nodiscard]] NumberNode(T value, const Token &token, NumberNodeType number_type)
+        [[nodiscard]] NumberNode(T value, const Token &token, NumberNodeType number_type) noexcept
           : LiteralNode<T>(value, token, NodeType::Number), m_number_type(number_type) {}
 
         /**
          * @brief Gets the number type of the AST node.
          * @return NumberNodeType enumeration value.
          */
-        [[nodiscard]] virtual NumberNodeType getNumberType() const { return m_number_type; };
+        [[nodiscard]] virtual NumberNodeType getNumberType() const noexcept { return m_number_type; };
         /**
          * @brief Returns a string representation of the AST node.
          * @return String representation of the AST node.

@@ -51,14 +51,10 @@ namespace vnd {
 
 #ifndef __llvm__
     template <typename T> T Parser::handle_from_chars_error(const std::from_chars_result &result, std::string_view str) {
-        if(result.ec == std::errc::invalid_argument) {
-            throw std::invalid_argument("parse_integer: invalid argument");
-        }
-        if(result.ec == std::errc::result_out_of_range) {
-            throw std::out_of_range("parse_integer: result out of range");
-        }
-        if(result.ptr != str.data() + str.size()) { throw std::invalid_argument("parse_integer: trailing characters"); }
-
+        if(result.ec == std::errc::invalid_argument) { throw std::invalid_argument("parse_integer: invalid argument"); }
+        if(result.ec == std::errc::result_out_of_range) { throw std::out_of_range("parse_integer: result out of range"); }
+        const std::string_view parsed_view(str.data(), C_ST(result.ptr - str.data()));
+        if(parsed_view != str) { throw std::invalid_argument("parse_integer: trailing characters"); }
         return {};
     }
     int Parser::convertToInt(std::string_view str) {
@@ -87,13 +83,10 @@ namespace vnd {
     int Parser::convertToInt(std::string_view str) {
         int result{};
         const auto [ptr, ec] = std::from_chars(str.data(), str.data() + str.size(), result);
-        if(ec == std::errc::invalid_argument) {
-            throw std::invalid_argument("parse_integer: invalid argument");
-        }
-        if(ec == std::errc::result_out_of_range) {
-            throw std::out_of_range("parse_integer: result out of range");
-        }
-        if(ptr != str.data() + str.size()) { throw std::invalid_argument("parse_integer: trailing characters"); }
+        if(ec == std::errc::invalid_argument) { throw std::invalid_argument("parse_integer: invalid argument"); }
+        if(ec == std::errc::result_out_of_range) { throw std::out_of_range("parse_integer: result out of range"); }
+        const std::string_view parsed_view(str.data(), C_ST(result.ptr - str.data()));
+        if(parsed_view != str) { throw std::invalid_argument("parse_integer: trailing characters"); }
 
         return result;
     }
@@ -102,13 +95,10 @@ namespace vnd {
         int result{};
         // NOLINTNEXTLINE(*-avoid-magic-numbers, *-magic-numbers)
         const auto [ptr, ec] = std::from_chars(str.data(), str.data() + str.size(), result, 16);
-        if(ec == std::errc::invalid_argument) {
-            throw std::invalid_argument("parse_integer: invalid argument");
-        }
-        if(ec == std::errc::result_out_of_range) {
-            throw std::out_of_range("parse_integer: result out of range");
-        }
-        if(ptr != str.data() + str.size()) { throw std::invalid_argument("parse_integer: trailing characters"); }
+        if(ec == std::errc::invalid_argument) { throw std::invalid_argument("parse_integer: invalid argument"); }
+        if(ec == std::errc::result_out_of_range) { throw std::out_of_range("parse_integer: result out of range"); }
+        const std::string_view parsed_view(str.data(), C_ST(result.ptr - str.data()));
+        if(parsed_view != str) { throw std::invalid_argument("parse_integer: trailing characters"); }
 
         return result;
     }
@@ -117,13 +107,10 @@ namespace vnd {
         int result{};
         // NOLINTNEXTLINE(*-avoid-magic-numbers, *-magic-numbers)
         const auto [ptr, ec] = std::from_chars(str.data(), str.data() + str.size(), result, 8);
-        if(ec == std::errc::invalid_argument) {
-            throw std::invalid_argument("parse_integer: invalid argument");
-        }
-        if(ec == std::errc::result_out_of_range) {
-            throw std::out_of_range("parse_integer: result out of range");
-        }
-        if(ptr != str.data() + str.size()) { throw std::invalid_argument("parse_integer: trailing characters"); }
+        if(ec == std::errc::invalid_argument) { throw std::invalid_argument("parse_integer: invalid argument"); }
+        if(ec == std::errc::result_out_of_range) { throw std::out_of_range("parse_integer: result out of range"); }
+        const std::string_view parsed_view(str.data(), C_ST(result.ptr - str.data()));
+        if(parsed_view != str) { throw std::invalid_argument("parse_integer: trailing characters"); }
 
         return result;
     }
@@ -133,12 +120,8 @@ namespace vnd {
         T result{};
         auto [ptr, ec] = std::from_chars(str.data(), str.data() + str.size(), result);
 
-        if(ec == std::errc::invalid_argument) {
-            throw std::invalid_argument("parse_double: invalid argument");
-        }
-        if(ec == std::errc::result_out_of_range) {
-            throw std::out_of_range("parse_double: result out of range");
-        }
+        if(ec == std::errc::invalid_argument) { throw std::invalid_argument("parse_double: invalid argument"); }
+        if(ec == std::errc::result_out_of_range) { throw std::out_of_range("parse_double: result out of range"); }
 
         return result;
     }
@@ -319,4 +302,4 @@ namespace vnd {
 
 }  // namespace vnd
 DISABLE_WARNINGS_POP()
-// NOLINTEND(*-include-cleaner, *-no-recursion,*-avoid-magic-numbers, *-magic-numbers, *-err58-cpp)e
+//  NOLINTEND(*-include-cleaner, *-no-recursion,*-avoid-magic-numbers, *-magic-numbers, *-err58-cpp)e

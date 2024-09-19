@@ -2,7 +2,7 @@
 
 #include "disableWarn.hpp"
 
-DISABLE_WARNINGS_PUSH(4521)
+DISABLE_WARNINGS_PUSH(4521 26429 26481)
 
 namespace vnd {
     /////////////////////////////
