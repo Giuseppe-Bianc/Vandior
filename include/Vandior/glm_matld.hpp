@@ -1,3 +1,4 @@
+// NOLINTBEGIN(*-include-cleaner)
 #pragma once
 #define GLM_FORCE_INTRINSICS
 #define GLM_ENABLE_EXPERIMENTAL
@@ -122,3 +123,4 @@ namespace glm {
 #if defined(__GNUC__) && (__GNUC__ >= 11)
 #pragma GCC diagnostic pop
 #endif
+// NOLINTEND(*-include-cleaner)

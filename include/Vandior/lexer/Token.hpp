@@ -1,3 +1,4 @@
+// NOLINTBEGIN(*-include-cleaner)
 #pragma once
 
 #include "CodeSourceLocation.hpp"
@@ -203,3 +204,4 @@ template <> struct fmt::formatter<vnd::Token> : fmt::formatter<std::string_view>
 };
 
 /** \endcond */
+// NOLINTEND(*-include-cleaner)

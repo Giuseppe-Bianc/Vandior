@@ -2,8 +2,9 @@
 // Created by gbian on 02/02/2024.
 //
 
+// NOLINTBEGIN(*-include-cleaner)
 #pragma once
-#include "../headers.hpp"  // NOLINT(*-include-cleaner)
+#include "../headers.hpp"
 
 /**
  * \cond
@@ -162,3 +163,4 @@ template <> struct fmt::formatter<vnd::CodeSourceLocation> : fmt::formatter<std:
     }
 };
 /** \endcond */
+// NOLINTEND(*-include-cleaner)

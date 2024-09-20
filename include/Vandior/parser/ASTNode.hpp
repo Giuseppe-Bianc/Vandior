@@ -1,7 +1,7 @@
 //
 // Created by gbian on 29/04/2024.
 //
-
+// NOLINTBEGIN(*-include-cleaner)
 #pragma once
 
 #include "../lexer/Token.hpp"
@@ -16,7 +16,7 @@ namespace vnd {
      *
      * This class serves as the base for all AST nodes in the system.
      */
-    class ASTNode { // NOLINT(*-special-member-functions)
+    class ASTNode {  // NOLINT(*-special-member-functions)
     public:
         /**
          * @brief Constructor for ASTNode.
@@ -136,3 +136,5 @@ namespace vnd {
     };
 
 }  // namespace vnd
+
+// NOLINTEND(*-include-cleaner)

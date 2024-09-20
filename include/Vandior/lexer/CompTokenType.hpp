@@ -1,7 +1,7 @@
 //
 // Created by gbian on 07/05/2024.
 //
-
+// NOLINTBEGIN(*-include-cleaner)
 #pragma once
 
 #include "TokenType.hpp"
@@ -171,3 +171,5 @@ namespace vnd {
         }
     }
 }  // namespace vnd
+
+// NOLINTEND(*-include-cleaner)

@@ -184,18 +184,6 @@ namespace vnd {
             }
         }
 
-        /*// Add the to_json and from_json functions here:
-        friend void to_json(nlohmann::json &j, const FolderCreationResult &result) {
-            j = nlohmann::json{
-                {"success", result.success()}, {"path", result.path().value_or("").string()}  // Convert path to string for JSON
-            };
-        }
-
-        friend void from_json(const nlohmann::json &j, FolderCreationResult &result) {
-            result.set_success(j.at("success").get<bool>());
-            result.set_path(j.at("path").get<std::filesystem::path>());
-        }*/
-
     private:
         bool success_ = false;                       ///< The success status of the folder creation.
         std::optional<std::filesystem::path> path_;  ///< The path of the created folder.

@@ -97,7 +97,7 @@ static inline void prettyPrint(const vnd::ASTNode &node, const std::string &inde
         LINFO(PRETTYPRINT_AST_FORMAT2, imarknode, chliteralNode->get_value());
     } else if(const auto *svliteralNode = node.safe_as<vnd::LiteralNode<std::string_view>>()) {
         LINFO(PRETTYPRINT_AST_FORMAT2, imarknode, svliteralNode->get_value());
-    } else if(const auto *nullptrNode = node.safe_as<vnd::NullptrNode>()) {
+    } else if([[maybe_unused]] const auto *nullptrNode = node.safe_as<vnd::NullptrNode>()) {
         LINFO(PRETTYPRINT_AST_NULLPTR, imarknode);
     } else if(const auto *typeNode = node.safe_as<vnd::TypeNode>()) {
         LINFO("{}, {})", imarknode, typeNode->get_value());

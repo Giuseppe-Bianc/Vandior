@@ -9,7 +9,8 @@ namespace vnd {
 
     class Statement : public ASTNode {
     public:
-        Statement() noexcept = default;
+        [[nodiscard]] explicit Statement(const Token &token) noexcept
+          : ASTNode(token) {}
 
         /**
          * @brief Gets the type of the AST node.
@@ -43,3 +44,5 @@ namespace vnd {
     };
 
 }  // namespace vnd
+
+// NOLINTEND(*-include-cleaner)

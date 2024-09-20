@@ -1,7 +1,8 @@
 //
 // Created by gbian on 01/06/2024.
 //
-// NOLINTBEGIN(*-macro-usage)
+// NOLINTBEGIN(*-include-cleaner,*-macro-usage)
+
 #pragma once
 
 #include <utility>
@@ -468,4 +469,4 @@ template <class T, class U> constexpr T narrow_cast(U &&nci) noexcept { return s
  */
 #define NC_CPCU32T(x) narrow_cast<const uint32_t *>(static_cast<const void *>(x))
 /** @} */  // end of TypeCastingMacros group
-// NOLINTEND(*-macro-usage)
+// NOLINTEND(*-include-cleaner, *-macro-usage)

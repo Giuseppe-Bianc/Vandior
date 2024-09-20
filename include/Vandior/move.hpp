@@ -1,3 +1,4 @@
+// NOLINTBEGIN(*-missing-std-forward, *-qualified-auto, *-implicit-bool-conversion, *-identifier-length)
 #pragma once
 
 #include "disableWarn.hpp"
@@ -47,9 +48,11 @@ namespace vnd {
      * @return true if the expression is a valid identifier expression, false otherwise.
      */
     constexpr bool is_id_expression(char const *const strExpr) noexcept {
-        for(auto it = strExpr; *it; ++it)
-            if(!('A' <= *it && *it <= 'Z') && !('a' <= *it && *it <= 'z') && !('0' <= *it && *it <= '9') && *it != '_' && *it != ':')
+        for(auto it = strExpr; *it; ++it) {
+            if(!('A' <= *it && *it <= 'Z') && !('a' <= *it && *it <= 'z') && !('0' <= *it && *it <= '9') && *it != '_' && *it != ':') {
                 return false;
+            }
+        }
         return true;
     }
 }  // namespace vnd
@@ -202,3 +205,4 @@ template <typename T> [[nodiscard]] constexpr std::remove_reference_t<T> &&vnd_m
     (static_cast<typename vnd::move_detail::no_adl::const_forward<decltype(__VA_ARGS__), vnd_is_id_expression(__VA_ARGS__)>::type>(        \
         __VA_ARGS__))
 DISABLE_WARNINGS_POP()
+// NOLINTEND(*-missing-std-forward, *-qualified-auto, *-implicit-bool-conversion, *-identifier-length)

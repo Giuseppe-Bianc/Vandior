@@ -1,8 +1,8 @@
 #pragma once
-// NOLINTBEGIN
+// NOLINTBEGIN(*-include-cleaner)
 #include "BaseCast.hpp"
 #include "BitCast.hpp"
 #include "NarrowCast.hpp"
 #include "TypeSizes.hpp"
 
-// NOLINTEND
+// NOLINTEND(*-include-cleaner)

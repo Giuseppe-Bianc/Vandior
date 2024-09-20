@@ -34,7 +34,7 @@ namespace vnd {
         }
 
 #ifdef INDEPT
-        LINFO("Build folder path {}", _vnSrcFolder.value());
+        LINFO("Build folder path {}", _vnSrcFolder.value()); // NOLINT(*-unchecked-optional-access)
 #endif
     }
 

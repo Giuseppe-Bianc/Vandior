@@ -3,7 +3,7 @@
  * @brief Header file containing macros for disabling compiler warnings.
  */
 #pragma once
-// NOLINTBEGIN
+// NOLINTBEGIN(*-macro-usage)
 
 #ifdef _MSC_VER
 // Microsoft Visual C++ Compiler
@@ -33,4 +33,4 @@
  */
 #define DISABLE_WARNINGS_POP()
 #endif
-// NOLINTEND
+// NOLINTEND(*-macro-usage)

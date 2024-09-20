@@ -1,5 +1,6 @@
+// NOLINTBEGIN(*-include-cleaner)
 #pragma once
-#include "../headers.hpp"  // NOLINT(*-include-cleaner)
+#include "../headers.hpp"
 
 namespace vnd {
 
@@ -334,3 +335,5 @@ template <> struct fmt::formatter<vnd::TokenType> : fmt::formatter<std::string_v
 };
 
 /** \endcond */
+
+// NOLINTEND(*-include-cleaner)

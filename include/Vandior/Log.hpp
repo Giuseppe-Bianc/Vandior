@@ -30,7 +30,7 @@
  * @endcode
  */
 #pragma once
-// NOLINTBEGIN
+// NOLINTBEGIN(*-include-cleaner)
 
 // clang-format off
 #include "disableWarn.hpp"
@@ -181,4 +181,4 @@ inline void my_error_handler(const std::string &msg) {
     }
 
 /// @}
-// NOLINTEND
+// NOLINTEND(*-include-cleaner)

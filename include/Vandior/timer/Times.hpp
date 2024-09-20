@@ -47,8 +47,8 @@ namespace vnd {
 
             const duration<long double, std::micro> durationmicros(inputTimeMicro);
 
-            auto durationUs = duration_cast<microseconds>(durationmicros);
-            auto durationNs = duration_cast<nanoseconds>(durationmicros - durationUs);
+            const auto durationUs = duration_cast<microseconds>(durationmicros);
+            const auto durationNs = duration_cast<nanoseconds>(durationmicros - durationUs);
 
             return FORMAT("{}us,{}ns", C_LD(durationUs.count()), C_LD(durationNs.count()));
         }
@@ -58,9 +58,9 @@ namespace vnd {
 
             const duration<long double, std::milli> durationmils(inputTimeMilli);
 
-            auto durationMs = duration_cast<milliseconds>(durationmils);
-            auto durationUs = duration_cast<microseconds>(durationmils - durationMs);
-            auto durationNs = duration_cast<nanoseconds>(durationmils - durationMs - durationUs);
+            const auto durationMs = duration_cast<milliseconds>(durationmils);
+            const auto durationUs = duration_cast<microseconds>(durationmils - durationMs);
+            const auto durationNs = duration_cast<nanoseconds>(durationmils - durationMs - durationUs);
 
             return FORMAT("{}ms,{}us,{}ns", C_LD(durationMs.count()), C_LD(durationUs.count()), C_LD(durationNs.count()));
         }
@@ -70,10 +70,10 @@ namespace vnd {
 
             const duration<long double> durationSecs(inputTimeSeconds);
 
-            auto durationSec = duration_cast<seconds>(durationSecs);
-            auto durationMs = duration_cast<milliseconds>(durationSecs - durationSec);
-            auto durationUs = duration_cast<microseconds>(durationSecs - durationSec - durationMs);
-            auto durationNs = duration_cast<nanoseconds>(durationSecs - durationSec - durationMs - durationUs);
+            const auto durationSec = duration_cast<seconds>(durationSecs);
+            const auto durationMs = duration_cast<milliseconds>(durationSecs - durationSec);
+            const auto durationUs = duration_cast<microseconds>(durationSecs - durationSec - durationMs);
+            const auto durationNs = duration_cast<nanoseconds>(durationSecs - durationSec - durationMs - durationUs);
 
             return FORMAT("{}s,{}ms,{}us,{}ns", C_LD(durationSec.count()), C_LD(durationMs.count()), C_LD(durationUs.count()),
                           C_LD(durationNs.count()));
