@@ -1,6 +1,6 @@
 /*
  * Created by gbian on 16/09/2024.
- * Copyright (c) 2024 All rights reserved.
+ * 
  */
 
 #pragma once
@@ -23,6 +23,8 @@
         return "STR";
     case NodeType::Variable:
         return "VAR";
+    case NodeType::Nullptr:
+        return "NULL";
     case NodeType::Type:
         return "TYPE";
     case NodeType::Index:

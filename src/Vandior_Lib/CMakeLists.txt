@@ -14,6 +14,8 @@ add_library(vandior_lib vandior.cpp
         parser/TypeNode.cpp
         parser/IndexNode.cpp
         parser/ArrayNode.cpp
+        parser/NullptrNode.cpp
+        parser/Statement.cpp
         transpiler/Transpiler.cpp
         transpiler/ProjectBuilder.cpp
 )

@@ -195,6 +195,9 @@ namespace vnd {
             auto node = MAKE_UNIQUE(VariableNode, currentValue, currentToken);
             if(!parseCall(node)) { parseIndex<VariableNode>(node); }
             return node;
+        } else if(currentType == TokenType::K_NULLPTR) {
+            consumeToken();
+            return MAKE_UNIQUE(NullptrNode, currentToken);
         } else if(currentValue == "(") {
             consumeToken();
             auto expression = parseExpression();

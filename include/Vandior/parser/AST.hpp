@@ -12,6 +12,7 @@
 #include "TypeNode.hpp"
 #include "UnaryExpressionNode.hpp"
 #include "VariableNode.hpp"
+#include "NullptrNode.hpp"
 
 /** \cond */
 DISABLE_WARNINGS_PUSH(
@@ -43,6 +44,7 @@ DISABLE_WARNINGS_PUSH(
 static inline constexpr auto PRETTYPRINT_AST_FORMAT = "{}, op:\"{}\")";
 static inline constexpr auto PRETTYPRINT_AST_FORMAT2 = "{}, val: {})";
 static inline constexpr auto PRETTYPRINT_AST_FORMAT3 = "{}_{}, val: {})";
+static inline constexpr auto PRETTYPRINT_AST_NULLPTR = "{} NULLPTR)";
 
 static inline void printParentNode(const vnd::ASTNode &node, const std::string &indentmark) {
     const auto *const nodeParent = node.get_parent();
@@ -95,6 +97,8 @@ static inline void prettyPrint(const vnd::ASTNode &node, const std::string &inde
         LINFO(PRETTYPRINT_AST_FORMAT2, imarknode, chliteralNode->get_value());
     } else if(const auto *svliteralNode = node.safe_as<vnd::LiteralNode<std::string_view>>()) {
         LINFO(PRETTYPRINT_AST_FORMAT2, imarknode, svliteralNode->get_value());
+    } else if(const auto *nullptrNode = node.safe_as<vnd::NullptrNode>()) {
+        LINFO(PRETTYPRINT_AST_NULLPTR, imarknode);
     } else if(const auto *typeNode = node.safe_as<vnd::TypeNode>()) {
         LINFO("{}, {})", imarknode, typeNode->get_value());
         if(typeNode->get_index()) { prettyPrint(*typeNode->get_index(), newindent, true, "INDEX"); }

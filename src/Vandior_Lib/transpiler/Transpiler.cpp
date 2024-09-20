@@ -84,6 +84,8 @@ namespace vnd {
             code << transpileLiteralNode(chliteralNode);
         } else if(const auto *svliteralNode = node.safe_as<LiteralNode<std::string_view>>()) {
             code << transpileLiteralNode(svliteralNode);
+        } else if(const auto *nullptrNode = node.safe_as<NullptrNode>()) {
+            code << "nullptr";
         } else if(const auto *typeNode = node.safe_as<TypeNode>()) {
             code << transpileTypeNode(typeNode);
         } else if(const auto *indexNode = node.safe_as<IndexNode>()) {
@@ -169,6 +171,7 @@ namespace vnd {
             return "";
         }
     }
+
     auto Transpiler::mapType(const std::string_view type) -> std::string_view {
         static const std::unordered_map<std::string_view, std::string_view> typeMap = {
             {"i32"sv, "int"sv},
