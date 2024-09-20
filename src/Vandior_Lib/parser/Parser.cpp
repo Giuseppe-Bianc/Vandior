@@ -85,7 +85,8 @@ namespace vnd {
         const auto [ptr, ec] = std::from_chars(str.data(), str.data() + str.size(), result);
         if(ec == std::errc::invalid_argument) { throw std::invalid_argument("parse_integer: invalid argument"); }
         if(ec == std::errc::result_out_of_range) { throw std::out_of_range("parse_integer: result out of range"); }
-        if(ptr != str.data() + str.size()) { throw std::invalid_argument("parse_integer: trailing characters"); }
+        const std::string_view parsed_view(str.data(), C_ST(ptr - str.data()));
+        if(parsed_view != str) { throw std::invalid_argument("parse_integer: trailing characters"); }
 
         return result;
     }
@@ -96,7 +97,8 @@ namespace vnd {
         const auto [ptr, ec] = std::from_chars(str.data(), str.data() + str.size(), result, 16);
         if(ec == std::errc::invalid_argument) { throw std::invalid_argument("parse_integer: invalid argument"); }
         if(ec == std::errc::result_out_of_range) { throw std::out_of_range("parse_integer: result out of range"); }
-        if(ptr != str.data() + str.size()) { throw std::invalid_argument("parse_integer: trailing characters"); }
+        const std::string_view parsed_view(str.data(), C_ST(ptr - str.data()));
+        if(parsed_view != str) { throw std::invalid_argument("parse_integer: trailing characters"); }
 
         return result;
     }
@@ -107,7 +109,8 @@ namespace vnd {
         const auto [ptr, ec] = std::from_chars(str.data(), str.data() + str.size(), result, 8);
         if(ec == std::errc::invalid_argument) { throw std::invalid_argument("parse_integer: invalid argument"); }
         if(ec == std::errc::result_out_of_range) { throw std::out_of_range("parse_integer: result out of range"); }
-        if(ptr != str.data() + str.size()) { throw std::invalid_argument("parse_integer: trailing characters"); }
+        const std::string_view parsed_view(str.data(), C_ST(ptr - str.data()));
+        if(parsed_view != str) { throw std::invalid_argument("parse_integer: trailing characters"); }
 
         return result;
     }
@@ -164,7 +167,7 @@ namespace vnd {
     std::unique_ptr<ASTNode> Parser::parsePrimary() {
         using enum NumberNodeType;
         const Token &currentToken = getCurrentToken();
-        const auto &currentType = currentToken.getType();
+        const auto &currentType = getCurrentTokenType();
         const auto &currentValue = currentToken.getValue();
 
         if(std::ranges::find(types, currentType) != types.end()) {
@@ -192,7 +195,7 @@ namespace vnd {
             auto node = MAKE_UNIQUE(VariableNode, currentValue, currentToken);
             if(!parseCall(node)) { parseIndex<VariableNode>(node); }
             return node;
-        } else if(currentToken.getValue() == "(") {
+        } else if(currentValue == "(") {
             consumeToken();
             auto expression = parseExpression();
             if(getCurrentToken().getValue() == ")") {
@@ -201,7 +204,7 @@ namespace vnd {
             }
             // Handle error: mismatched parentheses
             throw ParserException(currentToken);
-        } else if(currentToken.getValue() == "{") {
+        } else if(currentValue == "{") {
             auto token = getCurrentToken();
             consumeToken();
             if(getCurrentTokenType() == vnd::TokenType::CLOSE_CUR_PARENTESIS) {
