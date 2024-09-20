@@ -84,7 +84,7 @@ namespace vnd {
             code << transpileLiteralNode(chliteralNode);
         } else if(const auto *svliteralNode = node.safe_as<LiteralNode<std::string_view>>()) {
             code << transpileLiteralNode(svliteralNode);
-        } else if(const auto *nullptrNode = node.safe_as<NullptrNode>()) {
+        } else if([[maybe_unused]] const auto *nullptrNode = node.safe_as<NullptrNode>()) {
             code << "nullptr";
         } else if(const auto *typeNode = node.safe_as<TypeNode>()) {
             code << transpileTypeNode(typeNode);

@@ -8,28 +8,29 @@
 #include "NodeType.hpp"
 
 [[nodiscard]] static inline const char *comp_NodeType(NodeType e) noexcept {
+    using enum NodeType;
     switch(e) {
-    case NodeType::BinaryExpression:
+    case BinaryExpression:
         return "BIN_EXP";
-    case NodeType::UnaryExpression:
+    case UnaryExpression:
         return "UN_EXP";
-    case NodeType::Number:
+    case Number:
         return "NUM";
-    case NodeType::Boolean:
+    case Boolean:
         return "BOOL";
-    case NodeType::Char:
+    case Char:
         return "CHAR";
-    case NodeType::String:
+    case String:
         return "STR";
-    case NodeType::Variable:
+    case Variable:
         return "VAR";
-    case NodeType::Nullptr:
+    case Nullptr:
         return "NULL";
-    case NodeType::Type:
+    case Type:
         return "TYPE";
-    case NodeType::Index:
+    case Index:
         return "IDX";
-    case NodeType::Array:
+    case Array:
         return "ARR";
     default:
         return "UNKNOWN";
