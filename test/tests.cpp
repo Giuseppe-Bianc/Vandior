@@ -1875,6 +1875,17 @@ TEST_CASE("Parser emit array type", "[parser]") {
     REQUIRE(typeNode->get_index()->get_array() == nullptr);
 }
 
+// NOLINTNEXTLINE(*-function-cognitive-complexity)
+TEST_CASE("Parser emit nullptr node", "[parser]") {
+    vnd::Parser parser("nullptr", filename);
+    auto ast = parser.parse();
+    REQUIRE(ast != nullptr);
+    REQUIRE(ast->getType() == NodeType::Nullptr);
+    REQUIRE(ast->get_parent() == nullptr);
+    const auto *nullptrNode = ast->as<vnd::NullptrNode>();
+    REQUIRE(nullptrNode != nullptr);
+}
+
 TEST_CASE("Parser emit exception on comment", "[parser]") {
     vnd::Parser parser("// comment", filename);
 #ifdef _WIN32  // Windows
