@@ -8,6 +8,9 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4.1.7
+      with:
+        ref: ${{ github.head_ref }} # Ensure you're checking out the branch
+
     - name: Run clang-format
       uses: DoozyX/clang-format-lint-action@v0.18
       with:
@@ -16,7 +19,9 @@ jobs:
         extensions: 'h,cpp,hpp'
         clangFormatVersion: 17
         inplace: True
-    - uses: EndBug/add-and-commit@v9.1.4
+
+    - name: Commit changes
+      uses: EndBug/add-and-commit@v9.1.4
       with:
         author_name: Clang Robot
         author_email: robot@example.com
