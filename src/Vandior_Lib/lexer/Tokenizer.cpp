@@ -167,15 +167,16 @@ namespace vnd {
     Token Tokenizer::handleMultiLineComment() {
         const auto start = position;
         const auto startColumn = column;
-        while(_input[position] != starcr || _input[position + 1] != slashcr) {
-            if(position + 2 == _inputSize) {
-                const auto value = _input.substr(start, position - start + 1);
-                return {TokenType::UNKNOWN, value, {_filename, line, startColumn}};
+        while (_input[position] != starcr || _input[position + 1] != slashcr) {
+            if (!positionIsInText()) {
+                throw std::runtime_error("Unterminated multi-line comment");
             }
+            // Advance to the next character
+            incPosAndColumn();
             handleWhiteSpace();
         }
-        incPosAndColumn();
-        incPosAndColumn();
+        incPosAndColumn(); // Skip '*'
+        incPosAndColumn(); // Skip '/'
         const auto value = _input.substr(start, position - start);
         return {TokenType::COMMENT, value, {_filename, line, startColumn}};
     }

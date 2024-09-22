@@ -1062,10 +1062,8 @@ TEST_CASE("tokenizer emit multiline comment token", "[tokenizer]") {
     SECTION("Multi-line comment without closing") {
         const std::string input = "/* This is an unclosed comment";
         vnd::Tokenizer tokenizer(input, "testFile");
-        std::vector<vnd::Token> tokens = tokenizer.tokenize();
-        REQUIRE(tokens.size() == 3); //  shoud be 2
-        REQUIRE(tokens[0].getType() == vnd::TokenType::UNKNOWN);
-        REQUIRE(tokens[0].getValue() == "/* This is an unclosed commen"); // shoud be "/* This is an unclosed comment"
+        REQUIRE_THROWS_MATCHES(tokenizer.tokenize(), std::runtime_error,
+                               Message("Unterminated multi-line comment"));
     }
 }
 
