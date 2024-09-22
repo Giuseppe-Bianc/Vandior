@@ -60,8 +60,8 @@ static inline constexpr long long int timerSleap2 = 5;
 static inline constexpr std::size_t timerCicles = 1000000;
 static inline constexpr long double timerResolution = 5.0L;
 static inline constexpr std::size_t timestampSize = 24;
-#define REQ_FORMAT(type, string) REQUIRE(FORMAT("{}", type) == (string));  // NOLINT(*-macro-usage)
-#define REQ_FORMAT_COMPTOK(type, string) REQUIRE(FORMAT("{}", comp_tokType(type)) == (string)); // NOLINT(*-macro-usage)
+#define REQ_FORMAT(type, string) REQUIRE(FORMAT("{}", type) == (string));                        // NOLINT(*-macro-usage)
+#define REQ_FORMAT_COMPTOK(type, string) REQUIRE(FORMAT("{}", comp_tokType(type)) == (string));  // NOLINT(*-macro-usage)
 
 // NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("get_current_timestamp() tests", "[timestamp]") {
@@ -370,75 +370,75 @@ TEST_CASE("corrected format for Tokentype", "[token_type]") {
 // NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("corrected format for Tokentype compat to string", "[token_type]") {
     using enum vnd::TokenType;
-    REQ_FORMAT_COMPTOK(INTEGER,"INT")
-    REQ_FORMAT_COMPTOK(DOUBLE,"DBL")
-    REQ_FORMAT_COMPTOK(BOOLEAN,"BOOL")
-    REQ_FORMAT_COMPTOK(PLUS,"PLUS_OP")
-    REQ_FORMAT_COMPTOK(MINUS,"MINUS_OP")
-    REQ_FORMAT_COMPTOK(EQUAL,"EQUAL_OP")
-    REQ_FORMAT_COMPTOK(DOT,"DOT_OP")
-    REQ_FORMAT_COMPTOK(STAR,"STAR_OP")
-    REQ_FORMAT_COMPTOK(DIVIDE,"DIVIDE_OP")
-    REQ_FORMAT_COMPTOK(XOR,"XOR_OP")
-    REQ_FORMAT_COMPTOK(PERCENT,"PERCENT_OP")
-    REQ_FORMAT_COMPTOK(OR,"OR_OP")
-    REQ_FORMAT_COMPTOK(AND,"AND_OP")
-    REQ_FORMAT_COMPTOK(LESS,"LESS_OP")
-    REQ_FORMAT_COMPTOK(GREATER,"GREATER_OP")
-    REQ_FORMAT_COMPTOK(PLUSPLUS,"PLUSPLUS_OP")
-    REQ_FORMAT_COMPTOK(MINUSMINUS,"MINUSMINUS_OP")
-    REQ_FORMAT_COMPTOK(PLUSEQUAL,"PLUSEQUAL_OP")
-    REQ_FORMAT_COMPTOK(MINUSEQUAL,"MINUSEQUAL_OP")
-    REQ_FORMAT_COMPTOK(NOTEQUAL,"NOTEQUAL_OP")
-    REQ_FORMAT_COMPTOK(STAREQUAL,"STAREQUAL_OP")
-    REQ_FORMAT_COMPTOK(DIVIDEEQUAL,"DIVIDEEQUAL_OP")
-    REQ_FORMAT_COMPTOK(XOREQUAL,"XOREQUAL_OP")
-    REQ_FORMAT_COMPTOK(PERCENTEQUAL,"PERCENTEQUAL_OP")
-    REQ_FORMAT_COMPTOK(OROR,"OROR_OP")
-    REQ_FORMAT_COMPTOK(ANDAND,"ANDAND_OP")
-    REQ_FORMAT_COMPTOK(EQUALEQUAL,"EQUALEQUAL_OP")
-    REQ_FORMAT_COMPTOK(LESSEQUAL,"LESSEQUAL_OP")
-    REQ_FORMAT_COMPTOK(GREATEREQUAL,"GREATEREQUAL_OP")
-    REQ_FORMAT_COMPTOK(IDENTIFIER,"IDENT")
-    REQ_FORMAT_COMPTOK(CHAR,"CH")
-    REQ_FORMAT_COMPTOK(STRING,"STR")
-    REQ_FORMAT_COMPTOK(EOFT,"EOF")
-    REQ_FORMAT_COMPTOK(K_MAIN,"K_MAIN")
-    REQ_FORMAT_COMPTOK(K_VAR,"K_VAR")
-    REQ_FORMAT_COMPTOK(K_IF,"K_IF")
-    REQ_FORMAT_COMPTOK(K_WHILE,"K_WHILE")
-    REQ_FORMAT_COMPTOK(K_ELSE,"K_ELSE")
-    REQ_FORMAT_COMPTOK(K_FOR,"K_FOR")
-    REQ_FORMAT_COMPTOK(K_BREAK,"BREAK")
-    REQ_FORMAT_COMPTOK(K_FUN,"K_FUN")
-    REQ_FORMAT_COMPTOK(K_RETURN,"K_RETURN")
-    REQ_FORMAT_COMPTOK(K_NULLPTR,"K_NULLPTR")
-    REQ_FORMAT_COMPTOK(OPEN_PARENTESIS,"OPEN_PAR")
-    REQ_FORMAT_COMPTOK(OPEN_SQ_PARENTESIS,"OPEN_SQ_PAR")
-    REQ_FORMAT_COMPTOK(OPEN_CUR_PARENTESIS,"OPEN_CUR_PAR")
-    REQ_FORMAT_COMPTOK(CLOSE_PARENTESIS,"CLOSE_PAR")
-    REQ_FORMAT_COMPTOK(CLOSE_SQ_PARENTESIS,"CLOSE_SQ_PAR")
-    REQ_FORMAT_COMPTOK(CLOSE_CUR_PARENTESIS,"CLOSE_CUR_PAR")
-    REQ_FORMAT_COMPTOK(NOT,"NOT_OP")
-    REQ_FORMAT_COMPTOK(COMMA,"COMMA")
-    REQ_FORMAT_COMPTOK(COLON,"COLON")
-    REQ_FORMAT_COMPTOK(TYPE_I8,"I8")
-    REQ_FORMAT_COMPTOK(TYPE_I16,"I16")
-    REQ_FORMAT_COMPTOK(TYPE_I32,"I32")
-    REQ_FORMAT_COMPTOK(TYPE_I64,"I64")
-    REQ_FORMAT_COMPTOK(TYPE_U8,"U8")
-    REQ_FORMAT_COMPTOK(TYPE_U16,"U16")
-    REQ_FORMAT_COMPTOK(TYPE_U32,"U32")
-    REQ_FORMAT_COMPTOK(TYPE_U64,"U64")
-    REQ_FORMAT_COMPTOK(TYPE_F32,"F32")
-    REQ_FORMAT_COMPTOK(TYPE_F64,"F64")
-    REQ_FORMAT_COMPTOK(TYPE_C32,"C32")
-    REQ_FORMAT_COMPTOK(TYPE_C64,"C64")
-    REQ_FORMAT_COMPTOK(TYPE_CHAR,"CHAR")
-    REQ_FORMAT_COMPTOK(TYPE_STRING,"STRING")
-    REQ_FORMAT_COMPTOK(TYPE_BOOL,"BOOL")
-    REQ_FORMAT_COMPTOK(COMMENT,"COMMENT")
-    REQ_FORMAT_COMPTOK(UNKNOWN,"UNKNOWN")
+    REQ_FORMAT_COMPTOK(INTEGER, "INT")
+    REQ_FORMAT_COMPTOK(DOUBLE, "DBL")
+    REQ_FORMAT_COMPTOK(BOOLEAN, "BOOL")
+    REQ_FORMAT_COMPTOK(PLUS, "PLUS_OP")
+    REQ_FORMAT_COMPTOK(MINUS, "MINUS_OP")
+    REQ_FORMAT_COMPTOK(EQUAL, "EQUAL_OP")
+    REQ_FORMAT_COMPTOK(DOT, "DOT_OP")
+    REQ_FORMAT_COMPTOK(STAR, "STAR_OP")
+    REQ_FORMAT_COMPTOK(DIVIDE, "DIVIDE_OP")
+    REQ_FORMAT_COMPTOK(XOR, "XOR_OP")
+    REQ_FORMAT_COMPTOK(PERCENT, "PERCENT_OP")
+    REQ_FORMAT_COMPTOK(OR, "OR_OP")
+    REQ_FORMAT_COMPTOK(AND, "AND_OP")
+    REQ_FORMAT_COMPTOK(LESS, "LESS_OP")
+    REQ_FORMAT_COMPTOK(GREATER, "GREATER_OP")
+    REQ_FORMAT_COMPTOK(PLUSPLUS, "PLUSPLUS_OP")
+    REQ_FORMAT_COMPTOK(MINUSMINUS, "MINUSMINUS_OP")
+    REQ_FORMAT_COMPTOK(PLUSEQUAL, "PLUSEQUAL_OP")
+    REQ_FORMAT_COMPTOK(MINUSEQUAL, "MINUSEQUAL_OP")
+    REQ_FORMAT_COMPTOK(NOTEQUAL, "NOTEQUAL_OP")
+    REQ_FORMAT_COMPTOK(STAREQUAL, "STAREQUAL_OP")
+    REQ_FORMAT_COMPTOK(DIVIDEEQUAL, "DIVIDEEQUAL_OP")
+    REQ_FORMAT_COMPTOK(XOREQUAL, "XOREQUAL_OP")
+    REQ_FORMAT_COMPTOK(PERCENTEQUAL, "PERCENTEQUAL_OP")
+    REQ_FORMAT_COMPTOK(OROR, "OROR_OP")
+    REQ_FORMAT_COMPTOK(ANDAND, "ANDAND_OP")
+    REQ_FORMAT_COMPTOK(EQUALEQUAL, "EQUALEQUAL_OP")
+    REQ_FORMAT_COMPTOK(LESSEQUAL, "LESSEQUAL_OP")
+    REQ_FORMAT_COMPTOK(GREATEREQUAL, "GREATEREQUAL_OP")
+    REQ_FORMAT_COMPTOK(IDENTIFIER, "IDENT")
+    REQ_FORMAT_COMPTOK(CHAR, "CH")
+    REQ_FORMAT_COMPTOK(STRING, "STR")
+    REQ_FORMAT_COMPTOK(EOFT, "EOF")
+    REQ_FORMAT_COMPTOK(K_MAIN, "K_MAIN")
+    REQ_FORMAT_COMPTOK(K_VAR, "K_VAR")
+    REQ_FORMAT_COMPTOK(K_IF, "K_IF")
+    REQ_FORMAT_COMPTOK(K_WHILE, "K_WHILE")
+    REQ_FORMAT_COMPTOK(K_ELSE, "K_ELSE")
+    REQ_FORMAT_COMPTOK(K_FOR, "K_FOR")
+    REQ_FORMAT_COMPTOK(K_BREAK, "BREAK")
+    REQ_FORMAT_COMPTOK(K_FUN, "K_FUN")
+    REQ_FORMAT_COMPTOK(K_RETURN, "K_RETURN")
+    REQ_FORMAT_COMPTOK(K_NULLPTR, "K_NULLPTR")
+    REQ_FORMAT_COMPTOK(OPEN_PARENTESIS, "OPEN_PAR")
+    REQ_FORMAT_COMPTOK(OPEN_SQ_PARENTESIS, "OPEN_SQ_PAR")
+    REQ_FORMAT_COMPTOK(OPEN_CUR_PARENTESIS, "OPEN_CUR_PAR")
+    REQ_FORMAT_COMPTOK(CLOSE_PARENTESIS, "CLOSE_PAR")
+    REQ_FORMAT_COMPTOK(CLOSE_SQ_PARENTESIS, "CLOSE_SQ_PAR")
+    REQ_FORMAT_COMPTOK(CLOSE_CUR_PARENTESIS, "CLOSE_CUR_PAR")
+    REQ_FORMAT_COMPTOK(NOT, "NOT_OP")
+    REQ_FORMAT_COMPTOK(COMMA, "COMMA")
+    REQ_FORMAT_COMPTOK(COLON, "COLON")
+    REQ_FORMAT_COMPTOK(TYPE_I8, "I8")
+    REQ_FORMAT_COMPTOK(TYPE_I16, "I16")
+    REQ_FORMAT_COMPTOK(TYPE_I32, "I32")
+    REQ_FORMAT_COMPTOK(TYPE_I64, "I64")
+    REQ_FORMAT_COMPTOK(TYPE_U8, "U8")
+    REQ_FORMAT_COMPTOK(TYPE_U16, "U16")
+    REQ_FORMAT_COMPTOK(TYPE_U32, "U32")
+    REQ_FORMAT_COMPTOK(TYPE_U64, "U64")
+    REQ_FORMAT_COMPTOK(TYPE_F32, "F32")
+    REQ_FORMAT_COMPTOK(TYPE_F64, "F64")
+    REQ_FORMAT_COMPTOK(TYPE_C32, "C32")
+    REQ_FORMAT_COMPTOK(TYPE_C64, "C64")
+    REQ_FORMAT_COMPTOK(TYPE_CHAR, "CHAR")
+    REQ_FORMAT_COMPTOK(TYPE_STRING, "STRING")
+    REQ_FORMAT_COMPTOK(TYPE_BOOL, "BOOL")
+    REQ_FORMAT_COMPTOK(COMMENT, "COMMENT")
+    REQ_FORMAT_COMPTOK(UNKNOWN, "UNKNOWN")
 }
 
 namespace {
@@ -1007,20 +1007,93 @@ TEST_CASE("tokenizer emit unknown token on non closed char token", "[tokenizer]"
     REQUIRE(tokens[0] == vnd::Token(vnd::TokenType::UNKNOWN, R"(a")", vnd::CodeSourceLocation(filename, 1, 2)));
 }
 
+// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("tokenizer emit comment token", "[tokenizer]") {
-    constexpr std::string_view code2 = R"(// line comment)";
-    vnd::Tokenizer tokenizer{code2, filename};
-    std::vector<vnd::Token> tokens = tokenizer.tokenize();
-    REQUIRE(tokens.size() == 2);
-    REQUIRE(tokens[0] == vnd::Token(vnd::TokenType::COMMENT, "// line comment", vnd::CodeSourceLocation(filename, 1, 1)));
+    SECTION("Basic single-line comment") {
+        constexpr std::string_view code2 = R"(// line comment)";
+        vnd::Tokenizer tokenizer{code2, filename};
+        std::vector<vnd::Token> tokens = tokenizer.tokenize();
+        REQUIRE(tokens.size() == 2);
+        REQUIRE(tokens[0] == vnd::Token(vnd::TokenType::COMMENT, "// line comment", vnd::CodeSourceLocation(filename, 1, 1)));
+    }
+
+    SECTION("Single-line comment with symbols") {
+        const std::string input = "// Comment with symbols !@#$%^&*()123456\n";
+        vnd::Tokenizer tokenizer{input, filename};
+
+        std::vector<vnd::Token> tokens = tokenizer.tokenize();
+        REQUIRE(tokens.size() == 2);
+        REQUIRE(tokens[0].getType() == vnd::TokenType::COMMENT);
+        REQUIRE(tokens[0].getValue() == "// Comment with symbols !@#$%^&*()123456");
+    }
+
+    SECTION("Single-line comment with no text") {
+        const std::string input = "//\n";
+        vnd::Tokenizer tokenizer{input,filename};
+
+        std::vector<vnd::Token> tokens = tokenizer.tokenize();
+        REQUIRE(tokens.size() == 2);
+        REQUIRE(tokens[0].getType() == vnd::TokenType::COMMENT);
+        REQUIRE(tokens[0].getValue() == "//");
+    }
 }
 
+
+// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("tokenizer emit multiline comment token", "[tokenizer]") {
-    constexpr std::string_view code2 = R"(/*multi\nline\ncomment*/)";
-    vnd::Tokenizer tokenizer{code2, filename};
-    std::vector<vnd::Token> tokens = tokenizer.tokenize();
-    REQUIRE(tokens.size() == 2);
-    REQUIRE(tokens[0] == vnd::Token(vnd::TokenType::COMMENT, R"(/*multi\nline\ncomment*/)", vnd::CodeSourceLocation(filename, 1, 1)));
+    SECTION("Basic multi-line comment") {
+        constexpr std::string_view code2 = R"(/*multi\nline\ncomment*/)";
+        vnd::Tokenizer tokenizer{code2, filename};
+        std::vector<vnd::Token> tokens = tokenizer.tokenize();
+        REQUIRE(tokens.size() == 2);
+        REQUIRE(tokens[0] == vnd::Token(vnd::TokenType::COMMENT, R"(/*multi\nline\ncomment*/)", vnd::CodeSourceLocation(filename, 1, 1)));
+
+    }
+
+    SECTION("Multi-line comment with asterisks inside") {
+        const std::string input = "/* This * is * a * multi-line comment */";
+        vnd::Tokenizer tokenizer{input, filename};
+        std::vector<vnd::Token> tokens = tokenizer.tokenize();
+        REQUIRE(tokens.size() == 2);
+        REQUIRE(tokens[0].getType() == vnd::TokenType::COMMENT);
+        REQUIRE(tokens[0].getValue() == "/* This * is * a * multi-line comment */");
+    }
+
+    SECTION("Multi-line comment without closing") {
+        const std::string input = "/* This is an unclosed comment";
+        vnd::Tokenizer tokenizer(input, "testFile");
+        std::vector<vnd::Token> tokens = tokenizer.tokenize();
+        REQUIRE(tokens.size() == 3); //  shoud be 2
+        REQUIRE(tokens[0].getType() == vnd::TokenType::UNKNOWN);
+        REQUIRE(tokens[0].getValue() == "/* This is an unclosed commen"); // shoud be "/* This is an unclosed comment"
+    }
+}
+
+// NOLINTNEXTLINE(*-function-cognitive-complexity)
+TEST_CASE("tokenizer emit mixed Comments", "[comments]") {
+    SECTION("Single and multi-line comments") {
+        const std::string input = "// Single line\n/* Multi-line */";
+        vnd::Tokenizer tokenizer(input, "testFile");
+
+        auto tokens = tokenizer.tokenize();
+        REQUIRE(tokens[0].getType() == vnd::TokenType::COMMENT);
+        REQUIRE(tokens[0].getValue() == "// Single line");
+
+        REQUIRE(tokens[1].getType() == vnd::TokenType::COMMENT);
+        REQUIRE(tokens[1].getValue() == "/* Multi-line */");
+    }
+
+    SECTION("Multi-line comment followed by single-line comment") {
+        const std::string input = "/* Multi-line */\n// Single line";
+        vnd::Tokenizer tokenizer(input, "testFile");
+
+        auto tokens = tokenizer.tokenize();
+        REQUIRE(tokens[0].getType() == vnd::TokenType::COMMENT);
+        REQUIRE(tokens[0].getValue() == "/* Multi-line */");
+
+        REQUIRE(tokens[1].getType() == vnd::TokenType::COMMENT);
+        REQUIRE(tokens[1].getValue() == "// Single line");
+    }
 }
 
 TEST_CASE("ASTNode type conversion using as<T>()", "[ast]") {
