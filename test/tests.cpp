@@ -1068,7 +1068,7 @@ TEST_CASE("tokenizer emit multiline comment token", "[tokenizer]") {
 }
 
 // NOLINTNEXTLINE(*-function-cognitive-complexity)
-TEST_CASE("tokenizer emit mixed Comments", "[comments]") {
+TEST_CASE("tokenizer emit mixed Comments", "[tokenizer]") {
     SECTION("Single and multi-line comments") {
         const std::string input = "// Single line\n/* Multi-line */";
         vnd::Tokenizer tokenizer(input, "testFile");
@@ -1091,6 +1091,25 @@ TEST_CASE("tokenizer emit mixed Comments", "[comments]") {
 
         REQUIRE(tokens[1].getType() == vnd::TokenType::COMMENT);
         REQUIRE(tokens[1].getValue() == "// Single line");
+    }
+}
+
+TEST_CASE("tokenizer edge cases for comments","[tokenizer]") {
+    SECTION("Multi-line comment with nested asterisks") {
+        std::string input = "/* Comment with ** inside */";
+        vnd::Tokenizer tokenizer(input, "testFile");
+
+        auto token = tokenizer.tokenize()[0];
+        REQUIRE(token.getType() == vnd::TokenType::COMMENT);
+        REQUIRE(token.getValue() == "/* Comment with ** inside */");
+    }
+
+    SECTION("Multi-line comment at EOF without closing") {
+        std::string input = "/* Unclosed multi-line comment";
+        vnd::Tokenizer tokenizer(input, "testFile");
+
+        REQUIRE_THROWS_MATCHES(tokenizer.tokenize(), std::runtime_error,
+                               Message("Unterminated multi-line comment"));
     }
 }
 
