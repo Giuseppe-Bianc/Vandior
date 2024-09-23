@@ -1097,7 +1097,7 @@ TEST_CASE("tokenizer emit mixed Comments", "[tokenizer]") {
 
 TEST_CASE("tokenizer edge cases for comments","[tokenizer]") {
     SECTION("Multi-line comment with nested asterisks") {
-        const ostd::string input = "/* Comment with ** inside */";
+        const std::string input = "/* Comment with ** inside */";
         vnd::Tokenizer tokenizer(input, "testFile");
 
         auto token = tokenizer.tokenize()[0];
