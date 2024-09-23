@@ -1029,7 +1029,7 @@ TEST_CASE("tokenizer emit comment token", "[tokenizer]") {
 
     SECTION("Single-line comment with no text") {
         const std::string input = "//\n";
-        vnd::Tokenizer tokenizer{input,filename};
+        vnd::Tokenizer tokenizer{input, filename};
 
         std::vector<vnd::Token> tokens = tokenizer.tokenize();
         REQUIRE(tokens.size() == 2);
@@ -1037,7 +1037,6 @@ TEST_CASE("tokenizer emit comment token", "[tokenizer]") {
         REQUIRE(tokens[0].getValue() == "//");
     }
 }
-
 
 // NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("tokenizer emit multiline comment token", "[tokenizer]") {
@@ -1061,9 +1060,11 @@ TEST_CASE("tokenizer emit multiline comment token", "[tokenizer]") {
 
     SECTION("Multi-line comment without closing") {
         const std::string input = "/* This is an unclosed comment";
-        vnd::Tokenizer tokenizer(input, "testFile");
-        REQUIRE_THROWS_MATCHES(tokenizer.tokenize(), std::runtime_error,
-                               Message("Unterminated multi-line comment"));
+        vnd::Tokenizer tokenizer{input, filename};
+        std::vector<vnd::Token> tokens = tokenizer.tokenize();
+        REQUIRE(tokens.size() == 2);
+        REQUIRE(tokens[0].getType() == vnd::TokenType::UNKNOWN);
+        REQUIRE(tokens[0].getValue() == "/* This is an unclosed comment");
     }
 }
 
@@ -1096,7 +1097,7 @@ TEST_CASE("tokenizer emit mixed Comments", "[tokenizer]") {
 
 TEST_CASE("tokenizer edge cases for comments","[tokenizer]") {
     SECTION("Multi-line comment with nested asterisks") {
-        std::string input = "/* Comment with ** inside */";
+        const ostd::string input = "/* Comment with ** inside */";
         vnd::Tokenizer tokenizer(input, "testFile");
 
         auto token = tokenizer.tokenize()[0];
@@ -1105,11 +1106,12 @@ TEST_CASE("tokenizer edge cases for comments","[tokenizer]") {
     }
 
     SECTION("Multi-line comment at EOF without closing") {
-        std::string input = "/* Unclosed multi-line comment";
-        vnd::Tokenizer tokenizer(input, "testFile");
-
-        REQUIRE_THROWS_MATCHES(tokenizer.tokenize(), std::runtime_error,
-                               Message("Unterminated multi-line comment"));
+        const std::string input = "/* Unclosed multi-line comment";
+        vnd::Tokenizer tokenizer{input, filename};
+        std::vector<vnd::Token> tokens = tokenizer.tokenize();
+        REQUIRE(tokens.size() == 2);
+        REQUIRE(tokens[0].getType() == vnd::TokenType::UNKNOWN);
+        REQUIRE(tokens[0].getValue() == "/* Unclosed multi-line comment");
     }
 }
 

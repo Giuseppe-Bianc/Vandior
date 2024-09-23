@@ -169,7 +169,8 @@ namespace vnd {
         const auto startColumn = column;
         while (_input[position] != starcr || _input[position + 1] != slashcr) {
             if (!positionIsInText()) {
-                throw std::runtime_error("Unterminated multi-line comment");
+                const auto value = _input.substr(start, position - start);
+                return {TokenType::UNKNOWN, value, {_filename, line, startColumn}};
             }
             // Advance to the next character
             incPosAndColumn();
