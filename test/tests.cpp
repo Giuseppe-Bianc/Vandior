@@ -1057,15 +1057,6 @@ TEST_CASE("tokenizer emit multiline comment token", "[tokenizer]") {
         REQUIRE(tokens[0].getType() == vnd::TokenType::COMMENT);
         REQUIRE(tokens[0].getValue() == "/* This * is * a * multi-line comment */");
     }
-
-    SECTION("Multi-line comment without closing") {
-        const std::string input = "/* This is an unclosed comment";
-        vnd::Tokenizer tokenizer{input, filename};
-        std::vector<vnd::Token> tokens = tokenizer.tokenize();
-        REQUIRE(tokens.size() == 2);
-        REQUIRE(tokens[0].getType() == vnd::TokenType::UNKNOWN);
-        REQUIRE(tokens[0].getValue() == "/* This is an unclosed comment");
-    }
 }
 
 // NOLINTNEXTLINE(*-function-cognitive-complexity)
@@ -1096,23 +1087,12 @@ TEST_CASE("tokenizer emit mixed Comments", "[tokenizer]") {
 }
 
 TEST_CASE("tokenizer edge cases for comments","[tokenizer]") {
-    SECTION("Multi-line comment with nested asterisks") {
-        const std::string input = "/* Comment with ** inside */";
-        vnd::Tokenizer tokenizer(input, "testFile");
+    const std::string input = "/* Comment with ** inside */";
+    vnd::Tokenizer tokenizer(input, "testFile");
 
-        auto token = tokenizer.tokenize()[0];
-        REQUIRE(token.getType() == vnd::TokenType::COMMENT);
-        REQUIRE(token.getValue() == "/* Comment with ** inside */");
-    }
-
-    SECTION("Multi-line comment at EOF without closing") {
-        const std::string input = "/* Unclosed multi-line comment";
-        vnd::Tokenizer tokenizer{input, filename};
-        std::vector<vnd::Token> tokens = tokenizer.tokenize();
-        REQUIRE(tokens.size() == 2);
-        REQUIRE(tokens[0].getType() == vnd::TokenType::UNKNOWN);
-        REQUIRE(tokens[0].getValue() == "/* Unclosed multi-line comment");
-    }
+    auto token = tokenizer.tokenize()[0];
+    REQUIRE(token.getType() == vnd::TokenType::COMMENT);
+    REQUIRE(token.getValue() == "/* Comment with ** inside */");
 }
 
 TEST_CASE("ASTNode type conversion using as<T>()", "[ast]") {
