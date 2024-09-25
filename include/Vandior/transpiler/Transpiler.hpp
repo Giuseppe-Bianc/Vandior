@@ -95,9 +95,9 @@ namespace vnd {
          * Transpiles the given IndexNode into a string representation.
          *
          * @param indexNode The IndexNode to transpile.
-         * @return The transpiled string representation of the IndexNode.
+         * @return A pair containing the transpiled string representation of the IndexNode and of the ArrayNode.
          */
-        auto transpileIndexNode(const IndexNode *indexNode) -> std::string;
+        auto transpileIndexNode(const IndexNode *indexNode) -> std::pair<std::string, std::string>;
         /**
          * Transpiles an ArrayNode into a string representation.
          *
