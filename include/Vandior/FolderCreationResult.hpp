@@ -3,6 +3,8 @@
 #include "Log.hpp"
 #include "headers.hpp"
 
+DISABLE_WARNINGS_PUSH(4820)
+
 namespace vnd {
 
     /**
@@ -190,3 +192,5 @@ namespace vnd {
     };
 
 }  // namespace vnd
+
+DISABLE_WARNINGS_POP()

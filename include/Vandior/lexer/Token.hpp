@@ -4,6 +4,8 @@
 #include "CodeSourceLocation.hpp"
 #include "CompTokenType.hpp"
 
+DISABLE_WARNINGS_PUSH(4820)
+
 namespace vnd {
 
     /**
@@ -183,15 +185,17 @@ namespace vnd {
         bool operator!=(const Token &other) const noexcept = default;
 
     private:
-        TokenType _type;                     ///< The type of the token.
-        std::string_view _value;             ///< The value associated with the token.
-        CodeSourceLocation _sourceLocation;  ///< The token source location.
+        TokenType _type;  ///< The type of the token.
+        std::string_view _value;                             ///< The value associated with the token.
+        CodeSourceLocation _sourceLocation;                  ///< The token source location.
     };
 
     using TokenVec = std::vector<Token>;
     using TokenVecIter = TokenVec::iterator;
 
 }  // namespace vnd
+
+DISABLE_WARNINGS_POP()
 
 /**
  * This function is a formatter for Token using fmt.

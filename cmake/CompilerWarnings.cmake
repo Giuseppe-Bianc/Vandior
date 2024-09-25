@@ -35,6 +35,8 @@ function(
             /w14906 # string literal cast to 'LPWSTR'
             /w14928 # illegal copy-initialization; more than one user-defined conversion has been implicitly applied
             /wd4996 # Compatibility with C++98
+            /wd4464 # relative include path contains '..'
+            /wd4514 # unreferenced inline function has been removed
             /permissive- # standards conformance mode for MSVC compiler.
     )
   endif()

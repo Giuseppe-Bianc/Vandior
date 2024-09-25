@@ -6,7 +6,7 @@
 #include "ASTNode.hpp"
 #include "IndexNode.hpp"
 
-DISABLE_WARNINGS_PUSH(26445)
+DISABLE_WARNINGS_PUSH(4625 4626 4820 26445)
 
 namespace vnd {
 

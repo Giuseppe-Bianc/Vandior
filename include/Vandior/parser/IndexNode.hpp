@@ -3,6 +3,8 @@
 #include "ASTNode.hpp"
 #include "ArrayNode.hpp"
 
+DISABLE_WARNINGS_PUSH(4625 4626 26445)
+
 namespace vnd {
 
     /**
@@ -97,3 +99,5 @@ namespace vnd {
     };
 
 }  // namespace vnd
+
+DISABLE_WARNINGS_POP()

@@ -6,7 +6,7 @@
 
 #include "ASTNode.hpp"
 
-DISABLE_WARNINGS_PUSH(26445)
+DISABLE_WARNINGS_PUSH(4625 4626 26445)
 
 namespace vnd {
 

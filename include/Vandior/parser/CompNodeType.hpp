@@ -6,9 +6,11 @@
 
 #include "NodeType.hpp"
 
+DISABLE_WARNINGS_PUSH(4061)
+
 [[nodiscard]] static inline const char *comp_NodeType(NodeType e) noexcept {
-    using enum NodeType;
     switch(e) {
+        using enum NodeType;
     case BinaryExpression:
         return "BIN_EXP";
     case UnaryExpression:
@@ -35,3 +37,5 @@
         return "UNKNOWN";
     }
 }
+
+DISABLE_WARNINGS_POP()
