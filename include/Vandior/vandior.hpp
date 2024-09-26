@@ -17,4 +17,4 @@ namespace vnd {
 
     [[nodiscard]] auto timeParse(Parser &parser) -> std::unique_ptr<ASTNode>;
 }  // namespace vnd
-// NOLINTEND(*-const-correctness)
+   // NOLINTEND(*-const-correctness)

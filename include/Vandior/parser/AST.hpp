@@ -8,11 +8,11 @@
 #include "BinaryExpressionNode.hpp"
 #include "IndexNode.hpp"
 #include "LiteralNode.hpp"
+#include "NullptrNode.hpp"
 #include "NumberNode.hpp"
 #include "TypeNode.hpp"
 #include "UnaryExpressionNode.hpp"
 #include "VariableNode.hpp"
-#include "NullptrNode.hpp"
 
 /** \cond */
 DISABLE_WARNINGS_PUSH(

@@ -24,6 +24,7 @@ namespace vnd {
          * @return A vector of Token objects.
          */
         [[nodiscard]] TokenVec tokenize();
+
     private:
         std::string_view _input;     ///< The input string to tokenize.
         std::string_view _filename;  ///< The name of the file being tokenized.

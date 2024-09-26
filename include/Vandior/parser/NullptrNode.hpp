@@ -16,8 +16,7 @@ namespace vnd {
          * @brief Creates a NullptrNode.
          * @param token The token correspondent to the node.
          */
-        [[nodiscard]] explicit NullptrNode(const Token &token) noexcept
-          : ASTNode(token) {}
+        [[nodiscard]] explicit NullptrNode(const Token &token) noexcept : ASTNode(token) {}
 
         /**
          * @brief Gets the type of the AST node.
