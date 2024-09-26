@@ -140,14 +140,14 @@ namespace vnd {
     auto Transpiler::transpileVariableNode(const VariableNode *variableNode) -> std::string {
         if(variableNode == nullptr) [[unlikely]] { return ""; }
         std::ostringstream code;
-        std::string index, arr = "";
+        std::string index, arr;
         if(const auto &indexNode = variableNode->get_index()) {
             std::tie(index, arr) = transpileIndexNode(indexNode.get());
         } else {
             index = "{}";
         }
         code << fmt::vformat(index, fmt::make_format_args(variableNode->getName()));
-        if(arr != "") { code << arr; }
+        if(arr != "") { code << FORMAT("({})", arr); }
         if(variableNode->is_call()) {
             code << "(";
             if(const auto &callNode = variableNode->get_call()) { code << transpileNode(*callNode); }
@@ -178,8 +178,14 @@ namespace vnd {
 
     auto Transpiler::mapType(const std::string_view type) -> std::string_view {
         static const std::unordered_map<std::string_view, std::string_view> typeMap = {
-            {"i32"sv, "int"sv},
-            {"i64"sv, "double"sv},
+            {"i8"sv, "int8_t"sv},
+            {"i16"sv, "int16_t"sv},
+            {"i32"sv, "int32_t"sv},
+            {"i64"sv, "int64_t"sv},
+            {"u8"sv, "uint8_t"sv},
+            {"u16"sv, "uint16_t"sv},
+            {"u32"sv, "uint32_t"sv},
+            {"u64"sv, "uint64_t"sv},
             {"f32"sv, "float"sv},
             {"f64"sv, "double"sv},
             {"c32"sv, "std::complex<float>"sv},
@@ -202,14 +208,14 @@ namespace vnd {
             return std::string(initaltype);
         } else [[likely]] {
             std::ostringstream code;
-            std::string index, arr = "";
+            std::string index, arr;
             if(const auto &indexNode = typeNode->get_index()) {
                 std::tie(index, arr) = transpileIndexNode(indexNode.get());
             } else {
                 index = "{}";
             }
             code << fmt::vformat(index, fmt::make_format_args(mappedType));
-            if(arr != "") { code << arr; }
+            if(arr != "") { code << FORMAT("({})", arr); }
             return code.str();
         }
     }
