@@ -237,7 +237,9 @@ namespace vnd {
         }
         code << fmt::vformat(type, fmt::make_format_args(index));
         if(arr != "") { return std::make_pair(code.str(), arr); }
-        if(const auto &elementsArrayNode = indexNode->get_array()) { return std::make_pair(code.str(), FORMAT("{}", transpileNode(*elementsArrayNode))); }
+        if(const auto &elementsArrayNode = indexNode->get_array()) {
+            return std::make_pair(code.str(), FORMAT("{}", transpileNode(*elementsArrayNode)));
+        }
         return std::make_pair(code.str(), "");
     }
 
