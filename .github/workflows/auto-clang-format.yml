@@ -26,5 +26,8 @@ jobs:
         author_name: Clang Robot
         author_email: robot@example.com
         message: ':art: Committing clang-format changes'
-      env:
+        push: true
+        default_author: github_actor
+    env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
