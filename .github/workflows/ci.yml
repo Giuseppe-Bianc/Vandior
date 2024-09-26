@@ -16,7 +16,7 @@ env:
 
 jobs:
   Test:
-    name: ${{matrix.os}} ${{matrix.compiler}} ${{matrix.build_type}} ${{matrix.packaging_maintainer_mode == 'ON' && '(maintainer mode)' || ''}} ${{matrix.enable_indepth == 'ON' && '(indepth)' || ''}} $
+    name: ${{matrix.os}} ${{matrix.compiler}} ${{matrix.build_type}} ${{matrix.packaging_maintainer_mode == 'ON' && '(maintainer mode)' || ''}} ${{matrix.enable_indepth == 'ON' && '(indepth)' || ''}}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
