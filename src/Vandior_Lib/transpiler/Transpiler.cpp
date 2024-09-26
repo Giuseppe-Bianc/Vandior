@@ -140,20 +140,20 @@ namespace vnd {
     auto Transpiler::transpileVariableNode(const VariableNode *variableNode) -> std::string {
         if(variableNode == nullptr) [[unlikely]] { return ""; }
         std::ostringstream code;
-        std::string index, arr;
+        TranspileContext context;
         if(const auto &indexNode = variableNode->get_index()) {
-            std::tie(index, arr) = transpileIndexNode(indexNode.get());
+            context.setIndexAndArray(transpileIndexNode(indexNode.get()));
         } else {
-            index = "{}";
+            context.index = "{}";
         }
-        code << fmt::vformat(index, fmt::make_format_args(variableNode->getName()));
-        if(arr != "") { code << FORMAT("({})", arr); }
+        context.code << fmt::vformat(context.index, fmt::make_format_args(variableNode->getName()));
+        if(!context.arr.empty()) { code << FORMAT("({})", context.arr); }
         if(variableNode->is_call()) {
-            code << "(";
-            if(const auto &callNode = variableNode->get_call()) { code << transpileNode(*callNode); }
-            code << ")";
+            context.code << "(";
+            if(const auto &callNode = variableNode->get_call()) { context.code << transpileNode(*callNode); }
+            context.code << ")";
         }
-        return code.str();
+        return context.code.str();
     }
 
     // Helper function to transpile code for Numeric nodes
@@ -207,40 +207,39 @@ namespace vnd {
         if(mappedType == "unknown"sv) [[unlikely]] {
             return std::string(initaltype);
         } else [[likely]] {
-            std::ostringstream code;
-            std::string index, arr;
+            TranspileContext context;
             if(const auto &indexNode = typeNode->get_index()) {
-                std::tie(index, arr) = transpileIndexNode(indexNode.get());
+                context.setIndexAndArray(transpileIndexNode(indexNode.get()));
             } else {
-                index = "{}";
+                context.index = "{}";
             }
-            code << fmt::vformat(index, fmt::make_format_args(mappedType));
-            if(arr != "") { code << FORMAT("({})", arr); }
-            return code.str();
+            context.code << fmt::vformat(context.index, fmt::make_format_args(mappedType));
+            if(!context.arr.empty()) { context.code << FORMAT("({})", context.arr); }
+            return context.code.str();
         }
     }
 
     // Helper function to transpile code for IndexNode
     auto Transpiler::transpileIndexNode(const IndexNode *indexNode) -> std::pair<std::string, std::string> {
         if(indexNode == nullptr) [[unlikely]] { return {}; }
-        std::ostringstream code;
-        std::string type, index, arr;
+        std::string type;
+        TranspileContext context;
         if(const auto &elementsIndexNode = indexNode->get_index()) {
-            std::tie(index, arr) = transpileIndexNode(elementsIndexNode.get());
+            context.setIndexAndArray(transpileIndexNode(elementsIndexNode.get()));
         } else {
-            index = "{}";
+            context.index = "{}";
         }
         if(const auto &elements = indexNode->get_elements()) {
             type = FORMAT("vnd::array<{{}}, {}>", transpileNode(*elements));
         } else {
             type = "vnd::vector<{}>";
         }
-        code << fmt::vformat(type, fmt::make_format_args(index));
-        if(arr != "") { return std::make_pair(code.str(), arr); }
+        context.code << fmt::vformat(type, fmt::make_format_args(context.index));
+        if(!context.arr.empty()) { return std::make_pair(context.code.str(), context.arr); }
         if(const auto &elementsArrayNode = indexNode->get_array()) {
-            return std::make_pair(code.str(), FORMAT("{}", transpileNode(*elementsArrayNode)));
+            return std::make_pair(context.code.str(), FORMAT("{}", transpileNode(*elementsArrayNode)));
         }
-        return std::make_pair(code.str(), "");
+        return std::make_pair(context.code.str(), "");
     }
 
     // Helper function to transpile code for ArrayNode

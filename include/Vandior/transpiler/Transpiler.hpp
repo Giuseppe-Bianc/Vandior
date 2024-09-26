@@ -111,6 +111,19 @@ namespace vnd {
         fs::path _vnBuildSrcFolder;
         fs::path _mainOutputFilePath;
     };
+
+    struct TranspileContext {
+        std::ostringstream code;  // Holds the transpiled code.
+        std::string index;        // Holds the current index used in transpilation.
+        std::string arr;          // Holds the array or collection name.
+
+        // Method to set both index and array using std::pair, using std::move for efficiency
+        void setIndexAndArray(const std::pair<std::string, std::string> &idxAndArray) {
+            index = idxAndArray.first;
+            arr = idxAndArray.second;
+        }
+    };
+
 }  // namespace vnd
 
 // NOLINTEND(*-include-cleaner)
