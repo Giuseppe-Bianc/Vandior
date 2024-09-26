@@ -88,8 +88,6 @@ namespace vnd {
             code << "nullptr";
         } else if(const auto *typeNode = node.safe_as<TypeNode>()) {
             code << transpileTypeNode(typeNode);
-        } else if(const auto *indexNode = node.safe_as<IndexNode>()) {
-            code << transpileIndexNode(indexNode);
         } else if(const auto *arrayNode = node.safe_as<ArrayNode>()) {
             code << transpileArrayNode(arrayNode);
         } else {
@@ -142,13 +140,19 @@ namespace vnd {
     auto Transpiler::transpileVariableNode(const VariableNode *variableNode) -> std::string {
         if(variableNode == nullptr) [[unlikely]] { return ""; }
         std::ostringstream code;
-        code << variableNode->getName();
+        std::string index, arr;
+        if(const auto &indexNode = variableNode->get_index()) {
+            std::tie(index, arr) = transpileIndexNode(indexNode.get());
+        } else {
+            index = "{}";
+        }
+        code << fmt::vformat(index, fmt::make_format_args(variableNode->getName()));
+        if(arr != "") { code << FORMAT("({})", arr); }
         if(variableNode->is_call()) {
             code << "(";
             if(const auto &callNode = variableNode->get_call()) { code << transpileNode(*callNode); }
             code << ")";
         }
-        if(const auto &indexNode = variableNode->get_index()) { code << FORMAT("{}", transpileNode(*indexNode)); }
         return code.str();
     }
 
@@ -174,8 +178,14 @@ namespace vnd {
 
     auto Transpiler::mapType(const std::string_view type) -> std::string_view {
         static const std::unordered_map<std::string_view, std::string_view> typeMap = {
-            {"i32"sv, "int"sv},
-            {"i64"sv, "double"sv},
+            {"i8"sv, "int8_t"sv},
+            {"i16"sv, "int16_t"sv},
+            {"i32"sv, "int32_t"sv},
+            {"i64"sv, "int64_t"sv},
+            {"u8"sv, "uint8_t"sv},
+            {"u16"sv, "uint16_t"sv},
+            {"u32"sv, "uint32_t"sv},
+            {"u64"sv, "uint64_t"sv},
             {"f32"sv, "float"sv},
             {"f64"sv, "double"sv},
             {"c32"sv, "std::complex<float>"sv},
@@ -198,22 +208,37 @@ namespace vnd {
             return std::string(initaltype);
         } else [[likely]] {
             std::ostringstream code;
-            code << mappedType;
-            if(typeNode->get_index()) { code << FORMAT("{}", transpileNode(*typeNode->get_index())); }
+            std::string index, arr;
+            if(const auto &indexNode = typeNode->get_index()) {
+                std::tie(index, arr) = transpileIndexNode(indexNode.get());
+            } else {
+                index = "{}";
+            }
+            code << fmt::vformat(index, fmt::make_format_args(mappedType));
+            if(arr != "") { code << FORMAT("({})", arr); }
             return code.str();
         }
     }
 
     // Helper function to transpile code for IndexNode
-    auto Transpiler::transpileIndexNode(const IndexNode *indexNode) -> std::string {
-        if(indexNode == nullptr) [[unlikely]] { return ""; }
+    auto Transpiler::transpileIndexNode(const IndexNode *indexNode) -> std::pair<std::string, std::string> {
+        if(indexNode == nullptr) [[unlikely]] { return {}; }
         std::ostringstream code;
-        code << "[";
-        if(const auto &elementsNode = indexNode->get_elements()) { code << FORMAT("{}", transpileNode(*elementsNode)); }
-        code << "]";
-        if(const auto &elementsIndexNode = indexNode->get_index()) { code << FORMAT("{}", transpileNode(*elementsIndexNode)); }
-        if(const auto &elementsArrayNode = indexNode->get_array()) { code << FORMAT("{}", transpileNode(*elementsArrayNode)); }
-        return code.str();
+        std::string type, index, arr;
+        if(const auto &elementsIndexNode = indexNode->get_index()) {
+            std::tie(index, arr) = transpileIndexNode(elementsIndexNode.get());
+        } else {
+            index = "{}";
+        }
+        if(const auto &elements = indexNode->get_elements()) {
+            type = FORMAT("vnd::array<{{}}, {}>", transpileNode(*elements));
+        } else {
+            type = "vnd::vector<{}>";
+        }
+        code << fmt::vformat(type, fmt::make_format_args(index));
+        if(arr != "") { return std::make_pair(code.str(), arr); }
+        if(const auto &elementsArrayNode = indexNode->get_array()) { return std::make_pair(code.str(), FORMAT("{}", transpileNode(*elementsArrayNode))); }
+        return std::make_pair(code.str(), "");
     }
 
     // Helper function to transpile code for ArrayNode
