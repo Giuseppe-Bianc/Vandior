@@ -1,5 +1,14 @@
 name: auto-clang-format
-on: [pull_request]
+
+on:
+  pull_request:
+  release:
+    types: [published]
+  push:
+    tags:
+    branches:
+      - main
+      - develop
 
 jobs:
   build:
@@ -9,7 +18,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4.2.0
       with:
-        ref: ${{ github.head_ref }} # Ensure you're checking out the branch
+        ref: ${{ github.head_ref || github.ref }} # For pull_request and other events
 
     - name: Run clang-format
       uses: DoozyX/clang-format-lint-action@v0.18
@@ -18,7 +27,7 @@ jobs:
         exclude: './third_party ./external'
         extensions: 'h,cpp,hpp'
         clangFormatVersion: 17
-        inplace: True
+        inplace: true
 
     - name: Commit changes
       uses: EndBug/add-and-commit@v9.1.4
@@ -30,4 +39,3 @@ jobs:
         default_author: github_actor
     env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
