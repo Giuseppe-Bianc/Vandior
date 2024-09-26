@@ -17,10 +17,11 @@ macro(
     set(NEW_CXX_DEFINITIONS "${NEW_CXX_DEFINITIONS} -D_GLIBCXX_ASSERTIONS")
     message(STATUS "*** GLIBC++ Assertions (vector[], string[], ...) enabled")
 
-    set(NEW_COMPILE_OPTIONS "${NEW_COMPILE_OPTIONS} -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=3")
-    message(STATUS "*** g++/clang _FORTIFY_SOURCE=3 enabled")
+    if (NOT ${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+      set(NEW_COMPILE_OPTIONS "${NEW_COMPILE_OPTIONS} -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=3")
+      message(STATUS "*** g++/clang _FORTIFY_SOURCE=3 enabled")
+    endif()
 
-    # Uncomment the following code if PIE mode is supported and desired
     #    check_cxx_compiler_flag(-fpie PIE)
     #if(PIE)
     #  set(NEW_COMPILE_OPTIONS ${NEW_COMPILE_OPTIONS} -fpie)
@@ -62,7 +63,7 @@ macro(
 
   if(${ubsan_minimal_runtime})
     check_cxx_compiler_flag("-fsanitize=undefined -fno-sanitize-recover=undefined -fsanitize-minimal-runtime"
-                            MINIMAL_RUNTIME)
+            MINIMAL_RUNTIME)
     if(MINIMAL_RUNTIME)
       set(NEW_COMPILE_OPTIONS "${NEW_COMPILE_OPTIONS} -fsanitize=undefined -fsanitize-minimal-runtime")
       set(NEW_LINK_OPTIONS "${NEW_LINK_OPTIONS} -fsanitize=undefined -fsanitize-minimal-runtime")

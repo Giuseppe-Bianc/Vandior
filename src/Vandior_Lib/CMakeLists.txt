@@ -41,7 +41,12 @@ target_link_libraries(vandior_lib PUBLIC
 target_include_directories(vandior_lib ${WARNING_GUARD} PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
         $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include>)
 target_include_directories(vandior_lib ${WARNING_GUARD} PUBLIC "${CMAKE_BINARY_DIR}/configured_files/include")
-target_compile_features(vandior_lib PUBLIC cxx_std_23)
+if (Vandior_BUILD_FUZZ_TESTS)
+    target_link_libraries(vandior_lib PRIVATE -fsanitize=fuzzer-no-link)
+    target_compile_options(vandior_lib PRIVATE -fsanitize=fuzzer-no-link)
+endif()
+
+target_compile_features(vandior_lib PUBLIC cxx_std_${CMAKE_CXX_STANDARD})
 
 
 set_target_properties(
