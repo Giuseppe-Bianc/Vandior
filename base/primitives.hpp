@@ -1,20 +1,18 @@
 #pragma once
-#include <cstdint>
 #include <complex>
+#include <cstdint>
 
 /**
  * This function is a formatter for the complex numbers using fmt.
  * \cond
  */
-#define COMPLEX_FORMATTER(type)\
-template <>\
-struct fmt::formatter<type> {\
-    constexpr auto parse(format_parse_context& ctx) { return ctx.begin(); }\
-    template <typename FormatContext>\
-    auto format(const type& num, FormatContext& ctx) {\
-        return fmt::format_to(ctx.out(), "({}, {})", std::real(num), std::imag(num));\
-    }\
-};
+#define COMPLEX_FORMATTER(type)                                                                                                            \
+    template <> struct fmt::formatter<type> {                                                                                              \
+        constexpr auto parse(format_parse_context &ctx) { return ctx.begin(); }                                                            \
+        template <typename FormatContext> auto format(const type &num, FormatContext &ctx) {                                               \
+            return fmt::format_to(ctx.out(), "({}, {})", std::real(num), std::imag(num));                                                  \
+        }                                                                                                                                  \
+    };
 
 /** \endcond */
 

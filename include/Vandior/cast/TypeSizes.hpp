@@ -4,7 +4,6 @@
 
 #pragma once
 
-
 /**
  * @brief Namespace containing sizes of various types.
  *

@@ -167,8 +167,8 @@ namespace vnd {
     Token Tokenizer::handleMultiLineComment() {
         const auto start = position;
         const auto startColumn = column;
-        while (_input[position] != starcr || _input[position + 1] != slashcr) {
-            if (!positionIsInText()) {
+        while(_input[position] != starcr || _input[position + 1] != slashcr) {
+            if(!positionIsInText()) {
                 const auto value = _input.substr(start, position - start);
                 return {TokenType::UNKNOWN, value, {_filename, line, startColumn}};
             }
@@ -176,8 +176,8 @@ namespace vnd {
             incPosAndColumn();
             handleWhiteSpace();
         }
-        incPosAndColumn(); // Skip '*'
-        incPosAndColumn(); // Skip '/'
+        incPosAndColumn();  // Skip '*'
+        incPosAndColumn();  // Skip '/'
         const auto value = _input.substr(start, position - start);
         return {TokenType::COMMENT, value, {_filename, line, startColumn}};
     }

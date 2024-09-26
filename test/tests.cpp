@@ -1046,7 +1046,6 @@ TEST_CASE("tokenizer emit multiline comment token", "[tokenizer]") {
         std::vector<vnd::Token> tokens = tokenizer.tokenize();
         REQUIRE(tokens.size() == 2);
         REQUIRE(tokens[0] == vnd::Token(vnd::TokenType::COMMENT, R"(/*multi\nline\ncomment*/)", vnd::CodeSourceLocation(filename, 1, 1)));
-
     }
 
     SECTION("Multi-line comment with asterisks inside") {
@@ -1086,7 +1085,7 @@ TEST_CASE("tokenizer emit mixed Comments", "[tokenizer]") {
     }
 }
 
-TEST_CASE("tokenizer edge cases for comments","[tokenizer]") {
+TEST_CASE("tokenizer edge cases for comments", "[tokenizer]") {
     const std::string input = "/* Comment with ** inside */";
     vnd::Tokenizer tokenizer(input, "testFile");
 

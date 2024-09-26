@@ -185,9 +185,9 @@ namespace vnd {
         bool operator!=(const Token &other) const noexcept = default;
 
     private:
-        TokenType _type;  ///< The type of the token.
-        std::string_view _value;                             ///< The value associated with the token.
-        CodeSourceLocation _sourceLocation;                  ///< The token source location.
+        TokenType _type;                     ///< The type of the token.
+        std::string_view _value;             ///< The value associated with the token.
+        CodeSourceLocation _sourceLocation;  ///< The token source location.
     };
 
     using TokenVec = std::vector<Token>;

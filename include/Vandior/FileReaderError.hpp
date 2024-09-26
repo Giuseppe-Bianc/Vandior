@@ -8,8 +8,7 @@
 
 class FileReadError final : public std::runtime_error {
 public:
-    explicit FileReadError(const std::string_view &message)
-      : std::runtime_error(message.data()) {}
+    explicit FileReadError(const std::string_view &message) : std::runtime_error(message.data()) {}
 };
 
 #define FILEREADEREERRORF(...) FileReadError(FORMAT(__VA_ARGS__))

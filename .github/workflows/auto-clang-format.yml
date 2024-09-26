@@ -1,30 +1,50 @@
 name: auto-clang-format
-on: [pull_request]
+
+on:
+  pull_request:
+  release:
+    types: [published]
+  push:
+    tags:
+    branches:
+      - main
+      - develop
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4.1.7
-      with:
-        ref: ${{ github.head_ref }} # Ensure you're checking out the branch
+      - name: Checkout code
+        uses: actions/checkout@v4.2.0
+        with:
+          ref: ${{ github.head_ref || github.ref }} # For pull_request and other events
 
-    - name: Run clang-format
-      uses: DoozyX/clang-format-lint-action@v0.18
-      with:
-        source: '.'
-        exclude: './third_party ./external'
-        extensions: 'h,cpp,hpp'
-        clangFormatVersion: 17
-        inplace: True
+      - name: Run clang-format
+        uses: DoozyX/clang-format-lint-action@v0.18
+        with:
+          source: '.'
+          exclude: './third_party ./external'
+          extensions: 'h,cpp,hpp'
+          clangFormatVersion: 17
+          inplace: true
 
-    - name: Commit changes
-      uses: EndBug/add-and-commit@v9.1.4
-      with:
-        author_name: Clang Robot
-        author_email: robot@example.com
-        message: ':art: Committing clang-format changes'
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Commit changes
+        uses: EndBug/add-and-commit@v9.1.4
+        with:
+          author_name: Clang Robot
+          author_email: robot@example.com
+          message: |
+            :art: Applied clang-format to source code (auto-formatting)
+            
+            - Updated .h, .cpp, and .hpp files to conform with the style guide.
+            - Changes include:
+              - Indentation adjustments
+              - Spacing improvements
+              - Alignment enhancements
+              - Consistency in formatting across files
+              - Removal of trailing whitespace
+          push: true
+          default_author: github_actor
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
