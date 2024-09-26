@@ -18,3 +18,4 @@ updates:
       interval: "daily"
     commit-message:
       prefix: "[github] "
+      
