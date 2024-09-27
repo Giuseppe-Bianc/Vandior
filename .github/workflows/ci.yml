@@ -211,12 +211,12 @@ jobs:
       - name: Configure CMake LLVM
         if: ${{ matrix.compiler == 'llvm-18.1.3' }}
         run: |
-          cmake -S . -B ./build -G "${{matrix.generator}}"-D${{ env.PROJECT_NAME }}_ENABLE_CPPCHECK=${{matrix.enable_cppcheck }}  -D${{ env.PROJECT_NAME }}_ENABLE_IPO=${{matrix.enable_ipo }}  -DCMAKE_BUILD_TYPE:STRING=${{matrix.build_type}} -D${{ env.PROJECT_NAME }}_PACKAGING_MAINTAINER_MODE:BOOL=${{matrix.packaging_maintainer_mode}} -D${{ env.PROJECT_NAME }}_ENABLE_COVERAGE:BOOL=${{ matrix.build_type == 'Debug' } -D${{ env.PROJECT_NAME }}_ENABLE_INDEPTH:BOOL=${{matrix.enable_indepth}} -D${{ env.PROJECT_NAME }}_ENABLE_CLANG_TIDY:BOOL=OFF -DGIT_SHA:STRING=${{ github.sha }}
+          cmake -S . -B ./build -G "${{matrix.generator}}"-D${{ env.PROJECT_NAME }}_ENABLE_CPPCHECK=${{matrix.enable_cppcheck }}  -D${{ env.PROJECT_NAME }}_ENABLE_IPO=${{matrix.enable_ipo }}  -DCMAKE_BUILD_TYPE:STRING=${{matrix.build_type}} -D${{ env.PROJECT_NAME }}_PACKAGING_MAINTAINER_MODE:BOOL=${{matrix.packaging_maintainer_mode}} -D${{ env.PROJECT_NAME }}_ENABLE_COVERAGE:BOOL=${{ matrix.build_type == 'Debug' }} -D${{ env.PROJECT_NAME }}_ENABLE_INDEPTH:BOOL=${{matrix.enable_indepth}} -D${{ env.PROJECT_NAME }}_ENABLE_CLANG_TIDY:BOOL=OFF -DGIT_SHA:STRING=${{ github.sha }}
 
       - name: Configure CMake (Non-LLVM)
         if: ${{ matrix.compiler != 'llvm-18.1.3' }}
         run: |
-          cmake -S . -B ./build -G "${{matrix.generator}}"-D${{ env.PROJECT_NAME }}_ENABLE_CPPCHECK=${{matrix.enable_cppcheck }}  -D${{ env.PROJECT_NAME }}_ENABLE_IPO=${{matrix.enable_ipo }}  -DCMAKE_BUILD_TYPE:STRING=${{matrix.build_type}} -D${{ env.PROJECT_NAME }}_PACKAGING_MAINTAINER_MODE:BOOL=${{matrix.packaging_maintainer_mode}} -D${{ env.PROJECT_NAME }}_ENABLE_COVERAGE:BOOL=${{ matrix.build_type == 'Debug' } -D${{ env.PROJECT_NAME }}_ENABLE_INDEPTH:BOOL=${{matrix.enable_indepth}} -DGIT_SHA:STRING=${{ github.sha }}
+          cmake -S . -B ./build -G "${{matrix.generator}}"-D${{ env.PROJECT_NAME }}_ENABLE_CPPCHECK=${{matrix.enable_cppcheck }}  -D${{ env.PROJECT_NAME }}_ENABLE_IPO=${{matrix.enable_ipo }}  -DCMAKE_BUILD_TYPE:STRING=${{matrix.build_type}} -D${{ env.PROJECT_NAME }}_PACKAGING_MAINTAINER_MODE:BOOL=${{matrix.packaging_maintainer_mode}} -D${{ env.PROJECT_NAME }}_ENABLE_COVERAGE:BOOL=${{ matrix.build_type == 'Debug' }} -D${{ env.PROJECT_NAME }}_ENABLE_INDEPTH:BOOL=${{matrix.enable_indepth}} -DGIT_SHA:STRING=${{ github.sha }}
 
           
       - name: Build
