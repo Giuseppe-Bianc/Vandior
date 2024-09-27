@@ -13,27 +13,18 @@ env:
   CLANG_TIDY_VERSION: "18.1.3"
   VERBOSE: 1
 
-
 jobs:
   Test:
     name: ${{matrix.os}} ${{matrix.compiler}} ${{matrix.build_type}} ${{matrix.packaging_maintainer_mode == 'ON' && '(maintainer mode)' || ''}} ${{matrix.enable_indepth == 'ON' && '(indepth)' || ''}}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
-
-      # Recommendations:
-      #   * support at least 2 operating systems
-      #   * support at least 2 compilers
-      #   * make sure all supported configurations for your project are built
-      # Disable/enable builds in this list to meet the above recommendations
-      # and your own projects needs
       matrix:
         os:
           - ubuntu-22.04
           #- macos-10.15
           - windows-2019
         compiler:
-          # you can specify the version after `-` like "llvm-15.0.2".
           - llvm-18.1.3
           - gcc-13
         generator:
@@ -49,36 +40,19 @@ jobs:
         enable_indepth:
           - ON
           - OFF
-
         exclude:
-          # mingw is determined by this author to be too buggy to support
           - os: windows-2019
             compiler: gcc-13
-          #- os: macos-10.15
-
         include:
-          # Add appropriate variables for gcov version required. This will intentionally break
-          # if you try to use a compiler that does not have gcov set
           - compiler: gcc-13
             gcov_executable: gcov
             enable_ipo: On
             enable_cppcheck: Off
             enable_clang_tidy: Off
-
           - compiler: llvm-18.1.3
             enable_ipo: Off
             gcov_executable: "llvm-cov gcov"
             enable_cppcheck: Off
-
-          #- os: macos-10.15
-          #  enable_ipo: Off
-
-          # Set up preferred package generators, for given build configurations
-          #- build_type: Release
-          #  packaging_maintainer_mode: OFF
-          #  package_generator: TBZ2
-
-          # This exists solely to make sure a non-multiconfig build works
           - os: ubuntu-22.04
             compiler: gcc-13
             generator: "Unix Makefiles"
@@ -87,8 +61,6 @@ jobs:
             packaging_maintainer_mode: On
             enable_ipo: Off
             enable_cppcheck: Off
-
-          # Windows msvc builds
           - os: windows-2022
             compiler: msvc
             generator: "Visual Studio 17 2022"
@@ -96,7 +68,6 @@ jobs:
             packaging_maintainer_mode: On
             enable_ipo: On
             enable_cppcheck: On
-
           - os: windows-2022
             compiler: msvc
             generator: "Visual Studio 17 2022"
@@ -104,14 +75,12 @@ jobs:
             packaging_maintainer_mode: On
             enable_ipo: On
             enable_cppcheck: On
-
           - os: windows-2022
             compiler: msvc
             generator: "Visual Studio 17 2022"
             build_type: Debug
             packaging_maintainer_mode: Off
             enable_cppcheck: On
-
           - os: windows-2022
             compiler: msvc
             generator: "Visual Studio 17 2022"
@@ -119,7 +88,6 @@ jobs:
             packaging_maintainer_mode: Off
             package_generator: ZIP
             enable_cppcheck: On
-
           - os: windows-2022
             compiler: msvc
             generator: "Visual Studio 17 2022"
@@ -128,38 +96,31 @@ jobs:
             enable_ipo: On
             build_shared: On
             enable_cppcheck: On
-
-          # Duplicated configurations with enable_indepth ON
           - os: ubuntu-22.04
             compiler: gcc-13
             generator: "Ninja Multi-Config"
             build_type: Release
             enable_indepth: On
-
           - os: ubuntu-22.04
             compiler: gcc-13
             generator: "Ninja Multi-Config"
             build_type: Debug
             enable_indepth: On
-
           - os: windows-2019
             compiler: llvm-18.1.3
             generator: "Ninja Multi-Config"
             build_type: Release
             enable_indepth: On
-
           - os: windows-2019
             compiler: llvm-18.1.3
             generator: "Ninja Multi-Config"
             build_type: Debug
             enable_indepth: On
-
           - os: windows-2022
             compiler: msvc
             generator: "Visual Studio 17 2022"
             build_type: Release
             enable_indepth: On
-
           - os: windows-2022
             compiler: msvc
             generator: "Visual Studio 17 2022"
@@ -189,13 +150,11 @@ jobs:
         with:
           envFile: '.github/constants.env'
 
-
-      - name: Setup Cpp
+      - name: Setup C++ Toolchain
         uses: aminya/setup-cpp@v1
         with:
           compiler: ${{ matrix.compiler }}
           vcvarsall: ${{ contains(matrix.os, 'windows' )}}
-
           cmake: true
           ninja: true
           vcpkg: false
@@ -204,9 +163,13 @@ jobs:
           doxygen: true
           graphviz: true
           cppcheck: true
-
           gcovr: true
           opencppcoverage: true
+
+      - name: Update Gcov with pipx
+        run: |
+          pipx install gcovr
+          gcovr --version  # Verify gcovr is installed correctly
 
       - name: Configure CMake LLVM
         if: ${{ matrix.compiler == 'llvm-18.1.3' }}
@@ -217,21 +180,14 @@ jobs:
         if: ${{ matrix.compiler != 'llvm-18.1.3' }}
         run: |
           cmake -S . -B ./build -G "${{matrix.generator}}" -D${{ env.PROJECT_NAME }}_ENABLE_CPPCHECK=${{matrix.enable_cppcheck }} -D${{ env.PROJECT_NAME }}_ENABLE_IPO=${{matrix.enable_ipo }} -DCMAKE_BUILD_TYPE:STRING=${{matrix.build_type}} -D${{ env.PROJECT_NAME }}_PACKAGING_MAINTAINER_MODE:BOOL=${{matrix.packaging_maintainer_mode}} -D${{ env.PROJECT_NAME }}_ENABLE_COVERAGE:BOOL=${{ matrix.build_type == 'Debug' }} -D${{ env.PROJECT_NAME }}_ENABLE_INDEPT:BOOL=${{matrix.enable_indepth}} -DGIT_SHA:STRING=${{ github.sha }}
-          
-          
+
       - name: Build
-        # Execute the build.  You can specify a specific target with "--target <NAME>"
         run: |
           cmake --build ./build --config ${{matrix.build_type}}
-
-      #- name: Create Coverage Directory
-      #  run: mkdir -p ./out/coverage
 
       - name: Unix - Test and coverage
         if: runner.os != 'Windows'
         working-directory: ./build
-        # Execute tests defined by the CMake configuration.
-        # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
         run: |
           ctest -C ${{matrix.build_type}}
           gcovr -j ${{env.nproc}} --verbose --delete --root ../ --print-summary --xml-pretty --xml coverage.xml . --gcov-executable '${{ matrix.gcov_executable }}' --exclude-unreachable-branches --exclude-noncode-lines
