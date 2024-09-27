@@ -168,7 +168,7 @@ jobs:
 
       - name: Update Gcov with pipx
         run: |
-          pipx install gcovr
+          pipx upgrade gcovr
           gcovr --version  # Verify gcovr is installed correctly
 
       - name: Configure CMake LLVM
