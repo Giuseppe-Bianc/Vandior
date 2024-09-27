@@ -1,4 +1,5 @@
 #!/bin/bash
+
 readonly VANDIOR_ROOT="$PWD"
 
 readonly COBERTURA_F="$VANDIOR_ROOT/out/cobertura.xml"
@@ -36,19 +37,4 @@ if [ -d "$COVERAGE_DIR" ]; then
     echo "Cleanup complete."
 else
     echo "Directory $COVERAGE_DIR does not exist."
-fi
-cd  "$VANDIOR_ROOT"
-clear
-cmake -S . -B ./build -Wno-dev -GNinja -DVandior_WARNINGS_AS_ERRORS=ON -DVandior_ENABLE_CLANG_TIDY:BOOL=ON  -DVandior_ENABLE_COVERAGE:BOOL=ON
-cmake --build ./build -j 3
-if [ -d "$BUID_DIR" ]; then
-    cd  "$BUID_DIR"
-    echo "Current working directory: $(pwd)"
-    ctest -C Debug
-    clear
-    cho "Current working directory: $(pwd)"
-    ctest -C Debug && gcovr -j 3  --root ../ --config ../gcovr.cfg --gcov-executable 'gcov' --exclude-unreachable-branches --exclude-noncode-lines
-    echo "complete."
-else
-    echo "Directory $BUID_DIR does not exist."
 fi
