@@ -49,7 +49,7 @@
  * @param ... The format string and arguments.
  * @return The formatted string.
  */
-#define FORMATST(...) (__VA_ARGS__)
+#define FORMATST(...) FORMAT(__VA_ARGS__)
 #endif
 
 /**
