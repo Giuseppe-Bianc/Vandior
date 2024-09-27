@@ -2,7 +2,7 @@
 build/
 buildd/
 out/
-out/coverage/*
+#!out/coverage/*
 cmake-build-*/
 conan-cache/
 
@@ -43,3 +43,4 @@ Thumbs.db
 /input.cpp
 examples/vnbuild/src/
 /vnbuild/src/
+!/out/

@@ -190,7 +190,7 @@ jobs:
         working-directory: ./build
         run: |
           ctest -C ${{matrix.build_type}}
-          gcovr -j ${{env.nproc}} --verbose --delete --root ../ --print-summary --xml-pretty --xml coverage.xml . --gcov-executable '${{ matrix.gcov_executable }}' --exclude-unreachable-branches --exclude-noncode-lines
+          gcovr -j ${{env.nproc}} --verbose --root ../ --config ../gcovr.cfg --gcov-executable '${{ matrix.gcov_executable }}' --exclude-unreachable-branches --exclude-noncode-lines
 
       - name: Windows - Test and coverage
         if: runner.os == 'Windows'
