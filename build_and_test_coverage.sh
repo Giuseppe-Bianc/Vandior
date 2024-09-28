@@ -46,8 +46,8 @@ if [ -d "$BUID_DIR" ]; then
     echo "Current working directory: $(pwd)"
     ctest -C Debug
     clear
-    cho "Current working directory: $(pwd)"
-    ctest -C Debug && gcovr -j 3  --root ../ --config ../gcovr.cfg --gcov-executable 'gcov' --exclude-unreachable-branches --exclude-noncode-lines
+    echo "Current working directory: $(pwd)"
+    gcovr -j 3  --root ../ --config ../gcovr.cfg --gcov-executable 'gcov' --exclude-unreachable-branches --exclude-noncode-lines
     echo "complete."
 else
     echo "Directory $BUID_DIR does not exist."

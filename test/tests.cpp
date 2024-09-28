@@ -575,7 +575,7 @@ TEST_CASE("construct a EOFT token", "[token]") {  // NOLINT(*-function-cognitive
 }
 
 // NOLINTNEXTLINE(*-function-cognitive-complexity)
-TEST_CASE("FolderCreationResult Constructor") {
+TEST_CASE("FolderCreationResult Constructor", "[FolderCreationResult]") {
     SECTION("Default constructor") {
         const vnd::FolderCreationResult result;
         REQUIRE_FALSE(result.success());
@@ -590,7 +590,7 @@ TEST_CASE("FolderCreationResult Constructor") {
 }
 
 // NOLINTNEXTLINE(*-function-cognitive-complexity)
-TEST_CASE("FolderCreationResult Setters") {
+TEST_CASE("FolderCreationResult Setters", "[FolderCreationResult]") {
     vnd::FolderCreationResult result;
 
     SECTION("Set success") {
@@ -609,6 +609,243 @@ TEST_CASE("FolderCreationResult Setters") {
         REQUIRE_THROWS_MATCHES(result.set_path(fs::path()), std::invalid_argument, Message("Path cannot be empty"));
     }
 }
+
+// NOLINTNEXTLINE(*-function-cognitive-complexity)
+TEST_CASE("FolderCreationResult operator<< outputs correctly", "[FolderCreationResult]") {
+
+    SECTION("Test with successful folder creation and valid path") {
+        // Arrange
+        const fs::path folderPath = "/test/directory";
+        const vnd::FolderCreationResult result(true, folderPath);
+
+        // Act
+        std::ostringstream oss;
+        oss << result;
+
+        // Assert
+        REQUIRE(oss.str() == "success_: true, path_: /test/directory");
+    }
+
+    SECTION("Test with unsuccessful folder creation and no path") {
+        // Arrange
+        const vnd::FolderCreationResult result(false, fs::path{});
+
+        // Act
+        std::ostringstream oss;
+        oss << result;
+
+        // Assert
+        REQUIRE(oss.str() == "success_: false, path_: None");
+    }
+
+    SECTION("Test with successful folder creation but empty path") {
+        // Arrange
+        const vnd::FolderCreationResult result(true, fs::path{});
+
+        // Act
+        std::ostringstream oss;
+        oss << result;
+
+        // Assert
+        REQUIRE(oss.str() == "success_: true, path_: None");
+    }
+
+    SECTION("Test with unsuccessful folder creation and valid path") {
+        // Arrange
+        const fs::path folderPath = "/another/test/directory";
+        const vnd::FolderCreationResult result(false, folderPath);
+
+        // Act
+        std::ostringstream oss;
+        oss << result;
+
+        // Assert
+        REQUIRE(oss.str() == "success_: false, path_: /another/test/directory");
+    }
+
+    SECTION("Test with default constructed FolderCreationResult") {
+        // Arrange
+        const vnd::FolderCreationResult result;
+
+        // Act
+        std::ostringstream oss;
+        oss << result;
+
+        // Assert
+        REQUIRE(oss.str() == "success_: false, path_: None");
+    }
+}
+
+TEST_CASE("FolderCreationResult: Equality and Swap", "[FolderCreationResult]") {
+    fs::path path1("/folder1");
+    fs::path path2("/folder2");
+
+    vnd::FolderCreationResult result1(true, path1);
+    vnd::FolderCreationResult result2(false, path2);
+
+    SECTION("Equality operator") {
+        REQUIRE(result1 != result2);
+        vnd::FolderCreationResult result3(true, path1);
+        REQUIRE(result1 == result3);
+    }
+
+    SECTION("swap() function") {
+        swap(result1, result2);
+        REQUIRE(result1.success() == false);
+        REQUIRE(result1.path().value() == path2);
+        REQUIRE(result2.success() == true);
+        REQUIRE(result2.path().value() == path1);
+    }
+}
+
+// NOLINTNEXTLINE(*-function-cognitive-complexity)
+TEST_CASE("FolderCreationResult Hash Value", "[FolderCreationResult]") {
+
+    SECTION("Hash value is consistent for the same object") {
+        const vnd::FolderCreationResult result(true, fs::path("/test/directory"));
+        const std::size_t hash1 = hash_value(result);
+        const std::size_t hash2 = hash_value(result);
+
+        // The hash value should remain consistent for the same object
+        REQUIRE(hash1 == hash2);
+    }
+
+    SECTION("Hash value changes with different success status") {
+        const vnd::FolderCreationResult result1(true, fs::path("/test/directory"));
+        const vnd::FolderCreationResult result2(false, fs::path("/test/directory"));
+
+        const std::size_t hash1 = hash_value(result1);
+        const std::size_t hash2 = hash_value(result2);
+
+        // The hash value should differ when the success status changes
+        REQUIRE(hash1 != hash2);
+    }
+
+    SECTION("Hash value changes with different paths") {
+        const vnd::FolderCreationResult result1(true, fs::path("/test/directory"));
+        const vnd::FolderCreationResult result2(true, fs::path("/different/directory"));
+
+        const std::size_t hash1 = hash_value(result1);
+        const std::size_t hash2 = hash_value(result2);
+
+        // The hash value should differ when the path changes
+        REQUIRE(hash1 != hash2);
+    }
+
+    SECTION("Identical objects have the same hash value") {
+        const vnd::FolderCreationResult result1(true, fs::path("/test/directory"));
+        const vnd::FolderCreationResult result2(true, fs::path("/test/directory"));
+
+        const std::size_t hash1 = hash_value(result1);
+        const std::size_t hash2 = hash_value(result2);
+
+        // Objects with identical states should have the same hash value
+        REQUIRE(hash1 == hash2);
+    }
+
+    SECTION("Different objects have different hash values") {
+        const vnd::FolderCreationResult result1(true, fs::path("/test/directory"));
+        const vnd::FolderCreationResult result2(false, fs::path("/another/directory"));
+
+        const std::size_t hash1 = hash_value(result1);
+        const std::size_t hash2 = hash_value(result2);
+
+        // Different objects with different states should have different hash values
+        REQUIRE(hash1 != hash2);
+    }
+
+    SECTION("Hash for default constructed object is consistent") {
+        const vnd::FolderCreationResult result1;
+        const vnd::FolderCreationResult result2;
+
+        const std::size_t hash1 = hash_value(result1);
+        const std::size_t hash2 = hash_value(result2);
+
+        // The hash value for default constructed objects should be consistent and equal
+        REQUIRE(hash1 == hash2);
+    }
+
+    SECTION("Hash for default object vs object with empty path") {
+        const vnd::FolderCreationResult result1;
+        const vnd::FolderCreationResult result2(false, fs::path{});
+
+        const std::size_t hash1 = hash_value(result1);
+        const std::size_t hash2 = hash_value(result2);
+
+        // The hash value for a default object and an object with an explicitly empty path should be the same
+        REQUIRE(hash1 == hash2);
+    }
+}
+
+
+// NOLINTNEXTLINE(*-function-cognitive-complexity)
+TEST_CASE("FolderCreationResult Folder Creation Functions", "[FolderCreationResult]") {
+    // Create a temporary directory for testing
+    auto tempDir = fs::temp_directory_path() / "vnd_test";
+    const std::string folderName = "test_folder";
+    fs::create_directories(tempDir);
+
+    SECTION("Create folder with valid parameters") {
+        const vnd::FolderCreationResult result = vnd::FolderCreationResult::createFolder(folderName, tempDir);
+        REQUIRE(result.success() == true);
+        REQUIRE(result.path() == tempDir / folderName);
+        // Clean up
+        [[maybe_unused]] auto unused = fs::remove_all(tempDir / folderName);
+    }
+
+    SECTION("Create folder with empty folder name") {
+        const std::string emptyFolderName;
+        const vnd::FolderCreationResult result = vnd::FolderCreationResult::createFolder(emptyFolderName, tempDir);
+        REQUIRE_FALSE(result.success());
+        REQUIRE(result.path()->empty());
+    }
+
+    SECTION("Create folder in non-existent parent directory") {
+        const fs::path nonExistentParentDir = tempDir / "non_existent_dir";
+        const vnd::FolderCreationResult result = vnd::FolderCreationResult::createFolder(folderName, nonExistentParentDir);
+        REQUIRE(result.success() == true);
+        REQUIRE(!result.path()->empty());
+    }
+
+    SECTION("Create folder in existing directory") {
+        const fs::path nonExistentParentDir = tempDir / "non_existent_dir";
+        const vnd::FolderCreationResult result = vnd::FolderCreationResult::createFolder(folderName, nonExistentParentDir);
+        REQUIRE(result.success() == true);
+        REQUIRE(!result.path()->empty());
+        // const fs::path ExistentParentDir = tempDir / "non_existent_dir";
+        const std::string folderName2 = "test_folder";
+        const vnd::FolderCreationResult result2 = vnd::FolderCreationResult::createFolder(folderName2, nonExistentParentDir);
+        REQUIRE(result2.success() == true);
+        REQUIRE(!result2.path()->empty());
+    }
+
+    SECTION("Create folder next to non-existent file") {
+        const fs::path nonExistentFilePath = tempDir / "non_existent_file.txt";
+        const vnd::FolderCreationResult result = vnd::FolderCreationResult::createFolderNextToFile(nonExistentFilePath, folderName);
+        REQUIRE(result.success() == true);
+        REQUIRE(!result.path()->empty());
+        REQUIRE(!result.pathcref()->empty());
+    }
+
+    SECTION("Create folder next to existing file") {
+        // Create a file in the temporary directory
+        const fs::path filePath = tempDir / "test_file.txt";
+        std::ofstream ofs(filePath);
+        ofs.close();
+
+        const vnd::FolderCreationResult result = vnd::FolderCreationResult::createFolderNextToFile(filePath, folderName);
+        REQUIRE(result.success() == true);
+        REQUIRE(result.path() == tempDir / folderName);
+
+        // Clean up
+        [[maybe_unused]] auto unused = fs::remove(filePath);
+        [[maybe_unused]] auto unuseds = fs::remove_all(tempDir / folderName);
+    }
+
+    // Clean up the temporary directory
+    [[maybe_unused]] auto unused = fs::remove_all(tempDir);
+}
+
 
 TEST_CASE("vnd::readFromFile - Valid File", "[file]") {
     const std::string infilename = "testfile.txt";
@@ -678,74 +915,6 @@ TEST_CASE("vnd::readFromFile - Large File", "[file]") {
 
     // Clean up after test
     [[maybe_unused]] auto unsed = fs::remove(lrgfilename);
-}
-
-// NOLINTNEXTLINE(*-function-cognitive-complexity)
-TEST_CASE("FolderCreationResult Folder Creation Functions") {
-    // Create a temporary directory for testing
-    auto tempDir = fs::temp_directory_path() / "vnd_test";
-    const std::string folderName = "test_folder";
-    fs::create_directories(tempDir);
-
-    SECTION("Create folder with valid parameters") {
-        const vnd::FolderCreationResult result = vnd::FolderCreationResult::createFolder(folderName, tempDir);
-        REQUIRE(result.success() == true);
-        REQUIRE(result.path() == tempDir / folderName);
-        // Clean up
-        [[maybe_unused]] auto unused = fs::remove_all(tempDir / folderName);
-    }
-
-    SECTION("Create folder with empty folder name") {
-        const std::string emptyFolderName;
-        const vnd::FolderCreationResult result = vnd::FolderCreationResult::createFolder(emptyFolderName, tempDir);
-        REQUIRE_FALSE(result.success());
-        REQUIRE(result.path()->empty());
-    }
-
-    SECTION("Create folder in non-existent parent directory") {
-        const fs::path nonExistentParentDir = tempDir / "non_existent_dir";
-        const vnd::FolderCreationResult result = vnd::FolderCreationResult::createFolder(folderName, nonExistentParentDir);
-        REQUIRE(result.success() == true);
-        REQUIRE(!result.path()->empty());
-    }
-
-    SECTION("Create folder existent directory") {
-        const fs::path nonExistentParentDir = tempDir / "non_existent_dir";
-        const vnd::FolderCreationResult result = vnd::FolderCreationResult::createFolder(folderName, nonExistentParentDir);
-        REQUIRE(result.success() == true);
-        REQUIRE(!result.path()->empty());
-        // const fs::path ExistentParentDir = tempDir / "non_existent_dir";
-        const std::string folderName2 = "test_folder";
-        const vnd::FolderCreationResult result2 = vnd::FolderCreationResult::createFolder(folderName2, nonExistentParentDir);
-        REQUIRE(result2.success() == true);
-        REQUIRE(!result2.path()->empty());
-    }
-
-    SECTION("Create folder next to non-existent file") {
-        const fs::path nonExistentFilePath = tempDir / "non_existent_file.txt";
-        const vnd::FolderCreationResult result = vnd::FolderCreationResult::createFolderNextToFile(nonExistentFilePath, folderName);
-        REQUIRE(result.success() == true);
-        REQUIRE(!result.path()->empty());
-        REQUIRE(!result.pathcref()->empty());
-    }
-
-    SECTION("Create folder next to existing file") {
-        // Create a file in the temporary directory
-        const fs::path filePath = tempDir / "test_file.txt";
-        std::ofstream ofs(filePath);
-        ofs.close();
-
-        const vnd::FolderCreationResult result = vnd::FolderCreationResult::createFolderNextToFile(filePath, folderName);
-        REQUIRE(result.success() == true);
-        REQUIRE(result.path() == tempDir / folderName);
-
-        // Clean up
-        [[maybe_unused]] auto unused = fs::remove(filePath);
-        [[maybe_unused]] auto unuseds = fs::remove_all(tempDir / folderName);
-    }
-
-    // Clean up the temporary directory
-    [[maybe_unused]] auto unused = fs::remove_all(tempDir);
 }
 
 /*TEST_CASE("FolderCreationResult Serialization") {
@@ -1440,6 +1609,20 @@ TEST_CASE("Parser::convertToIntformOct tests") {
     }
 }
 
+TEST_CASE("comp_NodeType function", "[parser]") {
+    REQUIRE(std::string(comp_NodeType(NodeType::BinaryExpression)) == "BIN_EXP");
+    REQUIRE(std::string(comp_NodeType(NodeType::UnaryExpression)) == "UN_EXP");
+    REQUIRE(std::string(comp_NodeType(NodeType::Number)) == "NUM");
+    REQUIRE(std::string(comp_NodeType(NodeType::Boolean)) == "BOOL");
+    REQUIRE(std::string(comp_NodeType(NodeType::Char)) == "CHAR");
+    REQUIRE(std::string(comp_NodeType(NodeType::String)) == "STR");
+    REQUIRE(std::string(comp_NodeType(NodeType::Variable)) == "VAR");
+    REQUIRE(std::string(comp_NodeType(NodeType::Nullptr)) == "NULL");
+    REQUIRE(std::string(comp_NodeType(NodeType::Type)) == "TYPE");
+    REQUIRE(std::string(comp_NodeType(NodeType::Index)) == "IDX");
+    REQUIRE(std::string(comp_NodeType(NodeType::Array)) == "ARR");
+}
+
 TEST_CASE("Parser emit integer number node form exadecimal", "[parser]") {
     vnd::Parser parser("#23", filename);
     auto ast = parser.parse();
@@ -2116,6 +2299,30 @@ TEST_CASE("Parser emit callable node", "[parser]") {
     const auto *variableNode = ast->as<vnd::VariableNode>();
     REQUIRE(variableNode->is_call() == true);
     REQUIRE(variableNode->get_call() != nullptr);
+}
+
+TEST_CASE("NullptrNode basic functionality", "[NullptrNode]") {
+    vnd::Parser parser("nullptr", filename);
+    const auto ast = parser.parse();
+    SECTION("Constructor Test") {
+        auto node = ast->safe_as<vnd::NullptrNode>();
+        REQUIRE(node->get_token().getType() == vnd::TokenType::K_NULLPTR);
+    }
+
+    SECTION("getType() Test") {
+        auto node = ast->safe_as<vnd::NullptrNode>();
+        REQUIRE(node->getType() == NodeType::Nullptr);
+    }
+
+    SECTION("print() Test") {
+        auto node = ast->safe_as<vnd::NullptrNode>();
+        REQUIRE(node->print() == "NULLPTR");
+    }
+
+    SECTION("comp_print() Test") {
+        auto node = ast->safe_as<vnd::NullptrNode>();
+        REQUIRE(node->comp_print() == "NULL");
+    }
 }
 
 // NOLINTNEXTLINE(*-function-cognitive-complexity)

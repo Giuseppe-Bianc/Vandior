@@ -151,8 +151,7 @@ inline void my_error_handler(const std::string &msg) {
     std::cerr << FORMAT("Error occurred:\n  Timestamp: {}\n", get_current_timestamp());
     std::cerr << FORMAT("  Thread ID: {}\n", std::this_thread::get_id());
     std::cerr << FORMAT("  Message: {}\n", msg);
-    std::cerr << FORMAT("  Function: {}, File: {}, Line: {}, Column: {}\n", location.function_name(), location.file_name(), location.line(),
-                        location.column());
+    std::cerr << FORMAT("  Function: {}, File: {}, Line: {}, Column: {}\n", location.function_name(), location.file_name(), location.line(),location.column());
 }
 // C:\Users\gbian\AppData\Local\Programs\CLion
 /**
@@ -175,8 +174,8 @@ inline void my_error_handler(const std::string &msg) {
         const auto console = spdlog::stdout_color_mt(R"(console)");                                                                        \
         spdlog::set_default_logger(console);                                                                                               \
     } catch(const spdlog::spdlog_ex &ex) {                                                                                                 \
-        std::cerr << "Logger initialization failed: " << ex.what() << std::endl;                                                           \
-    } catch(const std::exception &e) { std::cerr << "Unhandled exception: " << e.what() << std::endl; } catch(...) {                       \
+        std::cerr << "Logger initialization failed: " << ex.what() << '\n';                                                                \
+    } catch(const std::exception &e) { std::cerr << "Unhandled exception: " << e.what() << '\n'; } catch(...) {                            \
         std::cerr << "An unknown error occurred Logger initialization failed.\n";                                                          \
     }
 

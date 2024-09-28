@@ -127,7 +127,9 @@ namespace vnd {
          * @return The output stream after writing the FolderCreationResult object.
          */
         friend std::ostream &operator<<(std::ostream &os, const FolderCreationResult &obj) {
-            return os << "success_: " << obj.success_ << " path_: " << obj.path_.value_or("");
+            const auto pathValue = obj.path_.value_or("");
+            if(pathValue.empty()) { return os << FORMAT("success_: {}, path_: None", obj.success_); }
+            return os << FORMAT("success_: {}, path_: {}", obj.success_, pathValue);
         }
 
         [[nodiscard]] static auto createFolder(std::string_view folderName, const fs::path &parentDir) -> FolderCreationResult {
