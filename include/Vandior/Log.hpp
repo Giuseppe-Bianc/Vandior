@@ -151,7 +151,8 @@ inline void my_error_handler(const std::string &msg) {
     std::cerr << FORMAT("Error occurred:\n  Timestamp: {}\n", get_current_timestamp());
     std::cerr << FORMAT("  Thread ID: {}\n", std::this_thread::get_id());
     std::cerr << FORMAT("  Message: {}\n", msg);
-    std::cerr << FORMAT("  Function: {}, File: {}, Line: {}, Column: {}\n", location.function_name(), location.file_name(), location.line(),location.column());
+    std::cerr << FORMAT("  Function: {}, File: {}, Line: {}, Column: {}\n", location.function_name(), location.file_name(), location.line(),
+                        location.column());
 }
 // C:\Users\gbian\AppData\Local\Programs\CLion
 /**

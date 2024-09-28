@@ -612,7 +612,6 @@ TEST_CASE("FolderCreationResult Setters", "[FolderCreationResult]") {
 
 // NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("FolderCreationResult operator<< outputs correctly", "[FolderCreationResult]") {
-
     SECTION("Test with successful folder creation and valid path") {
         // Arrange
         const fs::path folderPath = "/test/directory";
@@ -700,7 +699,6 @@ TEST_CASE("FolderCreationResult: Equality and Swap", "[FolderCreationResult]") {
 
 // NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("FolderCreationResult Hash Value", "[FolderCreationResult]") {
-
     SECTION("Hash value is consistent for the same object") {
         const vnd::FolderCreationResult result(true, fs::path("/test/directory"));
         const std::size_t hash1 = hash_value(result);
@@ -777,7 +775,6 @@ TEST_CASE("FolderCreationResult Hash Value", "[FolderCreationResult]") {
     }
 }
 
-
 // NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("FolderCreationResult Folder Creation Functions", "[FolderCreationResult]") {
     // Create a temporary directory for testing
@@ -845,7 +842,6 @@ TEST_CASE("FolderCreationResult Folder Creation Functions", "[FolderCreationResu
     // Clean up the temporary directory
     [[maybe_unused]] auto unused = fs::remove_all(tempDir);
 }
-
 
 TEST_CASE("vnd::readFromFile - Valid File", "[file]") {
     const std::string infilename = "testfile.txt";
