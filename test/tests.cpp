@@ -11,6 +11,8 @@
 
 #include <Vandior/vandior.hpp>
 
+using namespace std::literals::string_view_literals;
+
 using Catch::Matchers::ContainsSubstring;
 using Catch::Matchers::EndsWith;
 using Catch::Matchers::Message;
@@ -45,6 +47,9 @@ static inline constexpr std::string_view filename = R"(./unknown.vn)";
 static inline constexpr auto pIntInvArg = "parse_integer: invalid argument";
 static inline constexpr auto pIntOutRng = "parse_integer: result out of range";
 static inline constexpr auto pIntTrlChr = "parse_integer: trailing characters";
+// clang-format off
+static inline constexpr auto long_input = "x:i32[2] =  {{-22, 23}, function(1, 2)}, c:char = 'c' ,c:string = \"ssssss\", b:bool = true, cmp:c32 = 11.2if, dcmp: c64 = 11.2i, c: char = nullptr, cc:i32 = 12 + 21, cc + 12, xx:i32[2] = {2, 2}, xxx:i32[] = {2, 2, 2, 2}, ssss: tr = dnddd"sv;
+// clang-format on
 static inline constexpr std::string_view ffilename = "file1.cpp";
 static inline constexpr std::string_view filename2 = "example.cpp";
 static inline constexpr std::string_view filename3 = "new_file.cpp";
@@ -2323,12 +2328,10 @@ TEST_CASE("NullptrNode basic functionality", "[NullptrNode]") {
 
 // NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("Transpiler creates correct folders and files", "[transpiler]") {
-    const std::string input = "x:i32[2] =  {{-22, 23}, function(1, 2)}, c:char = 'c' ,c:string = \"ssssss\", b:bool = true, cmp:c32 = "
-                              "11.2if, dcmp: c64 = 11.2i, c: char = nullptr, cc:i32 = 12 + 21, cc + 12";
     const std::string transpilerfilename = "testfile.vnd";
 
     // Create a Transpiler instance
-    vnd::Transpiler transpiler(input, transpilerfilename);
+    vnd::Transpiler transpiler(long_input, transpilerfilename);
 
     // Test folder and file creation
     SECTION("Folder and file creation") {
@@ -2362,6 +2365,36 @@ TEST_CASE("Transpiler creates correct folders and files", "[transpiler]") {
         const fs::path buildFolder("vnbuild");
         [[maybe_unused]] auto unused = fs::remove_all(buildFolder);
         REQUIRE_FALSE(fs::exists(buildFolder));  // Folder should not exist
+    }
+}
+
+TEST_CASE("Transpiler::mapType returns correct type mappings", "[transpiler]") {
+    SECTION("Valid type mappings") {
+        REQUIRE(vnd::Transpiler::mapType("i8"sv) == "int8_t"sv);
+        REQUIRE(vnd::Transpiler::mapType("i16"sv) == "int16_t"sv);
+        REQUIRE(vnd::Transpiler::mapType("i32"sv) == "int32_t"sv);
+        REQUIRE(vnd::Transpiler::mapType("i64"sv) == "int64_t"sv);
+        REQUIRE(vnd::Transpiler::mapType("u8"sv) == "uint8_t"sv);
+        REQUIRE(vnd::Transpiler::mapType("u16"sv) == "uint16_t"sv);
+        REQUIRE(vnd::Transpiler::mapType("u32"sv) == "uint32_t"sv);
+        REQUIRE(vnd::Transpiler::mapType("u64"sv) == "uint64_t"sv);
+        REQUIRE(vnd::Transpiler::mapType("f32"sv) == "float"sv);
+        REQUIRE(vnd::Transpiler::mapType("f64"sv) == "double"sv);
+        REQUIRE(vnd::Transpiler::mapType("c32"sv) == "std::complex<float>"sv);
+        REQUIRE(vnd::Transpiler::mapType("c64"sv) == "std::complex<double>"sv);
+        REQUIRE(vnd::Transpiler::mapType("bool"sv) == "bool"sv);
+        REQUIRE(vnd::Transpiler::mapType("char"sv) == "char"sv);
+        REQUIRE(vnd::Transpiler::mapType("string"sv) == "std::string_view"sv);
+    }
+
+    SECTION("Unknown type returns 'unknown'") {
+        REQUIRE(vnd::Transpiler::mapType("unknown_type"sv) == "unknown"sv);
+        REQUIRE(vnd::Transpiler::mapType("xyz"sv) == "unknown"sv);
+        REQUIRE(vnd::Transpiler::mapType(""sv) == "unknown"sv);
+    }
+
+    SECTION("Case sensitivity") {
+        REQUIRE(vnd::Transpiler::mapType("I8"sv) == "unknown"sv);  // Should be case sensitive
     }
 }
 

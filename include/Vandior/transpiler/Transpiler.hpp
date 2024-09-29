@@ -10,11 +10,6 @@ namespace vnd {
         Transpiler(const std::string_view &input, const std::string_view &filename);
         void transpile();
 
-    private:
-        /**
-         * Creates a mock file.
-         */
-        void createMockfile();
         /**
          * @brief Maps a given type to a corresponding string view.
          *
@@ -22,6 +17,12 @@ namespace vnd {
          * @return The corresponding string view.
          */
         static auto mapType(const std::string_view type) -> std::string_view;
+
+    private:
+        /**
+         * Creates a mock file.
+         */
+        void createMockfile();
         /**
          * Transpiles the given ASTNode into a string representation.
          *
