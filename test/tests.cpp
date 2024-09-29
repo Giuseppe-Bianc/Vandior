@@ -2323,7 +2323,7 @@ TEST_CASE("NullptrNode basic functionality", "[NullptrNode]") {
 
 // NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("Transpiler creates correct folders and files", "[transpiler]") {
-    const std::string input = "x:i32[2] =  {{-22, 23}, function(1, 2)}, c:char = 'c' ,c:string = \"ssssss\", b:bool = true";
+    const std::string input = "x:i32[2] =  {{-22, 23}, function(1, 2)}, c:char = 'c' ,c:string = \"ssssss\", b:bool = true, cmp:c32 = 11.2if, dcmp: c64 = 11.2i, c: char = nullptr, cc:i32 = 12 + 21, cc + 12";
     const std::string transpilerfilename = "testfile.vnd";
 
     // Create a Transpiler instance

@@ -145,16 +145,16 @@ inline std::string get_current_timestamp() {
     return FORMAT("{}.{:03d}", std::chrono::system_clock::from_time_t(std::chrono::system_clock::to_time_t(now)), ms.count());
 }
 
-// Hypothetical implementation using C++23-like features
+// clang-format off
 inline void my_error_handler(const std::string &msg) {
     const std::source_location &location = std::source_location::current();
     std::cerr << FORMAT("Error occurred:\n  Timestamp: {}\n", get_current_timestamp());
     std::cerr << FORMAT("  Thread ID: {}\n", std::this_thread::get_id());
     std::cerr << FORMAT("  Message: {}\n", msg);
-    std::cerr << FORMAT("  Function: {}, File: {}, Line: {}, Column: {}\n", location.function_name(), location.file_name(), location.line(),
-                        location.column());
+    std::cerr << FORMAT("  Function: {}, File: {}, Line: {}, Column: {}\n", location.function_name(), location.file_name(), location.line(),location.column());
 }
-// C:\Users\gbian\AppData\Local\Programs\CLion
+// clang-format on
+
 /**
  * @brief Initialize the logging system with default configurations.
  * @details This macro initializes the logging system with a default pattern and creates a console logger.
