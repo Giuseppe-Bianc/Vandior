@@ -48,7 +48,7 @@ static inline constexpr auto pIntInvArg = "parse_integer: invalid argument";
 static inline constexpr auto pIntOutRng = "parse_integer: result out of range";
 static inline constexpr auto pIntTrlChr = "parse_integer: trailing characters";
 // clang-format off
-static inline constexpr auto long_input = "x:i32[2] =  {{-22, 23}, function(1, 2)}, c:char = 'c' ,c:string = \"ssssss\", b:bool = true, cmp:c32 = 11.2if, dcmp: c64 = 11.2i, c: char = nullptr, cc:i32 = 12 + 21, cc + 12, xx:i32[2] = {2, 2}, xxx:i32[] = {2, 2, 2, 2}, ssss: tr = dnddd"sv;
+static inline constexpr auto long_input = R"(x:i32[2] =  {{-22, 23}, function(1, 2)}, c:char = 'c' ,c:string = "ssssss", b:bool = true, cmp:c32 = 11.2if, dcmp: c64 = 11.2i, c: char = nullptr, cc:i32 = 12 + 21, cc + 12, xx:i32[2] = {2, 2}, xxx:i32[] = {2, 2, 2, 2}, ssss: tr = dnddd)"sv;
 // clang-format on
 static inline constexpr std::string_view ffilename = "file1.cpp";
 static inline constexpr std::string_view filename2 = "example.cpp";
