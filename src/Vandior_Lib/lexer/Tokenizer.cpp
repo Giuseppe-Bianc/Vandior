@@ -111,7 +111,6 @@ namespace vnd {
     }
 
     void Tokenizer::kewordType(const std::string_view &value, TokenType &type) noexcept {
-
         // Use std::find_if to search for the keyword type
         const auto it = std::ranges::find_if(keywordArray, [&value](const auto &pair) { return pair.first == value; });
 

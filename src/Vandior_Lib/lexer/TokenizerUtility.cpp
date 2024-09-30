@@ -7,13 +7,9 @@ namespace vnd {
     static inline constexpr std::array<char, 12> operators = {starcr, slashcr, '=', '<', '>', '!', '|', '&', '+', '-', '^', '%'};
     static inline constexpr std::array<char, 6> brackets = {'(', ')', '[', ']', '{', '}'};
 
-    bool TokenizerUtility::isOperator(const char aChar) {
-        return std::ranges::find(operators, aChar) != operators.end();
-    }
+    bool TokenizerUtility::isOperator(const char aChar) { return std::ranges::find(operators, aChar) != operators.end(); }
     bool TokenizerUtility::isPlusOrMinus(const char cara) noexcept { return cara == plusscr || cara == minuscs; }
-    bool TokenizerUtility::isBrackets(const char cha) {
-        return std::ranges::find(brackets, cha) != brackets.end();
-    }
+    bool TokenizerUtility::isBrackets(const char cha) { return std::ranges::find(brackets, cha) != brackets.end(); }
     bool TokenizerUtility::isDot(const char cha) noexcept { return cha == '.'; }
     bool TokenizerUtility::isApostrophe(const char cha) noexcept { return cha == '\''; }
     bool TokenizerUtility::isQuotation(const char cha) noexcept { return cha == '\"'; }
