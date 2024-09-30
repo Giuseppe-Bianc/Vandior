@@ -14,6 +14,18 @@ namespace vnd {
         {"!=", TokenType::NOTEQUAL}, {"&&", TokenType::ANDAND}, {"||", TokenType::OROR},
         {"++", TokenType::PLUSPLUS}, {"--", TokenType::MINUSMINUS}
     }};
+    static inline constexpr std::array<std::pair<std::string_view, TokenType>, 15> typeArray = {{
+        {"i8"sv, TokenType::TYPE_I8},   {"i16"sv, TokenType::TYPE_I16}, {"i32"sv, TokenType::TYPE_I32},   {"i64"sv, TokenType::TYPE_I64},       {"u8"sv, TokenType::TYPE_U8},
+        {"u16"sv, TokenType::TYPE_U16}, {"u32"sv, TokenType::TYPE_U32}, {"u64"sv, TokenType::TYPE_U64},   {"f32"sv, TokenType::TYPE_F32},       {"f64"sv, TokenType::TYPE_F64},
+        {"c32"sv, TokenType::TYPE_C32}, {"c64"sv, TokenType::TYPE_C64}, {"char"sv, TokenType::TYPE_CHAR}, {"string"sv, TokenType::TYPE_STRING}, {"bool"sv, TokenType::TYPE_BOOL}
+    }};
+    static inline constexpr std::array<std::pair<std::string_view, TokenType>, 15> keywordArray = {{
+        {"main"sv, TokenType::K_MAIN}, {"var"sv, TokenType::K_VAR},{"val"sv, TokenType::K_VAR},
+        {"const"sv, TokenType::K_VAR},{"if"sv, TokenType::K_IF}, {"while"sv, TokenType::K_WHILE},
+        {"else"sv, TokenType::K_ELSE},{"for"sv, TokenType::K_FOR},{"break"sv, TokenType::K_BREAK},
+        {"continue"sv, TokenType::K_BREAK}, {"fun"sv, TokenType::K_FUN}, {"return"sv, TokenType::K_RETURN},
+        {"nullptr"sv, TokenType::K_NULLPTR},{"true"sv, TokenType::BOOLEAN},{"false"sv, TokenType::BOOLEAN}
+    }};
 
     // clang-format on
 
@@ -89,31 +101,27 @@ namespace vnd {
     }
 
     DISABLE_WARNINGS_PUSH(26446 26447)
-    // NOLINTBEGIN(*-identifier-length)
+    // NOLINTBEGIN(*-identifier-length, *-qualified-auto)
     void Tokenizer::getType(const std::string_view &value, TokenType &type) noexcept {
-        using enum TokenType;
-        static const std::unordered_map<std::string_view, TokenType> typeMap = {
-            {"i8"sv, TYPE_I8},   {"i16"sv, TYPE_I16}, {"i32"sv, TYPE_I32},   {"i64"sv, TYPE_I64},       {"u8"sv, TYPE_U8},
-            {"u16"sv, TYPE_U16}, {"u32"sv, TYPE_U32}, {"u64"sv, TYPE_U64},   {"f32"sv, TYPE_F32},       {"f64"sv, TYPE_F64},
-            {"c32"sv, TYPE_C32}, {"c64"sv, TYPE_C64}, {"char"sv, TYPE_CHAR}, {"string"sv, TYPE_STRING}, {"bool"sv, TYPE_BOOL}};
+        const auto it = std::ranges::find_if(typeArray, [&value](const auto &pair) { return pair.first == value; });
 
-        if(const auto it = typeMap.find(value); it != typeMap.end()) [[likely]] { type = it->second; }
+        if(it != typeArray.end()) {
+            type = it->second;  // Assign the found type
+        }
     }
 
     void Tokenizer::kewordType(const std::string_view &value, TokenType &type) noexcept {
-        using enum TokenType;
-        static const std::unordered_map<std::string_view, TokenType> keywordMap = {
-            {"main"sv, K_MAIN},   {"var"sv, K_VAR},       {"val"sv, K_VAR},         {"const"sv, K_VAR},   {"if"sv, K_IF},
-            {"while"sv, K_WHILE}, {"else"sv, K_ELSE},     {"for"sv, K_FOR},         {"break"sv, K_BREAK}, {"continue"sv, K_BREAK},
-            {"fun"sv, K_FUN},     {"return"sv, K_RETURN}, {"nullptr"sv, K_NULLPTR}, {"true"sv, BOOLEAN},  {"false"sv, BOOLEAN}};
 
-        if(const auto it = keywordMap.find(value); it != keywordMap.end()) [[likely]] {
-            type = it->second;
+        // Use std::find_if to search for the keyword type
+        const auto it = std::ranges::find_if(keywordArray, [&value](const auto &pair) { return pair.first == value; });
+
+        if(it != keywordArray.end()) {
+            type = it->second;  // Assign the found type
         } else [[unlikely]] {
-            getType(value, type);
+            getType(value, type);  // Call getType for other types
         }
     }
-    // NOLINTEND(*-identifier-length)
+    // NOLINTEND(*-identifier-length, *-qualified-auto)
     DISABLE_WARNINGS_POP()
 
     bool Tokenizer::inTextAndE() const noexcept { return positionIsInText() && std::toupper(_input[position]) == ECR; }

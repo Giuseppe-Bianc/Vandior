@@ -4,14 +4,15 @@ using namespace std::literals::string_view_literals;
 
 DISABLE_WARNINGS_PUSH(26446 26497)
 namespace vnd {
+    static inline constexpr std::array<char, 12> operators = {starcr, slashcr, '=', '<', '>', '!', '|', '&', '+', '-', '^', '%'};
+    static inline constexpr std::array<char, 6> brackets = {'(', ')', '[', ']', '{', '}'};
+
     bool TokenizerUtility::isOperator(const char aChar) {
-        static const std::unordered_set<char> operators = {starcr, slashcr, '=', '<', '>', '!', '|', '&', '+', '-', '^', '%'};
-        return operators.contains(aChar);
+        return std::ranges::find(operators, aChar) != operators.end();
     }
     bool TokenizerUtility::isPlusOrMinus(const char cara) noexcept { return cara == plusscr || cara == minuscs; }
     bool TokenizerUtility::isBrackets(const char cha) {
-        static const std::unordered_set<char> operators = {'(', ')', '[', ']', '{', '}'};
-        return operators.contains(cha);
+        return std::ranges::find(brackets, cha) != brackets.end();
     }
     bool TokenizerUtility::isDot(const char cha) noexcept { return cha == '.'; }
     bool TokenizerUtility::isApostrophe(const char cha) noexcept { return cha == '\''; }
