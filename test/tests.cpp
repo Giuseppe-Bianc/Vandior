@@ -167,23 +167,15 @@ TEST_CASE("glm::mat formater", "[FMT]") {
 
 
 TEST_CASE("std::complex formater", "[FMT]") {
-    std::complex<float> complexFloat(1.0F, 2.0F);
-    std::complex<double> complexDouble(3.0, 4.0);
-    std::complex<long double> complexLongDouble(5.0L, 6.0L);
-
-    REQ_FORMAT(complexFloat, "(1, 2)");
-    REQ_FORMAT(complexDouble, "(3, 4)");
-    REQ_FORMAT(complexLongDouble, "(5, 6)");
+    REQ_FORMAT(std::complex<float>(1.0F, 2.0F), "(1, 2)");
+    REQ_FORMAT(std::complex<double>(3.0, 4.0), "(3, 4)");
+    REQ_FORMAT(std::complex<long double>(5.0L, 6.0L), "(5, 6)");
 }
 
 TEST_CASE("std::complex formater 2", "[FMT]") {
-    std::complex<float> complexFloat(1.1F, 2.1F);
-    std::complex<double> complexDouble(3.1, 4.1);
-    std::complex<long double> complexLongDouble(5.1L, 6.1L);
-
-    REQ_FORMAT(complexFloat, "(1.1, 2.1)");
-    REQ_FORMAT(complexDouble, "(3.1, 4.1)");
-    REQ_FORMAT(complexLongDouble, "(5.1, 6.1)");
+    REQ_FORMAT(std::complex<float>(1.1F, 2.1F), "(1.1, 2.1)");
+    REQ_FORMAT(std::complex<double>(3.1, 4.1), "(3.1, 4.1)");
+    REQ_FORMAT(std::complex<long double>(5.1L, 6.1L), "(5.1, 6.1)");
 }
 
 // clang-format on
