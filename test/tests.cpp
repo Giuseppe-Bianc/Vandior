@@ -680,6 +680,7 @@ TEST_CASE("FolderCreationResult operator<< outputs correctly", "[FolderCreationR
     }
 }
 
+// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("FolderCreationResult: Equality and Swap", "[FolderCreationResult]") {
     fs::path path1("/folder1");
     fs::path path2("/folder2");
@@ -1610,6 +1611,7 @@ TEST_CASE("Parser::convertToIntformOct tests") {
     }
 }
 
+// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("comp_NodeType function", "[parser]") {
     REQUIRE(std::string(comp_NodeType(NodeType::BinaryExpression)) == "BIN_EXP");
     REQUIRE(std::string(comp_NodeType(NodeType::UnaryExpression)) == "UN_EXP");
@@ -2062,6 +2064,24 @@ TEST_CASE("Parser emit exception for nonexistent unary operator", "[parser]") {
 #endif
 }
 
+// Test cases for NodeType formatter
+// NOLINTNEXTLINE(*-function-cognitive-complexity)
+TEST_CASE("NodeType formatter works as expected", "[formatter]") {
+    using enum NodeType;  // shorthand for enum access
+    REQ_FORMAT(BinaryExpression, "BINARY_EXPRESION");
+    REQ_FORMAT(UnaryExpression, "UNARY_EXPRESION");
+    REQ_FORMAT(Number, "NUMBER");
+    REQ_FORMAT(Boolean, "BOOLEAN");
+    REQ_FORMAT(Char, "CHAR");
+    REQ_FORMAT(String, "STRING");
+    REQ_FORMAT(Variable, "VARIABLE");
+    REQ_FORMAT(Nullptr, "NULLPTR");
+    REQ_FORMAT(Type, "TYPE");
+    REQ_FORMAT(Index, "INDEX");
+    REQ_FORMAT(Array, "ARRAY");
+    REQ_FORMAT(Statement, "STATEMENT");
+}
+
 // NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("Parser emit i8 TypeNode node", "[parser]") {
     vnd::Parser parser("i8", filename);
@@ -2302,6 +2322,7 @@ TEST_CASE("Parser emit callable node", "[parser]") {
     REQUIRE(variableNode->get_call() != nullptr);
 }
 
+// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("NullptrNode basic functionality", "[NullptrNode]") {
     vnd::Parser parser("nullptr", filename);
     const auto ast = parser.parse();
@@ -2368,6 +2389,7 @@ TEST_CASE("Transpiler creates correct folders and files", "[transpiler]") {
     }
 }
 
+// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("Transpiler::mapType returns correct type mappings", "[transpiler]") {
     SECTION("Valid type mappings") {
         REQUIRE(vnd::Transpiler::mapType("i8"sv) == "int8_t"sv);
