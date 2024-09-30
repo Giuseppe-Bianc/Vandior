@@ -447,12 +447,13 @@ namespace {
         token.setColumn(1);
     }
     // Helper function to create a file with content
-    // NOLINTNEXTLINE(*-easily-swappable-parameters)
+    // NOLINTBEGIN(*-easily-swappable-parameters, *-signed-bitwise)
     void createFile(const std::string &infilename, const std::string &content) {
-        std::ofstream ofs(infilename, std::ios::out | std::ios::binary);  // NOLINT(*-signed-bitwise)
+        std::ofstream ofs(infilename, std::ios::out | std::ios::binary);
         ofs << content;
         ofs.close();
     }
+    // NOLINTEND(*-easily-swappable-parameters, *-signed-bitwise)
 }  // namespace
 
 TEST_CASE("default constructed token", "[token]") {
