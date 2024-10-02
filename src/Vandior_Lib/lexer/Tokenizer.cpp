@@ -7,7 +7,7 @@ namespace vnd {
     static inline constexpr auto icr = 'i';
     static inline constexpr auto fcr = 'f';
     // clang-format off
-    static constexpr std::array<std::pair<std::string_view, TokenType>, 14> multiCharOperators = {{
+    static inline constexpr std::array<std::pair<std::string_view, TokenType>, 14> multiCharOperators = {{
         {"+=", TokenType::PLUSEQUAL}, {"-=", TokenType::MINUSEQUAL}, {"*=", TokenType::STAREQUAL},
         {"/=", TokenType::DIVIDEEQUAL}, {"^=", TokenType::XOREQUAL}, {"%=", TokenType::PERCENTEQUAL},
         {"==", TokenType::EQUALEQUAL}, {">=", TokenType::GREATEREQUAL}, {"<=", TokenType::LESSEQUAL},
@@ -44,7 +44,6 @@ namespace vnd {
                 tokens.emplace_back(handleHexadecimalOrOctal());
             } else if(C_BOOL(std::isspace(currentChar))) [[likely]] {
                 handleWhiteSpace();
-                continue;  // Continue the loop to get the next token
             } else if(TokenizerUtility::isComment(_input, position)) {
                 tokens.emplace_back(handleComment());
             } else if(TokenizerUtility::isOperator(currentChar)) [[likely]] {
@@ -370,29 +369,6 @@ namespace vnd {
 
     std::string Tokenizer::getContextLine(const std::size_t &lineStart, const std::size_t &lineEnd) const {
         return extract_context(lineStart, lineEnd).append(NEWL);
-    }
-
-    /**
-     * @brief Extracts leading tabs from the given string view.
-     *
-     * This function removes leading tab characters from the beginning of the
-     * provided string view and returns the modified string view without those tabs.
-     *
-     * @param input The input string view from which tabs are to be extracted.
-     * @return A string view containing the input string without leading tabs.
-     * @note The function is marked as [[nodiscard]] to ensure that the return value
-     * is not discarded unintentionally.
-     * @note The function is marked as noexcept to indicate that it does not throw
-     * any exceptions.
-     */
-    [[nodiscard]] std::string_view extractTabs(const std::string_view &input) noexcept {
-        // Find the position of the first character that is not a tab
-        const auto pos = input.find_first_not_of(CTAB);
-
-        // Return a substring starting from the beginning of the input string view
-        // up to the position of the first non-tab character found.
-        // If no non-tab character is found, return an empty string view.
-        return input.substr(0, pos == std::string_view::npos ? 0 : pos);
     }
 
     std::string Tokenizer::getHighlighting(const std::size_t &lineStart, const std::size_t &lineEnd, const std::string_view value) const {

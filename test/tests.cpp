@@ -69,6 +69,65 @@ static inline constexpr std::size_t timestampSize = 24;
 #define REQ_FORMAT_COMPTOK(type, string) REQUIRE(FORMAT("{}", comp_tokType(type)) == (string));  // NOLINT(*-macro-usage)
 
 // NOLINTNEXTLINE(*-function-cognitive-complexity)
+TEST_CASE("extractTabs basic functionality", "[extractTabs]") {
+
+    SECTION("String with only tabs") {
+        auto input = "\t\t\t\t"sv;
+        auto result = extractTabs(input);
+        REQUIRE(result == input);  // Only tabs, so the result should be the same as the input
+    }
+
+    SECTION("String with tabs followed by other characters") {
+        auto input = "\t\t\tHello, World!"sv;
+        auto result = extractTabs(input);
+        REQUIRE(result == "\t\t\t");
+    }
+
+    SECTION("String without any tabs") {
+        auto input = "Hello, World!"sv;
+        auto result = extractTabs(input);
+        REQUIRE(result.empty());  // No tabs, so the result should be empty
+    }
+
+    SECTION("String with no leading tabs but tabs in middle") {
+        auto input = "Hello\tWorld"sv;
+        auto result = extractTabs(input);
+        REQUIRE(result.empty());  // No leading tabs
+    }
+
+    SECTION("Empty string") {
+        std::string_view input;
+        std::string_view result = extractTabs(input);
+        REQUIRE(result.empty());  // Empty input should return empty result
+    }
+
+    SECTION("String with mixed whitespace and tabs") {
+        auto input = "\t \t\tHello"sv;
+        auto result = extractTabs(input);
+        REQUIRE(result == "\t");
+    }
+
+    SECTION("String with multiple tabs and spaces") {
+        auto input = "\t\t  \t\tWorld"sv;
+        auto result = extractTabs(input);
+        REQUIRE(result == "\t\t");  // Only leading tabs should be extracted, ignoring spaces
+    }
+
+    SECTION("String with only spaces") {
+        auto input = "     "sv;
+        auto result = extractTabs(input);
+        REQUIRE(result.empty());  // No tabs should result in an empty output
+    }
+
+    SECTION("String with a mix of leading tabs and spaces") {
+        auto input = "\t \t Hello"sv;
+        auto result = extractTabs(input);
+        REQUIRE(result == "\t");  // Only tabs until first non-tab character
+    }
+}
+
+
+// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("get_current_timestamp() tests", "[timestamp]") {
     SECTION("Basic test") {
         auto timestamp = get_current_timestamp();

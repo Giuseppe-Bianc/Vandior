@@ -155,6 +155,25 @@ template <std::integral T> [[nodiscard]] constexpr auto find_divisors(T num) noe
 }
 
 /**
+ * @brief Extracts leading tabs from the given string view.
+ *
+ * This function removes leading tab characters from the beginning of the
+ * provided string view and returns the modified string view without those tabs.
+ *
+ * @param input The input string view from which tabs are to be extracted.
+ * @return A string view containing the input string without leading tabs.
+ * @note The function is marked as [[nodiscard]] to ensure that the return value
+ * is not discarded unintentionally.
+ * @note The function is marked as noexcept to indicate that it does not throw
+ * any exceptions.
+ */
+[[nodiscard]] static constexpr std::string_view extractTabs(const std::string_view &input) noexcept {
+    const auto pos = input.find_first_not_of(CTAB);
+    return pos == std::string_view::npos ? input : input.substr(0, pos);
+}
+
+
+/**
  * @brief Converts the given parameter into a string literal.
  * This macro converts the provided parameter into a string literal.
  * For example, if `x` is provided as `param`, the macro expands to `"param"`.
