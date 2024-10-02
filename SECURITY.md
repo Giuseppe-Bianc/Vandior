@@ -30,10 +30,10 @@ For secure communication of sensitive information, please request our **PGP key*
 We actively support the following versions of our project. Please ensure you are using the most up-to-date version to
 benefit from security fixes:
 
-| Version | Status            |
-|---------|-------------------|
-| 1.x.x   | :white_check_mark |
-| 0.x.x   | :x:               |
+| Version | Status             |
+|---------|--------------------|
+| 1.x.x   | :white_check_mark: |
+| 0.x.x   | :x:                |
 
 We strongly recommend upgrading to supported versions to ensure you receive the latest security updates.
 
