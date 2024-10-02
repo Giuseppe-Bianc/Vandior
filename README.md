@@ -49,18 +49,32 @@ Flags:
 - --compile (-c): compiles the resulting C++ file if no error occurs;
 - --run (-r): Compiles and executes the resulting C++ file if no error occurs.
 
-Using -c and -r together is the same as using only -r.
+[//]: # (Using -c and -r together is the same as using only -r.)
 
-To manually compile the output C++ code:
+[//]: # ()
+[//]: # ()
+[//]: # (To manually compile the output C++ code:)
 
-### Windows
+[//]: # ()
+[//]: # ()
+[//]: # (### Windows)
 
-```powershell
-g++ -std=c++20 input_file.cpp -I %VNHOME%
-```
+[//]: # ()
+[//]: # ()
+[//]: # (```powershell)
 
-### Unix
+[//]: # ()
+[//]: # (g++ -std=c++20 input_file.cpp -I %VNHOME%)
 
-```bash
-g++ -std=c++20 input_file.cpp -I $VNHOME
-```
+[//]: # ()
+[//]: # (```)
+
+[//]: # ()
+[//]: # (### Unix)
+
+[//]: # ()
+[//]: # (```bash)
+
+[//]: # (g++ -std=c++20 input_file.cpp -I $VNHOME)
+
+[//]: # (```)
