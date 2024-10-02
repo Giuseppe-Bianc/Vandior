@@ -70,7 +70,6 @@ static inline constexpr std::size_t timestampSize = 24;
 
 // NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("extractTabs basic functionality", "[extractTabs]") {
-
     SECTION("String with only tabs") {
         auto input = "\t\t\t\t"sv;
         auto result = extractTabs(input);
@@ -125,7 +124,6 @@ TEST_CASE("extractTabs basic functionality", "[extractTabs]") {
         REQUIRE(result == "\t");  // Only tabs until first non-tab character
     }
 }
-
 
 // NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("get_current_timestamp() tests", "[timestamp]") {

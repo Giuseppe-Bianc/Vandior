@@ -172,7 +172,6 @@ template <std::integral T> [[nodiscard]] constexpr auto find_divisors(T num) noe
     return pos == std::string_view::npos ? input : input.substr(0, pos);
 }
 
-
 /**
  * @brief Converts the given parameter into a string literal.
  * This macro converts the provided parameter into a string literal.
