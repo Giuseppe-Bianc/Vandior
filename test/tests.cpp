@@ -1,5 +1,5 @@
 // clang-format off
-// NOLINTBEGIN(*-include-cleaner, *-avoid-magic-numbers, *-magic-numbers, *-unchecked-optional-access, *-avoid-do-while, *-use-anonymous-namespace, *-qualified-auto, *-suspicious-stringview-data-usage, *-err58-cpp)
+// NOLINTBEGIN(*-include-cleaner, *-avoid-magic-numbers, *-magic-numbers, *-unchecked-optional-access, *-avoid-do-while, *-use-anonymous-namespace, *-qualified-auto, *-suspicious-stringview-data-usage, *-err58-cpp, *-function-cognitive-complexity, *-macro-usage)
 // clang-format on
 
 #include <catch2/catch_test_macros.hpp>
@@ -65,10 +65,9 @@ static inline constexpr long long int timerSleap2 = 5;
 static inline constexpr std::size_t timerCicles = 1000000;
 static inline constexpr long double timerResolution = 5.0L;
 static inline constexpr std::size_t timestampSize = 24;
-#define REQ_FORMAT(type, string) REQUIRE(FORMAT("{}", type) == (string));                        // NOLINT(*-macro-usage)
-#define REQ_FORMAT_COMPTOK(type, string) REQUIRE(FORMAT("{}", comp_tokType(type)) == (string));  // NOLINT(*-macro-usage)
+#define REQ_FORMAT(type, string) REQUIRE(FORMAT("{}", type) == (string));
+#define REQ_FORMAT_COMPTOK(type, string) REQUIRE(FORMAT("{}", comp_tokType(type)) == (string));
 
-// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("extractTabs basic functionality", "[extractTabs]") {
     SECTION("String with only tabs") {
         const auto input = "\t\t\t\t"sv;
@@ -125,7 +124,6 @@ TEST_CASE("extractTabs basic functionality", "[extractTabs]") {
     }
 }
 
-// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("get_current_timestamp() tests", "[timestamp]") {
     SECTION("Basic test") {
         auto timestamp = get_current_timestamp();
@@ -153,7 +151,6 @@ TEST_CASE("get_current_timestamp() tests", "[timestamp]") {
     }
 }
 
-// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("my_error_handler(const std::string&) tests", "[error_handler]") {
     SECTION("Basic error handling") {
         const std::stringstream sss;
@@ -195,7 +192,6 @@ TEST_CASE("my_error_handler(const std::string&) tests", "[error_handler]") {
 
 TEST_CASE("std::filesystem::path formater", "[FMT]") { REQ_FORMAT(std::filesystem::path("../ssss"), "../ssss"); }
 
-// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("glm::vec formater", "[FMT]") {
     REQ_FORMAT(glm::vec2(0.0F, 0.0F), "vec2(0, 0)");
     REQ_FORMAT(glm::dvec2(0.0, 0.0), "dvec2(0, 0)");
@@ -209,7 +205,6 @@ TEST_CASE("glm::vec formater", "[FMT]") {
 }
 
 // clang-format off
-// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("glm::mat formater", "[FMT]") {
     REQ_FORMAT(glm::mat2(0.0F, 0.0F, 0.0F, 0.0F), "mat2x2((0,0), (0,0))");
     REQ_FORMAT(glm::dmat2(0.0, 0.0, 0.0, 0.0), "dmat2x2((0,0), (0,0))");
@@ -348,7 +343,6 @@ TEST_CASE("CodeSourceLocation toString() produces expected string", "[CodeSource
     REQUIRE(location.toString() == "(file:example.cpp, line:42, column:10)");
 }
 
-// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("corrected format for Tokentype", "[token_type]") {
     using enum vnd::TokenType;
     REQ_FORMAT(INTEGER, "INTEGER")
@@ -421,7 +415,6 @@ TEST_CASE("corrected format for Tokentype", "[token_type]") {
     REQ_FORMAT(UNKNOWN, "UNKNOWN")
 }
 
-// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("corrected format for Tokentype compat to string", "[token_type]") {
     using enum vnd::TokenType;
     REQ_FORMAT_COMPTOK(INTEGER, "INT")
@@ -532,7 +525,6 @@ TEST_CASE("default constructed token toString", "[token]") {
     REQUIRE(token.to_string() == "(type: UNKNOWN, value: '', source location:(file:unknown, line:0, column:0))");
 }
 
-// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("default constructed token format", "[token]") {
     vnd::Token token{};
     REQUIRE(token.getType() == vnd::TokenType::UNKNOWN);
@@ -544,7 +536,6 @@ TEST_CASE("default constructed token format", "[token]") {
     REQUIRE(token.compat_to_string() == "(typ: UNKNOWN, val: '', sl:(f:unknown, l:0, c:0))");
 }
 
-// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("default constructed token set propriety", "[token]") {
     using enum vnd::TokenType;
     vnd::Token token{};
@@ -561,7 +552,6 @@ TEST_CASE("default constructed token set propriety", "[token]") {
     REQUIRE(token.getColumn() == 1);
 }
 
-// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("default constructed token isType", "[token]") {
     using enum vnd::TokenType;
     vnd::Token token{};
@@ -580,7 +570,6 @@ TEST_CASE("default constructed token isType", "[token]") {
     REQUIRE(token.getColumn() == 1);
 }
 
-// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("default constructed token set propriety tostring", "[token]") {
     using enum vnd::TokenType;
     vnd::Token token{};
@@ -604,7 +593,6 @@ TEST_CASE("default constructed token set propriety tostring", "[token]") {
 #endif
 }
 
-// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("construct a empty value token", "[token]") {
     using enum vnd::TokenType;
     const vnd::Token token{UNKNOWN, vnd::CodeSourceLocation{}};
@@ -629,7 +617,6 @@ TEST_CASE("construct a EOFT token", "[token]") {  // NOLINT(*-function-cognitive
     REQUIRE(token.compat_to_string() == "(typ: EOF, sl:(f:, l:0, c:0))");
 }
 
-// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("FolderCreationResult Constructor", "[FolderCreationResult]") {
     SECTION("Default constructor") {
         const vnd::FolderCreationResult result;
@@ -644,7 +631,6 @@ TEST_CASE("FolderCreationResult Constructor", "[FolderCreationResult]") {
     }
 }
 
-// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("FolderCreationResult Setters", "[FolderCreationResult]") {
     vnd::FolderCreationResult result;
 
@@ -665,7 +651,6 @@ TEST_CASE("FolderCreationResult Setters", "[FolderCreationResult]") {
     }
 }
 
-// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("FolderCreationResult operator<< outputs correctly", "[FolderCreationResult]") {
     SECTION("Test with successful folder creation and valid path") {
         // Arrange
@@ -730,7 +715,6 @@ TEST_CASE("FolderCreationResult operator<< outputs correctly", "[FolderCreationR
     }
 }
 
-// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("FolderCreationResult: Equality and Swap", "[FolderCreationResult]") {
     fs::path path1("/folder1");
     fs::path path2("/folder2");
@@ -753,7 +737,6 @@ TEST_CASE("FolderCreationResult: Equality and Swap", "[FolderCreationResult]") {
     }
 }
 
-// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("FolderCreationResult Hash Value", "[FolderCreationResult]") {
     SECTION("Hash value is consistent for the same object") {
         const vnd::FolderCreationResult result(true, fs::path("/test/directory"));
@@ -831,7 +814,6 @@ TEST_CASE("FolderCreationResult Hash Value", "[FolderCreationResult]") {
     }
 }
 
-// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("FolderCreationResult Folder Creation Functions", "[FolderCreationResult]") {
     // Create a temporary directory for testing
     auto tempDir = fs::temp_directory_path() / "vnd_test";
@@ -911,7 +893,6 @@ TEST_CASE("vnd::readFromFile - Valid File", "[file]") {
         REQUIRE(result == content);  // Ensure the content matches
     }
 
-    // Clean up after test
     [[maybe_unused]] auto unsed = fs::remove(infilename);
 }
 
@@ -934,7 +915,6 @@ TEST_CASE("vnd::readFromFile - Non-regular File", "[file]") {
         REQUIRE_THROWS_MATCHES(vnd::readFromFile(dirName), std::runtime_error, Message(FORMAT("Path is not a regular file: {}", dirName)));
     }
 
-    // Clean up after test
     [[maybe_unused]] auto unsed = fs::remove(dirName);
 }
 
@@ -949,7 +929,6 @@ TEST_CASE("vnd::readFromFile - Empty File", "[file]") {
         REQUIRE(result.empty());  // Ensure the result is empty
     }
 
-    // Clean up after test
     [[maybe_unused]] auto unsed = fs::remove(emtfilename);
 }
 
@@ -965,7 +944,6 @@ TEST_CASE("vnd::readFromFile - Large File", "[file]") {
         REQUIRE(result == largeContent);  // Ensure content matches
     }
 
-    // Clean up after test
     [[maybe_unused]] auto unsed = fs::remove(lrgfilename);
 }
 
@@ -980,8 +958,6 @@ TEST_CASE("vnd::readFromFile - Large File", "[file]") {
     REQUIRE(deserializedResult.success() == true);
     REQUIRE(deserializedResult.path() == fs::path("/test/path"));
 }*/
-
-// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("default constructed token set propriety format", "[token]") {
     using enum vnd::TokenType;
     vnd::Token token{};
@@ -1085,7 +1061,6 @@ TEST_CASE("tokenizer emit integer token new line", "[tokenizer]") {
     REQUIRE(tokens[3] == vnd::Token(inte, "34000000", vnd::CodeSourceLocation(filename, 2, 5)));
 }
 
-// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("tokenizer emit double token", "[tokenizer]") {
     vnd::Tokenizer tokenizer{"1. 1.0 1e+1 1E+1 1.1e+1 1.1E+1 1e-1 1E-1 1.1e-1 1.1E-1 .4e12 4i 5.4if .7f", filename};
     std::vector<vnd::Token> tokens = tokenizer.tokenize();
@@ -1106,7 +1081,6 @@ TEST_CASE("tokenizer emit double token", "[tokenizer]") {
     REQUIRE(tokens[13] == vnd::Token(doub, ".7f", vnd::CodeSourceLocation(filename, 1, 71)));
 }
 
-// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("tokenizer emit operator token", "[tokenizer]") {
     using enum vnd::TokenType;
     vnd::Tokenizer tokenizer{"* / = , : < > ! | & + - ^ . %", filename};
@@ -1228,7 +1202,6 @@ TEST_CASE("tokenizer emit unknown token on non closed char token", "[tokenizer]"
     REQUIRE(tokens[0] == vnd::Token(vnd::TokenType::UNKNOWN, R"(a")", vnd::CodeSourceLocation(filename, 1, 2)));
 }
 
-// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("tokenizer emit comment token", "[tokenizer]") {
     SECTION("Basic single-line comment") {
         constexpr std::string_view code2 = R"(// line comment)";
@@ -1259,7 +1232,6 @@ TEST_CASE("tokenizer emit comment token", "[tokenizer]") {
     }
 }
 
-// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("tokenizer emit multiline comment token", "[tokenizer]") {
     SECTION("Basic multi-line comment") {
         constexpr std::string_view code2 = R"(/*multi\nline\ncomment*/)";
@@ -1279,7 +1251,6 @@ TEST_CASE("tokenizer emit multiline comment token", "[tokenizer]") {
     }
 }
 
-// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("tokenizer emit mixed Comments", "[tokenizer]") {
     SECTION("Single and multi-line comments") {
         const std::string input = "// Single line\n/* Multi-line */";
@@ -1319,16 +1290,13 @@ TEST_CASE("ASTNode type conversion using as<T>()", "[ast]") {
     const vnd::Token token{vnd::TokenType::IDENTIFIER, "id", vnd::CodeSourceLocation{filename, t_line, t_colum}};
     vnd::VariableNode dummyNode("id", token);
 
-    // Test conversion to base type (should work)
     vnd::ASTNode *basePtr = &dummyNode;
     auto *dummyPtr = basePtr->as<vnd::VariableNode>();
     REQUIRE(dummyPtr != nullptr);
 
-    // Test conversion to derived type (should fail)
     auto *anotherPtr = basePtr->as<vnd::Token>();
     REQUIRE(anotherPtr == nullptr);
 
-    // Test const conversion
     const vnd::ASTNode *constBasePtr = &dummyNode;
     const auto *constDummyPtr = constBasePtr->as<vnd::VariableNode>();
     REQUIRE(constDummyPtr != nullptr);
@@ -1341,16 +1309,13 @@ TEST_CASE("ASTNode type conversion using safe_as<T>()", "[ast]") {
     const vnd::Token token{vnd::TokenType::IDENTIFIER, "id", vnd::CodeSourceLocation{filename, t_line, t_colum}};
     vnd::VariableNode dummyNode("id", token);
 
-    // Test conversion to base type (should work)
     vnd::ASTNode *basePtr = &dummyNode;
     auto *dummyPtr = basePtr->as<vnd::VariableNode>();
     REQUIRE(dummyPtr != nullptr);
 
-    // Test conversion to derived type (should fail)
     auto *anotherPtr = basePtr->as<vnd::Token>();
     REQUIRE(anotherPtr == nullptr);
 
-    // Test const conversion
     const vnd::ASTNode *constBasePtr = &dummyNode;
     const auto *constDummyPtr = constBasePtr->safe_as<vnd::VariableNode>();
     REQUIRE(constDummyPtr != nullptr);
@@ -1377,7 +1342,6 @@ TEST_CASE("Parser emit boolean literal node", "[parser]") {
     REQUIRE(number->get_value() == true);
 }
 
-// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("boolean node swap", "[parser]") {
     auto token1 = vnd::Token{vnd::TokenType::BOOLEAN, "true", vnd::CodeSourceLocation{filename, t_line, t_colum4}};
     auto token2 = vnd::Token{vnd::TokenType::BOOLEAN, "false", vnd::CodeSourceLocation{filename, t_line, t_colum2}};
@@ -1406,7 +1370,6 @@ TEST_CASE("Parser emit string literal node", "[parser]") {
     REQUIRE(number->get_value() == "tr");
 }
 
-// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("string node swap", "[parser]") {
     auto token1 = vnd::Token{vnd::TokenType::STRING, "tr", vnd::CodeSourceLocation{filename, t_line, t_colum4}};
     auto token2 = vnd::Token{vnd::TokenType::STRING, "sr", vnd::CodeSourceLocation{filename, t_line, t_colum2}};
@@ -1435,7 +1398,6 @@ TEST_CASE("Parser emit char literal node", "[parser]") {
     REQUIRE(number->get_value() == 'c');
 }
 
-// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("char node swap", "[parser]") {
     auto token1 = vnd::Token{vnd::TokenType::CHAR, "c", vnd::CodeSourceLocation{filename, t_line, t_colum4}};
     auto token2 = vnd::Token{vnd::TokenType::CHAR, "d", vnd::CodeSourceLocation{filename, t_line, t_colum2}};
@@ -1486,7 +1448,6 @@ TEST_CASE("Parser emit complex float number node", "[parser]") {
     REQUIRE(number->get_value() == std::complex<float>(0, 1));
 }
 
-// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("integer number node swap", "[parser]") {
     auto token1 = vnd::Token{vnd::TokenType::INTEGER, "2", vnd::CodeSourceLocation{filename, t_line, t_colum}};
     auto token2 = vnd::Token{vnd::TokenType::INTEGER, "3", vnd::CodeSourceLocation{filename, t_line, t_colum2}};
@@ -1503,7 +1464,6 @@ TEST_CASE("integer number node swap", "[parser]") {
     REQUIRE(intb.get_token() == token1);
 }
 
-// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("Imaginary number node swap", "[parser]") {
     auto token1 = vnd::Token{vnd::TokenType::DOUBLE, "2if", vnd::CodeSourceLocation{filename, t_line, t_colum}};
     auto token2 = vnd::Token{vnd::TokenType::DOUBLE, "3if", vnd::CodeSourceLocation{filename, t_line, t_colum3}};
@@ -1532,7 +1492,6 @@ TEST_CASE("double number node swap", "[parser]") {
     REQUIRE(doubb.get_value() == 2.3);
 }
 
-// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("unary node swap", "[parser]") {
     using enum vnd::TokenType;
     auto token1 = vnd::Token{MINUS, "-", vnd::CodeSourceLocation{filename, t_line, t_colum}};
@@ -1560,7 +1519,6 @@ TEST_CASE("unary node swap", "[parser]") {
     REQUIRE(unarb.getOperand()->as<vnd::VariableNode>()->get_token() == token2);
 }
 
-// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("binary node swap", "[parser]") {
     using enum vnd::TokenType;
     auto token1 = vnd::Token{MINUS, "-", vnd::CodeSourceLocation{filename, t_line, t_colum5}};
@@ -1598,7 +1556,6 @@ TEST_CASE("binary node swap", "[parser]") {
     REQUIRE(unarb.getRight()->as<vnd::VariableNode>()->get_token() == token3);
 }
 
-// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("Parser::convertToInt tests", "[parser]") {
     SECTION("Valid integer conversion") {
         REQUIRE(vnd::Parser::convertToInt("123") == 123);
@@ -1619,7 +1576,6 @@ TEST_CASE("Parser::convertToInt tests", "[parser]") {
     }
 }
 
-// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("Parser::convertToIntformExa tests") {
     SECTION("Valid hexadecimal conversion") {
         REQUIRE(vnd::Parser::convertToIntformExa("1A") == 26);     // 0x1A = 26 in decimal
@@ -1640,7 +1596,6 @@ TEST_CASE("Parser::convertToIntformExa tests") {
     }
 }
 
-// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("Parser::convertToIntformOct tests") {
     SECTION("Valid octal conversion") {
         REQUIRE(vnd::Parser::convertToIntformOct("77") == 63);   // 077 = 63 in decimal
@@ -1661,7 +1616,6 @@ TEST_CASE("Parser::convertToIntformOct tests") {
     }
 }
 
-// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("comp_NodeType function", "[parser]") {
     REQUIRE(std::string(comp_NodeType(NodeType::BinaryExpression)) == "BIN_EXP");
     REQUIRE(std::string(comp_NodeType(NodeType::UnaryExpression)) == "UN_EXP");
@@ -1894,7 +1848,6 @@ TEST_CASE("Parser emit variable node compat print", "[parser]") {
     REQUIRE(variable->comp_print() == "VAR(y)");
 }
 
-// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("Parser emit unary expression node", "[parser]") {
     vnd::Parser parser("-x", filename);
     auto ast = parser.parse();
@@ -1917,7 +1870,6 @@ TEST_CASE("Parser emit unary expression node", "[parser]") {
     REQUIRE(variableNode->getName() == "x");
 }
 
-// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("Parser emit unary expression node print", "[parser]") {
     vnd::Parser parser("-x", filename);
     auto ast = parser.parse();
@@ -1941,7 +1893,6 @@ TEST_CASE("Parser emit unary expression node print", "[parser]") {
     REQUIRE(unaryNode->print() == "UNARY_EXPRESION(op:\"-\" operand:VARIABLE(x))");
 }
 
-// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("Parser emit unary expression node compat print", "[parser]") {
     vnd::Parser parser("-x", filename);
     auto ast = parser.parse();
@@ -1965,7 +1916,6 @@ TEST_CASE("Parser emit unary expression node compat print", "[parser]") {
     REQUIRE(unaryNode->comp_print() == "UNE(op:\"-\" opr:VAR(x))");
 }
 
-// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("Parser emit binary expression node", "[parser]") {
     vnd::Parser parser("1 + 2", filename);
     auto ast = parser.parse();
@@ -1999,7 +1949,6 @@ TEST_CASE("Parser emit binary expression node", "[parser]") {
     REQUIRE(rightNumber->get_value() == 2);
 }
 
-// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("Parser emit binary expression node print", "[parser]") {
     vnd::Parser parser("1 + 2", filename);
     auto ast = parser.parse();
@@ -2033,7 +1982,6 @@ TEST_CASE("Parser emit binary expression node print", "[parser]") {
     REQUIRE(binaryNode->print() == R"(BINARY_EXPRESION(op:"+" left:NUMBER_INTEGER(1), right:NUMBER_INTEGER(2)))");
 }
 
-// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("Parser emit binary expression node compact print", "[parser]") {
     vnd::Parser parser("1 + 2", filename);
     auto ast = parser.parse();
@@ -2115,7 +2063,6 @@ TEST_CASE("Parser emit exception for nonexistent unary operator", "[parser]") {
 }
 
 // Test cases for NodeType formatter
-// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("NodeType formatter works as expected", "[formatter]") {
     using enum NodeType;  // shorthand for enum access
     REQ_FORMAT(BinaryExpression, "BINARY_EXPRESION");
@@ -2132,7 +2079,6 @@ TEST_CASE("NodeType formatter works as expected", "[formatter]") {
     REQ_FORMAT(Statement, "STATEMENT");
 }
 
-// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("Parser emit i8 TypeNode node", "[parser]") {
     vnd::Parser parser("i8", filename);
     auto ast = parser.parse();
@@ -2148,7 +2094,6 @@ TEST_CASE("Parser emit i8 TypeNode node", "[parser]") {
     REQUIRE(typeNode->get_index() == nullptr);
 }
 
-// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("Parser emit array", "[parser]") {
     vnd::Parser parser("i8[size][]{1, 2}", filename);
     auto ast = parser.parse();
@@ -2169,7 +2114,6 @@ TEST_CASE("Parser emit array", "[parser]") {
     REQUIRE(typeNode->get_index()->get_index()->get_array()->get_elements() != nullptr);
 }
 
-// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("Parser emit empty array", "[parser]") {
     vnd::Parser parser("Object[]{}", filename);
     auto ast = parser.parse();
@@ -2184,7 +2128,6 @@ TEST_CASE("Parser emit empty array", "[parser]") {
     REQUIRE(variable->get_index()->get_array()->get_elements() == nullptr);
 }
 
-// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("Parser emit array type", "[parser]") {
     vnd::Parser parser("i8[]", filename);
     auto ast = parser.parse();
@@ -2200,7 +2143,6 @@ TEST_CASE("Parser emit array type", "[parser]") {
     REQUIRE(typeNode->get_index()->get_array() == nullptr);
 }
 
-// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("Parser emit nullptr node", "[parser]") {
     vnd::Parser parser("nullptr", filename);
     auto ast = parser.parse();
@@ -2372,7 +2314,6 @@ TEST_CASE("Parser emit callable node", "[parser]") {
     REQUIRE(variableNode->get_call() != nullptr);
 }
 
-// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("NullptrNode basic functionality", "[NullptrNode]") {
     vnd::Parser parser("nullptr", filename);
     const auto ast = parser.parse();
@@ -2397,7 +2338,6 @@ TEST_CASE("NullptrNode basic functionality", "[NullptrNode]") {
     }
 }
 
-// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("Transpiler creates correct folders and files", "[transpiler]") {
     const std::string transpilerfilename = "testfile.vnd";
 
@@ -2439,7 +2379,6 @@ TEST_CASE("Transpiler creates correct folders and files", "[transpiler]") {
     }
 }
 
-// NOLINTNEXTLINE(*-function-cognitive-complexity)
 TEST_CASE("Transpiler::mapType returns correct type mappings", "[transpiler]") {
     SECTION("Valid type mappings") {
         REQUIRE(vnd::Transpiler::mapType("i8"sv) == "int8_t"sv);
@@ -2501,5 +2440,5 @@ TEST_CASE("vnd::timeParse", "[Vandior]") {
     }
 }
 // clang-format off
-// NOLINTEND(*-include-cleaner, *-avoid-magic-numbers, *-magic-numbers, *-unchecked-optional-access, *-avoid-do-while, *-use-anonymous-namespace, *-qualified-auto, *-suspicious-stringview-data-usage, *-err58-cpp)
+// NOLINTEND(*-include-cleaner, *-avoid-magic-numbers, *-magic-numbers, *-unchecked-optional-access, *-avoid-do-while, *-use-anonymous-namespace, *-qualified-auto, *-suspicious-stringview-data-usage, *-err58-cpp, *-function-cognitive-complexity, *-macro-usage)
 // clang-format on
