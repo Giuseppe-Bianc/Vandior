@@ -67,6 +67,7 @@ static inline constexpr long double timerResolution = 5.0L;
 static inline constexpr std::size_t timestampSize = 24;
 #define REQ_FORMAT(type, string) REQUIRE(FORMAT("{}", type) == (string));
 #define REQ_FORMAT_COMPTOK(type, string) REQUIRE(FORMAT("{}", comp_tokType(type)) == (string));
+#define MSG_FORMAT(...) Message(FORMAT(__VA_ARGS__))
 
 TEST_CASE("extractTabs basic functionality", "[extractTabs]") {
     SECTION("String with only tabs") {
@@ -758,7 +759,6 @@ TEST_CASE("FolderCreationResult Hash Value", "[FolderCreationResult]") {
         const std::size_t hash1 = hash_value(result1);
         const std::size_t hash2 = hash_value(result2);
 
-        // Objects with identical states should have the same hash value
         REQUIRE(hash1 == hash2);
     }
 
@@ -769,7 +769,6 @@ TEST_CASE("FolderCreationResult Hash Value", "[FolderCreationResult]") {
         const std::size_t hash1 = hash_value(result1);
         const std::size_t hash2 = hash_value(result2);
 
-        // Different objects with different states should have different hash values
         REQUIRE(hash1 != hash2);
     }
 
@@ -798,14 +797,14 @@ TEST_CASE("FolderCreationResult Folder Creation Functions", "[FolderCreationResu
     // Create a temporary directory for testing
     auto tempDir = fs::temp_directory_path() / "vnd_test";
     const std::string folderName = "test_folder";
+    const fs::path folderPath = tempDir / folderName;
     fs::create_directories(tempDir);
 
     SECTION("Create folder with valid parameters") {
         const vnd::FolderCreationResult result = vnd::FolderCreationResult::createFolder(folderName, tempDir);
         REQUIRE(result.success() == true);
-        REQUIRE(result.path() == tempDir / folderName);
-        // Clean up
-        [[maybe_unused]] auto unused = fs::remove_all(tempDir / folderName);
+        REQUIRE(result.path() == folderPath);
+        [[maybe_unused]] auto unused = fs::remove_all(folderPath);
     }
 
     SECTION("Create folder with empty folder name") {
@@ -827,7 +826,6 @@ TEST_CASE("FolderCreationResult Folder Creation Functions", "[FolderCreationResu
         const vnd::FolderCreationResult result = vnd::FolderCreationResult::createFolder(folderName, nonExistentParentDir);
         REQUIRE(result.success() == true);
         REQUIRE(!result.path()->empty());
-        // const fs::path ExistentParentDir = tempDir / "non_existent_dir";
         const std::string folderName2 = "test_folder";
         const vnd::FolderCreationResult result2 = vnd::FolderCreationResult::createFolder(folderName2, nonExistentParentDir);
         REQUIRE(result2.success() == true);
@@ -844,20 +842,17 @@ TEST_CASE("FolderCreationResult Folder Creation Functions", "[FolderCreationResu
 
     SECTION("Create folder next to existing file") {
         // Create a file in the temporary directory
-        const fs::path filePath = tempDir / "test_file.txt";
-        std::ofstream ofs(filePath);
+        const fs::path filePathInner = tempDir / "test_file.txt";
+        std::ofstream ofs(filePathInner);
         ofs.close();
 
-        const vnd::FolderCreationResult result = vnd::FolderCreationResult::createFolderNextToFile(filePath, folderName);
+        const vnd::FolderCreationResult result = vnd::FolderCreationResult::createFolderNextToFile(filePathInner, folderName);
         REQUIRE(result.success() == true);
-        REQUIRE(result.path() == tempDir / folderName);
+        REQUIRE(result.path() == folderPath);
 
-        // Clean up
-        [[maybe_unused]] auto unused = fs::remove(filePath);
-        [[maybe_unused]] auto unuseds = fs::remove_all(tempDir / folderName);
+        [[maybe_unused]] auto unused = fs::remove(filePathInner);
+        [[maybe_unused]] auto unuseds = fs::remove_all(folderPath);
     }
-
-    // Clean up the temporary directory
     [[maybe_unused]] auto unused = fs::remove_all(tempDir);
 }
 
@@ -865,7 +860,6 @@ TEST_CASE("vnd::readFromFile - Valid File", "[file]") {
     const std::string infilename = "testfile.txt";
     const std::string content = "This is a test.";
 
-    // Create the test file
     createFile(infilename, content);
 
     SECTION("Read from valid file") {
@@ -880,19 +874,17 @@ TEST_CASE("vnd::readFromFile - Non-existent File", "[file]") {
     const std::string nonExistentFile = "nonexistent.txt";
 
     SECTION("Read from non-existent file") {
-        REQUIRE_THROWS_MATCHES(vnd::readFromFile(nonExistentFile), std::runtime_error,
-                               Message(FORMAT("File not found: {}", nonExistentFile)));
+        REQUIRE_THROWS_MATCHES(vnd::readFromFile(nonExistentFile), std::runtime_error, MSG_FORMAT("File not found: {}", nonExistentFile));
     }
 }
 
 TEST_CASE("vnd::readFromFile - Non-regular File", "[file]") {
     const std::string dirName = "testdir";
 
-    // Create a directory (not a file)
     fs::create_directory(dirName);
 
     SECTION("Read from a directory") {
-        REQUIRE_THROWS_MATCHES(vnd::readFromFile(dirName), std::runtime_error, Message(FORMAT("Path is not a regular file: {}", dirName)));
+        REQUIRE_THROWS_MATCHES(vnd::readFromFile(dirName), std::runtime_error, MSG_FORMAT("Path is not a regular file: {}", dirName));
     }
 
     [[maybe_unused]] auto unsed = fs::remove(dirName);
@@ -901,7 +893,6 @@ TEST_CASE("vnd::readFromFile - Non-regular File", "[file]") {
 TEST_CASE("vnd::readFromFile - Empty File", "[file]") {
     const std::string emtfilename = "emptyfile.txt";
 
-    // Create an empty file
     createFile(emtfilename, "");
 
     SECTION("Read from an empty file") {
@@ -916,7 +907,6 @@ TEST_CASE("vnd::readFromFile - Large File", "[file]") {
     const std::string lrgfilename = "largefile.txt";
     const std::string largeContent(C_ST(1024 * 1024) * 10, 'a');  // 10 MB of 'a'
 
-    // Create a large file
     createFile(lrgfilename, largeContent);
 
     SECTION("Read from a large file") {
@@ -1859,7 +1849,6 @@ TEST_CASE("Parser emit unary expression node print", "[parser]") {
 
     const auto *unaryNode = ast->as<vnd::UnaryExpressionNode>();
 
-    // Check the operator and operand
     REQUIRE(unaryNode->getOp() == "-");
 
     const auto &operand = unaryNode->getOperand();
@@ -1882,7 +1871,6 @@ TEST_CASE("Parser emit unary expression node compat print", "[parser]") {
 
     const auto *unaryNode = ast->as<vnd::UnaryExpressionNode>();
 
-    // Check the operator and operand
     REQUIRE(unaryNode->getOp() == "-");
 
     const auto &operand = unaryNode->getOperand();
@@ -1905,10 +1893,8 @@ TEST_CASE("Parser emit binary expression node", "[parser]") {
     const auto *binaryNode = ast->as<vnd::BinaryExpressionNode>();
     REQUIRE(binaryNode != nullptr);
 
-    // Check the operation
     REQUIRE(binaryNode->getOp() == "+");
 
-    // Check the left and right operands
     const auto *leftNumber = binaryNode->getLeft()->as<VND_NUM_INT>();
     const auto *rightNumber = binaryNode->getRight()->as<VND_NUM_INT>();
 
@@ -1924,7 +1910,6 @@ TEST_CASE("Parser emit binary expression node", "[parser]") {
     REQUIRE(rightNumber->getTypeIDName() == "int");
 #endif
 
-    // Check the values of left and right operands
     REQUIRE(leftNumber->get_value() == 1);
     REQUIRE(rightNumber->get_value() == 2);
 }
@@ -1937,10 +1922,8 @@ TEST_CASE("Parser emit binary expression node print", "[parser]") {
 
     const auto *binaryNode = ast->as<vnd::BinaryExpressionNode>();
 
-    // Check the operation
     REQUIRE(binaryNode->getOp() == "+");
 
-    // Check the left and right operands
     const auto *leftNumber = binaryNode->getLeft()->as<VND_NUM_INT>();
     const auto *rightNumber = binaryNode->getRight()->as<VND_NUM_INT>();
 
@@ -1956,7 +1939,6 @@ TEST_CASE("Parser emit binary expression node print", "[parser]") {
     REQUIRE(rightNumber->getTypeIDName() == "int");
 #endif
 
-    // Check the values of left and right operands
     REQUIRE(leftNumber->get_value() == 1);
     REQUIRE(rightNumber->get_value() == 2);
     REQUIRE(binaryNode->print() == R"(BINARY_EXPRESION(op:"+" left:NUMBER_INTEGER(1), right:NUMBER_INTEGER(2)))");
@@ -1970,10 +1952,8 @@ TEST_CASE("Parser emit binary expression node compact print", "[parser]") {
 
     const auto *binaryNode = ast->as<vnd::BinaryExpressionNode>();
 
-    // Check the operation
     REQUIRE(binaryNode->getOp() == "+");
 
-    // Check the left and right operands
     const auto *leftNumber = binaryNode->getLeft()->as<VND_NUM_INT>();
     const auto *rightNumber = binaryNode->getRight()->as<VND_NUM_INT>();
 
@@ -1989,7 +1969,6 @@ TEST_CASE("Parser emit binary expression node compact print", "[parser]") {
     REQUIRE(rightNumber->getTypeIDName() == "int");
 #endif
 
-    // Check the values of left and right operands
     REQUIRE(leftNumber->get_value() == 1);
     REQUIRE(rightNumber->get_value() == 2);
     REQUIRE(binaryNode->comp_print() == R"(BINE(op:"+" l:NUM_INT(1), r:NUM_INT(2)))");
@@ -2042,7 +2021,6 @@ TEST_CASE("Parser emit exception for nonexistent unary operator", "[parser]") {
 #endif
 }
 
-// Test cases for NodeType formatter
 TEST_CASE("NodeType formatter works as expected", "[formatter]") {
     using enum NodeType;  // shorthand for enum access
     REQ_FORMAT(BinaryExpression, "BINARY_EXPRESION");
@@ -2160,8 +2138,6 @@ TEST_CASE("Parser emit exception on multiline comment", "[parser]") {
             R"(Unexpected token: (type: COMMENT, value: '/*multi\nline\ncomment*/', source location:(file:./unknown.vn, line:1, column:1)))"));
 #endif
 }
-
-// constexpr std::string_view code2 = R"(/*multi\nline\ncomment*/)";
 
 TEST_CASE("Parser emit mismatched square brackets exception", "[parser]") {
     vnd::Parser parser("Object[size", filename);
@@ -2321,38 +2297,30 @@ TEST_CASE("NullptrNode basic functionality", "[NullptrNode]") {
 TEST_CASE("Transpiler creates correct folders and files", "[transpiler]") {
     const std::string transpilerfilename = "testfile.vnd";
 
-    // Create a Transpiler instance
     vnd::Transpiler transpiler(long_input, transpilerfilename);
 
-    // Test folder and file creation
     SECTION("Folder and file creation") {
         transpiler.transpile();
 
-        // Verify that the folders were created
         const fs::path buildFolder("vnbuild");
         const fs::path srcFolder = buildFolder / "src";
         REQUIRE(fs::exists(buildFolder));
         REQUIRE(fs::exists(srcFolder));
 
-        // Verify that the .cpp file is created
         const fs::path cppFile = srcFolder / "testfile.cpp";
         REQUIRE(fs::exists(cppFile));
 
-        // Check that the content of the file is correct
         std::ifstream file(cppFile);
         std::string fileContent((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
 
-        // Using Catch2 Matchers for string checks
         REQUIRE_THAT(fileContent, ContainsSubstring("Hello, World!"));  // Check for the presence of "Hello, World!"
         REQUIRE_THAT(fileContent, StartsWith("// This is an automatically generated file by Vandior"));
         REQUIRE_THAT(fileContent, EndsWith("return 0;\n}\n"));
     }
 
-    // Clean up after the test
     SECTION("Clean up") {
         transpiler.transpile();
 
-        // Ensure the files and folders are deleted after the test
         const fs::path buildFolder("vnbuild");
         [[maybe_unused]] auto unused = fs::remove_all(buildFolder);
         REQUIRE_FALSE(fs::exists(buildFolder));  // Folder should not exist
@@ -2389,7 +2357,6 @@ TEST_CASE("Transpiler::mapType returns correct type mappings", "[transpiler]") {
     }
 }
 
-// Test for timeParser
 TEST_CASE("vnd::timeParser", "[Vandior]") {
     vnd::Parser parser{"asdf", filename};
     std::unique_ptr<vnd::ASTNode> ast;
@@ -2402,14 +2369,13 @@ TEST_CASE("vnd::timeParser", "[Vandior]") {
 
     SECTION("returns a unique_ptr to ASTNode") {
         const vnd::Token token{vnd::TokenType::IDENTIFIER, "id", vnd::CodeSourceLocation{filename, t_line, t_colum}};
-        // vnd::VariableNode dummyNode("id", token);
         ast = std::make_unique<vnd::VariableNode>("id", token);
         vnd::timeParser(ast, parser);
 
         REQUIRE(ast != nullptr);
     }
 }
-// Test for timeParse
+
 TEST_CASE("vnd::timeParse", "[Vandior]") {
     vnd::Parser parser{"asdf", filename};
 
