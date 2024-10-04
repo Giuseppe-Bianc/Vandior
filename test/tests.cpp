@@ -653,64 +653,49 @@ TEST_CASE("FolderCreationResult Setters", "[FolderCreationResult]") {
 
 TEST_CASE("FolderCreationResult operator<< outputs correctly", "[FolderCreationResult]") {
     SECTION("Test with successful folder creation and valid path") {
-        // Arrange
         const fs::path folderPath = "/test/directory";
         const vnd::FolderCreationResult result(true, folderPath);
 
-        // Act
         std::ostringstream oss;
         oss << result;
 
-        // Assert
         REQUIRE(oss.str() == "success_: true, path_: /test/directory");
     }
 
     SECTION("Test with unsuccessful folder creation and no path") {
-        // Arrange
         const vnd::FolderCreationResult result(false, fs::path{});
 
-        // Act
         std::ostringstream oss;
         oss << result;
 
-        // Assert
         REQUIRE(oss.str() == "success_: false, path_: None");
     }
 
     SECTION("Test with successful folder creation but empty path") {
-        // Arrange
         const vnd::FolderCreationResult result(true, fs::path{});
 
-        // Act
         std::ostringstream oss;
         oss << result;
 
-        // Assert
         REQUIRE(oss.str() == "success_: true, path_: None");
     }
 
     SECTION("Test with unsuccessful folder creation and valid path") {
-        // Arrange
         const fs::path folderPath = "/another/test/directory";
         const vnd::FolderCreationResult result(false, folderPath);
 
-        // Act
         std::ostringstream oss;
         oss << result;
 
-        // Assert
         REQUIRE(oss.str() == "success_: false, path_: /another/test/directory");
     }
 
     SECTION("Test with default constructed FolderCreationResult") {
-        // Arrange
         const vnd::FolderCreationResult result;
 
-        // Act
         std::ostringstream oss;
         oss << result;
 
-        // Assert
         REQUIRE(oss.str() == "success_: false, path_: None");
     }
 }
@@ -743,7 +728,6 @@ TEST_CASE("FolderCreationResult Hash Value", "[FolderCreationResult]") {
         const std::size_t hash1 = hash_value(result);
         const std::size_t hash2 = hash_value(result);
 
-        // The hash value should remain consistent for the same object
         REQUIRE(hash1 == hash2);
     }
 
@@ -754,7 +738,6 @@ TEST_CASE("FolderCreationResult Hash Value", "[FolderCreationResult]") {
         const std::size_t hash1 = hash_value(result1);
         const std::size_t hash2 = hash_value(result2);
 
-        // The hash value should differ when the success status changes
         REQUIRE(hash1 != hash2);
     }
 
@@ -765,7 +748,6 @@ TEST_CASE("FolderCreationResult Hash Value", "[FolderCreationResult]") {
         const std::size_t hash1 = hash_value(result1);
         const std::size_t hash2 = hash_value(result2);
 
-        // The hash value should differ when the path changes
         REQUIRE(hash1 != hash2);
     }
 
@@ -798,7 +780,6 @@ TEST_CASE("FolderCreationResult Hash Value", "[FolderCreationResult]") {
         const std::size_t hash1 = hash_value(result1);
         const std::size_t hash2 = hash_value(result2);
 
-        // The hash value for default constructed objects should be consistent and equal
         REQUIRE(hash1 == hash2);
     }
 
@@ -809,7 +790,6 @@ TEST_CASE("FolderCreationResult Hash Value", "[FolderCreationResult]") {
         const std::size_t hash1 = hash_value(result1);
         const std::size_t hash2 = hash_value(result2);
 
-        // The hash value for a default object and an object with an explicitly empty path should be the same
         REQUIRE(hash1 == hash2);
     }
 }
