@@ -152,7 +152,7 @@ TEST_CASE("get_current_timestamp() tests", "[timestamp]") {
     }
 }
 
-TEST_CASE("singleCharOp function tests" , "[singleCharOp]") {
+TEST_CASE("singleCharOp function tests", "[singleCharOp]") {
     // Test valid operators
     REQUIRE(vnd::singoleCharOp('-') == vnd::TokenType::MINUS);
     REQUIRE(vnd::singoleCharOp('=') == vnd::TokenType::EQUAL);
@@ -169,8 +169,8 @@ TEST_CASE("singleCharOp function tests" , "[singleCharOp]") {
 
     // Test an unknown operator
     REQUIRE(vnd::singoleCharOp('a') == vnd::TokenType::UNKNOWN);
-    REQUIRE(vnd::singoleCharOp(' ') == vnd::TokenType::UNKNOWN); // Space character
-    REQUIRE(vnd::singoleCharOp('#') == vnd::TokenType::UNKNOWN); // Unrecognized symbol
+    REQUIRE(vnd::singoleCharOp(' ') == vnd::TokenType::UNKNOWN);  // Space character
+    REQUIRE(vnd::singoleCharOp('#') == vnd::TokenType::UNKNOWN);  // Unrecognized symbol
 }
 
 TEST_CASE("my_error_handler(const std::string&) tests", "[error_handler]") {
