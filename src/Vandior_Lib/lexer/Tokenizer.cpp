@@ -225,7 +225,8 @@ namespace vnd {
             ++line;
             column = 0;
         }
-        incPosAndColumn();
+        position++;
+        column++;
     }
 
     Token Tokenizer::handleBrackets() {
