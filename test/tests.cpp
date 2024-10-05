@@ -1294,6 +1294,25 @@ TEST_CASE("ASTNode type conversion using safe_as<T>()", "[ast]") {
     REQUIRE(constAnotherPtr == nullptr);
 }
 
+TEST_CASE("ASTNode type conversion using safe_as<T>() non  const", "[ast]") {
+    const vnd::Token token{vnd::TokenType::IDENTIFIER, "id", vnd::CodeSourceLocation{filename, t_line, t_colum}};
+    vnd::VariableNode dummyNode("id", token);
+
+    vnd::ASTNode *basePtr = &dummyNode;
+    auto *dummyPtr = basePtr->as<vnd::VariableNode>();
+    REQUIRE(dummyPtr != nullptr);
+
+    auto *anotherPtr = basePtr->as<vnd::Token>();
+    REQUIRE(anotherPtr == nullptr);
+
+    auto *constBasePtr = &dummyNode;
+    auto *constDummyPtr = constBasePtr->safe_as<vnd::VariableNode>();
+    REQUIRE(constDummyPtr != nullptr);
+
+    auto *constAnotherPtr = constBasePtr->safe_as<vnd::Token>();
+    REQUIRE(constAnotherPtr == nullptr);
+}
+
 TEST_CASE("ASTNode get token", "[ast]") {
     vnd::Token token{vnd::TokenType::IDENTIFIER, "id", vnd::CodeSourceLocation{filename, t_line, t_colum}};
     const vnd::VariableNode dummyNode("id", token);
