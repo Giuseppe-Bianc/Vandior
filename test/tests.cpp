@@ -152,6 +152,27 @@ TEST_CASE("get_current_timestamp() tests", "[timestamp]") {
     }
 }
 
+TEST_CASE("singleCharOp function tests" , "[singleCharOp]") {
+    // Test valid operators
+    REQUIRE(vnd::singoleCharOp('-') == vnd::TokenType::MINUS);
+    REQUIRE(vnd::singoleCharOp('=') == vnd::TokenType::EQUAL);
+    REQUIRE(vnd::singoleCharOp('<') == vnd::TokenType::LESS);
+    REQUIRE(vnd::singoleCharOp('>') == vnd::TokenType::GREATER);
+    REQUIRE(vnd::singoleCharOp('!') == vnd::TokenType::NOT);
+    REQUIRE(vnd::singoleCharOp('+') == vnd::TokenType::PLUS);
+    REQUIRE(vnd::singoleCharOp('*') == vnd::TokenType::STAR);
+    REQUIRE(vnd::singoleCharOp('/') == vnd::TokenType::DIVIDE);
+    REQUIRE(vnd::singoleCharOp('^') == vnd::TokenType::XOR);
+    REQUIRE(vnd::singoleCharOp('%') == vnd::TokenType::PERCENT);
+    REQUIRE(vnd::singoleCharOp('|') == vnd::TokenType::OR);
+    REQUIRE(vnd::singoleCharOp('&') == vnd::TokenType::AND);
+
+    // Test an unknown operator
+    REQUIRE(vnd::singoleCharOp('a') == vnd::TokenType::UNKNOWN);
+    REQUIRE(vnd::singoleCharOp(' ') == vnd::TokenType::UNKNOWN); // Space character
+    REQUIRE(vnd::singoleCharOp('#') == vnd::TokenType::UNKNOWN); // Unrecognized symbol
+}
+
 TEST_CASE("my_error_handler(const std::string&) tests", "[error_handler]") {
     SECTION("Basic error handling") {
         const std::stringstream sss;

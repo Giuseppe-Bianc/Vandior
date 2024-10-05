@@ -288,38 +288,6 @@ namespace vnd {
         while(positionIsInText() && TokenizerUtility::isOperator(_input[position])) { incPosAndColumn(); }
     }
 
-    TokenType Tokenizer::singoleCharOp(const char view) noexcept {
-        switch(view) {
-            using enum TokenType;
-        case minuscs:
-            return MINUS;
-        case '=':
-            return EQUAL;
-        case '<':
-            return LESS;
-        case '>':
-            return GREATER;
-        case '!':
-            return NOT;
-        case plusscr:
-            return PLUS;
-        case '*':
-            return STAR;
-        case '/':
-            return DIVIDE;
-        case '^':
-            return XOR;
-        case '%':
-            return PERCENT;
-        case '|':
-            return OR;
-        case '&':
-            return AND;
-        default:
-            return UNKNOWN;
-        }
-    }
-
     TokenType Tokenizer::multyCharOp(const std::string_view &view) noexcept {
         // NOLINTNEXTLINE(*-identifier-length, *-qualified-auto)
         if(const auto it = std::ranges::find_if(multiCharOperators, [&](const auto &pair) { return pair.first == view; });

@@ -189,13 +189,6 @@ namespace vnd {
         void extractVarLenOperator();
 
         /**
-         * @brief Determines the token type of single character operators.
-         * @param view The character.
-         * @return TokenType of the character.
-         */
-        [[nodiscard]] static TokenType singoleCharOp(const char view) noexcept;
-
-        /**
          * @brief Determines the token type of multi-character operators.
          * @param view The operator.
          * @return TokenType of the operator.
