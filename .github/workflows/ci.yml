@@ -19,6 +19,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
+      max-parallel: 4
 
       # Recommendations:
       #   * support at least 2 operating systems
