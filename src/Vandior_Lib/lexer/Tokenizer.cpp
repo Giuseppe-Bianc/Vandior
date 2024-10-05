@@ -180,7 +180,7 @@ namespace vnd {
             }
             // Advance to the next character
             incPosAndColumn();
-            handleWhiteSpace();
+            handleWhiteSpaceSingle();
         }
         incPosAndColumn();  // Skip '*'
         incPosAndColumn();  // Skip '/'
@@ -220,13 +220,24 @@ namespace vnd {
         column++;
     }
 
-    void Tokenizer::handleWhiteSpace() noexcept {
+    void Tokenizer::handleWhiteSpaceSingle() noexcept {
         if(_input[position] == NL) [[unlikely]] {
             ++line;
             column = 0;
         }
         position++;
         column++;
+    }
+
+    void Tokenizer::handleWhiteSpace() noexcept {
+        while(positionIsInText() && C_BOOL(std::isspace(_input[position]))) {
+            if(_input[position] == NL) [[unlikely]] {
+                ++line;
+                column = 0;
+            }
+            position++;
+            column++;
+        }
     }
 
     Token Tokenizer::handleBrackets() {
@@ -266,7 +277,7 @@ namespace vnd {
                 value = _input.substr(start, position - start);
                 return {TokenType::UNKNOWN, value, {_filename, line, startColumn}};
             }
-            handleWhiteSpace();
+            handleWhiteSpaceSingle();
         }
         value = _input.substr(start, position - start);
         incPosAndColumn();
