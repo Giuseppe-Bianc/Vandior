@@ -1,4 +1,4 @@
-// NOLINTBEGIN(*-include-cleaner, *-use-anonymous-namespace)
+// NOLINTBEGIN(*-err58-cpp, *-include-cleaner, *-use-anonymous-namespace, *-function-cognitive-complexity, *-avoid-do-while)
 #include <catch2/catch_test_macros.hpp>
 
 #include <Vandior/vandior.hpp>
@@ -85,4 +85,4 @@ TEST_CASE("singleCharOp function tests", "[singleCharOp]") {
     STATIC_REQUIRE(vnd::singoleCharOp('#') == vnd::TokenType::UNKNOWN);  // Unrecognized symbol
 }
 
-// NOLINTEND(*-include-cleaner, *-use-anonymous-namespace)
+// NOLINTEND(*-err58-cpp, *-include-cleaner, *-use-anonymous-namespace, *-function-cognitive-complexity, *-avoid-do-while)
