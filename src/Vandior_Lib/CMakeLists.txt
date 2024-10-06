@@ -28,19 +28,23 @@ include("${CMAKE_SOURCE_DIR}/cmake/Simd.cmake")
 set_simd_instructions(${target_name})
 
 
-target_link_libraries(vandior_lib PRIVATE
+target_link_libraries(vandior_lib
+        PRIVATE
         Vandior_options
-        Vandior_warnings)
-target_link_libraries(vandior_lib PUBLIC
+        Vandior_warnings
+        PUBLIC
         fmt::fmt
         spdlog::spdlog
         glm::glm
         #nlohmann_json::nlohmann_json
 )
 
-target_include_directories(vandior_lib ${WARNING_GUARD} PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
-        $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include>)
-target_include_directories(vandior_lib ${WARNING_GUARD} PUBLIC "${CMAKE_BINARY_DIR}/configured_files/include")
+target_include_directories(vandior_lib
+        PUBLIC
+        $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+        $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include>
+        "${CMAKE_BINARY_DIR}/configured_files/include"
+)
 if (Vandior_BUILD_FUZZ_TESTS)
     target_link_libraries(vandior_lib PRIVATE -fsanitize=fuzzer-no-link)
     target_compile_options(vandior_lib PRIVATE -fsanitize=fuzzer-no-link)

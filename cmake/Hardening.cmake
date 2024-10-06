@@ -1,11 +1,6 @@
 include(CheckCXXCompilerFlag)
 
-macro(
-  Vandior_enable_hardening
-  target
-  global
-  ubsan_minimal_runtime)
-
+macro(Vandior_enable_hardening target global ubsan_minimal_runtime)
   message(STATUS "** Enabling Hardening (Target ${target}) **")
 
   if(MSVC)
@@ -62,8 +57,7 @@ macro(
   endif()
 
   if(${ubsan_minimal_runtime})
-    check_cxx_compiler_flag("-fsanitize=undefined -fno-sanitize-recover=undefined -fsanitize-minimal-runtime"
-            MINIMAL_RUNTIME)
+    check_cxx_compiler_flag("-fsanitize=undefined -fno-sanitize-recover=undefined -fsanitize-minimal-runtime" MINIMAL_RUNTIME)
     if(MINIMAL_RUNTIME)
       set(NEW_COMPILE_OPTIONS "${NEW_COMPILE_OPTIONS} -fsanitize=undefined -fsanitize-minimal-runtime")
       set(NEW_LINK_OPTIONS "${NEW_LINK_OPTIONS} -fsanitize=undefined -fsanitize-minimal-runtime")
