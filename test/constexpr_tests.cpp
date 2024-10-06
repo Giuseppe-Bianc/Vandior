@@ -51,13 +51,40 @@ TEST_CASE("the constexpr size of types", "[TypeSizes]") {
     STATIC_REQUIRE(TypeSizes::sizeOfU32StringView == sizeof(std::u32string_view));
 }
 
-TEST_CASE("the constexpr paretesis tokenType", "[tokenType]") {
+TEST_CASE("the constexpr parentesis tokenType", "[tokenType]") {
     STATIC_REQUIRE(vnd::getBracketsType("(") == vnd::TokenType::OPEN_PARENTESIS);
     STATIC_REQUIRE(vnd::getBracketsType("[") == vnd::TokenType::OPEN_SQ_PARENTESIS);
     STATIC_REQUIRE(vnd::getBracketsType("{") == vnd::TokenType::OPEN_CUR_PARENTESIS);
     STATIC_REQUIRE(vnd::getBracketsType(")") == vnd::TokenType::CLOSE_PARENTESIS);
     STATIC_REQUIRE(vnd::getBracketsType("]") == vnd::TokenType::CLOSE_SQ_PARENTESIS);
     STATIC_REQUIRE(vnd::getBracketsType("}") == vnd::TokenType::CLOSE_CUR_PARENTESIS);
+
+    STATIC_REQUIRE(vnd::getBracketsType("a") == vnd::TokenType::UNKNOWN);
+    STATIC_REQUIRE(vnd::getBracketsType(" ") == vnd::TokenType::UNKNOWN);  // Space character
+    STATIC_REQUIRE(vnd::getBracketsType("#") == vnd::TokenType::UNKNOWN);  // Unrecognized symbol
 }
+
+TEST_CASE("singleCharOp function tests", "[singleCharOp]") {
+    // Test valid operators
+    STATIC_REQUIRE(vnd::singoleCharOp('-') == vnd::TokenType::MINUS);
+    STATIC_REQUIRE(vnd::singoleCharOp('=') == vnd::TokenType::EQUAL);
+    STATIC_REQUIRE(vnd::singoleCharOp('<') == vnd::TokenType::LESS);
+    STATIC_REQUIRE(vnd::singoleCharOp('>') == vnd::TokenType::GREATER);
+    STATIC_REQUIRE(vnd::singoleCharOp('!') == vnd::TokenType::NOT);
+    STATIC_REQUIRE(vnd::singoleCharOp('+') == vnd::TokenType::PLUS);
+    STATIC_REQUIRE(vnd::singoleCharOp('*') == vnd::TokenType::STAR);
+    STATIC_REQUIRE(vnd::singoleCharOp('/') == vnd::TokenType::DIVIDE);
+    STATIC_REQUIRE(vnd::singoleCharOp('^') == vnd::TokenType::XOR);
+    STATIC_REQUIRE(vnd::singoleCharOp('%') == vnd::TokenType::PERCENT);
+    STATIC_REQUIRE(vnd::singoleCharOp('|') == vnd::TokenType::OR);
+    STATIC_REQUIRE(vnd::singoleCharOp('&') == vnd::TokenType::AND);
+
+    // Test an unknown operator
+    STATIC_REQUIRE(vnd::singoleCharOp('a') == vnd::TokenType::UNKNOWN);
+    STATIC_REQUIRE(vnd::singoleCharOp(' ') == vnd::TokenType::UNKNOWN);  // Space character
+    STATIC_REQUIRE(vnd::singoleCharOp('#') == vnd::TokenType::UNKNOWN);  // Unrecognized symbol
+}
+
+
 
 // NOLINTEND(*-include-cleaner, *-use-anonymous-namespace)
