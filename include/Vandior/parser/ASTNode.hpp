@@ -7,8 +7,6 @@
 #include "../lexer/Token.hpp"
 #include "CompNodeType.hpp"
 
-#include <Vandior/Log.hpp>
-
 namespace vnd {
 
     /**

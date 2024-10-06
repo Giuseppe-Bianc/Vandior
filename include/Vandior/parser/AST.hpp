@@ -4,7 +4,7 @@
 // NOLINTBEGIN(*-include-cleaner)
 #pragma once
 
-#include "../Log.hpp"
+#include "../headers.hpp"
 #include "BinaryExpressionNode.hpp"
 #include "IndexNode.hpp"
 #include "LiteralNode.hpp"

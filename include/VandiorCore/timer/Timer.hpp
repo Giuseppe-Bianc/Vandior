@@ -7,7 +7,7 @@
 #include "../Log.hpp"
 #include "../disableWarn.hpp"
 #include "../format.hpp"
-#include "../headers.hpp"
+#include "../headersCore.hpp"
 #include "Times.hpp"
 #include "timeFactors.hpp"
 // On GCC < 4.8, the following define is often missing. Since

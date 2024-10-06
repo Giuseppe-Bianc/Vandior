@@ -1,8 +1,6 @@
 #pragma once
 // clang-format off
 #include "headers.hpp"
-#include "Log.hpp"
-#include "FileReader.hpp"
 #include "lexer/Tokenizer.hpp"
 #include "parser/ParserException.hpp"
 #include "transpiler/Transpiler.hpp"

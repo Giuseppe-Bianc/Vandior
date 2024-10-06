@@ -1,10 +1,10 @@
 //
 // Created by gbian on 16/01/2024.
 //
-// NOLINTBEGIN(*-easily-swappable-parameters)
+// NOLINTBEGIN(*-easily-swappable-parameters, *-include-cleaner)
 #pragma once
 
-#include "headers.hpp"
+#include "headersCore.hpp"
 
 class FileReadError final : public std::runtime_error {
 public:
@@ -12,4 +12,4 @@ public:
 };
 
 #define FILEREADEREERRORF(...) FileReadError(FORMAT(__VA_ARGS__))
-// NOLINTEND(*-easily-swappable-parameters)
+// NOLINTEND(*-easily-swappable-parameters, *-include-cleaner)

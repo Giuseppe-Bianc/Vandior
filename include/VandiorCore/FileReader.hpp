@@ -5,7 +5,7 @@
 #pragma once
 
 #include "FileReaderError.hpp"
-#include "headers.hpp"
+#include "headersCore.hpp"
 #include "timer/Timer.hpp"
 
 namespace vnd {

@@ -33,9 +33,7 @@ target_link_libraries(vandior_lib
         Vandior_options
         Vandior_warnings
         PUBLIC
-        fmt::fmt
-        spdlog::spdlog
-        glm::glm
+        Vandior::vandior_core_lib
         #nlohmann_json::nlohmann_json
 )
 

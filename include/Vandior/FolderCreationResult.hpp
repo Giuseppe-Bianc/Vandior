@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Log.hpp"
 #include "headers.hpp"
 
 DISABLE_WARNINGS_PUSH(4820)
