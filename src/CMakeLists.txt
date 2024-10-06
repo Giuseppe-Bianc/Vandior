@@ -1,3 +1,3 @@
-add_subdirectory(Vandior_Core_Lib)
+add_subdirectory(Vandior_Core_lib)
 add_subdirectory(Vandior_Lib)
 add_subdirectory(Vandior)
