@@ -85,6 +85,4 @@ TEST_CASE("singleCharOp function tests", "[singleCharOp]") {
     STATIC_REQUIRE(vnd::singoleCharOp('#') == vnd::TokenType::UNKNOWN);  // Unrecognized symbol
 }
 
-
-
 // NOLINTEND(*-include-cleaner, *-use-anonymous-namespace)
