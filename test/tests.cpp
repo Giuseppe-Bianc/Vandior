@@ -153,7 +153,6 @@ TEST_CASE("TimeValues initialization", "[TimeValues]") {
     }
 }
 
-/*
 TEST_CASE("ValueLabel functionality", "[ValueLabel]") {
     using vnd::ValueLabel;
 
@@ -170,7 +169,11 @@ TEST_CASE("ValueLabel functionality", "[ValueLabel]") {
         REQUIRE(value.transformTimeMilli(2.5L) == "2ms,500us,0ns");
 
         const ValueLabel valueNonExact(2.505L, "ms");
+#if defined(__linux__)
+        REQUIRE(valueNonExact.transformTimeMilli(2.505L) == "2ms,505us,0ns");
+#else
         REQUIRE(valueNonExact.transformTimeMilli(2.505L) == "2ms,504us,999ns");
+#endif
     }
 
     SECTION("Transform time in seconds") {
@@ -194,7 +197,7 @@ TEST_CASE("ValueLabel functionality", "[ValueLabel]") {
         const ValueLabel unknownVal(3.0L, "unknown");
         REQUIRE(unknownVal.toString() == "3 unknown");
     }
-}*/
+}
 
 TEST_CASE("Times functionality", "[Times]") {
     using vnd::Times;
