@@ -35,8 +35,10 @@ namespace vnd {
             swap(lhs.nodes, rhs.nodes);
         }
 
+        void addNode(std::unique_ptr<ASTNode> node) { nodes.push_back(std::move(node)); }
+
     private:
-        std::vector<ASTNode> nodes;
+        std::vector<std::unique_ptr<ASTNode>> nodes;
     };
 
 }  // namespace vnd
