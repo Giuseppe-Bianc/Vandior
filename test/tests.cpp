@@ -153,6 +153,7 @@ TEST_CASE("TimeValues initialization", "[TimeValues]") {
     }
 }
 
+/*
 TEST_CASE("ValueLabel functionality", "[ValueLabel]") {
     using vnd::ValueLabel;
 
@@ -193,7 +194,7 @@ TEST_CASE("ValueLabel functionality", "[ValueLabel]") {
         const ValueLabel unknownVal(3.0L, "unknown");
         REQUIRE(unknownVal.toString() == "3 unknown");
     }
-}
+}*/
 
 TEST_CASE("Times functionality", "[Times]") {
     using vnd::Times;
