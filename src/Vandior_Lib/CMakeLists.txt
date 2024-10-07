@@ -1,6 +1,5 @@
 include(GenerateExportHeader)
 
-find_package(glm REQUIRED)
 add_library(vandior_lib vandior.cpp
         lexer/Token.cpp
         lexer/Tokenizer.cpp
