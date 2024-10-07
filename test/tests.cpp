@@ -125,6 +125,143 @@ TEST_CASE("extractTabs basic functionality", "[extractTabs]") {
     }
 }
 
+TEST_CASE("TimeValues initialization", "[TimeValues]") {
+    using vnd::TimeValues;
+
+    SECTION("Default Constructor") {
+        const TimeValues time;
+        REQUIRE(time.get_seconds() == 0.0L);
+        REQUIRE(time.get_millis() == 0.0L);
+        REQUIRE(time.get_micro() == 0.0L);
+        REQUIRE(time.get_nano() == 0.0L);
+    }
+
+    SECTION("Initialization with nanoseconds") {
+        const TimeValues time(1'000'000.0L);  // 1 millisecond in nanoseconds
+        REQUIRE(time.get_seconds() == 0.001L);
+        REQUIRE(time.get_millis() == 1.0L);
+        REQUIRE(time.get_micro() == 1000.0L);
+        REQUIRE(time.get_nano() == 1'000'000.0L);
+    }
+
+    SECTION("Initialization with individual time units") {
+        const TimeValues time(1.0L, 1000.0L, 1'000'000.0L, 1'000'000'000.0L);  // 1 second
+        REQUIRE(time.get_seconds() == 1.0L);
+        REQUIRE(time.get_millis() == 1000.0L);
+        REQUIRE(time.get_micro() == 1'000'000.0L);
+        REQUIRE(time.get_nano() == 1'000'000'000.0L);
+    }
+}
+
+TEST_CASE("ValueLabel functionality", "[ValueLabel]") {
+    using vnd::ValueLabel;
+
+    SECTION("Transform time in microseconds") {
+        const ValueLabel value(1500.0L, "us");
+        REQUIRE(value.transformTimeMicro(1500.0L) == "1500us,0ns");
+
+        const ValueLabel valueNonExact(1500.5L, "us");
+        REQUIRE(valueNonExact.transformTimeMicro(1500.5L) == "1500us,500ns");
+    }
+
+    SECTION("Transform time in milliseconds") {
+        const ValueLabel value(2.5L, "ms");
+        REQUIRE(value.transformTimeMilli(2.5L) == "2ms,500us,0ns");
+
+        const ValueLabel valueNonExact(2.505L, "ms");
+        REQUIRE(valueNonExact.transformTimeMilli(2.505L) == "2ms,504us,999ns");
+    }
+
+    SECTION("Transform time in seconds") {
+        const ValueLabel value(1.0L, "s");
+        REQUIRE(value.transformTimeSeconds(1.0L) == "1s,0ms,0us,0ns");
+
+        const ValueLabel valueNonExact(1.005001L, "s");
+        REQUIRE(valueNonExact.transformTimeSeconds(1.005001L) == "1s,5ms,1us,0ns");
+    }
+
+    SECTION("ToString based on time label") {
+        const ValueLabel secondsVal(2.0L, "s");
+        REQUIRE(secondsVal.toString() == "2s,0ms,0us,0ns");
+
+        const ValueLabel millisVal(2500.0L, "ms");
+        REQUIRE(millisVal.toString() == "2500ms,0us,0ns");
+
+        const ValueLabel microsVal(1500.0L, "us");
+        REQUIRE(microsVal.toString() == "1500us,0ns");
+
+        const ValueLabel unknownVal(3.0L, "unknown");
+        REQUIRE(unknownVal.toString() == "3 unknown");
+    }
+}
+
+TEST_CASE("Times functionality", "[Times]") {
+    using vnd::Times;
+    using vnd::TimeValues;
+    using vnd::ValueLabel;
+
+    SECTION("Initialization with nanoseconds") {
+        const Times time(1'000'000.0L);  // 1 millisecond
+        const ValueLabel relevantTime = time.getRelevantTimeframe();
+        REQUIRE(relevantTime.toString() == "1000us,0ns");
+    }
+
+    SECTION("Initialization with TimeValues and custom labels") {
+        const TimeValues timeVals(0.5L, 500.0L, 500'000.0L, 500'000'000.0L);  // 0.5 seconds
+        const Times time(timeVals, "seconds", "milliseconds", "microseconds", "nanoseconds");
+
+        const ValueLabel relevantTime = time.getRelevantTimeframe();
+        REQUIRE(relevantTime.toString() == "500 milliseconds");
+    }
+
+    SECTION("Switch between time units") {
+        const TimeValues timeVals(0.001L, 1.0L, 1000.0L, 1'000'000.0L);  // 1 millisecond
+        const Times time(timeVals);
+
+        const ValueLabel relevantTime = time.getRelevantTimeframe();
+        REQUIRE(relevantTime.toString() == "1000us,0ns");
+    }
+
+    SECTION("Very small nanoseconds") {
+        const TimeValues timeVals(0.000001L, 0.001L, 1.0L, 1'000.0L);  // 1 microsecond
+        const Times time(timeVals);
+
+        const ValueLabel relevantTime = time.getRelevantTimeframe();
+        REQUIRE(relevantTime.toString() == "1000 ns");
+    }
+}
+
+TEST_CASE("Corner cases for TimeValues and Times", "[TimeValues][Times][CornerCases]") {
+    using vnd::Times;
+    using vnd::TimeValues;
+    using vnd::ValueLabel;
+
+    SECTION("Negative values") {
+        const TimeValues negativeTime(-1000000.0L);  // -1 millisecond
+        const Times time(negativeTime);
+
+        const ValueLabel relevantTime = time.getRelevantTimeframe();
+        REQUIRE(relevantTime.toString() == "-1000000 ns");
+    }
+
+    SECTION("Zero values") {
+        const TimeValues zeroTime(0.0L);  // Zero nanoseconds
+        const Times time(zeroTime);
+
+        const ValueLabel relevantTime = time.getRelevantTimeframe();
+        REQUIRE(relevantTime.toString() == "0 ns");
+    }
+
+    SECTION("Large values") {
+        const long double largeValue = 1'000'000'000'000.0L;  // 1 second in nanoseconds
+        const TimeValues largeTime(largeValue);               // 1 second
+        const Times time(largeTime);
+
+        const ValueLabel relevantTime = time.getRelevantTimeframe();
+        REQUIRE(relevantTime.toString() == "1000s,0ms,0us,0ns");
+    }
+}
+
 TEST_CASE("get_current_timestamp() tests", "[timestamp]") {
     SECTION("Basic test") {
         auto timestamp = get_current_timestamp();
