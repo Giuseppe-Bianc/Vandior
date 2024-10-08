@@ -78,9 +78,10 @@ auto main(int argc, const char *const argv[]) -> int {
         /*LINFO("print internal function\n{}", ast->print());
         LINFO("comp_print internal function\n {}", ast->comp_print());
         LINFO("prettyPrint external function");*/
-        prettyPrint(*ast);
-        vnd::Transpiler transpiler{input, filename};
-        transpiler.transpile();
+        //for(const auto &i : ast) { prettyPrint(*i.get_nodes().at(0).get()); }
+        //prettyPrint(*ast);
+        //vnd::Transpiler transpiler{input, filename};
+        //transpiler.transpile();
     } catch(const std::exception &e) {
         // Handle any other types of exceptions
         LERROR("Unhandled exception in main: {}", e.what());

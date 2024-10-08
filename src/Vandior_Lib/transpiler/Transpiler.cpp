@@ -51,10 +51,10 @@ namespace vnd {
 #endif  // INDEPT
     }
     void Transpiler::transpile() {
-        createMockfile();
-        const auto ast = _parser.parse();
-        const auto transpiledCode = transpileNode(*ast);
-        LINFO("transpiled code: {}", transpiledCode);
+        //createMockfile();
+        //const auto ast = _parser.parse();
+        //const auto transpiledCode = transpileNode(*ast);
+        //LINFO("transpiled code: {}", transpiledCode);
     }
 
     // Main code generation function

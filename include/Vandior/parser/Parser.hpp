@@ -5,6 +5,7 @@
 #pragma once
 #include "AST.hpp"
 #include "Vandior/lexer/Tokenizer.hpp"
+#include "Vandior/parser/Statement.hpp"
 
 namespace vnd {
     /**
@@ -25,7 +26,7 @@ namespace vnd {
          * @brief Parses the tokens into an AST.
          * @return A unique pointer to the root AST node.
          */
-        std::unique_ptr<ASTNode> parse();
+        std::vector<Statement> parse();
 
         /**
          * @brief Converts a string view to an integer.

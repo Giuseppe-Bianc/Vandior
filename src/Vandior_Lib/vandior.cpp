@@ -3,15 +3,15 @@
 
 namespace vnd {
 
-    auto timeParser(std::unique_ptr<ASTNode> &ast, Parser &parser) -> void {
+    auto timeParser(std::vector<Statement> &ast, Parser &parser) -> void {
 #ifdef INDEPT
         const AutoTimer timer("parse");
 #endif
         ast = vnd_move_always_even_const(parser.parse());
     }
 
-    auto timeParse(Parser &parser) -> std::unique_ptr<ASTNode> {
-        std::unique_ptr<ASTNode> ast;
+    auto timeParse(Parser &parser) -> std::vector<Statement> {
+        std::vector<Statement> ast;
         timeParser(ast, parser);
         return ast;
     }

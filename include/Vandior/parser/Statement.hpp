@@ -29,6 +29,8 @@ namespace vnd {
          */
         [[nodiscard]] std::string comp_print() const override { return ""; }
 
+        [[nodiscard]] std::vector<std::unique_ptr<ASTNode>> &get_nodes() noexcept { return nodes; }
+
         friend void swap(Statement &lhs, Statement &rhs) noexcept {
             using std::swap;
             swap(static_cast<ASTNode &>(lhs), static_cast<ASTNode &>(rhs));

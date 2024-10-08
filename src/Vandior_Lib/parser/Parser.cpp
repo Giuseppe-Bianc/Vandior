@@ -1,6 +1,5 @@
 #include "Vandior/parser/Parser.hpp"
 #include "Vandior/parser/ParserException.hpp"
-#include "Vandior/parser/Statement.hpp"
 #include <charconv>
 #include <system_error>
 #include <utility>
@@ -9,10 +8,11 @@
 DISABLE_WARNINGS_PUSH(26410 26411 26415 26445 26481)
 
 namespace vnd {
-    std::unique_ptr<ASTNode> Parser::parse() {
-        auto statement = std::make_unique<Statement>(Token{});
-        statement->addNode(parseExpression());
-        return statement;
+    std::vector<Statement> Parser::parse() {
+        std::vector<Statement> statements;
+        statements.emplace_back(Token{});
+        statements.back().addNode(parseExpression());
+        return statements;
     }
     void Parser::consumeToken() noexcept {
         if(position < tokenSize) { position++; }
