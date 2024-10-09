@@ -3,7 +3,7 @@
 
 #include "timeFactors.hpp"
 
-DISABLE_WARNINGS_PUSH(26447 26481) // NOLINT(*-avoid-non-const-global-variables, *-avoid-magic-numbers, *-magic-numbers)
+DISABLE_WARNINGS_PUSH(26447 26481)  // NOLINT(*-avoid-non-const-global-variables, *-avoid-magic-numbers, *-magic-numbers)
 
 namespace vnd {
     class TimeValues {

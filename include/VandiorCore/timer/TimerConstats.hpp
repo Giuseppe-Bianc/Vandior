@@ -1,6 +1,6 @@
 /*
-* Created by gbian on 09/10/2024.
-*/
+ * Created by gbian on 09/10/2024.
+ */
 
 #pragma once
 
@@ -19,4 +19,4 @@ namespace vnd {
     static inline constexpr auto minimalFormat = "{} - {}";
     static inline constexpr auto timeItFormat = "{} for {} tries";
     static inline constexpr std::size_t TILEPADDING = 10;
-}
+}  // namespace vnd

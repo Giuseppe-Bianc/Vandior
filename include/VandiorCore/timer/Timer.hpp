@@ -104,7 +104,7 @@ namespace vnd {
 
             start_ = clock::now();
             std::size_t n = 0;
-            do { // NOLINT(*-avoid-do-while)
+            do {  // NOLINT(*-avoid-do-while)
                 f();
                 total_time = ch::duration_cast<nanolld>(clock::now() - start_).count();
             } while(n++ < MFACTOR && total_time < target_time);
@@ -173,7 +173,7 @@ namespace vnd {
         ~AutoTimer() noexcept {
             try {
                 LINFO(to_string());
-            } catch(...) { // NOLINT(*-empty-catch)
+            } catch(...) {  // NOLINT(*-empty-catch)
                 // Handle or log the exception as needed
             }
         }
