@@ -69,6 +69,7 @@ DISABLE_WARNINGS_POP()
 // DISABLE_WARNINGS_POP()
 
 namespace fs = std::filesystem;  // NOLINT(*-unused-alias-decls)
+namespace ch = std::chrono;      // NOLINT(*-unused-alias-decls)
 
 DISABLE_WARNINGS_PUSH(26481)
 static inline constexpr long double NINFINITY = std::numeric_limits<long double>::infinity();
