@@ -117,7 +117,7 @@ namespace vnd {
             const auto millis = values.get_millis();
             const auto micro = values.get_micro();
 
-            if(seconds > 1.0L) {  // seconds
+            if(seconds > 1.0L) {  // seconds NOLINT(*-branch-clone)
                 return {seconds, labelseconds};
             } else if(millis > 1.0L) {  // millis
                 return {millis, labelmillis};
@@ -129,7 +129,7 @@ namespace vnd {
         }
 
     private:
-        TimeValues values{};
+        TimeValues values;
         std::string_view labelseconds{"s"};
         std::string_view labelmillis{"ms"};
         std::string_view labelmicro{"us"};
@@ -138,7 +138,10 @@ namespace vnd {
     DISABLE_WARNINGS_POP()
 }  // namespace vnd
 
-// Custom formatter for ValueLabel to use with fmt
+/**
+ * This function is a formatter for Token using fmt.
+ * \cond
+ */
 template <> struct fmt::formatter<vnd::ValueLabel> : fmt::formatter<std::string_view> {
     auto format(const vnd::ValueLabel &val, format_context &ctx) const -> format_context::iterator {
         return fmt::formatter<std::string_view>::format(val.toString(), ctx);

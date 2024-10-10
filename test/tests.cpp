@@ -464,7 +464,6 @@ TEST_CASE("Timer: TimeItTimer", "[timer]") {
 TEST_CASE("CodeSourceLocation default constructor sets default values", "[CodeSourceLocation]") {
     const vnd::CodeSourceLocation location;
     REQUIRE(location.getFileName() == "unknown");
-    ;
     REQUIRE(location.getLine() == 0);
     REQUIRE(location.getColumn() == 0);
 }
