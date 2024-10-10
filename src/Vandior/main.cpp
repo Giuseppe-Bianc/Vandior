@@ -78,7 +78,10 @@ auto main(int argc, const char *const argv[]) -> int {
         /*LINFO("print internal function\n{}", ast->print());
         LINFO("comp_print internal function\n {}", ast->comp_print());
         LINFO("prettyPrint external function");*/
-        for(const auto &i : ast) { prettyPrint(*i.get_nodes().at(0)); }
+        for(const auto &i : ast) {
+            LINFO("{}", i.get_token());
+            prettyPrint(*i.get_nodes().at(0));
+        }
         vnd::Transpiler transpiler{input, filename};
         transpiler.transpile();
     } catch(const std::exception &e) {

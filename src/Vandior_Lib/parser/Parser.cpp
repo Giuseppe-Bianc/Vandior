@@ -9,8 +9,14 @@ DISABLE_WARNINGS_PUSH(26410 26411 26415 26445 26481)
 
 namespace vnd {
     std::vector<Statement> Parser::parse() {
+        if(tokens.empty()) { return {}; }
         std::vector<Statement> statements;
-        statements.emplace_back(Token{});
+        Token token{};
+        if(Tokenizer::isKeyword(tokens.front().getType())) {
+            token = tokens.front();
+            tokens.erase(tokens.begin());
+        }
+        statements.emplace_back(token);
         statements.back().addNode(parseExpression());
         return statements;
     }
