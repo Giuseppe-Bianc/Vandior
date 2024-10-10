@@ -1,30 +1,32 @@
+// NOLINTBEGIN(*-include-cleaner, *-identifier-length, *-special-member-functions)
 #pragma once
 
 #include "timeFactors.hpp"
 
-DISABLE_WARNINGS_PUSH(26447 26481)
+DISABLE_WARNINGS_PUSH(26447 26481)  // NOLINT(*-avoid-non-const-global-variables, *-avoid-magic-numbers, *-magic-numbers)
 
 namespace vnd {
     class TimeValues {
     public:
-        TimeValues() = default;
+        constexpr TimeValues() noexcept = default;
 
-        explicit TimeValues(const long double nanoseconds_) noexcept
+        explicit constexpr TimeValues(long double nanoseconds_) noexcept
           : seconds(nanoseconds_ / SECONDSFACTOR), millis(nanoseconds_ / MILLISECONDSFACTOR), micro(nanoseconds_ / MICROSECONDSFACTOR),
             nano(nanoseconds_) {}
 
-        TimeValues(const long double seconds_, const long double millis_, const long double micro_, const long double nano_) noexcept
+        // NOLINTNEXTLINE(*-easily-swappable-parameters)
+        constexpr TimeValues(long double seconds_, long double millis_, long double micro_, long double nano_) noexcept
           : seconds(seconds_), millis(millis_), micro(micro_), nano(nano_) {}
 
-        TimeValues(const TimeValues &other) = default;
+        TimeValues(const TimeValues &other) noexcept = default;
         TimeValues(TimeValues &&other) noexcept = default;
-        TimeValues &operator=(const TimeValues &other) = default;
+        TimeValues &operator=(const TimeValues &other) noexcept = default;
         TimeValues &operator=(TimeValues &&other) noexcept = default;
 
-        [[nodiscard]] constexpr const long double &get_seconds() const noexcept { return seconds; }
-        [[nodiscard]] constexpr const long double &get_millis() const noexcept { return millis; }
-        [[nodiscard]] constexpr const long double &get_micro() const noexcept { return micro; }
-        [[nodiscard]] constexpr const long double &get_nano() const noexcept { return nano; }
+        [[nodiscard]] constexpr long double get_seconds() const noexcept { return seconds; }
+        [[nodiscard]] constexpr long double get_millis() const noexcept { return millis; }
+        [[nodiscard]] constexpr long double get_micro() const noexcept { return micro; }
+        [[nodiscard]] constexpr long double get_nano() const noexcept { return nano; }
 
     private:
         long double seconds{};
@@ -35,11 +37,12 @@ namespace vnd {
 
     class ValueLabel {
     public:
-        ValueLabel() noexcept = default;
-        ValueLabel(const long double time_val, const std::string_view time_label) noexcept : timeVal(time_val), timeLabel(time_label) {}
-        ValueLabel(const ValueLabel &other) = default;
+        constexpr ValueLabel() noexcept = default;
+        // NOLINTNEXTLINE(*-easily-swappable-parameters)
+        constexpr ValueLabel(long double time_val, std::string_view time_label) noexcept : timeVal(time_val), timeLabel(time_label) {}
+        ValueLabel(const ValueLabel &other) noexcept = default;
         ValueLabel(ValueLabel &&other) noexcept = default;
-        ValueLabel &operator=(const ValueLabel &other) = default;
+        ValueLabel &operator=(const ValueLabel &other) noexcept = default;
         ValueLabel &operator=(ValueLabel &&other) noexcept = default;
 
         [[nodiscard]] std::string transformTimeMicro(long double inputTimeMicro) const noexcept {
@@ -93,30 +96,32 @@ namespace vnd {
 
     class Times {
     public:
-        Times() = default;
+        Times() noexcept = default;
 
-        explicit Times(const long double nanoseconds_) noexcept : values(nanoseconds_) {}
+        explicit Times(long double nanoseconds_) noexcept : values(nanoseconds_) {}
 
         explicit Times(const TimeValues &time_values) noexcept : values(time_values) {}
 
-        Times(const TimeValues &time_values, const std::string_view labelseconds_, const std::string_view labelmillis_,
-              const std::string_view labelmicro_, std::string_view labelnano_) noexcept
+        // NOLINTNEXTLINE(*-easily-swappable-parameters)
+        Times(const TimeValues &time_values, std::string_view labelseconds_, std::string_view labelmillis_, std::string_view labelmicro_,
+              std::string_view labelnano_) noexcept
           : values(time_values), labelseconds(labelseconds_), labelmillis(labelmillis_), labelmicro(labelmicro_), labelnano(labelnano_) {}
 
-        Times(const Times &other) = default;
+        Times(const Times &other) noexcept = default;
         Times(Times &&other) noexcept = default;
-        Times &operator=(const Times &other) = default;
+        Times &operator=(const Times &other) noexcept = default;
         Times &operator=(Times &&other) noexcept = default;
 
         [[nodiscard]] ValueLabel getRelevantTimeframe() const noexcept {
             const auto seconds = values.get_seconds();
             const auto millis = values.get_millis();
             const auto micro = values.get_micro();
-            if(seconds > 1) {  // seconds
+
+            if(seconds > 1.0L) {  // seconds NOLINT(*-branch-clone)
                 return {seconds, labelseconds};
-            } else if(millis > 1) {  // millis
+            } else if(millis > 1.0L) {  // millis
                 return {millis, labelmillis};
-            } else if(micro > 1) {  // micros
+            } else if(micro > 1.0L) {  // micros
                 return {micro, labelmicro};
             } else {  // nanos
                 return {values.get_nano(), labelnano};
@@ -124,7 +129,7 @@ namespace vnd {
         }
 
     private:
-        TimeValues values{};
+        TimeValues values;
         std::string_view labelseconds{"s"};
         std::string_view labelmillis{"ms"};
         std::string_view labelmicro{"us"};
@@ -143,3 +148,5 @@ template <> struct fmt::formatter<vnd::ValueLabel> : fmt::formatter<std::string_
     }
 };
 /** \endcond */
+
+// NOLINTEND(*-include-cleaner, *-identifier-length, *-special-member-functions)
