@@ -463,7 +463,7 @@ TEST_CASE("Timer: TimeItTimer", "[timer]") {
 
 TEST_CASE("CodeSourceLocation default constructor sets default values", "[CodeSourceLocation]") {
     const vnd::CodeSourceLocation location;
-    REQUIRE(location.getFileName().empty());
+    REQUIRE(location.getFileName() == "unknown");;
     REQUIRE(location.getLine() == 0);
     REQUIRE(location.getColumn() == 0);
 }
@@ -763,9 +763,9 @@ TEST_CASE("construct a empty value token", "[token]") {
     REQUIRE(token.getValue().empty() == true);
     REQUIRE(token.getLine() == 0);
     REQUIRE(token.getColumn() == 0);
-    REQUIRE(token.getFileName().empty() == true);
-    REQUIRE(token.to_string() == "(type: UNKNOWN, value: '', source location:(file:, line:0, column:0))");
-    REQUIRE(token.compat_to_string() == "(typ: UNKNOWN, val: '', sl:(f:, l:0, c:0))");
+    REQUIRE(token.getFileName()== "unknown");
+    REQUIRE(token.to_string() == "(type: UNKNOWN, value: '', source location:(file:unknown, line:0, column:0))");
+    REQUIRE(token.compat_to_string() == "(typ: UNKNOWN, val: '', sl:(f:unknown, l:0, c:0))");
 }
 
 TEST_CASE("construct a EOFT token", "[token]") {  // NOLINT(*-function-cognitive-complexity)
@@ -775,9 +775,9 @@ TEST_CASE("construct a EOFT token", "[token]") {  // NOLINT(*-function-cognitive
     REQUIRE(token.getValue().empty() == true);
     REQUIRE(token.getLine() == 0);
     REQUIRE(token.getColumn() == 0);
-    REQUIRE(token.getFileName().empty() == true);
-    REQUIRE(token.to_string() == "(type: EOF, source location:(file:, line:0, column:0))");
-    REQUIRE(token.compat_to_string() == "(typ: EOF, sl:(f:, l:0, c:0))");
+    REQUIRE(token.getFileName() == "unknown");
+    REQUIRE(token.to_string() == "(type: EOF, source location:(file:unknown, line:0, column:0))");
+    REQUIRE(token.compat_to_string() == "(typ: EOF, sl:(f:unknown, l:0, c:0))");
 }
 
 TEST_CASE("FolderCreationResult Constructor", "[FolderCreationResult]") {
