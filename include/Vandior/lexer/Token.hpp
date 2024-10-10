@@ -202,22 +202,7 @@ DISABLE_WARNINGS_POP()
  * \cond
  */
 template <> struct fmt::formatter<vnd::Token> : fmt::formatter<std::string_view> {  // NOLINT(*-include-cleaner)
-    // Add a flag to use the compact form or not
-    bool use_compact = false;
-
-    // Parse function to toggle compact format flag based on user input
-    constexpr auto parse(format_parse_context &ctx) -> format_parse_context::iterator {
-        auto it = ctx.begin();
-        auto end = ctx.end();
-
-        if(it != end && *it == 'c') {  // 'c' for compact
-            use_compact = true;
-            ++it;
-        }
-        return it;
-    }
     auto format(const vnd::Token &val, format_context &ctx) const -> format_context::iterator {
-        if(use_compact) { return fmt::formatter<std::string_view>::format(val.compat_to_string(), ctx); }
         return fmt::formatter<std::string_view>::format(val.to_string(), ctx);
     }
 };

@@ -54,17 +54,17 @@ static inline void printParentNode(const vnd::ASTNode &node, const std::string &
         if(nodeParentType == NodeType::Index) {
             LINFO("{} Parent of Node ({})", indentmark, nodeParentTypeStr);
         } else {
-            LINFO("{} Parent of Node ({}){:c}", indentmark, nodeParentTypeStr, nodeParent->get_token());
+            LINFO("{} Parent of Node ({}){}", indentmark, nodeParentTypeStr, nodeParent->get_token().compat_to_string());
         }
     } else {
-        LINFO("{} Node ({:c}) has no parent", indentmark, node.getType());
+        LINFO("{} Node ({}) has no parent", indentmark, comp_NodeType(node.getType()));
     }
 }
 // NOLINTNEXTLINE(misc-no-recursion, *-function-cognitive-complexity)
 static inline void prettyPrint(const vnd::ASTNode &node, const std::string &indent = "", bool isLast = true, const std::string &lorf = "") {
     const auto &indentmark = FORMAT("{}{}{}", indent, isLast ? "+-" : "|-", lorf);
     const auto &newindent = FORMAT("{}{}", indent, isLast ? "  " : "| ");
-    const auto &imarknode = FORMAT("{}({:c}", indentmark, node.getType());
+    const auto &imarknode = FORMAT("{}({}", indentmark, comp_NodeType(node.getType()));
 
     // printParentNode(node, indentmark);
     //  Determine the type of node and print information
