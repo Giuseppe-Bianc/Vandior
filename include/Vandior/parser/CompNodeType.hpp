@@ -70,8 +70,9 @@ template <> struct fmt::formatter<NodeType> : fmt::formatter<std::string_view> {
     auto format(NodeType nodeType, format_context &ctx) const -> format_context::iterator {
         using enum NodeType;
         std::string_view name;
-        if(use_compact) { name = std::string_view(comp_NodeType(nodeType)); }
-        else {
+        if(use_compact) {
+            name = std::string_view(comp_NodeType(nodeType));
+        } else {
             switch(nodeType) {
             case BinaryExpression:
                 name = "BINARY_EXPRESION";

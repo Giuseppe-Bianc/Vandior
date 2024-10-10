@@ -9,5 +9,4 @@
  */
 enum class NodeType { BinaryExpression, UnaryExpression, Number, Boolean, Char, String, Variable, Nullptr, Type, Index, Array, Statement };
 
-
 // NOLINTEND(*-include-cleaner)
