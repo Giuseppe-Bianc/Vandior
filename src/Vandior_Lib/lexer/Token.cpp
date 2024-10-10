@@ -7,8 +7,8 @@ namespace vnd {
     }
 
     std::string Token::compat_to_string() const {
-        if(_type == eofTokenType) { return FORMAT("(typ: {}, sl:{})", comp_tokType(_type), _sourceLocation.compat_to_string()); }
-        return FORMAT("(typ: {}, val: '{}', sl:{})", comp_tokType(_type), _value, _sourceLocation.compat_to_string());
+        if(_type == eofTokenType) { return FORMAT("(typ: {:c}, sl:{:c})", _type, _sourceLocation); }
+        return FORMAT("(typ: {:c}, val: '{}', sl:{:c})", _type, _value, _sourceLocation);
     }
 }  // namespace vnd
 // NOLINTEND(*-include-cleaner)
