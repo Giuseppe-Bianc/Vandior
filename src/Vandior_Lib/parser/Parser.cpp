@@ -11,15 +11,21 @@ namespace vnd {
     std::vector<Statement> Parser::parse() {
         if(tokens.empty()) { return {}; }
         std::vector<Statement> statements;
+        emplaceStatement(statements);
+        statements.back().addNode(parseExpression());
+        return statements;
+    }
+
+    void Parser::emplaceStatement(std::vector<Statement> &statements) noexcept {
         Token token{};
         if(Tokenizer::isKeyword(tokens.front().getType())) {
             token = tokens.front();
             tokens.erase(tokens.begin());
         }
         statements.emplace_back(token);
-        statements.back().addNode(parseExpression());
-        return statements;
+        keyword = token; 
     }
+
     void Parser::consumeToken() noexcept {
         if(position < tokenSize) { position++; }
     }
@@ -50,12 +56,21 @@ namespace vnd {
         return 0;
     }
 
-    std::size_t Parser::getOperatorPrecedence(const Token &token) noexcept {
+    std::size_t Parser::getOperatorPrecedence(const Token &token, const TokenType &type) noexcept {
         const auto &tokenValue = token.getValue();
         std::size_t precedence = 0;
         for(const auto &itm : operatorPrecedence) {
             precedence++;
-            if(std::ranges::find(itm, tokenValue) != itm.end()) { return precedence; }
+            if(std::ranges::find(itm, tokenValue) != itm.end()) {
+                if(type == TokenType::K_VAR) {
+                    if(tokenValue == ",") {
+                        precedence++;
+                    } else if(tokenValue == ":") {
+                        precedence--;
+                    };
+                }
+                return precedence;
+            }
         }
         return 0;
     }
@@ -249,7 +264,7 @@ namespace vnd {
     std::unique_ptr<ASTNode> Parser::parseBinary(std::size_t parentPrecendence) {
         auto left = parseUnary(parentPrecendence);
         while(true) {
-            const auto precedence = getOperatorPrecedence(getCurrentToken());
+            const auto precedence = getOperatorPrecedence(getCurrentToken(), keyword.getType());
             if(precedence == 0 || precedence <= parentPrecendence) { break; }
             const Token &opToken = getCurrentToken();
             consumeToken();

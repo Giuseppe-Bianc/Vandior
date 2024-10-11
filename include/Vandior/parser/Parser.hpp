@@ -56,6 +56,11 @@ namespace vnd {
 #endif
 
         /**
+         * @brief create a statement and emplace it in the parsing result.
+         */
+        void emplaceStatement(std::vector<Statement> &statements) noexcept;
+
+        /**
          * @brief Consumes the current token and advances to the next token.
          */
         void consumeToken() noexcept;
@@ -74,9 +79,10 @@ namespace vnd {
         /**
          * @brief Gets the precedence of an operator.
          * @param token The token representing the operator.
+         * @param type The keyword token type of current statement.
          * @return The precedence level of the operator.
          */
-        static std::size_t getOperatorPrecedence(const Token &token) noexcept;
+        static std::size_t getOperatorPrecedence(const Token &token, const TokenType &type) noexcept;
 
         /**
          * @brief Converts a string view to a double.
@@ -162,6 +168,7 @@ namespace vnd {
         std::vector<Token> tokens{};  ///< The list of tokens.
         std::size_t tokenSize{};      ///< The size of the token list.
         std::size_t position{};       ///< The current position in the token list.
+        Token keyword{};              ///< The keyword token of the current statement.
     };
 }  // namespace vnd
 
