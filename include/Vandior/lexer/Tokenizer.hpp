@@ -19,14 +19,6 @@ namespace vnd {
         explicit Tokenizer(const std::string_view &input, const std::string_view &fileName = "unknown.vn") noexcept
           : _input(input), _filename(fileName), _inputSize(input.size()) /*_locationAllocator(_inputSize)*/ {}
 
-        
-        /**
-         * @brief Checks if a tokenType is a keyword.
-         * @param type the TokenType to check.
-         * @return a bool flag.
-         */
-        //[[nodiscard]] static auto isKeyword(const TokenType &type) -> bool;
-
         /**
          * @brief Tokenize the input string.
          * @return A vector of Token objects.

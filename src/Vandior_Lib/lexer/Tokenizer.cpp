@@ -27,14 +27,6 @@ namespace vnd {
         {"nullptr"sv, TokenType::K_NULLPTR},{"true"sv, TokenType::BOOLEAN},{"false"sv, TokenType::BOOLEAN}
     }};
 
-    /*auto Tokenizer::isKeyword(const TokenType &type) -> bool {
-        std::vector<TokenType> types = {
-            TokenType::K_MAIN, TokenType::K_VAR, TokenType::K_IF, TokenType::K_WHILE, TokenType::K_ELSE,
-            TokenType::K_FOR, TokenType::K_BREAK, TokenType::K_FUN, TokenType::K_RETURN,
-        };
-        return std::find(std::begin(types), std::end(types), type) != std::end(types);
-    }*/
-
     // clang-format on
 
     std::vector<Token> Tokenizer::tokenize() {
