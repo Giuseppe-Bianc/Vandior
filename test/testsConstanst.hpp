@@ -1,7 +1,7 @@
 /*
-* Created by gbian on 12/10/2024.
-* Copyright (c) 2024 All rights reserved.
-*/
+ * Created by gbian on 12/10/2024.
+ * Copyright (c) 2024 All rights reserved.
+ */
 
 #pragma once
 
