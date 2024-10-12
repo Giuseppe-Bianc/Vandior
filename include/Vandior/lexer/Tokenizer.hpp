@@ -25,7 +25,7 @@ namespace vnd {
          * @param type the TokenType to check.
          * @return a bool flag.
          */
-        [[nodiscard]] static auto isKeyword(const TokenType &type) -> bool;
+        //[[nodiscard]] static auto isKeyword(const TokenType &type) -> bool;
 
         /**
          * @brief Tokenize the input string.

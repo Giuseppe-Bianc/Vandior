@@ -84,6 +84,14 @@ namespace vnd {
     static inline constexpr TokenType eofTokenType = TokenType::EOFT;
     using TokenTypeVec = std::vector<TokenType>;
 
+    [[nodiscard]] inline bool isKeyword(const TokenType &type) noexcept {
+        std::vector<TokenType> types = {
+            TokenType::K_MAIN, TokenType::K_VAR,   TokenType::K_IF,  TokenType::K_WHILE,  TokenType::K_ELSE,
+            TokenType::K_FOR,  TokenType::K_BREAK, TokenType::K_FUN, TokenType::K_RETURN,
+        };
+        return std::find(std::begin(types), std::end(types), type) != std::end(types);
+    }
+
     /**
      * @brief Gets the TokenType of a value.
      * @param value The value.

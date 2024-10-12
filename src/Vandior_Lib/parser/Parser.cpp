@@ -18,7 +18,7 @@ namespace vnd {
 
     void Parser::emplaceStatement(std::vector<Statement> &statements) noexcept {
         Token token{};
-        if(Tokenizer::isKeyword(tokens.front().getType())) {
+        if(isKeyword(tokens.front().getType())) {
             token = tokens.front();
             tokens.erase(tokens.begin());
         }
