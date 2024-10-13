@@ -140,28 +140,26 @@ namespace vnd {
         consumeToken();
         if(currentValue.starts_with("#o") || currentValue.starts_with("#O")) {
             currentValue.remove_prefix(2);
-            return MAKE_UNIQUE(NumberNode<int>, convertToIntformOct(currentValue), currentToken, NumberNodeType::Integer);
+            return MAKE_UNIQUE(VND_NUM_INT, convertToIntformOct(currentValue), currentToken, NumberNodeType::Integer);
         }
         if(currentValue.starts_with("#")) {
             currentValue.remove_prefix(1);
-            return MAKE_UNIQUE(NumberNode<int>, convertToIntformExa(currentValue), currentToken, NumberNodeType::Integer);
+            return MAKE_UNIQUE(VND_NUM_INT, convertToIntformExa(currentValue), currentToken, NumberNodeType::Integer);
         }
-        return MAKE_UNIQUE(NumberNode<int>, convertToInt(currentValue), currentToken, NumberNodeType::Integer);
+        return MAKE_UNIQUE(VND_NUM_INT, convertToInt(currentValue), currentToken, NumberNodeType::Integer);
     }
     std::unique_ptr<ASTNode> Parser::parsePrimaryDouble(const Token &currentToken, const std::string_view &currentValue) {
         consumeToken();
         if(currentValue.ends_with("if")) {
-            return MAKE_UNIQUE(NumberNode<std::complex<float>>, convertToImg<float>(currentValue), currentToken,
-                               NumberNodeType::ImaginaryFloat);
+            return MAKE_UNIQUE(VND_NUM_CFLOAT, convertToImg<float>(currentValue), currentToken, NumberNodeType::ImaginaryFloat);
         }
         if(currentValue.ends_with("i")) {
-            return MAKE_UNIQUE(NumberNode<std::complex<double>>, convertToImg<double>(currentValue), currentToken,
-                               NumberNodeType::Imaginary);
+            return MAKE_UNIQUE(VND_NUM_CDOUBLE, convertToImg<double>(currentValue), currentToken, NumberNodeType::Imaginary);
         }
         if(currentValue.ends_with("f")) {
-            return MAKE_UNIQUE(NumberNode<float>, convertToDouble<float>(currentValue), currentToken, NumberNodeType::Float);
+            return MAKE_UNIQUE(VND_NUM_FLOAT, convertToDouble<float>(currentValue), currentToken, NumberNodeType::Float);
         }
-        return MAKE_UNIQUE(NumberNode<double>, convertToDouble<double>(currentValue), currentToken, NumberNodeType::Double);
+        return MAKE_UNIQUE(VND_NUM_DOUBLE, convertToDouble<double>(currentValue), currentToken, NumberNodeType::Double);
     }
     // NOLINTNEXTLINE(*-function-cognitive-complexity)
     std::unique_ptr<ASTNode> Parser::parsePrimary() {
