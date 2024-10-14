@@ -23,7 +23,7 @@ namespace vnd {
             tokens.erase(tokens.begin());
         }
         statements.emplace_back(token);
-        keyword = token; 
+        keyword = token;
     }
 
     void Parser::consumeToken() noexcept {
