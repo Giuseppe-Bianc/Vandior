@@ -74,13 +74,13 @@ auto main(int argc, const char *const argv[]) -> int {
         std::getline(std::cin, input);
         LINFO("Input: {}", input);
         vnd::Parser parser{input, "input.vn"};
-        const auto ast = vnd::timeParse(parser);
+        const auto progrmamAST = vnd::timeParse(parser);
         /*LINFO("print internal function\n{}", ast->print());
         LINFO("comp_print internal function\n {}", ast->comp_print());
         LINFO("prettyPrint external function");*/
-        for(const auto &i : ast) {
-            LINFO("{}", i.get_token());
-            prettyPrint(*i.get_nodes().at(0));
+        for(const auto &statement : progrmamAST) {
+            LINFO("{}", statement.get_token());
+            prettyPrint(*statement.get_nodes().at(0));
         }
         vnd::Transpiler transpiler{input, filename};
         transpiler.transpile();
