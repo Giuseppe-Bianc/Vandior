@@ -170,6 +170,11 @@ namespace vnd {
     public:
         using Timer::Timer;
 
+        AutoTimer(const AutoTimer &) = delete;
+        AutoTimer &operator=(const AutoTimer &) = delete;
+        AutoTimer(AutoTimer &&) = delete;
+        AutoTimer &operator=(AutoTimer &&) = delete;
+
         ~AutoTimer() noexcept {
             try {
                 LINFO(to_string());
