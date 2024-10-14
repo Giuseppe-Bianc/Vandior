@@ -1436,10 +1436,11 @@ TEST_CASE("ASTNode get token", "[ast]") {
     const vnd::VariableNode dummyNode("id", token);
     REQUIRE(dummyNode.get_token() == token);
 }
-/*
 TEST_CASE("Parser emit boolean literal node", "[parser]") {
     vnd::Parser parser("true", filename);
-    auto ast = parser.parse();
+    auto programAst = parser.parse();
+    REQUIRE(programAst.size() == 1);
+    auto ast = programAst[0].get_nodes().at(0).get();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Boolean);
     const auto *number = ast->as<vnd::LiteralNode<bool>>();
@@ -1447,7 +1448,7 @@ TEST_CASE("Parser emit boolean literal node", "[parser]") {
     REQUIRE(number->print() == "BOOLEAN_LIT(true)");
     REQUIRE(number->comp_print() == "BOOLEAN(true)");
     REQUIRE(number->get_value() == true);
-}*/
+}
 
 TEST_CASE("boolean node swap", "[parser]") {
     auto token1 = vnd::Token{vnd::TokenType::BOOLEAN, "true", vnd::CodeSourceLocation{filename, t_line, t_colum4}};
