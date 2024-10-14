@@ -79,7 +79,8 @@ auto main(int argc, const char *const argv[]) -> int {
         LINFO("comp_print internal function\n {}", ast->comp_print());
         LINFO("prettyPrint external function");*/
         for(const auto &statement : progrmamAST) {
-            LINFO("{}", statement.get_token()); //FIXME: the output should be the actual token not the the default token: (type: UNKNOWN, value: '', source location:(file:unknown, line:0, column:0))
+            LINFO("{}", statement.get_token());  // FIXME: the output should be the actual token not the the default token: (type: UNKNOWN,
+                                                 // value: '', source location:(file:unknown, line:0, column:0))
             prettyPrint(*statement.get_nodes().at(0));
         }
         vnd::Transpiler transpiler{input, filename};
