@@ -14,10 +14,10 @@
 using namespace std::literals::string_view_literals;
 
 using Catch::Matchers::ContainsSubstring;
-// using Catch::Matchers::EndsWith;
+using Catch::Matchers::EndsWith;
 using Catch::Matchers::Message;
 using Catch::Matchers::MessageMatches;
-// using Catch::Matchers::StartsWith;
+using Catch::Matchers::StartsWith;
 //  using Catch::Matchers::SizeIs;
 //  using Catch::Matchers::Equals;
 
@@ -1464,10 +1464,12 @@ TEST_CASE("boolean node swap", "[parser]") {
     REQUIRE(boola.get_token() == token2);
     REQUIRE(boolb.get_token() == token1);
 }
-/*
+
 TEST_CASE("Parser emit string literal node", "[parser]") {
     vnd::Parser parser("\"tr\"", filename);
-    auto ast = parser.parse();
+    auto programAst = parser.parse();
+    REQUIRE(programAst.size() == 1);
+    auto ast = programAst[0].get_nodes().at(0).get();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::String);
     const auto *number = ast->as<vnd::LiteralNode<std::string_view>>();
@@ -1495,7 +1497,9 @@ TEST_CASE("string node swap", "[parser]") {
 
 TEST_CASE("Parser emit char literal node", "[parser]") {
     vnd::Parser parser("'c'", filename);
-    auto ast = parser.parse();
+    auto programAst = parser.parse();
+    REQUIRE(programAst.size() == 1);
+    auto ast = programAst[0].get_nodes().at(0).get();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Char);
     const auto *number = ast->as<vnd::LiteralNode<char>>();
@@ -1523,7 +1527,9 @@ TEST_CASE("char node swap", "[parser]") {
 
 TEST_CASE("Parser emit integer number node", "[parser]") {
     vnd::Parser parser("1", filename);
-    auto ast = parser.parse();
+    auto programAst = parser.parse();
+    REQUIRE(programAst.size() == 1);
+    auto ast = programAst[0].get_nodes().at(0).get();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Number);
     const auto *number = ast->as<VND_NUM_INT>();
@@ -1533,7 +1539,9 @@ TEST_CASE("Parser emit integer number node", "[parser]") {
 
 TEST_CASE("Parser emit complex number node", "[parser]") {
     vnd::Parser parser("1i", filename);
-    auto ast = parser.parse();
+    auto programAst = parser.parse();
+    REQUIRE(programAst.size() == 1);
+    auto ast = programAst[0].get_nodes().at(0).get();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Number);
     const auto *number = ast->as<VND_NUM_CDOUBLE>();
@@ -1545,7 +1553,9 @@ TEST_CASE("Parser emit complex number node", "[parser]") {
 
 TEST_CASE("Parser emit complex float number node", "[parser]") {
     vnd::Parser parser("1if", filename);
-    auto ast = parser.parse();
+    auto programAst = parser.parse();
+    REQUIRE(programAst.size() == 1);
+    auto ast = programAst[0].get_nodes().at(0).get();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Number);
     const auto *number = ast->as<VND_NUM_CFLOAT>();
@@ -1554,7 +1564,7 @@ TEST_CASE("Parser emit complex float number node", "[parser]") {
     REQUIRE(number->comp_print() == "NUM_IMF((0, 1))");
     REQUIRE(number->get_value() == std::complex<float>(0, 1));
 }
-*/
+
 TEST_CASE("integer number node swap", "[parser]") {
     auto token1 = vnd::Token{vnd::TokenType::INTEGER, "2", vnd::CodeSourceLocation{filename, t_line, t_colum}};
     auto token2 = vnd::Token{vnd::TokenType::INTEGER, "3", vnd::CodeSourceLocation{filename, t_line, t_colum2}};
@@ -1736,10 +1746,12 @@ TEST_CASE("comp_NodeType function", "[parser]") {
     REQUIRE(std::string(comp_NodeType(NodeType::Index)) == "IDX");
     REQUIRE(std::string(comp_NodeType(NodeType::Array)) == "ARR");
 }
-/*
+
 TEST_CASE("Parser emit integer number node form exadecimal", "[parser]") {
     vnd::Parser parser("#23", filename);
-    auto ast = parser.parse();
+    auto programAst = parser.parse();
+    REQUIRE(programAst.size() == 1);
+    auto ast = programAst[0].get_nodes().at(0).get();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Number);
     const auto *number = ast->as<VND_NUM_INT>();
@@ -1754,7 +1766,9 @@ TEST_CASE("Parser emit integer number node form exadecimal", "[parser]") {
 
 TEST_CASE("Parser emit integer number node form exadecimal max int -1", "[parser]") {
     vnd::Parser parser("#7ffffffe", filename);
-    auto ast = parser.parse();
+    auto programAst = parser.parse();
+    REQUIRE(programAst.size() == 1);
+    auto ast = programAst[0].get_nodes().at(0).get();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Number);
     const auto *number = ast->as<VND_NUM_INT>();
@@ -1769,7 +1783,9 @@ TEST_CASE("Parser emit integer number node form exadecimal max int -1", "[parser
 
 TEST_CASE("Parser emit integer number node form octal", "[parser]") {
     vnd::Parser parser("#o23", filename);
-    auto ast = parser.parse();
+    auto programAst = parser.parse();
+    REQUIRE(programAst.size() == 1);
+    auto ast = programAst[0].get_nodes().at(0).get();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Number);
     const auto *number = ast->as<VND_NUM_INT>();
@@ -1784,7 +1800,9 @@ TEST_CASE("Parser emit integer number node form octal", "[parser]") {
 
 TEST_CASE("Parser emit integer number node form octal max int -1", "[parser]") {
     vnd::Parser parser("#o17777777776", filename);
-    auto ast = parser.parse();
+    auto programAst = parser.parse();
+    REQUIRE(programAst.size() == 1);
+    auto ast = programAst[0].get_nodes().at(0).get();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Number);
     const auto *number = ast->as<VND_NUM_INT>();
@@ -1799,7 +1817,9 @@ TEST_CASE("Parser emit integer number node form octal max int -1", "[parser]") {
 
 TEST_CASE("Parser emit integer number node print", "[parser]") {
     vnd::Parser parser("1", filename);
-    auto ast = parser.parse();
+    auto programAst = parser.parse();
+    REQUIRE(programAst.size() == 1);
+    auto ast = programAst[0].get_nodes().at(0).get();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Number);
     const auto *number = ast->as<VND_NUM_INT>();
@@ -1815,7 +1835,9 @@ TEST_CASE("Parser emit integer number node print", "[parser]") {
 
 TEST_CASE("Parser emit integer number node compat print", "[parser]") {
     vnd::Parser parser("1", filename);
-    auto ast = parser.parse();
+    auto programAst = parser.parse();
+    REQUIRE(programAst.size() == 1);
+    auto ast = programAst[0].get_nodes().at(0).get();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Number);
     const auto *number = ast->as<VND_NUM_INT>();
@@ -1831,7 +1853,9 @@ TEST_CASE("Parser emit integer number node compat print", "[parser]") {
 
 TEST_CASE("Parser emit variable node", "[parser]") {
     vnd::Parser parser("y", filename);
-    auto ast = parser.parse();
+    auto programAst = parser.parse();
+    REQUIRE(programAst.size() == 1);
+    auto ast = programAst[0].get_nodes().at(0).get();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Variable);
     const auto *variable = ast->as<vnd::VariableNode>();
@@ -1841,7 +1865,9 @@ TEST_CASE("Parser emit variable node", "[parser]") {
 
 TEST_CASE("Parser emit double number node double", "[parser]") {
     vnd::Parser parser("1.5", filename);
-    auto ast = parser.parse();
+    auto programAst = parser.parse();
+    REQUIRE(programAst.size() == 1);
+    auto ast = programAst[0].get_nodes().at(0).get();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Number);
     const auto *number = ast->as<VND_NUM_DOUBLE>();
@@ -1856,7 +1882,9 @@ TEST_CASE("Parser emit double number node double", "[parser]") {
 
 TEST_CASE("Parser emit flaot number node float", "[parser]") {
     vnd::Parser parser("1.5f", filename);
-    auto ast = parser.parse();
+    auto programAst = parser.parse();
+    REQUIRE(programAst.size() == 1);
+    auto ast = programAst[0].get_nodes().at(0).get();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Number);
     const auto *number = ast->as<VND_NUM_FLOAT>();
@@ -1871,7 +1899,9 @@ TEST_CASE("Parser emit flaot number node float", "[parser]") {
 
 TEST_CASE("Parser emit double number node double print", "[parser]") {
     vnd::Parser parser("1.5", filename);
-    auto ast = parser.parse();
+    auto programAst = parser.parse();
+    REQUIRE(programAst.size() == 1);
+    auto ast = programAst[0].get_nodes().at(0).get();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Number);
     const auto *number = ast->as<VND_NUM_DOUBLE>();
@@ -1887,7 +1917,9 @@ TEST_CASE("Parser emit double number node double print", "[parser]") {
 
 TEST_CASE("Parser emit flaot number node float print", "[parser]") {
     vnd::Parser parser("1.5f", filename);
-    auto ast = parser.parse();
+    auto programAst = parser.parse();
+    REQUIRE(programAst.size() == 1);
+    auto ast = programAst[0].get_nodes().at(0).get();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Number);
     const auto *number = ast->as<VND_NUM_FLOAT>();
@@ -1903,7 +1935,9 @@ TEST_CASE("Parser emit flaot number node float print", "[parser]") {
 
 TEST_CASE("Parser emit double number node double compat print", "[parser]") {
     vnd::Parser parser("1.5", filename);
-    auto ast = parser.parse();
+    auto programAst = parser.parse();
+    REQUIRE(programAst.size() == 1);
+    auto ast = programAst[0].get_nodes().at(0).get();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Number);
     const auto *number = ast->as<VND_NUM_DOUBLE>();
@@ -1919,7 +1953,9 @@ TEST_CASE("Parser emit double number node double compat print", "[parser]") {
 
 TEST_CASE("Parser emit flaot number node float compat print", "[parser]") {
     vnd::Parser parser("1.5f", filename);
-    auto ast = parser.parse();
+    auto programAst = parser.parse();
+    REQUIRE(programAst.size() == 1);
+    auto ast = programAst[0].get_nodes().at(0).get();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Number);
     const auto *number = ast->as<VND_NUM_FLOAT>();
@@ -1935,7 +1971,9 @@ TEST_CASE("Parser emit flaot number node float compat print", "[parser]") {
 
 TEST_CASE("Parser emit variable node print", "[parser]") {
     vnd::Parser parser("y", filename);
-    auto ast = parser.parse();
+    auto programAst = parser.parse();
+    REQUIRE(programAst.size() == 1);
+    auto ast = programAst[0].get_nodes().at(0).get();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Variable);
     const auto *variable = ast->as<vnd::VariableNode>();
@@ -1946,7 +1984,9 @@ TEST_CASE("Parser emit variable node print", "[parser]") {
 
 TEST_CASE("Parser emit variable node compat print", "[parser]") {
     vnd::Parser parser("y", filename);
-    auto ast = parser.parse();
+    auto programAst = parser.parse();
+    REQUIRE(programAst.size() == 1);
+    auto ast = programAst[0].get_nodes().at(0).get();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Variable);
     const auto *variable = ast->as<vnd::VariableNode>();
@@ -1957,8 +1997,9 @@ TEST_CASE("Parser emit variable node compat print", "[parser]") {
 
 TEST_CASE("Parser emit unary expression node", "[parser]") {
     vnd::Parser parser("-x", filename);
-    auto ast = parser.parse();
-
+    auto programAst = parser.parse();
+    REQUIRE(programAst.size() == 1);
+    auto ast = programAst[0].get_nodes().at(0).get();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::UnaryExpression);
 
@@ -1979,8 +2020,9 @@ TEST_CASE("Parser emit unary expression node", "[parser]") {
 
 TEST_CASE("Parser emit unary expression node print", "[parser]") {
     vnd::Parser parser("-x", filename);
-    auto ast = parser.parse();
-
+    auto programAst = parser.parse();
+    REQUIRE(programAst.size() == 1);
+    auto ast = programAst[0].get_nodes().at(0).get();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::UnaryExpression);
 
@@ -2001,8 +2043,9 @@ TEST_CASE("Parser emit unary expression node print", "[parser]") {
 
 TEST_CASE("Parser emit unary expression node compat print", "[parser]") {
     vnd::Parser parser("-x", filename);
-    auto ast = parser.parse();
-
+    auto programAst = parser.parse();
+    REQUIRE(programAst.size() == 1);
+    auto ast = programAst[0].get_nodes().at(0).get();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::UnaryExpression);
 
@@ -2023,7 +2066,9 @@ TEST_CASE("Parser emit unary expression node compat print", "[parser]") {
 
 TEST_CASE("Parser emit binary expression node", "[parser]") {
     vnd::Parser parser("1 + 2", filename);
-    auto ast = parser.parse();
+    auto programAst = parser.parse();
+    REQUIRE(programAst.size() == 1);
+    auto ast = programAst[0].get_nodes().at(0).get();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::BinaryExpression);
 
@@ -2053,7 +2098,9 @@ TEST_CASE("Parser emit binary expression node", "[parser]") {
 
 TEST_CASE("Parser emit binary expression node print", "[parser]") {
     vnd::Parser parser("1 + 2", filename);
-    auto ast = parser.parse();
+    auto programAst = parser.parse();
+    REQUIRE(programAst.size() == 1);
+    auto ast = programAst[0].get_nodes().at(0).get();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::BinaryExpression);
 
@@ -2083,7 +2130,9 @@ TEST_CASE("Parser emit binary expression node print", "[parser]") {
 
 TEST_CASE("Parser emit binary expression node compact print", "[parser]") {
     vnd::Parser parser("1 + 2", filename);
-    auto ast = parser.parse();
+    auto programAst = parser.parse();
+    REQUIRE(programAst.size() == 1);
+    auto ast = programAst[0].get_nodes().at(0).get();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::BinaryExpression);
 
@@ -2114,11 +2163,12 @@ TEST_CASE("Parser emit binary expression node compact print", "[parser]") {
 TEST_CASE("Parser pars complex expression", "[parser]") {
     // clang-format off
     vnd::Parser parser{"2 + 3 + (4.2 / 2) * 3 + y", "input.vn"};
-    const auto ast = parser.parse();
-    REQUIRE(ast->print() == R"(BINARY_EXPRESION(op:"+" left:BINARY_EXPRESION(op:"+" left:BINARY_EXPRESION(op:"+" left:NUMBER_INTEGER(2),
-right:NUMBER_INTEGER(3)), right:BINARY_EXPRESION(op:"*" left:BINARY_EXPRESION(op:"/" left:NUMBER_DOUBLE(4.2), right:NUMBER_INTEGER(2)),
-right:NUMBER_INTEGER(3))), right:VARIABLE(y)))"); REQUIRE(ast->comp_print() == R"(BINE(op:"+" l:BINE(op:"+" l:BINE(op:"+" l:NUM_INT(2),
-r:NUM_INT(3)), r:BINE(op:"*" l:BINE(op:"/" l:NUM_DBL(4.2), r:NUM_INT(2)), r:NUM_INT(3))), r:VAR(y)))");
+    auto programAst = parser.parse();
+    REQUIRE(programAst.size() == 1);
+    auto ast = programAst[0].get_nodes().at(0).get();
+    REQUIRE(ast != nullptr);
+    REQUIRE(ast->print() == R"(BINARY_EXPRESION(op:"+" left:BINARY_EXPRESION(op:"+" left:BINARY_EXPRESION(op:"+" left:NUMBER_INTEGER(2), right:NUMBER_INTEGER(3)), right:BINARY_EXPRESION(op:"*" left:BINARY_EXPRESION(op:"/" left:NUMBER_DOUBLE(4.2), right:NUMBER_INTEGER(2)), right:NUMBER_INTEGER(3))), right:VARIABLE(y)))");
+    REQUIRE(ast->comp_print() == R"(BINE(op:"+" l:BINE(op:"+" l:BINE(op:"+" l:NUM_INT(2), r:NUM_INT(3)), r:BINE(op:"*" l:BINE(op:"/" l:NUM_DBL(4.2), r:NUM_INT(2)), r:NUM_INT(3))), r:VAR(y)))");
     // clang-format on
 }
 
@@ -2178,7 +2228,9 @@ TEST_CASE("NodeType formatter works as expected", "[formatter]") {
 
 TEST_CASE("Parser emit i8 TypeNode node", "[parser]") {
     vnd::Parser parser("i8", filename);
-    auto ast = parser.parse();
+    auto programAst = parser.parse();
+    REQUIRE(programAst.size() == 1);
+    auto ast = programAst[0].get_nodes().at(0).get();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Type);
     REQUIRE(ast->get_parent() == nullptr);
@@ -2193,7 +2245,9 @@ TEST_CASE("Parser emit i8 TypeNode node", "[parser]") {
 
 TEST_CASE("Parser emit array", "[parser]") {
     vnd::Parser parser("i8[size][]{1, 2}", filename);
-    auto ast = parser.parse();
+    auto programAst = parser.parse();
+    REQUIRE(programAst.size() == 1);
+    auto ast = programAst[0].get_nodes().at(0).get();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Type);
     REQUIRE(ast->get_parent() == nullptr);
@@ -2213,7 +2267,9 @@ TEST_CASE("Parser emit array", "[parser]") {
 
 TEST_CASE("Parser emit empty array", "[parser]") {
     vnd::Parser parser("Object[]{}", filename);
-    auto ast = parser.parse();
+    auto programAst = parser.parse();
+    REQUIRE(programAst.size() == 1);
+    auto ast = programAst[0].get_nodes().at(0).get();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Variable);
     REQUIRE(ast->get_parent() == nullptr);
@@ -2227,7 +2283,9 @@ TEST_CASE("Parser emit empty array", "[parser]") {
 
 TEST_CASE("Parser emit array type", "[parser]") {
     vnd::Parser parser("i8[]", filename);
-    auto ast = parser.parse();
+    auto programAst = parser.parse();
+    REQUIRE(programAst.size() == 1);
+    auto ast = programAst[0].get_nodes().at(0).get();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Type);
     REQUIRE(ast->get_parent() == nullptr);
@@ -2242,7 +2300,9 @@ TEST_CASE("Parser emit array type", "[parser]") {
 
 TEST_CASE("Parser emit nullptr node", "[parser]") {
     vnd::Parser parser("nullptr", filename);
-    auto ast = parser.parse();
+    auto programAst = parser.parse();
+    REQUIRE(programAst.size() == 1);
+    auto ast = programAst[0].get_nodes().at(0).get();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Nullptr);
     REQUIRE(ast->get_parent() == nullptr);
@@ -2261,7 +2321,7 @@ TEST_CASE("Parser emit exception on comment", "[parser]") {
         parser.parse(), vnd::ParserException,
         Message(R"(Unexpected token: (type: COMMENT, value: '// comment', source location:(file:./unknown.vn, line:1, column:1)))"));
 #endif
-}*/
+}
 
 TEST_CASE("Parser emit exception on multiline comment", "[parser]") {
     vnd::Parser parser(R"(/*multi\nline\ncomment*/)", filename);
@@ -2299,11 +2359,13 @@ TEST_CASE("Parser emit mismatched curly brackets exception", "[parser]") {
                            Message(R"(Unexpected token: (type: EOF, source location:(file:./unknown.vn, line:1, column:14)))"));
 #endif
 }
-/*
 TEST_CASE("Parser emit empty index node print", "[parser]") {
     vnd::Parser parser("i8[]", filename);
-    auto ast = parser.parse();
+    auto programAst = parser.parse();
+    REQUIRE(programAst.size() == 1);
+    auto ast = programAst[0].get_nodes().at(0).get();
     REQUIRE(ast != nullptr);
+
     REQUIRE(ast->getType() == NodeType::Type);
     REQUIRE(ast->get_parent() == nullptr);
     const auto *typeNode = ast->as<vnd::TypeNode>();
@@ -2313,7 +2375,9 @@ TEST_CASE("Parser emit empty index node print", "[parser]") {
 
 TEST_CASE("Parser emit empty index compat print", "[parser]") {
     vnd::Parser parser("i8[]", filename);
-    auto ast = parser.parse();
+    auto programAst = parser.parse();
+    REQUIRE(programAst.size() == 1);
+    auto ast = programAst[0].get_nodes().at(0).get();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Type);
     REQUIRE(ast->get_parent() == nullptr);
@@ -2324,7 +2388,9 @@ TEST_CASE("Parser emit empty index compat print", "[parser]") {
 
 TEST_CASE("Parser emit index node print", "[parser]") {
     vnd::Parser parser("i8[1]", filename);
-    auto ast = parser.parse();
+    auto programAst = parser.parse();
+    REQUIRE(programAst.size() == 1);
+    auto ast = programAst[0].get_nodes().at(0).get();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Type);
     REQUIRE(ast->get_parent() == nullptr);
@@ -2335,7 +2401,9 @@ TEST_CASE("Parser emit index node print", "[parser]") {
 
 TEST_CASE("Parser emit index compat print", "[parser]") {
     vnd::Parser parser("i8[1]", filename);
-    auto ast = parser.parse();
+    auto programAst = parser.parse();
+    REQUIRE(programAst.size() == 1);
+    auto ast = programAst[0].get_nodes().at(0).get();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Type);
     REQUIRE(ast->get_parent() == nullptr);
@@ -2346,7 +2414,9 @@ TEST_CASE("Parser emit index compat print", "[parser]") {
 
 TEST_CASE("Parser emit empty array node print", "[parser]") {
     vnd::Parser parser("{}", filename);
-    auto ast = parser.parse();
+    auto programAst = parser.parse();
+    REQUIRE(programAst.size() == 1);
+    auto ast = programAst[0].get_nodes().at(0).get();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Array);
     REQUIRE(ast->get_parent() == nullptr);
@@ -2357,7 +2427,9 @@ TEST_CASE("Parser emit empty array node print", "[parser]") {
 
 TEST_CASE("Parser emit empty array compat node print", "[parser]") {
     vnd::Parser parser("{}", filename);
-    auto ast = parser.parse();
+    auto programAst = parser.parse();
+    REQUIRE(programAst.size() == 1);
+    auto ast = programAst[0].get_nodes().at(0).get();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Array);
     REQUIRE(ast->get_parent() == nullptr);
@@ -2368,7 +2440,9 @@ TEST_CASE("Parser emit empty array compat node print", "[parser]") {
 
 TEST_CASE("Parser emit array node print", "[parser]") {
     vnd::Parser parser("{1, 2}", filename);
-    auto ast = parser.parse();
+    auto programAst = parser.parse();
+    REQUIRE(programAst.size() == 1);
+    auto ast = programAst[0].get_nodes().at(0).get();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Array);
     REQUIRE(ast->get_parent() == nullptr);
@@ -2379,7 +2453,9 @@ TEST_CASE("Parser emit array node print", "[parser]") {
 
 TEST_CASE("Parser emit array compat node print", "[parser]") {
     vnd::Parser parser("{1, 2}", filename);
-    auto ast = parser.parse();
+    auto programAst = parser.parse();
+    REQUIRE(programAst.size() == 1);
+    auto ast = programAst[0].get_nodes().at(0).get();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Array);
     REQUIRE(ast->get_parent() == nullptr);
@@ -2390,7 +2466,9 @@ TEST_CASE("Parser emit array compat node print", "[parser]") {
 
 TEST_CASE("Parser emit empty callable node", "[parser]") {
     vnd::Parser parser("function()", filename);
-    auto ast = parser.parse();
+    auto programAst = parser.parse();
+    REQUIRE(programAst.size() == 1);
+    auto ast = programAst[0].get_nodes().at(0).get();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Variable);
     REQUIRE(ast->get_parent() == nullptr);
@@ -2401,7 +2479,9 @@ TEST_CASE("Parser emit empty callable node", "[parser]") {
 
 TEST_CASE("Parser emit callable node", "[parser]") {
     vnd::Parser parser("function(1)", filename);
-    auto ast = parser.parse();
+    auto programAst = parser.parse();
+    REQUIRE(programAst.size() == 1);
+    auto ast = programAst[0].get_nodes().at(0).get();
     REQUIRE(ast != nullptr);
     REQUIRE(ast->getType() == NodeType::Variable);
     const auto *variableNode = ast->as<vnd::VariableNode>();
@@ -2411,7 +2491,9 @@ TEST_CASE("Parser emit callable node", "[parser]") {
 
 TEST_CASE("NullptrNode basic functionality", "[NullptrNode]") {
     vnd::Parser parser("nullptr", filename);
-    const auto ast = parser.parse();
+    auto programAst = parser.parse();
+    REQUIRE(programAst.size() == 1);
+    auto ast = programAst[0].get_nodes().at(0).get();
     SECTION("Constructor Test") {
         auto node = ast->safe_as<vnd::NullptrNode>();
         REQUIRE(node->get_token().getType() == vnd::TokenType::K_NULLPTR);
@@ -2495,7 +2577,7 @@ TEST_CASE("Transpiler::mapType returns correct type mappings", "[transpiler]") {
         REQUIRE(vnd::Transpiler::mapType("I8"sv) == "unknown"sv);  // Should be case sensitive
     }
 }
-
+/*
 TEST_CASE("vnd::timeParser", "[Vandior]") {
     vnd::Parser parser{"asdf", filename};
     std::unique_ptr<vnd::ASTNode> ast;
