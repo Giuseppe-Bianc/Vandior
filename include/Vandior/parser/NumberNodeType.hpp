@@ -9,7 +9,7 @@
  * @brief Enum representing different types of AST nodes.
  */
 // NOLINTNEXTLINE(*-enum-size)
-enum class NumberNodeType { Integer, Float, Double, ImaginaryFloat, Imaginary };
+enum class NumberNodeType : std::uint8_t { Integer, Float, Double, ImaginaryFloat, Imaginary };
 [[nodiscard]] inline std::string NumNodeType_comp(NumberNodeType type) {
     using enum NumberNodeType;
     switch(type) {

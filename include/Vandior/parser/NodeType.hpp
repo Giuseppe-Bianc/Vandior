@@ -7,7 +7,7 @@
 /**
  * @brief Enum representing different types of AST nodes.
  */
-enum class NodeType { BinaryExpression, UnaryExpression, Number, Boolean, Char, String, Variable, Nullptr, Type, Index, Array, Statement };
+enum class NodeType : std::uint8_t { BinaryExpression, UnaryExpression, Number, Boolean, Char, String, Variable, Nullptr, Type, Index, Array, Statement };
 
 /**
  * This function is a formatter for NodeType using fmt.

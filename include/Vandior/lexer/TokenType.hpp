@@ -8,7 +8,7 @@ namespace vnd {
      * @enum TokenType
      * @brief Represents the types of tokens in the programming language.
      */
-    enum class TokenType : long {
+    enum class TokenType : std::uint8_t {
         INTEGER,               ///< Integer literal
         DOUBLE,                ///< Double literal
         BOOLEAN,               ///< Boolean literal
@@ -81,8 +81,8 @@ namespace vnd {
         // Add more types as needed
     };
 
-    static inline constexpr TokenType eofTokenType = TokenType::EOFT;
-    static std::vector<TokenType> keywordsTokenTypes = {
+    static inline constexpr auto eofTokenType = TokenType::EOFT;
+    static inline constexpr std::array<TokenType, 9> keywordsTokenTypes = {
         TokenType::K_MAIN, TokenType::K_VAR,   TokenType::K_IF,  TokenType::K_WHILE,  TokenType::K_ELSE,
         TokenType::K_FOR,  TokenType::K_BREAK, TokenType::K_FUN, TokenType::K_RETURN,
     };
@@ -93,8 +93,8 @@ namespace vnd {
      * @param type the TokenType to check.
      * @return a bool flag.
      */
-    [[nodiscard]] inline bool isKeyword(const TokenType &type) noexcept {
-        return std::find(std::begin(keywordsTokenTypes), std::end(keywordsTokenTypes), type) != std::end(keywordsTokenTypes);
+    [[nodiscard]] static constexpr bool isKeyword(const TokenType &type) noexcept {
+        return std::ranges::find(keywordsTokenTypes, type) != std::end(keywordsTokenTypes);
     }
 
     /**
