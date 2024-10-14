@@ -2578,35 +2578,19 @@ TEST_CASE("Transpiler::mapType returns correct type mappings", "[transpiler]") {
         REQUIRE(vnd::Transpiler::mapType("I8"sv) == "unknown"sv);  // Should be case sensitive
     }
 }
-/*
 TEST_CASE("vnd::timeParser", "[Vandior]") {
     vnd::Parser parser{"asdf", filename};
-    std::unique_ptr<vnd::ASTNode> ast;
-
-    SECTION("parse is successful") {
-        vnd::timeParser(ast, parser);
-
-        REQUIRE(ast != nullptr);  // AST should be a valid object
-    }
-
-    SECTION("returns a unique_ptr to ASTNode") {
-        const vnd::Token token{vnd::TokenType::IDENTIFIER, "id", vnd::CodeSourceLocation{filename, t_line, t_colum}};
-        ast = std::make_unique<vnd::VariableNode>("id", token);
-        vnd::timeParser(ast, parser);
-
-        REQUIRE(ast != nullptr);
-    }
+    std::vector<vnd::Statement> ast;
+    vnd::timeParser(ast, parser);
+    REQUIRE(ast.size() == 1);  // AST should be a valid object
 }
 
 TEST_CASE("vnd::timeParse", "[Vandior]") {
     vnd::Parser parser{"asdf", filename};
 
-    SECTION("parsing returns a valid unique_ptr") {
-        auto ast = vnd::timeParse(parser);
-
-        REQUIRE(ast != nullptr);
-    }
-}*/
+    auto ast = vnd::timeParse(parser);
+    REQUIRE(ast.size() == 1);
+}
 // clang-format off
 // NOLINTEND(*-include-cleaner, *-avoid-magic-numbers, *-magic-numbers, *-unchecked-optional-access, *-avoid-do-while, *-use-anonymous-namespace, *-qualified-auto, *-suspicious-stringview-data-usage, *-err58-cpp, *-function-cognitive-complexity, *-macro-usage)
 // clang-format on
