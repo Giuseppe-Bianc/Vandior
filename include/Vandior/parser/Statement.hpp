@@ -29,14 +29,18 @@ namespace vnd {
          */
         [[nodiscard]] std::string comp_print() const override { return ""; }
 
+        [[nodiscard]] const std::vector<std::unique_ptr<ASTNode>> &get_nodes() const noexcept { return nodes; }
+
         friend void swap(Statement &lhs, Statement &rhs) noexcept {
             using std::swap;
             swap(static_cast<ASTNode &>(lhs), static_cast<ASTNode &>(rhs));
             swap(lhs.nodes, rhs.nodes);
         }
 
+        void addNode(std::unique_ptr<ASTNode> node) { nodes.push_back(std::move(node)); }
+
     private:
-        std::vector<ASTNode> nodes;
+        std::vector<std::unique_ptr<ASTNode>> nodes;
     };
 
 }  // namespace vnd

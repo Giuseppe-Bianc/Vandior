@@ -82,7 +82,20 @@ namespace vnd {
     };
 
     static inline constexpr TokenType eofTokenType = TokenType::EOFT;
+    static std::vector<TokenType> keywordsTokenTypes = {
+        TokenType::K_MAIN, TokenType::K_VAR,   TokenType::K_IF,  TokenType::K_WHILE,  TokenType::K_ELSE,
+        TokenType::K_FOR,  TokenType::K_BREAK, TokenType::K_FUN, TokenType::K_RETURN,
+    };
     using TokenTypeVec = std::vector<TokenType>;
+
+    /**
+     * @brief Checks if a tokenType is a keyword.
+     * @param type the TokenType to check.
+     * @return a bool flag.
+     */
+    [[nodiscard]] inline bool isKeyword(const TokenType &type) noexcept {
+        return std::find(std::begin(keywordsTokenTypes), std::end(keywordsTokenTypes), type) != std::end(keywordsTokenTypes);
+    }
 
     /**
      * @brief Gets the TokenType of a value.

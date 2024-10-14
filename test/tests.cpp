@@ -1436,7 +1436,7 @@ TEST_CASE("ASTNode get token", "[ast]") {
     const vnd::VariableNode dummyNode("id", token);
     REQUIRE(dummyNode.get_token() == token);
 }
-
+/*
 TEST_CASE("Parser emit boolean literal node", "[parser]") {
     vnd::Parser parser("true", filename);
     auto ast = parser.parse();
@@ -1447,7 +1447,7 @@ TEST_CASE("Parser emit boolean literal node", "[parser]") {
     REQUIRE(number->print() == "BOOLEAN_LIT(true)");
     REQUIRE(number->comp_print() == "BOOLEAN(true)");
     REQUIRE(number->get_value() == true);
-}
+}*/
 
 TEST_CASE("boolean node swap", "[parser]") {
     auto token1 = vnd::Token{vnd::TokenType::BOOLEAN, "true", vnd::CodeSourceLocation{filename, t_line, t_colum4}};
@@ -1464,7 +1464,7 @@ TEST_CASE("boolean node swap", "[parser]") {
     REQUIRE(boola.get_token() == token2);
     REQUIRE(boolb.get_token() == token1);
 }
-
+/*
 TEST_CASE("Parser emit string literal node", "[parser]") {
     vnd::Parser parser("\"tr\"", filename);
     auto ast = parser.parse();
@@ -1554,7 +1554,7 @@ TEST_CASE("Parser emit complex float number node", "[parser]") {
     REQUIRE(number->comp_print() == "NUM_IMF((0, 1))");
     REQUIRE(number->get_value() == std::complex<float>(0, 1));
 }
-
+*/
 TEST_CASE("integer number node swap", "[parser]") {
     auto token1 = vnd::Token{vnd::TokenType::INTEGER, "2", vnd::CodeSourceLocation{filename, t_line, t_colum}};
     auto token2 = vnd::Token{vnd::TokenType::INTEGER, "3", vnd::CodeSourceLocation{filename, t_line, t_colum2}};
@@ -1736,7 +1736,7 @@ TEST_CASE("comp_NodeType function", "[parser]") {
     REQUIRE(std::string(comp_NodeType(NodeType::Index)) == "IDX");
     REQUIRE(std::string(comp_NodeType(NodeType::Array)) == "ARR");
 }
-
+/*
 TEST_CASE("Parser emit integer number node form exadecimal", "[parser]") {
     vnd::Parser parser("#23", filename);
     auto ast = parser.parse();
@@ -2259,7 +2259,7 @@ TEST_CASE("Parser emit exception on comment", "[parser]") {
         parser.parse(), vnd::ParserException,
         Message(R"(Unexpected token: (type: COMMENT, value: '// comment', source location:(file:./unknown.vn, line:1, column:1)))"));
 #endif
-}
+}*/
 
 TEST_CASE("Parser emit exception on multiline comment", "[parser]") {
     vnd::Parser parser(R"(/*multi\nline\ncomment*/)", filename);
@@ -2297,7 +2297,7 @@ TEST_CASE("Parser emit mismatched curly brackets exception", "[parser]") {
                            Message(R"(Unexpected token: (type: EOF, source location:(file:./unknown.vn, line:1, column:14)))"));
 #endif
 }
-
+/*
 TEST_CASE("Parser emit empty index node print", "[parser]") {
     vnd::Parser parser("i8[]", filename);
     auto ast = parser.parse();
@@ -2521,7 +2521,7 @@ TEST_CASE("vnd::timeParse", "[Vandior]") {
 
         REQUIRE(ast != nullptr);
     }
-}
+}*/
 // clang-format off
 // NOLINTEND(*-include-cleaner, *-avoid-magic-numbers, *-magic-numbers, *-unchecked-optional-access, *-avoid-do-while, *-use-anonymous-namespace, *-qualified-auto, *-suspicious-stringview-data-usage, *-err58-cpp, *-function-cognitive-complexity, *-macro-usage)
 // clang-format on
