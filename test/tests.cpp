@@ -14,12 +14,12 @@
 using namespace std::literals::string_view_literals;
 
 using Catch::Matchers::ContainsSubstring;
-//using Catch::Matchers::EndsWith;
+// using Catch::Matchers::EndsWith;
 using Catch::Matchers::Message;
 using Catch::Matchers::MessageMatches;
-//using Catch::Matchers::StartsWith;
-// using Catch::Matchers::SizeIs;
-// using Catch::Matchers::Equals;
+// using Catch::Matchers::StartsWith;
+//  using Catch::Matchers::SizeIs;
+//  using Catch::Matchers::Equals;
 
 #define REQ_FORMAT(type, string) REQUIRE(FORMAT("{}", type) == (string));
 #define REQ_FORMAT_COMPTOK(type, string) REQUIRE(FORMAT("{}", comp_tokType(type)) == (string));
