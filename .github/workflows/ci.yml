@@ -173,6 +173,9 @@ jobs:
             core.setFailed('There is a mismatch between configured llvm compiler and clang-tidy version chosen')
 
       - uses: actions/checkout@v4.2.1
+        with:
+          fetch-depth: 1
+      
 
       - name: Setup Cache
         uses: ./.github/actions/setup_cache
