@@ -18,8 +18,9 @@ namespace vnd {
 
     void Parser::emplaceStatement(std::vector<Statement> &statements) noexcept {
         Token token{};
-        if(isKeyword(tokens.front().getType())) {
-            token = tokens.front();
+        const auto tokensFront = tokens.front();
+        if(isKeyword(tokensFront.getType())) {
+            token = tokensFront;
             tokens.erase(tokens.begin());
         }
         statements.emplace_back(token);
@@ -48,6 +49,7 @@ namespace vnd {
 
     const Token &Parser::getCurrentToken() const { return tokens.at(position); }
     TokenType Parser::getCurrentTokenType() const { return tokens.at(position).getType(); }
+    bool Parser::isCurrentTokenType(const TokenType &type) const { return getCurrentTokenType() == type; }
     std::size_t Parser::getUnaryOperatorPrecedence(const Token &token) noexcept {
         if(const auto &tokenValue = token.getValue();
            tokenValue == "+" || tokenValue == "-" || tokenValue == "!" || tokenValue == "++" || tokenValue == "--") {
@@ -234,12 +236,12 @@ namespace vnd {
         } else if(currentValue == "{") {
             auto token = getCurrentToken();
             consumeToken();
-            if(getCurrentTokenType() == vnd::TokenType::CLOSE_CUR_PARENTESIS) {
+            if(isCurrentTokenType(TokenType::CLOSE_CUR_PARENTESIS)) {
                 consumeToken();
                 return MAKE_UNIQUE(ArrayNode, nullptr, token);
             }
             auto elements = parseExpression();
-            if(getCurrentTokenType() != vnd::TokenType::CLOSE_CUR_PARENTESIS) { throw ParserException(getCurrentToken()); }
+            if(!isCurrentTokenType(TokenType::CLOSE_CUR_PARENTESIS)) { throw ParserException(getCurrentToken()); }
             consumeToken();
             return MAKE_UNIQUE(ArrayNode, std::move(elements), token);
         } else [[unlikely]] {
@@ -279,7 +281,7 @@ namespace vnd {
         auto token = getCurrentToken();
         if(token.getType() != OPEN_SQ_PARENTESIS) { return; }
         consumeToken();
-        if(getCurrentTokenType() == CLOSE_SQ_PARENTESIS) {
+        if(isCurrentTokenType(CLOSE_SQ_PARENTESIS)) {
             consumeToken();
             auto index = MAKE_UNIQUE(IndexNode, nullptr, token);
             if(!parseArray(index)) { parseIndex<IndexNode>(index); }
@@ -287,7 +289,7 @@ namespace vnd {
             return;
         }
         auto elements = parseExpression();
-        if(getCurrentTokenType() != CLOSE_SQ_PARENTESIS) { throw ParserException(getCurrentToken()); }
+        if(!isCurrentTokenType(CLOSE_SQ_PARENTESIS)) { throw ParserException(getCurrentToken()); }
         consumeToken();
         auto index = MAKE_UNIQUE(IndexNode, std::move(elements), token);
         if(!parseArray(index)) { parseIndex<IndexNode>(index); }
@@ -299,13 +301,13 @@ namespace vnd {
         auto token = getCurrentToken();
         if(token.getType() != OPEN_CUR_PARENTESIS) { return false; }
         consumeToken();
-        if(getCurrentTokenType() == CLOSE_CUR_PARENTESIS) {
+        if(isCurrentTokenType(CLOSE_CUR_PARENTESIS)) {
             consumeToken();
             node->set_array(MAKE_UNIQUE(ArrayNode, nullptr, token));
             return true;
         }
         auto elements = parseExpression();
-        if(getCurrentTokenType() != CLOSE_CUR_PARENTESIS) { throw ParserException(getCurrentToken()); }
+        if(!isCurrentTokenType(CLOSE_CUR_PARENTESIS)) { throw ParserException(getCurrentToken()); }
         consumeToken();
         node->set_array(MAKE_UNIQUE(ArrayNode, std::move(elements), token));
         return true;
@@ -313,15 +315,15 @@ namespace vnd {
 
     bool Parser::parseCall(const std::unique_ptr<VariableNode> &node) {
         using enum vnd::TokenType;
-        if(getCurrentTokenType() != OPEN_PARENTESIS) { return false; }
+        if(!isCurrentTokenType(OPEN_PARENTESIS)) { return false; }
         consumeToken();
-        if(getCurrentTokenType() == CLOSE_PARENTESIS) {
+        if(isCurrentTokenType(CLOSE_PARENTESIS)) {
             consumeToken();
             node->set_call();
             return true;
         }
         auto elements = parseExpression();
-        if(getCurrentTokenType() != CLOSE_PARENTESIS) { throw ParserException(getCurrentToken()); }
+        if(!isCurrentTokenType(CLOSE_PARENTESIS)) { throw ParserException(getCurrentToken()); }
         consumeToken();
         node->set_call(std::move(elements));
         return true;

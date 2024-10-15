@@ -70,6 +70,7 @@ namespace vnd {
          */
         const Token &getCurrentToken() const;
         TokenType getCurrentTokenType() const;
+        bool isCurrentTokenType(const TokenType &type) const;
         /**
          * @brief Gets the precedence of an unary operator.
          * @param token The token representing the unary operator.
