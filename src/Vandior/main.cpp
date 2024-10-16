@@ -80,8 +80,9 @@ auto main(int argc, const char *const argv[]) -> int {
         LINFO("prettyPrint external function");*/
         for(const auto &statement : progrmamAST) {
             const auto token = statement.get_token();
-            // FIXME: the output should be the actual token not the the default token: (type: UNKNOWN value: '', source location:(file:unknown, line:0, column:0))
-            if (token.getType() == vnd::TokenType::UNKNOWN) {
+            // FIXME: the output should be the actual token not the the default token: (type: UNKNOWN value: '', source
+            // location:(file:unknown, line:0, column:0))
+            if(token.getType() == vnd::TokenType::UNKNOWN) {
                 LINFO("lo statement non e' generato da nessun token");
             } else {
                 LINFO("{}", token);
