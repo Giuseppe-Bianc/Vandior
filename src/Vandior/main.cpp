@@ -79,9 +79,17 @@ auto main(int argc, const char *const argv[]) -> int {
         LINFO("comp_print internal function\n {}", ast->comp_print());
         LINFO("prettyPrint external function");*/
         for(const auto &statement : progrmamAST) {
-            LINFO("{}", statement.get_token());  // FIXME: the output should be the actual token not the the default token: (type: UNKNOWN,
-                                                 // value: '', source location:(file:unknown, line:0, column:0))
-            prettyPrint(*statement.get_nodes().at(0));
+            const auto token = statement.get_token();
+            // FIXME: the output should be the actual token not the the default token: (type: UNKNOWN value: '', source location:(file:unknown, line:0, column:0))
+            if (token.getType() == vnd::TokenType::UNKNOWN) {
+                LINFO("lo statement non e' generato da nessun token");
+            } else {
+                LINFO("{}", token);
+            }
+            for(const auto &[index, node] : statement.get_nodes() | std::views::enumerate) {
+                LINFO("AST num {}:", index);
+                prettyPrint(*node);
+            }
         }
         vnd::Transpiler transpiler{input, filename};
         transpiler.transpile();
