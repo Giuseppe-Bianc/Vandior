@@ -10,6 +10,8 @@ DISABLE_WARNINGS_PUSH(
 
 DISABLE_WARNINGS_POP()
 
+template <typename T> auto enumerate(T &iterable) { return enumerate_wrapper<T>(iterable); }
+
 namespace vnd {
     inline auto timeTokenizer(Tokenizer &tokenizer, std::vector<Token> &tokens) -> void {
         tokens.clear();
@@ -80,16 +82,26 @@ auto main(int argc, const char *const argv[]) -> int {
         LINFO("prettyPrint external function");*/
         for(const auto &statement : progrmamAST) {
             const auto token = statement.get_token();
-            // FIXME: the output should be the actual token not the the default token: (type: UNKNOWN value: '', source location:(file:unknown, line:0, column:0))
-            if (token.getType() == vnd::TokenType::UNKNOWN) {
+            // FIXME: the output should be the actual token not the the default token: (type: UNKNOWN value: '', source
+            // location:(file:unknown, line:0, column:0))
+            if(token.getType() == vnd::TokenType::UNKNOWN) {
                 LINFO("lo statement non e' generato da nessun token");
             } else {
                 LINFO("{}", token);
             }
+#if defined(__llvm__) && defined(__clang__)
+            std::size_t index = 0;
+            for(const auto &node : statement.get_nodes()) {
+                LINFO("AST num {}:", index);
+                prettyPrint(*node);
+                ++index;
+            }
+#else
             for(const auto &[index, node] : statement.get_nodes() | std::views::enumerate) {
                 LINFO("AST num {}:", index);
                 prettyPrint(*node);
             }
+#endif
         }
         vnd::Transpiler transpiler{input, filename};
         transpiler.transpile();
