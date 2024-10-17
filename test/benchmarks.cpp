@@ -9,7 +9,7 @@
 
 #include <Vandior/vandior.hpp>
 
-#ifdef _WIN32  // Windows
+#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
 #ifdef __MINGW32__
 constexpr std::string_view tfile = R"(..\..\..\test\test_imp.vn)";  // windows mingw form editor, use this when building for mingw
 #elifdef __clang__

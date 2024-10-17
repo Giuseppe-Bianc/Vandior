@@ -25,7 +25,7 @@ static inline constexpr std::size_t t_colum14 = 12;
 static inline constexpr auto identf = vnd::TokenType::IDENTIFIER;
 static inline constexpr auto inte = vnd::TokenType::INTEGER;
 static inline constexpr auto doub = vnd::TokenType::DOUBLE;
-#ifdef _WIN32  // Windows
+#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
 static inline constexpr std::string_view filename = R"(.\unknown.vn)";
 #else
 static inline constexpr std::string_view filename = R"(./unknown.vn)";

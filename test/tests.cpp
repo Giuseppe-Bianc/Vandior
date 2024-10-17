@@ -125,7 +125,7 @@ TEST_CASE("ValueLabel functionality", "[ValueLabel]") {
         REQUIRE(value.transformTimeMilli(2.5L) == "2ms,500us,0ns");
 
         const ValueLabel valueNonExact(2.505L, "ms");
-#if defined(__linux__)
+#if defined(__linux) || defined(__linux__) || defined(linux)
         REQUIRE(valueNonExact.transformTimeMilli(2.505L) == "2ms,505us,0ns");
 #else
         REQUIRE(valueNonExact.transformTimeMilli(2.505L) == "2ms,504us,999ns");
@@ -703,7 +703,7 @@ TEST_CASE("default constructed token set propriety tostring", "[token]") {
     REQUIRE(token.getFileName() == filename);
     REQUIRE(token.getLine() == 1);
     REQUIRE(token.getColumn() == 1);
-#ifdef _WIN32  // Windows
+#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
     REQUIRE(token.to_string() == R"((type: INTEGER, value: 'assss', source location:(file:.\unknown.vn, line:1, column:1)))");
     REQUIRE(token.compat_to_string() == R"((typ: INT, val: 'assss', sl:(f:.\unknown.vn, l:1, c:1)))");
 #else
@@ -1060,7 +1060,7 @@ TEST_CASE("default constructed token set propriety format", "[token]") {
     REQUIRE(token.getFileName() == filename);
     REQUIRE(token.getLine() == 1);
     REQUIRE(token.getColumn() == 1);
-#ifdef _WIN32  // Windows
+#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
     REQ_FORMAT(token, R"((type: INTEGER, value: 'assss', source location:(file:.\unknown.vn, line:1, column:1)))");
 #else
     REQ_FORMAT(token, R"((type: INTEGER, value: 'assss', source location:(file:./unknown.vn, line:1, column:1)))");
@@ -1757,7 +1757,7 @@ TEST_CASE("Parser emit integer number node form exadecimal", "[parser]") {
     REQUIRE(ast->getType() == NodeType::Number);
     const auto *number = ast->as<VND_NUM_INT>();
     REQUIRE(number != nullptr);
-#ifdef __linux__
+#if defined(__linux) || defined(__linux__) || defined(linux)
     REQUIRE(number->getTypeIDName() == "i");
 #else
     REQUIRE(number->getTypeIDName() == "int");
@@ -1774,7 +1774,7 @@ TEST_CASE("Parser emit integer number node form exadecimal max int -1", "[parser
     REQUIRE(ast->getType() == NodeType::Number);
     const auto *number = ast->as<VND_NUM_INT>();
     REQUIRE(number != nullptr);
-#ifdef __linux__
+#if defined(__linux) || defined(__linux__) || defined(linux)
     REQUIRE(number->getTypeIDName() == "i");
 #else
     REQUIRE(number->getTypeIDName() == "int");
@@ -1791,7 +1791,7 @@ TEST_CASE("Parser emit integer number node form octal", "[parser]") {
     REQUIRE(ast->getType() == NodeType::Number);
     const auto *number = ast->as<VND_NUM_INT>();
     REQUIRE(number != nullptr);
-#ifdef __linux__
+#if defined(__linux) || defined(__linux__) || defined(linux)
     REQUIRE(number->getTypeIDName() == "i");
 #else
     REQUIRE(number->getTypeIDName() == "int");
@@ -1808,7 +1808,7 @@ TEST_CASE("Parser emit integer number node form octal max int -1", "[parser]") {
     REQUIRE(ast->getType() == NodeType::Number);
     const auto *number = ast->as<VND_NUM_INT>();
     REQUIRE(number != nullptr);
-#ifdef __linux__
+#if defined(__linux) || defined(__linux__) || defined(linux)
     REQUIRE(number->getTypeIDName() == "i");
 #else
     REQUIRE(number->getTypeIDName() == "int");
@@ -1826,7 +1826,7 @@ TEST_CASE("Parser emit integer number node print", "[parser]") {
     const auto *number = ast->as<VND_NUM_INT>();
     REQUIRE(number != nullptr);
     REQUIRE(number->get_value() == 1);
-#ifdef __linux__
+#if defined(__linux) || defined(__linux__) || defined(linux)
     REQUIRE(number->getTypeIDName() == "i");
 #else
     REQUIRE(number->getTypeIDName() == "int");
@@ -1844,7 +1844,7 @@ TEST_CASE("Parser emit integer number node compat print", "[parser]") {
     const auto *number = ast->as<VND_NUM_INT>();
     REQUIRE(number != nullptr);
     REQUIRE(number->get_value() == 1);
-#ifdef __linux__
+#if defined(__linux) || defined(__linux__) || defined(linux)
     REQUIRE(number->getTypeIDName() == "i");
 #else
     REQUIRE(number->getTypeIDName() == "int");
@@ -1873,7 +1873,7 @@ TEST_CASE("Parser emit double number node double", "[parser]") {
     REQUIRE(ast->getType() == NodeType::Number);
     const auto *number = ast->as<VND_NUM_DOUBLE>();
     REQUIRE(number != nullptr);
-#ifdef __linux__
+#if defined(__linux) || defined(__linux__) || defined(linux)
     REQUIRE(number->getTypeIDName() == "d");
 #else
     REQUIRE(number->getTypeIDName() == "double");
@@ -1890,7 +1890,7 @@ TEST_CASE("Parser emit flaot number node float", "[parser]") {
     REQUIRE(ast->getType() == NodeType::Number);
     const auto *number = ast->as<VND_NUM_FLOAT>();
     REQUIRE(number != nullptr);
-#ifdef __linux__
+#if defined(__linux) || defined(__linux__) || defined(linux)
     REQUIRE(number->getTypeIDName() == "f");
 #else
     REQUIRE(number->getTypeIDName() == "float");
@@ -1907,7 +1907,7 @@ TEST_CASE("Parser emit double number node double print", "[parser]") {
     REQUIRE(ast->getType() == NodeType::Number);
     const auto *number = ast->as<VND_NUM_DOUBLE>();
     REQUIRE(number != nullptr);
-#ifdef __linux__
+#if defined(__linux) || defined(__linux__) || defined(linux)
     REQUIRE(number->getTypeIDName() == "d");
 #else
     REQUIRE(number->getTypeIDName() == "double");
@@ -1925,7 +1925,7 @@ TEST_CASE("Parser emit flaot number node float print", "[parser]") {
     REQUIRE(ast->getType() == NodeType::Number);
     const auto *number = ast->as<VND_NUM_FLOAT>();
     REQUIRE(number != nullptr);
-#ifdef __linux__
+#if defined(__linux) || defined(__linux__) || defined(linux)
     REQUIRE(number->getTypeIDName() == "f");
 #else
     REQUIRE(number->getTypeIDName() == "float");
@@ -1943,7 +1943,7 @@ TEST_CASE("Parser emit double number node double compat print", "[parser]") {
     REQUIRE(ast->getType() == NodeType::Number);
     const auto *number = ast->as<VND_NUM_DOUBLE>();
     REQUIRE(number != nullptr);
-#ifdef __linux__
+#if defined(__linux) || defined(__linux__) || defined(linux)
     REQUIRE(number->getTypeIDName() == "d");
 #else
     REQUIRE(number->getTypeIDName() == "double");
@@ -1961,7 +1961,7 @@ TEST_CASE("Parser emit flaot number node float compat print", "[parser]") {
     REQUIRE(ast->getType() == NodeType::Number);
     const auto *number = ast->as<VND_NUM_FLOAT>();
     REQUIRE(number != nullptr);
-#ifdef __linux__
+#if defined(__linux) || defined(__linux__) || defined(linux)
     REQUIRE(number->getTypeIDName() == "f");
 #else
     REQUIRE(number->getTypeIDName() == "float");
@@ -2085,7 +2085,7 @@ TEST_CASE("Parser emit binary expression node", "[parser]") {
     REQUIRE(rightNumber != nullptr);
     REQUIRE(leftNumber->get_parent() != nullptr);
     REQUIRE(rightNumber->get_parent() != nullptr);
-#ifdef __linux__
+#if defined(__linux) || defined(__linux__) || defined(linux)
     REQUIRE(leftNumber->getTypeIDName() == "i");
     REQUIRE(rightNumber->getTypeIDName() == "i");
 #else
@@ -2116,7 +2116,7 @@ TEST_CASE("Parser emit binary expression node print", "[parser]") {
     REQUIRE(rightNumber != nullptr);
     REQUIRE(leftNumber->get_parent() != nullptr);
     REQUIRE(rightNumber->get_parent() != nullptr);
-#ifdef __linux__
+#if defined(__linux) || defined(__linux__) || defined(linux)
     REQUIRE(leftNumber->getTypeIDName() == "i");
     REQUIRE(rightNumber->getTypeIDName() == "i");
 #else
@@ -2148,7 +2148,7 @@ TEST_CASE("Parser emit binary expression node compact print", "[parser]") {
     REQUIRE(rightNumber != nullptr);
     REQUIRE(leftNumber->get_parent() != nullptr);
     REQUIRE(rightNumber->get_parent() != nullptr);
-#ifdef __linux__
+#if defined(__linux) || defined(__linux__) || defined(linux)
     REQUIRE(leftNumber->getTypeIDName() == "i");
     REQUIRE(rightNumber->getTypeIDName() == "i");
 #else
@@ -2175,7 +2175,7 @@ TEST_CASE("Parser pars complex expression", "[parser]") {
 
 TEST_CASE("Parser emit exception for mismacted  paren", "[parser]") {
     vnd::Parser tokenizer{"1 + 2 +( 2+3*3", filename};
-#ifdef _WIN32  // Windows
+#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
     REQUIRE_THROWS_MATCHES(
         tokenizer.parse(), vnd::ParserException,
         Message(R"(Unexpected token: (type: OPEN_PARENTESIS, value: '(', source location:(file:.\unknown.vn, line:1, column:8)))"));
@@ -2189,7 +2189,7 @@ TEST_CASE("Parser emit exception for mismacted  paren", "[parser]") {
 
 TEST_CASE("Parser emit exception for uncomplete expression", "[parser]") {
     vnd::Parser tokenizer{"1 + 2 *", filename};
-#ifdef _WIN32  // Windows
+#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
     REQUIRE_THROWS_MATCHES(tokenizer.parse(), vnd::ParserException,
                            Message(R"(Unexpected token: (type: EOF, source location:(file:.\unknown.vn, line:1, column:8)))"));
 #else
@@ -2200,7 +2200,7 @@ TEST_CASE("Parser emit exception for uncomplete expression", "[parser]") {
 
 TEST_CASE("Parser emit exception for nonexistent unary operator", "[parser]") {
     vnd::Parser tokenizer{"*2", filename};
-#ifdef _WIN32  // Windows
+#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
     REQUIRE_THROWS_MATCHES(
         tokenizer.parse(), vnd::ParserException,
         Message(R"(Unexpected token: (type: STAR_OPERATOR, value: '*', source location:(file:.\unknown.vn, line:1, column:1)))"));
@@ -2313,7 +2313,7 @@ TEST_CASE("Parser emit nullptr node", "[parser]") {
 
 TEST_CASE("Parser emit exception on comment", "[parser]") {
     vnd::Parser parser("// comment", filename);
-#ifdef _WIN32  // Windows
+#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
     REQUIRE_THROWS_MATCHES(
         parser.parse(), vnd::ParserException,
         Message(R"(Unexpected token: (type: COMMENT, value: '// comment', source location:(file:.\unknown.vn, line:1, column:1)))"));
@@ -2326,7 +2326,7 @@ TEST_CASE("Parser emit exception on comment", "[parser]") {
 
 TEST_CASE("Parser emit exception on multiline comment", "[parser]") {
     vnd::Parser parser(R"(/*multi\nline\ncomment*/)", filename);
-#ifdef _WIN32  // Windows
+#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
     REQUIRE_THROWS_MATCHES(
         parser.parse(), vnd::ParserException,
         Message(
@@ -2341,7 +2341,7 @@ TEST_CASE("Parser emit exception on multiline comment", "[parser]") {
 
 TEST_CASE("Parser emit mismatched square brackets exception", "[parser]") {
     vnd::Parser parser("Object[size", filename);
-#ifdef _WIN32  // Windows
+#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
     REQUIRE_THROWS_MATCHES(parser.parse(), vnd::ParserException,
                            Message(R"(Unexpected token: (type: EOF, source location:(file:.\unknown.vn, line:1, column:12)))"));
 #else
@@ -2352,7 +2352,7 @@ TEST_CASE("Parser emit mismatched square brackets exception", "[parser]") {
 
 TEST_CASE("Parser emit mismatched curly brackets exception", "[parser]") {
     vnd::Parser parser("string[size]{", filename);
-#ifdef _WIN32  // Windows
+#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
     REQUIRE_THROWS_MATCHES(parser.parse(), vnd::ParserException,
                            Message(R"(Unexpected token: (type: EOF, source location:(file:.\unknown.vn, line:1, column:14)))"));
 #else
