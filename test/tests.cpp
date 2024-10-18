@@ -125,11 +125,7 @@ TEST_CASE("ValueLabel functionality", "[ValueLabel]") {
         REQUIRE(value.transformTimeMilli(2.5L) == "2ms,500us,0ns");
 
         const ValueLabel valueNonExact(2.505L, "ms");
-#if defined(__linux) || defined(__linux__) || defined(linux)
         REQUIRE(valueNonExact.transformTimeMilli(2.505L) == "2ms,505us,0ns");
-#else
-        REQUIRE(valueNonExact.transformTimeMilli(2.505L) == "2ms,504us,999ns");
-#endif
     }
 
     SECTION("Transform time in seconds") {
