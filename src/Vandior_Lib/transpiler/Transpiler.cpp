@@ -17,12 +17,12 @@ namespace vnd {
     Transpiler::Transpiler(const std::string_view &input, const std::string_view &filename)
       : _filename(filename), _projectBuilder(filename), _parser(input, _filename) {
         _projectBuilder.buildProject();
-        if(auto src_folderpo = _projectBuilder.getSrcFolderPath(); src_folderpo.has_value()) {
+        if(const auto src_folderpo = _projectBuilder.getSrcFolderPath(); src_folderpo.has_value()) {
             _vnBuildSrcFolder = src_folderpo.value();
         } else {
             LERROR("Failed to get src folder path.");
         }
-        if(auto mainOutputFilePathpo = _projectBuilder.getMainOutputFilePath(); mainOutputFilePathpo.has_value()) {
+        if(const auto mainOutputFilePathpo = _projectBuilder.getMainOutputFilePath(); mainOutputFilePathpo.has_value()) {
             _mainOutputFilePath = mainOutputFilePathpo.value();
         } else {
             LERROR("Failed to get main output file path");

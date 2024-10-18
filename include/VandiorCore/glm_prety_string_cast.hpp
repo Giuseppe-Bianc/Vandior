@@ -1,7 +1,8 @@
+// NOLINTBEGIN((*-include-cleaner)
 #pragma once
 
-#include "format.hpp"     // NOLINT(*-include-cleaner)
-#include "glm_matld.hpp"  // NOLINT(*-include-cleaner)
+#include "format.hpp"
+#include "glm_matld.hpp"
 
 // #define PRETTY_PRINT
 
@@ -438,3 +439,5 @@ namespace glmp {
     }
 
 }  // namespace glmp
+
+// NOLINTEND((*-include-cleaner)

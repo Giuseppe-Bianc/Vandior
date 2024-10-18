@@ -1,4 +1,4 @@
-// NOLINTBEGIN(*-include-cleaner, *-identifier-length, *-special-member-functions)
+// NOLINTBEGIN(*-include-cleaner, *-identifier-length, *-special-member-functions, *-convert-member-functions-to-static)
 #pragma once
 
 #include "timeFactors.hpp"
@@ -149,4 +149,4 @@ template <> struct fmt::formatter<vnd::ValueLabel> : fmt::formatter<std::string_
 };
 /** \endcond */
 
-// NOLINTEND(*-include-cleaner, *-identifier-length, *-special-member-functions)
+// NOLINTEND(*-include-cleaner, *-identifier-length, *-special-member-functions, *-convert-member-functions-to-static)

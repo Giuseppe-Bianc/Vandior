@@ -28,28 +28,28 @@ DISABLE_WARNINGS_PUSH(
 #include <filesystem>
 #include <fstream>
 #include <iomanip>
-#include <iostream>
+//#include <iostream>
 #include <iterator>
 #include <initializer_list>
 #include <limits>
 #include <map>
 #include <memory>
 #include <memory_resource>
-#include <new>
+//#include <new>
 #include <numbers>
 #include <ostream>
 #include <optional>
 #include <random>
 #include <ranges>
-#include <set>
+//#include <set>
 #include <source_location>
 #include <sstream>
-#include <stack>
+//#include <stack>
 #include <stdexcept>
 #include <string>
 #include <string_view>
 #include <type_traits>
-#include <unordered_set>
+//#include <unordered_set>
 #include <utility>
 #include <variant>
 #include <vector>
@@ -132,7 +132,7 @@ static inline constexpr auto minuscs = '-';
         std::cin.ignore();                                                                                                                 \
     } while(0);
 
-[[nodiscard]] static inline constexpr auto is_divisor(std::integral auto n, std::integral auto d) noexcept -> bool { return n % d == 0; }
+[[nodiscard]] static constexpr auto is_divisor(std::integral auto n, std::integral auto d) noexcept -> bool { return n % d == 0; }
 
 template <std::integral T> [[nodiscard]] constexpr auto find_divisors(T num) noexcept -> std::vector<T> {
     if(num < 1) {
