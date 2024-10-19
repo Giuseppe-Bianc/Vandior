@@ -68,7 +68,8 @@ namespace vnd {
                     if(tokenValue == ",") {
                         precedence++;
                     } else if(tokenValue == ":") {
-                        precedence--;}
+                        precedence--;
+                    }
                 }
                 return precedence;
             }
