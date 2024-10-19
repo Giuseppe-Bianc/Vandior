@@ -2558,7 +2558,7 @@ TEST_CASE("ProjectBuilder buildProject", "[ProjectBuilder]") {
     }
 
     SECTION("Clean up") {
-        const auto buildFolder= fs::path("vnbuild")/ "src";
+        const auto buildFolder = fs::path("vnbuild") / "src";
         [[maybe_unused]] auto unused = fs::remove_all(buildFolder);
         REQUIRE_FALSE(fs::exists(buildFolder));  // Folder should not exist
     }
@@ -2575,7 +2575,7 @@ TEST_CASE("ProjectBuilder Getter Methods", "[ProjectBuilder]") {
         REQUIRE(fs::exists(buildPath.value()));
     }
     SECTION("Clean up") {
-        const auto buildFolder= fs::path("vnbuild")/ "src";
+        const auto buildFolder = fs::path("vnbuild") / "src";
         [[maybe_unused]] auto unused = fs::remove_all(buildFolder);
         REQUIRE_FALSE(fs::exists(buildFolder));  // Folder should not exist
     }
@@ -2587,7 +2587,7 @@ TEST_CASE("ProjectBuilder Getter Methods", "[ProjectBuilder]") {
         REQUIRE(fs::exists(srcPath.value()));
     }
     SECTION("Clean up") {
-        const auto buildFolder= fs::path("vnbuild")/ "src";
+        const auto buildFolder = fs::path("vnbuild") / "src";
         [[maybe_unused]] auto unused = fs::remove_all(buildFolder);
         REQUIRE_FALSE(fs::exists(buildFolder));  // Folder should not exist
     }
@@ -2599,14 +2599,13 @@ TEST_CASE("ProjectBuilder Getter Methods", "[ProjectBuilder]") {
         REQUIRE_FALSE(fs::exists(mainFilePath.value()));
     }
     SECTION("Clean up") {
-        const auto buildFolder= fs::path("vnbuild")/ "src";
+        const auto buildFolder = fs::path("vnbuild") / "src";
         [[maybe_unused]] auto unused = fs::remove_all(buildFolder);
         REQUIRE_FALSE(fs::exists(buildFolder));  // Folder should not exist
     }
 }
 
 TEST_CASE("ProjectBuilder Corner Cases", "[ProjectBuilder]") {
-
     SECTION("Invalid characters in filename") {
         const std::string_view invalidFilename = "invalid:name";
         vnd::ProjectBuilder builder(invalidFilename);
@@ -2615,7 +2614,7 @@ TEST_CASE("ProjectBuilder Corner Cases", "[ProjectBuilder]") {
     }
 
     SECTION("Clean up") {
-        const auto buildFolder= fs::path("vnbuild")/ "src";
+        const auto buildFolder = fs::path("vnbuild") / "src";
         [[maybe_unused]] auto unused = fs::remove_all(buildFolder);
         REQUIRE_FALSE(fs::exists(buildFolder));  // Folder should not exist
     }
