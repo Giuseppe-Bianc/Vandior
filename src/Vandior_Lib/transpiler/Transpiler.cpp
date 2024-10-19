@@ -17,6 +17,11 @@ namespace vnd {
     Transpiler::Transpiler(const std::string_view &input, const std::string_view &filename)
       : _filename(filename), _projectBuilder(filename), _parser(input, _filename) {
         _projectBuilder.buildProject();
+        if(const auto buildFolderpo = _projectBuilder.getBuildFolderPath(); buildFolderpo.has_value()) {
+            _vnBuildFolder = buildFolderpo.value();
+        } else {
+            LERROR("Failed to get build folder path.");
+        }
         if(const auto src_folderpo = _projectBuilder.getSrcFolderPath(); src_folderpo.has_value()) {
             _vnBuildSrcFolder = src_folderpo.value();
         } else {

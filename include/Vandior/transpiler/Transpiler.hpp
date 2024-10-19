@@ -109,6 +109,7 @@ namespace vnd {
         std::string_view _filename;
         ProjectBuilder _projectBuilder;
         Parser _parser;
+        fs::path _vnBuildFolder;
         fs::path _vnBuildSrcFolder;
         fs::path _mainOutputFilePath;
     };
