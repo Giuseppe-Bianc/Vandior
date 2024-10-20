@@ -1,12 +1,8 @@
 /*
  * Created by gbian on 20/10/2024.
  */
-// NOLINTBEGIN(*-include-cleaner)
+// NOLINTBEGIN(*-include-cleaner, *-qualified-auto, *-no-recursion, *-easily-swappable-parameters)
 #include "Vandior/parser/AST.hpp"
-#include "Vandior/parser/LiteralNode.hpp"
-#include "Vandior/parser/NullptrNode.hpp"
-#include "Vandior/parser/NumberNode.hpp"
-#include "Vandior/parser/TypeNode.hpp"
 
 /** \cond */
 DISABLE_WARNINGS_PUSH(
@@ -106,4 +102,4 @@ void prettyPrint(const vnd::ASTNode &node, const std::string &indent, bool isLas
 DISABLE_WARNINGS_POP()
 /** \endcond */
 
-// NOLINTEND(*-include-cleaner)
+// NOLINTEND(*-include-cleaner, *-qualified-auto, *-no-recursion, *-easily-swappable-parameters)
