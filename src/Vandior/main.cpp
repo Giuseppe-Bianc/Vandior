@@ -36,6 +36,15 @@ static inline constexpr std::array<std::string_view, 12> transpilerInputs = {"as
                                                                              "asd:i32[2]={1232, 2333}",
                                                                              "asd:i32[2][2]={{1232, 33333}, {2333, 44444}}"};
 */
+
+template <typename T> std::vector<std::pair<size_t, const T &>> enumerate(const std::vector<T> &vec) {
+    std::vector<std::pair<size_t, const T &>> enumerated;
+    for(std::size_t index = 0; const auto &item : vec) {
+        enumerated.emplace_back(index, item);
+        ++index;
+    }
+    return enumerated;
+}
 // NOLINTNEXTLINE(*-function-cognitive-complexity)
 auto main(int argc, const char *const argv[]) -> int {
     // NOLINTNEXTLINE
@@ -79,7 +88,7 @@ auto main(int argc, const char *const argv[]) -> int {
             } else {
                 LINFO("{}", token);
             }
-            for(const auto &[index, node] : statement.get_nodes() | std::views::enumerate) {
+            for(const auto &[index, node] : enumerate(statement.get_nodes())) {
                 LINFO("AST num {}:", index);
                 prettyPrint(*node);
             }
