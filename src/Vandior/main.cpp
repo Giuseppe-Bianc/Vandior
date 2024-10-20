@@ -10,6 +10,7 @@ DISABLE_WARNINGS_PUSH(
 
 DISABLE_WARNINGS_POP()
 namespace vnd {
+    // NOLINTNEXTLINE(*-use-anonymous-namespace)
     static auto timeTokenizer(Tokenizer &tokenizer, std::vector<Token> &tokens) -> void {
         tokens.clear();
 #ifdef INDEPT
