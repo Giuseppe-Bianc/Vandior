@@ -10,7 +10,7 @@ DISABLE_WARNINGS_PUSH(
 
 DISABLE_WARNINGS_POP()
 namespace vnd {
-    inline auto timeTokenizer(Tokenizer &tokenizer, std::vector<Token> &tokens) -> void {
+    static auto timeTokenizer(Tokenizer &tokenizer, std::vector<Token> &tokens) -> void {
         tokens.clear();
 #ifdef INDEPT
         const AutoTimer timer("tokenization");
@@ -71,31 +71,18 @@ auto main(int argc, const char *const argv[]) -> int {
         LINFO("Input: {}", input);
         vnd::Parser parser{input, "input.vn"};
         const auto progrmamAST = vnd::timeParse(parser);
-        /*LINFO("print internal function\n{}", ast->print());
-        LINFO("comp_print internal function\n {}", ast->comp_print());
-        LINFO("prettyPrint external function");*/
         for(const auto &statement : progrmamAST) {
-            const auto token = statement.get_token();
-            // FIXME: the output should be the actual token not the the default token: (type: UNKNOWN value: '', source
-            // location:(file:unknown, line:0, column:0))
+            const auto &token = statement.get_token();
+            // FIXME: Output the actual token, not the default one.
             if(token.getType() == vnd::TokenType::UNKNOWN) {
                 LINFO("lo statement non e' generato da nessun token");
             } else {
                 LINFO("{}", token);
             }
-#if defined(__llvm__) && defined(__clang__)
-            std::size_t index = 0;
-            for(const auto &node : statement.get_nodes()) {
-                LINFO("AST num {}:", index);
-                prettyPrint(*node);
-                ++index;
-            }
-#else
             for(const auto &[index, node] : statement.get_nodes() | std::views::enumerate) {
                 LINFO("AST num {}:", index);
                 prettyPrint(*node);
             }
-#endif
         }
         vnd::Transpiler transpiler{input, filename};
         transpiler.transpile();

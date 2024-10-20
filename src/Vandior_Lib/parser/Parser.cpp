@@ -18,7 +18,7 @@ namespace vnd {
 
     void Parser::emplaceStatement(std::vector<Statement> &statements) noexcept {
         Token token{};
-        const auto tokensFront = tokens.front();
+        const auto &tokensFront = tokens.front();
         if(isKeyword(tokensFront.getType())) {
             token = tokensFront;
             tokens.erase(tokens.begin());
