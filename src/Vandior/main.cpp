@@ -22,21 +22,7 @@ namespace vnd {
 
 DISABLE_WARNINGS_PUSH(26461 26821)
 
-/*static inline constexpr auto sequence = std::views::iota(0, 9999);
-
-static inline constexpr std::array<std::string_view, 12> transpilerInputs = {"asd",
-                                                                             "123",
-                                                                             "123.3333",
-                                                                             "i32",
-                                                                             "asd:i32",
-                                                                             "asd:i32[]",
-                                                                             "asd:i32[2]",
-                                                                             "asd = 123",
-                                                                             "asd = 123.3333",
-                                                                             "asd:i32[]={1232}",
-                                                                             "asd:i32[2]={1232, 2333}",
-                                                                             "asd:i32[2][2]={{1232, 33333}, {2333, 44444}}"};
-*/
+// static inline constexpr auto sequence = std::views::iota(0, 9999);
 
 template <typename T> std::vector<std::pair<size_t, const T &>> enumerate(const std::vector<T> &vec) {
     std::vector<std::pair<size_t, const T &>> enumerated;

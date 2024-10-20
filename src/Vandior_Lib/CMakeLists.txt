@@ -17,6 +17,7 @@ add_library(vandior_lib vandior.cpp
         parser/Statement.cpp
         transpiler/Transpiler.cpp
         transpiler/ProjectBuilder.cpp
+        parser/AST.cpp
 )
 
 add_library(Vandior::vandior_lib ALIAS vandior_lib)
