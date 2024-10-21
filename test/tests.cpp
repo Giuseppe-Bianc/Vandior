@@ -2671,9 +2671,28 @@ TEST_CASE("prettyPrint: Unknown node type", "[prettyPrint]") {
     const UnknownNode unknownNode;
 
     // Verificare che venga gestito correttamente
-    REQUIRE_NOTHROW(prettyPrint(unknownNode, "", true, "L"));
+    REQUIRE_NOTHROW(prettyPrint(unknownNode));
 }
 
+TEST_CASE("printParentNode: no parent", "[printParentNode]") {
+    vnd::Parser parser{"2 + 3 + (4.2 / 2) * 3 + y", "input.vn"};
+    auto programAst = parser.parse();
+    REQUIRE(programAst.size() == 1);
+    auto ast = programAst[0].get_nodes().at(0).get();
+    REQUIRE(ast != nullptr);
+    REQUIRE_NOTHROW(printParentNode(*ast, ""));
+}
+
+// getLeft()
+
+TEST_CASE("printParentNode: parent", "[printParentNode]") {
+    vnd::Parser parser{"2 + 3 + (4.2 / 2) * 3 + y", "input.vn"};
+    auto programAst = parser.parse();
+    REQUIRE(programAst.size() == 1);
+    auto ast = programAst[0].get_nodes().at(0).get();
+    REQUIRE(ast != nullptr);
+    REQUIRE_NOTHROW(printParentNode(*ast->as<vnd::BinaryExpressionNode>()->getLeft(), ""));
+}
 TEST_CASE("vnd::timeParser", "[Vandior]") {
     vnd::Parser parser{"asdf", filename};
     std::vector<vnd::Statement> ast;
