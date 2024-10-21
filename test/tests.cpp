@@ -2574,6 +2574,106 @@ TEST_CASE("Transpiler::mapType returns correct type mappings", "[transpiler]") {
         REQUIRE(vnd::Transpiler::mapType("I8"sv) == "unknown"sv);  // Should be case sensitive
     }
 }
+
+TEST_CASE("prettyPrint: BinaryExpressionNode", "[prettyPrint]") {
+    vnd::Parser parser("a + b", filename);
+    auto programAst = parser.parse();
+    REQUIRE(programAst.size() == 1);
+    auto ast = programAst[0].get_nodes().at(0).get();
+    REQUIRE(ast != nullptr);
+
+    // Verificare che la funzione prettyPrint gestisca correttamente un BinaryExpressionNode
+    REQUIRE_NOTHROW(prettyPrint(*ast, "", true));
+}
+
+TEST_CASE("prettyPrint: UnaryExpressionNode", "[prettyPrint]") {
+    vnd::Parser parser("-b", filename);
+    auto programAst = parser.parse();
+    REQUIRE(programAst.size() == 1);
+    auto ast = programAst[0].get_nodes().at(0).get();
+    REQUIRE(ast != nullptr);
+    REQUIRE_NOTHROW(prettyPrint(*ast, "", true));
+}
+
+TEST_CASE("prettyPrint: Variable", "[prettyPrint]") {
+    vnd::Parser parser("b", filename);
+    auto programAst = parser.parse();
+    REQUIRE(programAst.size() == 1);
+    auto ast = programAst[0].get_nodes().at(0).get();
+    REQUIRE(ast != nullptr);
+    REQUIRE_NOTHROW(prettyPrint(*ast, "", true));
+}
+
+TEST_CASE("prettyPrint: function call", "[prettyPrint]") {
+    vnd::Parser parser("functiosss()", filename);
+    auto programAst = parser.parse();
+    REQUIRE(programAst.size() == 1);
+    auto ast = programAst[0].get_nodes().at(0).get();
+    REQUIRE(ast != nullptr);
+    REQUIRE_NOTHROW(prettyPrint(*ast, "", true));
+}
+
+TEST_CASE("prettyPrint: function call2", "[prettyPrint]") {
+    vnd::Parser parser("functiosss(2, 2)", filename);
+    auto programAst = parser.parse();
+    REQUIRE(programAst.size() == 1);
+    auto ast = programAst[0].get_nodes().at(0).get();
+    REQUIRE(ast != nullptr);
+    REQUIRE_NOTHROW(prettyPrint(*ast, "", true));
+}
+
+TEST_CASE("prettyPrint: tipe assignment", "[prettyPrint]") {
+    vnd::Parser parser("asd : i32", filename);
+    auto programAst = parser.parse();
+    REQUIRE(programAst.size() == 1);
+    auto ast = programAst[0].get_nodes().at(0).get();
+    REQUIRE(ast != nullptr);
+    REQUIRE_NOTHROW(prettyPrint(*ast, "", true));
+}
+
+TEST_CASE("prettyPrint: array type assignment", "[prettyPrint]") {
+    vnd::Parser parser("asd : i32[2], asd2 : i32[2][]", filename);
+    auto programAst = parser.parse();
+    REQUIRE(programAst.size() == 1);
+    auto ast = programAst[0].get_nodes().at(0).get();
+    REQUIRE(ast != nullptr);
+    REQUIRE_NOTHROW(prettyPrint(*ast, "", true));
+}
+
+TEST_CASE("prettyPrint: array elements", "[prettyPrint]") {
+    vnd::Parser parser("asd : i32[2] ={2, 3}", filename);
+    auto programAst = parser.parse();
+    REQUIRE(programAst.size() == 1);
+    auto ast = programAst[0].get_nodes().at(0).get();
+    REQUIRE(ast != nullptr);
+    REQUIRE_NOTHROW(prettyPrint(*ast, "", true));
+}
+
+TEST_CASE("prettyPrint: base literlas types", "[prettyPrint]") {
+    vnd::Parser parser("12, 12.2f, 12.2, 12.2if, 12.2i, 'c', \"asdfgh\", true, false, nullptr", filename);
+    auto programAst = parser.parse();
+    REQUIRE(programAst.size() == 1);
+    auto ast = programAst[0].get_nodes().at(0).get();
+    REQUIRE(ast != nullptr);
+    REQUIRE_NOTHROW(prettyPrint(*ast, "", true));
+}
+
+class UnknownNode : public vnd::ASTNode {
+public:
+    UnknownNode() : ASTNode(vnd::Token{}) {}
+    [[nodiscard]] NodeType getType() const noexcept override { return NodeType::Unknown; }
+    [[nodiscard]] std::string print() const override { return "UnknownNode"; }
+    [[nodiscard]] std::string comp_print() const override { return "UnknownNode"; }
+};
+TEST_CASE("prettyPrint: Unknown node type", "[prettyPrint]") {
+    // Creare un nodo fittizio non gestito
+
+    const UnknownNode unknownNode;
+
+    // Verificare che venga gestito correttamente
+    REQUIRE_NOTHROW(prettyPrint(unknownNode, "", true, "L"));
+}
+
 TEST_CASE("vnd::timeParser", "[Vandior]") {
     vnd::Parser parser{"asdf", filename};
     std::vector<vnd::Statement> ast;

@@ -19,7 +19,8 @@ enum class NodeType : std::uint8_t {
     Type,
     Index,
     Array,
-    Statement
+    Statement,
+    Unknown
 };
 
 /**
