@@ -6,8 +6,8 @@
 
 namespace vnd {
     ArrayNode::ArrayNode(std::unique_ptr<ASTNode> elements, const Token &token) noexcept
-          : ASTNode(token), m_elements(vnd_move_always_even_const(elements)) {
-        if(m_elements){ m_elements->set_parent(this);}
+      : ASTNode(token), m_elements(vnd_move_always_even_const(elements)) {
+        if(m_elements) { m_elements->set_parent(this); }
     }
 
     NodeType ArrayNode::getType() const noexcept { return NodeType::Array; }
