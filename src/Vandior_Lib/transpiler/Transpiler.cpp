@@ -59,9 +59,28 @@ namespace vnd {
         createMockfile();
         const auto ast = _parser.parse();
         for(const auto &i : ast) {
-            const auto transpiledCode = transpileNode(*i.get_nodes().at(0));
+            const auto transpiledCode = transpileKeyword(i.get_token()) + transpileNode(*i.get_nodes().at(0));
             LINFO("transpiled code: {}", transpiledCode);
         }
+    }
+
+    
+    auto Transpiler::transpileKeyword(const Token &keyword) -> std::string {
+        switch(keyword.getType()) {
+        case TokenType::K_MAIN:
+            return "int main(int argc, char **argv)";
+        case TokenType::K_IF:
+            return "if";
+        case TokenType::K_WHILE:
+            return "while";
+        case TokenType::K_FOR:
+            return "for";
+        case TokenType::K_BREAK:
+            return std::string{keyword.getValue()};
+        case TokenType::K_RETURN:
+            return "return";
+        }
+        return "";
     }
 
     // Main code generation function

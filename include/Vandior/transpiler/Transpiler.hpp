@@ -23,6 +23,15 @@ namespace vnd {
          * Creates a mock file.
          */
         void createMockfile();
+
+        /**
+         * Transpiles the given Token keyword into a string representatio.
+         * 
+         * @param keyword the Token to tranpile.
+         * @return The transpiled  string representation of the keyword.
+         */
+        auto transpileKeyword(const Token &keyword) -> std::string;
+
         /**
          * Transpiles the given ASTNode into a string representation.
          *
