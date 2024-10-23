@@ -77,7 +77,7 @@ auto main(int argc, const char *const argv[]) -> int {
             }
             for(const auto &[index, node] : enumerate(statement.get_nodes())) {
                 LINFO("AST num {}:", index);
-                prettyPrint(*node);
+                node ? prettyPrint(*node) : LINFO("EMPTY");
             }
         }
         vnd::Transpiler transpiler{input, filename};

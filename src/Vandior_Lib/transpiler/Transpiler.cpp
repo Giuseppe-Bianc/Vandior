@@ -59,8 +59,11 @@ namespace vnd {
         createMockfile();
         const auto ast = _parser.parse();
         for(const auto &i : ast) {
-            const auto transpiledCode = transpileKeyword(i.get_token()) + transpileNode(*i.get_nodes().at(0));
-            LINFO("transpiled code: {}", transpiledCode);
+            const auto &node = i.get_nodes().at(0);
+            std::stringstream out;
+            out << transpileKeyword(i.get_token());
+            if(node) { out << transpileNode(*node); }
+            LINFO("transpiled code: {}", out.str());
         }
     }
 

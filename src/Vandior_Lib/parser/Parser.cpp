@@ -12,7 +12,11 @@ namespace vnd {
         if(tokens.empty()) { return {}; }
         std::vector<Statement> statements;
         emplaceStatement(statements);
-        statements.back().addNode(parseExpression());
+        if(tokens.size() == 1 && tokens.at(0).getType() == eofTokenType) {
+            statements.back().addNode(nullptr);
+        } else {
+            statements.back().addNode(parseExpression());
+        }
         return statements;
     }
 
@@ -274,7 +278,9 @@ namespace vnd {
         return left;
     }
 
-    std::unique_ptr<ASTNode> Parser::parseExpression(std::size_t parentPrecendence) { return parseBinary(parentPrecendence); }
+    std::unique_ptr<ASTNode> Parser::parseExpression(std::size_t parentPrecendence) {
+        return parseBinary(parentPrecendence);
+    }
 
     template <typename T> void Parser::parseIndex(const std::unique_ptr<T> &node) {
         using enum vnd::TokenType;
