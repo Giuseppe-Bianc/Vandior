@@ -1,3 +1,4 @@
+// NOLINTBEGIN(*-include-cleaner)
 #pragma once
 
 #include "headers.hpp"
@@ -92,6 +93,8 @@ namespace vnd {
          */
         friend bool operator==(const FolderCreationResult &lhs, const FolderCreationResult &rhs) noexcept = default;
 
+        ~FolderCreationResult() = default;
+
         /**
          * @brief Swaps the contents of two FolderCreationResult objects.
          * @param lhs The first FolderCreationResult object.
@@ -108,27 +111,26 @@ namespace vnd {
          * @return The hash value of the object.
          */
         friend std::size_t hash_value(const FolderCreationResult &obj) noexcept {
+            const std::hash<bool> bool_hasher;
 #ifdef __llvm__
-            std::hash<bool> bool_hasher;
-            std::hash<std::string> string_hasher;
+            const std::hash<std::string> string_hasher;
             return bool_hasher(obj.success_) ^ (string_hasher(obj.path_.value_or("").string()) << 1);
 #else
-            std::hash<bool> bool_hasher;
-            std::hash<std::filesystem::path> path_hasher;
+            const std::hash<std::filesystem::path> path_hasher;
             return bool_hasher(obj.success_) ^ (path_hasher(obj.path_.value_or("")) << 1);
 #endif
         }
 
         /**
          * @brief Outputs the FolderCreationResult object to an output stream.
-         * @param os The output stream.
+         * @param oss The output stream.
          * @param obj The FolderCreationResult object to output.
          * @return The output stream after writing the FolderCreationResult object.
          */
-        friend std::ostream &operator<<(std::ostream &os, const FolderCreationResult &obj) {
+        friend std::ostream &operator<<(std::ostream &oss, const FolderCreationResult &obj) {
             const auto pathValue = obj.path_.value_or("");
-            if(pathValue.empty()) { return os << FORMAT("success_: {}, path_: None", obj.success_); }
-            return os << FORMAT("success_: {}, path_: {}", obj.success_, pathValue);
+            if(pathValue.empty()) { return oss << FORMAT("success_: {}, path_: None", obj.success_); }
+            return oss << FORMAT("success_: {}, path_: {}", obj.success_, pathValue);
         }
 
         [[nodiscard]] static auto createFolder(std::string_view folderName, const fs::path &parentDir) -> FolderCreationResult {
@@ -195,3 +197,5 @@ namespace vnd {
 }  // namespace vnd
 
 DISABLE_WARNINGS_POP()
+
+// NOLINTEND(*-include-cleaner)
