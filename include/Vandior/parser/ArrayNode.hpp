@@ -18,37 +18,31 @@ namespace vnd {
          * @param elements The elements of the array.
          * @param token The token correspondent to the node.
          */
-        [[nodiscard]] ArrayNode(std::unique_ptr<ASTNode> elements, const Token &token) noexcept
-          : ASTNode(token), m_elements(vnd_move_always_even_const(elements)) {
-            if(m_elements) m_elements->set_parent(this);
-        }
+        [[nodiscard]] ArrayNode(std::unique_ptr<ASTNode> elements, const Token &token) noexcept;
 
         /**
          * @brief Gets the type of the AST node.
          * @return NodeType enumeration value.
          */
-        [[nodiscard]] NodeType getType() const noexcept override { return NodeType::Array; }
+        [[nodiscard]] NodeType getType() const noexcept override;
 
         /**
          * @brief Returns a string representation of the AST node.
          * @return String representation of the AST node.
          */
-        [[nodiscard]] std::string print() const override {
-            if(m_elements) { return FORMAT("{}({})", getType(), m_elements->comp_print()); }
-            return FORMAT("{}()", getType());
-        }
+        [[nodiscard]] std::string print() const override;
 
         /**
          * @brief Returns a compact string representation of the AST node for compilation purposes.
          * @return Compact string representation of the AST node.
          */
-        [[nodiscard]] std::string comp_print() const override { return FORMAT("{}", getType()); }
+        [[nodiscard]] std::string comp_print() const override;
 
         /**
          * @brief Gets the elements of the node.
          * @return The elements of the node.
          */
-        [[nodiscard]] const std::unique_ptr<ASTNode> &get_elements() const noexcept { return m_elements; }
+        [[nodiscard]] const std::unique_ptr<ASTNode> &get_elements() const noexcept;
 
         /**
          * @brief Swaps the contents of two LiteralNode objects.

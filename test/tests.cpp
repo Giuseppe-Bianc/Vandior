@@ -2693,6 +2693,16 @@ TEST_CASE("printParentNode: parent", "[printParentNode]") {
     REQUIRE(ast != nullptr);
     REQUIRE_NOTHROW(printParentNode(*ast->as<vnd::BinaryExpressionNode>()->getLeft(), ""));
 }
+
+TEST_CASE("printParentNode: parent index", "[printParentNode]") {
+    vnd::Parser parser{"asd[2][1]", "input.vn"};
+    auto programAst = parser.parse();
+    REQUIRE(programAst.size() == 1);
+    auto ast = programAst[0].get_nodes().at(0).get();
+    REQUIRE(ast != nullptr);
+    REQUIRE_NOTHROW(printParentNode(*ast->as<vnd::VariableNode>()->get_index()->as<vnd::IndexNode>()->get_index(), ""));
+}
+
 TEST_CASE("vnd::timeParser", "[Vandior]") {
     vnd::Parser parser{"asdf", filename};
     std::vector<vnd::Statement> ast;
