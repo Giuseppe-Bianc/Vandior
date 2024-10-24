@@ -17,67 +17,54 @@ namespace vnd {
          * @param elements The root element of the index.
          * @param token The token correspondent to the node.
          */
-        [[nodiscard]] IndexNode(std::unique_ptr<ASTNode> elements, const Token &token) noexcept
-          : ASTNode(token), m_elements(vnd_move_always_even_const(elements)), m_index(nullptr), m_array(nullptr) {
-            if(m_elements) m_elements->set_parent(this);
-        }
+        [[nodiscard]] IndexNode(std::unique_ptr<ASTNode> elements, const Token &token) noexcept;
 
         /**
          * @brief Gets the type of the AST node.
          * @return NodeType enumeration value.
          */
-        [[nodiscard]] NodeType getType() const noexcept override { return NodeType::Index; }
+        [[nodiscard]] NodeType getType() const noexcept override;
 
         /**
          * @brief Returns a string representation of the AST node.
          * @return String representation of the AST node.
          */
-        [[nodiscard]] std::string print() const override {
-            if(m_elements) { return FORMAT("{}({})", getType(), m_elements->comp_print()); }
-            return FORMAT("{}()", getType());
-        }
+        [[nodiscard]] std::string print() const override;
 
         /**
          * @brief Returns a compact string representation of the AST node for compilation purposes.
          * @return Compact string representation of the AST node.
          */
-        [[nodiscard]] std::string comp_print() const override { return FORMAT("{}", getType()); }
+        [[nodiscard]] std::string comp_print() const override;
 
         /**
          * @brief Gets the elements of the node.
          * @return The elements of the node.
          */
-        [[nodiscard]] const std::unique_ptr<ASTNode> &get_elements() const noexcept { return m_elements; }
+        [[nodiscard]] const std::unique_ptr<ASTNode> &get_elements() const noexcept;
 
         /**
          * @brief Gets the index node of the node.
          * @return The index node of the node.
          */
-        [[nodiscard]] const std::unique_ptr<IndexNode> &get_index() const noexcept { return m_index; }
+        [[nodiscard]] const std::unique_ptr<IndexNode> &get_index() const noexcept;
 
         /**
          * @brief Sets the index node of the node.
          * @param index The index node of the node.
          */
-        void set_index(std::unique_ptr<IndexNode> index) noexcept {
-            m_index = vnd_move_always_even_const(index);
-            if(m_index) m_index->set_parent(this);
-        }
-
+        void set_index(std::unique_ptr<IndexNode> index) noexcept;
         /**
          * @brief Gets the array node of the node.
          * @return The array node of the node.
          */
-        [[nodiscard]] const std::unique_ptr<ArrayNode> &get_array() const noexcept { return m_array; }
+        [[nodiscard]] const std::unique_ptr<ArrayNode> &get_array() const noexcept;
 
         /**
          * @brief Sets the array node of the node.
          * @param _array The array node of the node.
          */
-        void set_array(std::unique_ptr<ArrayNode> _array) noexcept {
-            m_array = vnd_move_always_even_const(_array);
-            if(m_array) m_array->set_parent(this);
-        }
+        void set_array(std::unique_ptr<ArrayNode> _array) noexcept;
 
         /**
          * @brief Swaps the contents of two LiteralNode objects.

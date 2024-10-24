@@ -1,7 +1,7 @@
 //
 // Created by potex02 on 10/07/2024.
 //
-
+// NOLINTBEGIN(*-include-cleaner)
 #pragma once
 
 #include "ASTNode.hpp"
@@ -61,3 +61,5 @@ namespace vnd {
 
 }  // namespace vnd
 DISABLE_WARNINGS_POP()
+
+// NOLINTEND(*-include-cleaner)
