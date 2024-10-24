@@ -63,21 +63,21 @@ namespace vnd {
             std::stringstream out;
             out << transpileKeyword(i.get_token());
             if(node) { out << transpileNode(*node); }
+            if(checkKeyword(i.get_token().getType()).second) { out << ") {"; }
             LINFO("transpiled code: {}", out.str());
         }
     }
-
     
     auto Transpiler::transpileKeyword(const Token &keyword) -> std::string {
         switch(keyword.getType()) {
         case TokenType::K_MAIN:
             return "int main(int argc, char **argv)";
         case TokenType::K_IF:
-            return "if";
+            return "if(";
         case TokenType::K_WHILE:
-            return "while";
+            return "while(";
         case TokenType::K_FOR:
-            return "for";
+            return "for(";
         case TokenType::K_BREAK:
             return std::string{keyword.getValue()};
         case TokenType::K_RETURN:

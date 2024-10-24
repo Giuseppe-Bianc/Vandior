@@ -2,6 +2,7 @@
 #pragma once
 
 #include "../parser/Parser.hpp"
+#include "../lexer/TokenType.hpp"
 #include "ProjectBuilder.hpp"
 
 namespace vnd {
@@ -28,7 +29,7 @@ namespace vnd {
          * Transpiles the given Token keyword into a string representatio.
          * 
          * @param keyword the Token to tranpile.
-         * @return The transpiled  string representation of the keyword.
+         * @return The transpiled string representation of the keyword.
          */
         auto transpileKeyword(const Token &keyword) -> std::string;
 
