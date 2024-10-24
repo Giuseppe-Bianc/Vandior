@@ -86,15 +86,19 @@ namespace vnd {
         TokenType::K_MAIN, TokenType::K_VAR,   TokenType::K_IF,  TokenType::K_WHILE,  TokenType::K_ELSE,
         TokenType::K_FOR,  TokenType::K_BREAK, TokenType::K_FUN, TokenType::K_RETURN,
     };
+    static inline constexpr std::array<TokenType, 6> structuresTokenTypes = {
+        TokenType::K_MAIN, TokenType::K_IF,  TokenType::K_WHILE,  TokenType::K_ELSE, TokenType::K_FOR,  TokenType::K_FUN
+    };
     using TokenTypeVec = std::vector<TokenType>;
 
     /**
      * @brief Checks if a tokenType is a keyword.
      * @param type the TokenType to check.
-     * @return a bool flag.
+     * @return A pair containing a bool flag indicating if the token is a keyword and another flag indicating if it's a structure.
      */
-    [[nodiscard]] static constexpr bool isKeyword(const TokenType &type) noexcept {
-        return std::ranges::find(keywordsTokenTypes, type) != std::end(keywordsTokenTypes);
+    [[nodiscard]] static constexpr std::pair<bool, bool> checkKeyword(const TokenType &type) noexcept {
+        return std::make_pair(std::ranges::find(keywordsTokenTypes, type) != std::end(keywordsTokenTypes),
+                              std::ranges::find(structuresTokenTypes, type) != std::end(structuresTokenTypes));
     }
 
     /**

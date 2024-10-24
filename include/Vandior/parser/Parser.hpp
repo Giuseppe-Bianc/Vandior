@@ -58,7 +58,7 @@ namespace vnd {
         /**
          * @brief create a statement and emplace it in the parsing result.
          */
-        void emplaceStatement(std::vector<Statement> &statements) noexcept;
+        void emplaceStatement(std::vector<Statement> &statements);
 
         /**
          * @brief Consumes the current token and advances to the next token.

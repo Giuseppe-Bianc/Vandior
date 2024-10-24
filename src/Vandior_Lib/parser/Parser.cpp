@@ -20,12 +20,19 @@ namespace vnd {
         return statements;
     }
 
-    void Parser::emplaceStatement(std::vector<Statement> &statements) noexcept {
+    void Parser::emplaceStatement(std::vector<Statement> &statements) {
         Token token{};
         const auto &tokensFront = tokens.front();
-        if(isKeyword(tokensFront.getType())) {
+        const auto flags = checkKeyword(tokensFront.getType());
+        if(flags.first) {
             token = tokensFront;
             tokens.erase(tokens.begin());
+        }
+        if(flags.second) {
+            if(tokens.size() < 2 || tokens.at(tokens.size() - 2).getValue() != "{") {
+                throw new ParserException(tokensFront);
+            }
+            tokens.erase(tokens.end() - 2);
         }
         statements.emplace_back(token);
         keyword = token;
