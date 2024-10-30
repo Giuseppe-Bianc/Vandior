@@ -23,10 +23,14 @@ namespace vnd {
     void Parser::emplaceStatement(std::vector<Statement> &statements) {
         Token token{};
         const auto &tokensFront = tokens.front();
+        StringVec data;
         const auto flags = checkKeyword(tokensFront.getType());
         if(flags.first) {
             token = tokensFront;
             tokens.erase(tokens.begin());
+            if(token.getType() == TokenType::K_FUN) {
+                data = extractFunData();
+            }
         }
         if(flags.second) {
             if(tokens.size() < 2 || tokens.at(tokens.size() - 2).getValue() != "{") {
@@ -34,7 +38,7 @@ namespace vnd {
             }
             tokens.erase(tokens.end() - 2);
         }
-        statements.emplace_back(token);
+        statements.emplace_back(token, data);
         keyword = token;
     }
 
@@ -341,6 +345,8 @@ namespace vnd {
         node->set_call(std::move(elements));
         return true;
     }
+
+    std::vector<std::string> Parser::extractFunData() { return {}; }
 
 }  // namespace vnd
 DISABLE_WARNINGS_POP()

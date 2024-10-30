@@ -63,7 +63,10 @@ namespace vnd {
             std::stringstream out;
             out << transpileKeyword(i.get_token());
             if(node) { out << transpileNode(*node); }
-            if(checkKeyword(i.get_token().getType()).second) { out << ") {"; }
+            if(checkKeyword(i.get_token().getType()).second) {
+                if(i.get_token().getType() != TokenType::K_FUN) { out << ")"; }
+                out << " {";
+            }
             LINFO("transpiled code: {}", out.str());
         }
     }
@@ -80,6 +83,8 @@ namespace vnd {
             return "for(";
         case TokenType::K_BREAK:
             return std::string{keyword.getValue()};
+        case TokenType::K_FUN:
+            return "auto ";
         case TokenType::K_RETURN:
             return "return";
         }

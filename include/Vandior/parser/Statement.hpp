@@ -9,7 +9,8 @@ namespace vnd {
 
     class Statement : public ASTNode {
     public:
-        [[nodiscard]] explicit Statement(const Token &token) noexcept : ASTNode(token) {}
+        [[nodiscard]] explicit Statement(const Token &token, const std::vector<std::string> &funData) noexcept
+          : ASTNode(token), funData(funData) {}
 
         /**
          * @brief Gets the type of the AST node.
@@ -31,6 +32,8 @@ namespace vnd {
 
         [[nodiscard]] const std::vector<std::unique_ptr<ASTNode>> &get_nodes() const noexcept { return std::move(nodes); }
 
+        [[nodiscard]] const std::vector<std::string> &get_funData() const noexcept { return funData; }
+
         friend void swap(Statement &lhs, Statement &rhs) noexcept {
             using std::swap;
             swap(static_cast<ASTNode &>(lhs), static_cast<ASTNode &>(rhs));
@@ -41,6 +44,7 @@ namespace vnd {
 
     private:
         std::vector<std::unique_ptr<ASTNode>> nodes;
+        std::vector<std::string> funData;
     };
 
 }  // namespace vnd
