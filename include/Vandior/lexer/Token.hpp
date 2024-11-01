@@ -110,6 +110,8 @@ namespace vnd {
          */
         [[nodiscard]] const std::string_view getFileName() const noexcept { return _sourceLocation.getFileName(); }
 
+        [[nodiscard]] const CodeSourceLocation &getSourceLocation() const noexcept { return _sourceLocation; }
+
         /**
          * @brief Get the line number where the token appears.
          * @return The line number.
