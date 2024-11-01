@@ -26,13 +26,19 @@ namespace vnd {
     bool TokenizerUtility::isUnderscore(const char cha) noexcept { return cha == underore; }
     bool TokenizerUtility::isCommaColon(const char cha) noexcept { return cha == commacr || cha == coloncr; }
     TokenType TokenizerUtility::CommaOrColonType(const char cha) {
-        if(cha == commacr) { return TokenType::COMMA; }
-        else if(cha == coloncr) { return TokenType::COLON; }
+        if(cha == commacr) {
+            return TokenType::COMMA;
+        } else if(cha == coloncr) {
+            return TokenType::COLON;
+        }
         return TokenType::UNKNOWN;
     }
     std::string_view TokenizerUtility::CommaOrColonValue(const char cha) {
-        if(cha == commacr) { return comma; }
-        else if(cha == coloncr) { return colon; }
+        if(cha == commacr) {
+            return comma;
+        } else if(cha == coloncr) {
+            return colon;
+        }
         return "unknown"sv;
     }
 }  // namespace vnd

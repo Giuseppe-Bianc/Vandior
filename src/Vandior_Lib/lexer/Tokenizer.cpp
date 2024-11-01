@@ -60,7 +60,8 @@ namespace vnd {
             } else if(TokenizerUtility::isCommaColon(currentChar)) {
                 auto value = currentChar;
                 incPosAndColumn();
-                tokens.emplace_back(TokenizerUtility::CommaOrColonType(value), TokenizerUtility::CommaOrColonValue(value), CodeSourceLocation{_filename, line, column - 1});
+                tokens.emplace_back(TokenizerUtility::CommaOrColonType(value), TokenizerUtility::CommaOrColonValue(value),
+                                    CodeSourceLocation{_filename, line, column - 1});
             } else [[unlikely]] {
                 handleError(std::string(1, currentChar), "Unknown Character");
             }
