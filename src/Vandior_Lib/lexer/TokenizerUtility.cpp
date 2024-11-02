@@ -26,12 +26,13 @@ namespace vnd {
     bool TokenizerUtility::isUnderscore(const char cha) noexcept { return cha == underore; }
     bool TokenizerUtility::isCommaColon(const char cha) noexcept { return cha == commacr || cha == coloncr; }
     TokenType TokenizerUtility::CommaOrColonType(const char cha) {
+        using enum TokenType;
         if(cha == commacr) {
-            return TokenType::COMMA;
+            return COMMA;
         } else if(cha == coloncr) {
-            return TokenType::COLON;
+            return COLON;
         }
-        return TokenType::UNKNOWN;
+        return UNKNOWN;
     }
     std::string_view TokenizerUtility::CommaOrColonValue(const char cha) {
         if(cha == commacr) {
