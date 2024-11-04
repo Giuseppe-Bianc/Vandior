@@ -169,7 +169,7 @@ namespace vnd {
          * @brief Extract the function data from a fun statement tokens.
          * @return The return types of the function.
          */
-        [[nodiscard]] std::vector<std::string> extractFunData();
+        [[nodiscard]] StringVec extractFunData();
 
         Tokenizer tokenizer;          ///< The tokenizer used to tokenize the input.
         std::vector<Token> tokens{};  ///< The list of tokens.

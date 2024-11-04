@@ -65,6 +65,14 @@ namespace vnd {
             if(node) { out << transpileNode(*node); }
             if(checkKeyword(i.get_token().getType()).second) {
                 if(i.get_token().getType() != TokenType::K_FUN) { out << ")"; }
+                if(i.get_token().getType() == TokenType::K_FUN) {
+                    out << " ->";
+                    if(i.get_funData().empty()) {
+                        out << " void";
+                    } else {
+                        for(const auto &j : i.get_funData()) { out << FORMAT(" {}", j); }
+                    }
+                }
                 out << " {";
             }
             LINFO("transpiled code: {}", out.str());

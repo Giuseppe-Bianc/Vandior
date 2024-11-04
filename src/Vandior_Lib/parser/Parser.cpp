@@ -346,8 +346,16 @@ namespace vnd {
         return true;
     }
 
-    std::vector<std::string> Parser::extractFunData() { return {}; }
-
+    StringVec Parser::extractFunData() {
+        StringVec result;
+        if(tokens.size() < 2) { return {}; }
+        auto it = tokens.end() - 3;
+        while(it->getType() != TokenType::CLOSE_PARENTESIS && tokens.size() >= 2) {
+            result.insert(result.begin(), std::string{it->getValue()});
+            tokens.erase(it--);
+        }
+        return result;
+    }
 }  // namespace vnd
 DISABLE_WARNINGS_POP()
 //  NOLINTEND(*-include-cleaner, *-no-recursion,*-avoid-magic-numbers, *-magic-numbers, *-err58-cpp, *-suspicious-stringview-data-usage)
