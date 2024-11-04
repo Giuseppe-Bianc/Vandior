@@ -13,8 +13,6 @@ namespace vnd {
     bool TokenizerUtility::isDot(const char cha) noexcept { return cha == '.'; }
     bool TokenizerUtility::isApostrophe(const char cha) noexcept { return cha == '\''; }
     bool TokenizerUtility::isQuotation(const char cha) noexcept { return cha == '\"'; }
-    bool TokenizerUtility::isComma(const char cha) noexcept { return cha == commacr; }
-    bool TokenizerUtility::isColon(const char cha) noexcept { return cha == coloncr; }
     bool TokenizerUtility::isComment(const std::string_view &inputSpan, const size_t position) noexcept {
         const auto nextpos = position + 1;
         return position != inputSpan.size() && inputSpan[position] == slashcr &&
@@ -26,6 +24,24 @@ namespace vnd {
     }
     bool TokenizerUtility::isHasterisc(const char cha) noexcept { return cha == '#'; }
     bool TokenizerUtility::isUnderscore(const char cha) noexcept { return cha == underore; }
+    bool TokenizerUtility::isCommaColon(const char cha) noexcept { return cha == commacr || cha == coloncr; }
+    TokenType TokenizerUtility::CommaOrColonType(const char cha) {
+        using enum TokenType;
+        if(cha == commacr) {
+            return COMMA;
+        } else if(cha == coloncr) {
+            return COLON;
+        }
+        return UNKNOWN;
+    }
+    std::string_view TokenizerUtility::CommaOrColonValue(const char cha) {
+        if(cha == commacr) {
+            return comma;
+        } else if(cha == coloncr) {
+            return colon;
+        }
+        return "unknown"sv;
+    }
 }  // namespace vnd
 DISABLE_WARNINGS_POP()
 // NOLINTEND(*-include-cleaner)

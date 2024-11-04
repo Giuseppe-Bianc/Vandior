@@ -57,12 +57,11 @@ namespace vnd {
                 tokens.emplace_back(handleChar());
             } else if(TokenizerUtility::isQuotation(currentChar)) [[likely]] {
                 tokens.emplace_back(handleString());
-            } else if(TokenizerUtility::isComma(currentChar)) {
-                tokens.emplace_back(TokenType::COMMA, comma, CodeSourceLocation{_filename, line, column - 1});
+            } else if(TokenizerUtility::isCommaColon(currentChar)) {
+                auto value = currentChar;
                 incPosAndColumn();
-            } else if(TokenizerUtility::isColon(currentChar)) {
-                tokens.emplace_back(TokenType::COLON, colon, CodeSourceLocation{_filename, line, column - 1});
-                incPosAndColumn();
+                tokens.emplace_back(TokenizerUtility::CommaOrColonType(value), TokenizerUtility::CommaOrColonValue(value),
+                                    CodeSourceLocation{_filename, line, column - 1});
             } else [[unlikely]] {
                 handleError(std::string(1, currentChar), "Unknown Character");
             }

@@ -1,7 +1,7 @@
 // NOLINTBEGIN(*-include-cleaner)
 #pragma once
 #include "../headers.hpp"
-
+#include "Vandior/lexer/TokenType.hpp"
 namespace vnd {
 
     /**
@@ -52,20 +52,6 @@ namespace vnd {
         [[nodiscard]] static bool isQuotation(const char cha) noexcept;
 
         /**
-         * @brief Check if the character is a comma.
-         * @param cha The character to check.
-         * @return True if the character is a comma, false otherwise.
-         */
-        [[nodiscard]] static bool isComma(const char cha) noexcept;
-
-        /**
-         * @brief Check if the character is a colon.
-         * @param cha The character to check.
-         * @return True if the character is a colon, false otherwise.
-         */
-        [[nodiscard]] static bool isColon(const char cha) noexcept;
-
-        /**
          * @brief Check if the span contains a comment starting at the given position.
          * @param inputSpan The input string span.
          * @param position The starting position for checking the comment.
@@ -100,6 +86,9 @@ namespace vnd {
          * @return True if the character is a  Underscore, false otherwise.
          */
         [[nodiscard]] static bool isUnderscore(const char cha) noexcept;
+        [[nodiscard]] static bool isCommaColon(const char cha) noexcept;
+        [[nodiscard]] static TokenType CommaOrColonType(const char cha);
+        [[nodiscard]] static std::string_view CommaOrColonValue(const char cha);
     };
 
 }  // namespace vnd
