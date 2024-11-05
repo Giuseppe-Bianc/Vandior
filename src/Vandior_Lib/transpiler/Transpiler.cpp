@@ -13,6 +13,8 @@ int main() {
 }
 )"sv;
 namespace vnd {
+    static inline constexpr std::size_t INITIAL_BUFFER_SIZE = 100;
+    static inline constexpr std::size_t INITIAL_TOTAL_BUFFER_SIZE = 1024;
 
     // Simplify handling of std::optional with fallback logging function
     template <typename T> auto Transpiler::getValueOrLog(const std::optional<T> &opt, std::string_view errorMsg) -> T {
@@ -61,6 +63,7 @@ namespace vnd {
     // Main code generation function
     auto Transpiler::transpileNode(const ASTNode &node) -> std::string {
         std::ostringstream code;
+        code.str().reserve(INITIAL_TOTAL_BUFFER_SIZE);
 
         // Determine the type of node and transpile code accordingly using helper functions
         if(const auto *binaryNode = node.safe_as<BinaryExpressionNode>()) {
@@ -110,6 +113,7 @@ namespace vnd {
     auto Transpiler::transpileBinaryExpressionNode(const BinaryExpressionNode *binaryNode) -> std::string {
         if(binaryNode == nullptr) { return ""; }
         std::ostringstream code;
+        code.str().reserve(INITIAL_BUFFER_SIZE);
         const auto op = binaryNode->getOp();
         if(op == ":") {
             const auto *binaryRight = binaryNode->getRight()->safe_as<BinaryExpressionNode>();
@@ -246,6 +250,7 @@ namespace vnd {
     auto Transpiler::transpileArrayNode(const ArrayNode *arrayNode) -> std::string {
         if(arrayNode == nullptr) [[unlikely]] { return ""; }
         std::ostringstream code;
+        code.str().reserve(INITIAL_BUFFER_SIZE);
         code << "{";
         if(const auto &elementsNode = arrayNode->get_elements()) { code << transpileNode(*elementsNode); }
         code << "}";
