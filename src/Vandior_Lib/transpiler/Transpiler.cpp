@@ -14,24 +14,19 @@ int main() {
 )"sv;
 namespace vnd {
 
+    // Simplify handling of std::optional with fallback logging function
+    template <typename T> auto Transpiler::getValueOrLog(const std::optional<T> &opt, std::string_view errorMsg) -> T {
+        if(opt.has_value()) { return opt.value(); }
+        LERROR(errorMsg);
+        return {};  // Default-constructed value
+    }
+
     Transpiler::Transpiler(const std::string_view &input, const std::string_view &filename)
       : _filename(filename), _projectBuilder(filename), _parser(input, _filename) {
         _projectBuilder.buildProject();
-        if(const auto buildFolderpo = _projectBuilder.getBuildFolderPath(); buildFolderpo.has_value()) {
-            _vnBuildFolder = buildFolderpo.value();
-        } else {
-            LERROR("Failed to get build folder path.");
-        }
-        if(const auto src_folderpo = _projectBuilder.getSrcFolderPath(); src_folderpo.has_value()) {
-            _vnBuildSrcFolder = src_folderpo.value();
-        } else {
-            LERROR("Failed to get src folder path.");
-        }
-        if(const auto mainOutputFilePathpo = _projectBuilder.getMainOutputFilePath(); mainOutputFilePathpo.has_value()) {
-            _mainOutputFilePath = mainOutputFilePathpo.value();
-        } else {
-            LERROR("Failed to get main output file path");
-        }
+        _vnBuildFolder = getValueOrLog(_projectBuilder.getBuildFolderPath(), "Failed to get build folder path.");
+        _vnBuildSrcFolder = getValueOrLog(_projectBuilder.getSrcFolderPath(), "Failed to get src folder path.");
+        _mainOutputFilePath = getValueOrLog(_projectBuilder.getMainOutputFilePath(), "Failed to get main output file path.");
     }
     void Transpiler::createMockfile() {
         // Apre il file in modalità scrittura con RAII, nessuna necessità di close() manuale
@@ -43,7 +38,7 @@ namespace vnd {
             return;
         }
 
-        auto generatorName = GENERATOR_FULLNAME;
+        const auto generatorName = GENERATOR_FULLNAME;
 
         outfile << FORMAT("// This is an automatically generated file by {}, do not modify.", generatorName);
         outfile << fileContent;
@@ -57,8 +52,7 @@ namespace vnd {
     }
     void Transpiler::transpile() {
         createMockfile();
-        const auto ast = _parser.parse();
-        for(const auto &i : ast) {
+        for(const auto ast = _parser.parse(); const auto &i : ast) {
             const auto transpiledCode = transpileNode(*i.get_nodes().at(0));
             LINFO("transpiled code: {}", transpiledCode);
         }
