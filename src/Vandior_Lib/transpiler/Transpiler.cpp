@@ -140,7 +140,6 @@ namespace vnd {
     // Helper function to transpile code for VariableNode
     auto Transpiler::transpileVariableNode(const VariableNode *variableNode) -> std::string {
         if(variableNode == nullptr) [[unlikely]] { return ""; }
-        std::ostringstream code;
         TranspileContext context;
         if(const auto &indexNode = variableNode->get_index()) {
             context.setIndexAndArray(transpileIndexNode(indexNode.get()));
@@ -148,7 +147,7 @@ namespace vnd {
             context.index = "{}";
         }
         context.code << fmt::vformat(context.index, fmt::make_format_args(variableNode->getName()));
-        if(!context.arr.empty()) { code << FORMAT("({})", context.arr); }
+        if(!context.arr.empty()) { context.code << FORMAT("({})", context.arr); }
         if(variableNode->is_call()) {
             context.code << "(";
             if(const auto &callNode = variableNode->get_call()) { context.code << transpileNode(*callNode); }
