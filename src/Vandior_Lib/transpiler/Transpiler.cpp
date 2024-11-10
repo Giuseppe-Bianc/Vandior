@@ -68,10 +68,10 @@ namespace vnd {
                     if(data.empty()) {
                         out << " void";
                     } else if(data.size() == 1) {
-                        out << FORMAT(" {}", data.front());
+                        out << FORMAT(" {}", mapType(data.front()));
                     } else {
                         out << " std::tuple<";
-                        for(const auto &j : i.get_funData()) { out << FORMAT(" {}", j); }
+                        for(const auto &j : i.get_funData()) { out << FORMAT(" {}", mapType(j)); }
                         out << ">";
                     }
                 }
@@ -242,7 +242,7 @@ namespace vnd {
         };
 
         if(typeMap.contains(type)) { return typeMap.at(type); }
-        return "unknown"sv;  // Default case if type is not found
+        return type;  // Default case if type is not found
     }
     // Helper function to transpile code for TypeNode
     auto Transpiler::transpileTypeNode(const TypeNode *typeNode) -> std::string {

@@ -34,7 +34,7 @@ namespace vnd {
         }
         if(flags.second) {
             if(tokens.size() < 2 || tokens.at(tokens.size() - 2).getValue() != "{") {
-                throw new ParserException(tokensFront);
+                throw ParserException(tokensFront);
             }
             tokens.erase(tokens.end() - 2);
         }
@@ -348,11 +348,11 @@ namespace vnd {
 
     StringVec Parser::extractFunData() {
         StringVec result;
-        if(tokens.size() < 2) { return {}; }
-        auto it = tokens.end() - 3;
-        while(it->getType() != TokenType::CLOSE_PARENTESIS && tokens.size() >= 2) {
-            result.insert(result.begin(), std::string{it->getValue()});
-            tokens.erase(it--);
+        if(tokens.size() <= 3) { return {}; }
+        auto iter = tokens.end() - 3;
+        while(iter->getType() != TokenType::CLOSE_PARENTESIS && tokens.size() > 3) {
+            result.insert(result.begin(), std::string{iter->getValue()});
+            tokens.erase(iter--);
         }
         return result;
     }
