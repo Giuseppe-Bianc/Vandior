@@ -97,8 +97,9 @@ namespace vnd {
             return "auto ";
         case TokenType::K_RETURN:
             return "return";
+        default:
+            return "";
         }
-        return "";
     }
 
     // Main code generation function
