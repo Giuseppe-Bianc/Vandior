@@ -13,25 +13,22 @@ int main() {
 }
 )"sv;
 namespace vnd {
+    static inline constexpr std::size_t INITIAL_BUFFER_SIZE = 100;
+    static inline constexpr std::size_t INITIAL_TOTAL_BUFFER_SIZE = 1024;
+
+    // Simplify handling of std::optional with fallback logging function
+    template <typename T> auto Transpiler::getValueOrLog(const std::optional<T> &opt, std::string_view errorMsg) -> T {
+        if(opt.has_value()) { return opt.value(); }
+        LERROR(errorMsg);
+        return {};  // Default-constructed value
+    }
 
     Transpiler::Transpiler(const std::string_view &input, const std::string_view &filename)
       : _filename(filename), _projectBuilder(filename), _parser(input, _filename) {
         _projectBuilder.buildProject();
-        if(const auto buildFolderpo = _projectBuilder.getBuildFolderPath(); buildFolderpo.has_value()) {
-            _vnBuildFolder = buildFolderpo.value();
-        } else {
-            LERROR("Failed to get build folder path.");
-        }
-        if(const auto src_folderpo = _projectBuilder.getSrcFolderPath(); src_folderpo.has_value()) {
-            _vnBuildSrcFolder = src_folderpo.value();
-        } else {
-            LERROR("Failed to get src folder path.");
-        }
-        if(const auto mainOutputFilePathpo = _projectBuilder.getMainOutputFilePath(); mainOutputFilePathpo.has_value()) {
-            _mainOutputFilePath = mainOutputFilePathpo.value();
-        } else {
-            LERROR("Failed to get main output file path");
-        }
+        _vnBuildFolder = getValueOrLog(_projectBuilder.getBuildFolderPath(), "Failed to get build folder path.");
+        _vnBuildSrcFolder = getValueOrLog(_projectBuilder.getSrcFolderPath(), "Failed to get src folder path.");
+        _mainOutputFilePath = getValueOrLog(_projectBuilder.getMainOutputFilePath(), "Failed to get main output file path.");
     }
     void Transpiler::createMockfile() {
         // Apre il file in modalità scrittura con RAII, nessuna necessità di close() manuale
@@ -43,7 +40,7 @@ namespace vnd {
             return;
         }
 
-        auto generatorName = GENERATOR_FULLNAME;
+        const auto generatorName = GENERATOR_FULLNAME;
 
         outfile << FORMAT("// This is an automatically generated file by {}, do not modify.", generatorName);
         outfile << fileContent;
@@ -57,20 +54,25 @@ namespace vnd {
     }
     void Transpiler::transpile() {
         createMockfile();
-        const auto ast = _parser.parse();
-        for(const auto &i : ast) {
+        for(const auto ast = _parser.parse(); const auto &i : ast) {
             const auto &node = i.get_nodes().at(0);
             std::stringstream out;
             out << transpileKeyword(i.get_token());
             if(node) { out << transpileNode(*node); }
             if(checkKeyword(i.get_token().getType()).second) {
-                if(i.get_token().getType() != TokenType::K_FUN) { out << ")"; }
-                if(i.get_token().getType() == TokenType::K_FUN) {
+                if(i.get_token().getType() != TokenType::K_FUN) {
+                    out << ")";
+                } else {
                     out << " ->";
-                    if(i.get_funData().empty()) {
+                    const auto &data = i.get_funData();
+                    if(data.empty()) {
                         out << " void";
+                    } else if(data.size() == 1) {
+                        out << FORMAT(" {}", data.front());
                     } else {
+                        out << " std::tuple<";
                         for(const auto &j : i.get_funData()) { out << FORMAT(" {}", j); }
+                        out << ">";
                     }
                 }
                 out << " {";
@@ -102,6 +104,7 @@ namespace vnd {
     // Main code generation function
     auto Transpiler::transpileNode(const ASTNode &node) -> std::string {
         std::ostringstream code;
+        code.str().reserve(INITIAL_TOTAL_BUFFER_SIZE);
 
         // Determine the type of node and transpile code accordingly using helper functions
         if(const auto *binaryNode = node.safe_as<BinaryExpressionNode>()) {
@@ -151,6 +154,7 @@ namespace vnd {
     auto Transpiler::transpileBinaryExpressionNode(const BinaryExpressionNode *binaryNode) -> std::string {
         if(binaryNode == nullptr) { return ""; }
         std::ostringstream code;
+        code.str().reserve(INITIAL_BUFFER_SIZE);
         const auto op = binaryNode->getOp();
         if(op == ":") {
             const auto *binaryRight = binaryNode->getRight()->safe_as<BinaryExpressionNode>();
@@ -181,7 +185,6 @@ namespace vnd {
     // Helper function to transpile code for VariableNode
     auto Transpiler::transpileVariableNode(const VariableNode *variableNode) -> std::string {
         if(variableNode == nullptr) [[unlikely]] { return ""; }
-        std::ostringstream code;
         TranspileContext context;
         if(const auto &indexNode = variableNode->get_index()) {
             context.setIndexAndArray(transpileIndexNode(indexNode.get()));
@@ -189,7 +192,7 @@ namespace vnd {
             context.index = "{}";
         }
         context.code << fmt::vformat(context.index, fmt::make_format_args(variableNode->getName()));
-        if(!context.arr.empty()) { code << FORMAT("({})", context.arr); }
+        if(!context.arr.empty()) { context.code << FORMAT("({})", context.arr); }
         if(variableNode->is_call()) {
             context.code << "(";
             if(const auto &callNode = variableNode->get_call()) { context.code << transpileNode(*callNode); }
@@ -288,6 +291,7 @@ namespace vnd {
     auto Transpiler::transpileArrayNode(const ArrayNode *arrayNode) -> std::string {
         if(arrayNode == nullptr) [[unlikely]] { return ""; }
         std::ostringstream code;
+        code.str().reserve(INITIAL_BUFFER_SIZE);
         code << "{";
         if(const auto &elementsNode = arrayNode->get_elements()) { code << transpileNode(*elementsNode); }
         code << "}";
