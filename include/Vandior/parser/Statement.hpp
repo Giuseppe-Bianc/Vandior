@@ -9,8 +9,8 @@ namespace vnd {
 
     class Statement : public ASTNode {
     public:
-        [[nodiscard]] explicit Statement(const Token &token, const std::vector<std::string> &funData) noexcept
-          : ASTNode(token), funData(funData) {}
+        [[nodiscard]] explicit Statement(const Token &token, const std::vector<std::string> &_funData) noexcept
+          : ASTNode(token), funData(_funData) {}
 
         /**
          * @brief Gets the type of the AST node.
@@ -30,8 +30,16 @@ namespace vnd {
          */
         [[nodiscard]] std::string comp_print() const override { return ""; }
 
+        /**
+         * @brief Returns the vector of the statment nodes.
+         * @return The vector of the statment nodes.
+         */
         [[nodiscard]] const std::vector<std::unique_ptr<ASTNode>> &get_nodes() const noexcept { return std::move(nodes); }
 
+        /**
+         * @brief Returns the vector of the function return types.
+         * @return The vector of the function return types. If the statmement is not a function, an empty vector is returned.
+         */
         [[nodiscard]] const std::vector<std::string> &get_funData() const noexcept { return funData; }
 
         friend void swap(Statement &lhs, Statement &rhs) noexcept {
