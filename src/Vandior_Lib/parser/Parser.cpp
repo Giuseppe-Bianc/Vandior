@@ -28,14 +28,10 @@ namespace vnd {
         if(flags.first) {
             token = tokensFront;
             tokens.erase(tokens.begin());
-            if(token.getType() == TokenType::K_FUN) {
-                data = extractFunData();
-            }
+            if(token.getType() == TokenType::K_FUN) { data = extractFunData(); }
         }
         if(flags.second) {
-            if(tokens.size() < 2 || tokens.at(tokens.size() - 2).getValue() != "{") {
-                throw ParserException(tokensFront);
-            }
+            if(tokens.size() < 2 || tokens.at(tokens.size() - 2).getValue() != "{") { throw ParserException(tokensFront); }
             tokens.erase(tokens.end() - 2);
         }
         statements.emplace_back(token, data);
@@ -289,9 +285,7 @@ namespace vnd {
         return left;
     }
 
-    std::unique_ptr<ASTNode> Parser::parseExpression(std::size_t parentPrecendence) {
-        return parseBinary(parentPrecendence);
-    }
+    std::unique_ptr<ASTNode> Parser::parseExpression(std::size_t parentPrecendence) { return parseBinary(parentPrecendence); }
 
     template <typename T> void Parser::parseIndex(const std::unique_ptr<T> &node) {
         using enum vnd::TokenType;

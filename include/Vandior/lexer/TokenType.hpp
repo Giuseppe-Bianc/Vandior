@@ -86,9 +86,8 @@ namespace vnd {
         TokenType::K_MAIN, TokenType::K_VAR,   TokenType::K_IF,  TokenType::K_WHILE,  TokenType::K_ELSE,
         TokenType::K_FOR,  TokenType::K_BREAK, TokenType::K_FUN, TokenType::K_RETURN,
     };
-    static inline constexpr std::array<TokenType, 6> structuresTokenTypes = {
-        TokenType::K_MAIN, TokenType::K_IF,  TokenType::K_WHILE,  TokenType::K_ELSE, TokenType::K_FOR,  TokenType::K_FUN
-    };
+    static inline constexpr std::array<TokenType, 6> structuresTokenTypes = {TokenType::K_MAIN, TokenType::K_IF,  TokenType::K_WHILE,
+                                                                             TokenType::K_ELSE, TokenType::K_FOR, TokenType::K_FUN};
     using TokenTypeVec = std::vector<TokenType>;
 
     /**

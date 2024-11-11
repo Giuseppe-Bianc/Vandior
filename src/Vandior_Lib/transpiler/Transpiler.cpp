@@ -80,7 +80,7 @@ namespace vnd {
             LINFO("transpiled code: {}", out.str());
         }
     }
-    
+
     auto Transpiler::transpileKeyword(const Token &keyword) -> std::string {
         switch(keyword.getType()) {
         case TokenType::K_MAIN:
