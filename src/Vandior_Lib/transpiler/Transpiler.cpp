@@ -84,7 +84,7 @@ namespace vnd {
     auto Transpiler::transpileKeyword(const Token &keyword) -> std::string {
         using enum TokenType;
 
-        switch(keyword.getType())  {
+        switch(keyword.getType()) {
         case K_MAIN:
             return "int main(int argc, char **argv)";
         case K_IF:
