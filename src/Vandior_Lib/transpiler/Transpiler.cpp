@@ -55,8 +55,50 @@ namespace vnd {
     void Transpiler::transpile() {
         createMockfile();
         for(const auto ast = _parser.parse(); const auto &i : ast) {
-            const auto transpiledCode = transpileNode(*i.get_nodes().at(0));
-            LINFO("transpiled code: {}", transpiledCode);
+            const auto &node = i.get_nodes().at(0);
+            std::stringstream out;
+            out << transpileKeyword(i.get_token());
+            if(node) { out << transpileNode(*node); }
+            if(checkKeyword(i.get_token().getType()).second) {
+                if(i.get_token().getType() != TokenType::K_FUN) {
+                    out << ")";
+                } else {
+                    out << " ->";
+                    const auto &data = i.get_funData();
+                    if(data.empty()) {
+                        out << " void";
+                    } else if(data.size() == 1) {
+                        out << FORMAT(" {}", mapType(data.front()));
+                    } else {
+                        out << " std::tuple<";
+                        for(const auto &j : i.get_funData()) { out << FORMAT(" {}", mapType(j)); }
+                        out << ">";
+                    }
+                }
+                out << " {";
+            }
+            LINFO("transpiled code: {}", out.str());
+        }
+    }
+    
+    auto Transpiler::transpileKeyword(const Token &keyword) -> std::string {
+        switch(keyword.getType()) {
+        case TokenType::K_MAIN:
+            return "int main(int argc, char **argv)";
+        case TokenType::K_IF:
+            return "if(";
+        case TokenType::K_WHILE:
+            return "while(";
+        case TokenType::K_FOR:
+            return "for(";
+        case TokenType::K_BREAK:
+            return std::string{keyword.getValue()};
+        case TokenType::K_FUN:
+            return "auto ";
+        case TokenType::K_RETURN:
+            return "return";
+        default:
+            return "";
         }
     }
 
@@ -200,7 +242,7 @@ namespace vnd {
         };
 
         if(typeMap.contains(type)) { return typeMap.at(type); }
-        return "unknown"sv;  // Default case if type is not found
+        return type;  // Default case if type is not found
     }
     // Helper function to transpile code for TypeNode
     auto Transpiler::transpileTypeNode(const TypeNode *typeNode) -> std::string {

@@ -58,7 +58,7 @@ namespace vnd {
         /**
          * @brief create a statement and emplace it in the parsing result.
          */
-        void emplaceStatement(std::vector<Statement> &statements) noexcept;
+        void emplaceStatement(std::vector<Statement> &statements);
 
         /**
          * @brief Consumes the current token and advances to the next token.
@@ -164,6 +164,12 @@ namespace vnd {
          * @return True if the function call was successfully parsed, false otherwise.
          */
         [[nodiscard]] bool parseCall(const std::unique_ptr<VariableNode> &node);
+
+        /**
+         * @brief Extract the function data from a fun statement tokens.
+         * @return The return types of the function.
+         */
+        [[nodiscard]] StringVec extractFunData();
 
         Tokenizer tokenizer;          ///< The tokenizer used to tokenize the input.
         std::vector<Token> tokens{};  ///< The list of tokens.

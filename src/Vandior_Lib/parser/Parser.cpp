@@ -12,18 +12,33 @@ namespace vnd {
         if(tokens.empty()) { return {}; }
         std::vector<Statement> statements;
         emplaceStatement(statements);
-        statements.back().addNode(parseExpression());
+        if(tokens.size() == 1 && tokens.at(0).getType() == eofTokenType) {
+            statements.back().addNode(nullptr);
+        } else {
+            statements.back().addNode(parseExpression());
+        }
         return statements;
     }
 
-    void Parser::emplaceStatement(std::vector<Statement> &statements) noexcept {
+    void Parser::emplaceStatement(std::vector<Statement> &statements) {
         Token token{};
         const auto &tokensFront = tokens.front();
-        if(isKeyword(tokensFront.getType())) {
+        StringVec data;
+        const auto flags = checkKeyword(tokensFront.getType());
+        if(flags.first) {
             token = tokensFront;
             tokens.erase(tokens.begin());
+            if(token.getType() == TokenType::K_FUN) {
+                data = extractFunData();
+            }
         }
-        statements.emplace_back(token);
+        if(flags.second) {
+            if(tokens.size() < 2 || tokens.at(tokens.size() - 2).getValue() != "{") {
+                throw ParserException(tokensFront);
+            }
+            tokens.erase(tokens.end() - 2);
+        }
+        statements.emplace_back(token, data);
         keyword = token;
     }
 
@@ -274,7 +289,9 @@ namespace vnd {
         return left;
     }
 
-    std::unique_ptr<ASTNode> Parser::parseExpression(std::size_t parentPrecendence) { return parseBinary(parentPrecendence); }
+    std::unique_ptr<ASTNode> Parser::parseExpression(std::size_t parentPrecendence) {
+        return parseBinary(parentPrecendence);
+    }
 
     template <typename T> void Parser::parseIndex(const std::unique_ptr<T> &node) {
         using enum vnd::TokenType;
@@ -329,6 +346,16 @@ namespace vnd {
         return true;
     }
 
+    StringVec Parser::extractFunData() {
+        StringVec result;
+        if(tokens.size() <= 3) { return {}; }
+        auto iter = tokens.end() - 3;
+        while(iter->getType() != TokenType::CLOSE_PARENTESIS && tokens.size() > 3) {
+            result.insert(result.begin(), std::string{iter->getValue()});
+            tokens.erase(iter--);
+        }
+        return result;
+    }
 }  // namespace vnd
 DISABLE_WARNINGS_POP()
 //  NOLINTEND(*-include-cleaner, *-no-recursion,*-avoid-magic-numbers, *-magic-numbers, *-err58-cpp, *-suspicious-stringview-data-usage)
