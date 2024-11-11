@@ -82,20 +82,22 @@ namespace vnd {
     }
 
     auto Transpiler::transpileKeyword(const Token &keyword) -> std::string {
-        switch(keyword.getType()) {
-        case TokenType::K_MAIN:
+        using enum TokenType;
+
+        switch(keyword.getType())  {
+        case K_MAIN:
             return "int main(int argc, char **argv)";
-        case TokenType::K_IF:
+        case K_IF:
             return "if(";
-        case TokenType::K_WHILE:
+        case K_WHILE:
             return "while(";
-        case TokenType::K_FOR:
+        case K_FOR:
             return "for(";
-        case TokenType::K_BREAK:
+        case K_BREAK:
             return std::string{keyword.getValue()};
-        case TokenType::K_FUN:
+        case K_FUN:
             return "auto ";
-        case TokenType::K_RETURN:
+        case K_RETURN:
             return "return";
         default:
             return "";

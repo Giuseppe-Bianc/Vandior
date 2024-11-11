@@ -66,8 +66,7 @@ auto main(int argc, const char *const argv[]) -> int {
         std::getline(std::cin, input);
         LINFO("Input: {}", input);
         vnd::Parser parser{input, "input.vn"};
-        const auto progrmamAST = vnd::timeParse(parser);
-        for(const auto &statement : progrmamAST) {
+        for(const auto progrmamAST = vnd::timeParse(parser); const auto &statement : progrmamAST) {
             const auto &token = statement.get_token();
             // FIXME: Output the actual token, not the default one.
             if(token.getType() == vnd::TokenType::UNKNOWN) {

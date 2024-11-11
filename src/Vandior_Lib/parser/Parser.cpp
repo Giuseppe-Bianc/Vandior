@@ -24,14 +24,15 @@ namespace vnd {
         Token token{};
         const auto &tokensFront = tokens.front();
         StringVec data;
-        const auto flags = checkKeyword(tokensFront.getType());
-        if(flags.first) {
+        const auto [fst, snd] = checkKeyword(tokensFront.getType());
+        if(fst) {
             token = tokensFront;
             tokens.erase(tokens.begin());
             if(token.getType() == TokenType::K_FUN) { data = extractFunData(); }
         }
-        if(flags.second) {
-            if(tokens.size() < 2 || tokens.at(tokens.size() - 2).getValue() != "{") { throw ParserException(tokensFront); }
+        if(snd) {
+            const auto tokensSize = tokens.size();
+            if(tokensSize < 2 || tokens.at(tokensSize - 2).getValue() != "{") { throw ParserException(tokensFront); }
             tokens.erase(tokens.end() - 2);
         }
         statements.emplace_back(token, data);
@@ -345,7 +346,7 @@ namespace vnd {
         if(tokens.size() <= 3) { return {}; }
         auto iter = tokens.end() - 3;
         while(iter->getType() != TokenType::CLOSE_PARENTESIS && tokens.size() > 3) {
-            result.insert(result.begin(), std::string{iter->getValue()});
+            result.emplace(result.begin(), iter->getValue());
             tokens.erase(iter--);
         }
         return result;
