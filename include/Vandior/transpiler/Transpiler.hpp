@@ -9,7 +9,7 @@ namespace vnd {
     class Transpiler {
     public:
         Transpiler(const std::string_view &input, const std::string_view &filename);
-        void transpile();
+        std::string transpile();
 
         /**
          * @brief Maps a given type to a corresponding string view.

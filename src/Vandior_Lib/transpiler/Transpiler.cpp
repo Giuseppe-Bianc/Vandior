@@ -52,17 +52,18 @@ namespace vnd {
         LINFO("File {} creato con successo!", _mainOutputFilePath);
 #endif  // INDEPT
     }
-    void Transpiler::transpile() {
+    std::string Transpiler::transpile() {
         createMockfile();
+        std::stringstream out;
         for(const auto ast = _parser.parse(); const auto &i : ast) {
             const auto &node = i.get_nodes().at(0);
-            std::stringstream out;
             out << transpileKeyword(i.get_token());
             if(node) { out << transpileNode(*node); }
             if(checkKeyword(i.get_token().getType()).second) {
-                if(i.get_token().getType() != TokenType::K_FUN) {
+                const auto type = i.get_token().getType();
+                if(type != TokenType::K_FUN && type != TokenType::K_MAIN) {
                     out << ")";
-                } else {
+                } else if(type == TokenType::K_FUN) {
                     out << " ->";
                     const auto &data = i.get_funData();
                     if(data.empty()) {
@@ -76,9 +77,10 @@ namespace vnd {
                     }
                 }
                 out << " {";
-            }
-            LINFO("transpiled code: {}", out.str());
+            };
+            out << "\n";
         }
+        return out.str();
     }
 
     auto Transpiler::transpileKeyword(const Token &keyword) -> std::string {

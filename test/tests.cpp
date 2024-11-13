@@ -2717,6 +2717,29 @@ TEST_CASE("vnd::timeParse", "[Vandior]") {
     auto ast = vnd::timeParse(parser);
     REQUIRE(ast.size() == 1);
 }
+
+TEST_CASE("Transpiler transpile main instruction", "[transpiler]") {
+    vnd::Transpiler transpiler{"main {", "input.vn"};
+    const auto code = transpiler.transpile();
+    REQUIRE(code == "int main(int argc, char **argv) {\n");
+}
+
+TEST_CASE("Transpiler throw exception with main instruction", "[transpiler]") {
+    vnd::Transpiler transpiler{"main", "input.vn"};
+    REQUIRE_THROWS_AS(transpiler.transpile(), vnd::ParserException);
+}
+
+TEST_CASE("Transpiler transpile i8 declaration instruction", "[transpiler]") {
+    vnd::Transpiler transpiler{"var num1, num2: i8", "input.vn"};
+    const auto code = transpiler.transpile();
+    REQUIRE(code == "int8_t num1, num2\n");
+}
+
+TEST_CASE("Transpiler transpile declaration instruction", "[transpiler]") {
+    vnd::Transpiler transpiler{"var var1, var2: type", "input.vn"};
+    const auto code = transpiler.transpile();
+    REQUIRE(code == "type var1, var2\n");
+}
 // clang-format off
 // NOLINTEND(*-include-cleaner, *-avoid-magic-numbers, *-magic-numbers, *-unchecked-optional-access, *-avoid-do-while, *-use-anonymous-namespace, *-qualified-auto, *-suspicious-stringview-data-usage, *-err58-cpp, *-function-cognitive-complexity, *-macro-usage)
 // clang-format on

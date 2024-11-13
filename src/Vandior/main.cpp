@@ -80,7 +80,7 @@ auto main(int argc, const char *const argv[]) -> int {
             }
         }
         vnd::Transpiler transpiler{input, filename};
-        transpiler.transpile();
+        LINFO("transpiled code: {}", transpiler.transpile());
     } catch(const std::exception &e) {
         // Handle any other types of exceptions
         LERROR("Unhandled exception in main: {}", e.what());
