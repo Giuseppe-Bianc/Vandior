@@ -100,7 +100,7 @@ namespace vnd {
         case K_FUN:
             return "auto ";
         case K_RETURN:
-            return "return";
+            return "return ";
         default:
             return "";
         }
