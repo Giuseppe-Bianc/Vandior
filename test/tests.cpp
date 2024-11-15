@@ -2568,7 +2568,7 @@ TEST_CASE("Transpiler::mapType returns correct type mappings", "[transpiler]") {
     SECTION("Unknown type returns 'unknown'") {
         REQUIRE(vnd::Transpiler::mapType("unknown_type"sv) == "unknown_type"sv);
         REQUIRE(vnd::Transpiler::mapType("xyz"sv) == "xyz"sv);
-        REQUIRE(vnd::Transpiler::mapType(""sv) == ""sv);
+        REQUIRE(vnd::Transpiler::mapType(""sv).empty());
     }
 
     SECTION("Case sensitivity") {

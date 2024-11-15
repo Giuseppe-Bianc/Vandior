@@ -59,8 +59,9 @@ namespace vnd {
             std::stringstream out;
             out << transpileKeyword(i.get_token());
             if(node) { out << transpileNode(*node); }
-            if(checkKeyword(i.get_token().getType()).second) {
-                if(i.get_token().getType() != TokenType::K_FUN) {
+            const auto stTknType = i.get_token().getType();
+            if(checkKeyword(stTknType).second) {
+                if(stTknType != TokenType::K_FUN) {
                     out << ")";
                 } else {
                     out << " ->";
@@ -81,6 +82,7 @@ namespace vnd {
         }
     }
 
+    // NOLINTBEGIN(*-convert-member-functions-to-static)
     auto Transpiler::transpileKeyword(const Token &keyword) -> std::string {
         using enum TokenType;
 
@@ -103,6 +105,7 @@ namespace vnd {
             return "";
         }
     }
+    // NOLINTEND(*-convert-member-functions-to-static)
 
     // Main code generation function
     auto Transpiler::transpileNode(const ASTNode &node) -> std::string {
