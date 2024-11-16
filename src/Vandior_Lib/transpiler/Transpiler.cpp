@@ -59,11 +59,11 @@ namespace vnd {
             const auto &node = i.get_nodes().at(0);
             out << transpileKeyword(i.get_token());
             if(node) { out << transpileNode(*node); }
-            if(checkKeyword(i.get_token().getType()).second) {
-                const auto type = i.get_token().getType();
-                if(type != TokenType::K_FUN && type != TokenType::K_MAIN) {
+            const auto stTknType = i.get_token().getType();
+            if(checkKeyword(stTknType).second) {
+                if(stTknType != TokenType::K_FUN && stTknType != TokenType::K_MAIN) {
                     out << ")";
-                } else if(type == TokenType::K_FUN) {
+                } else if(stTknType == TokenType::K_FUN) {
                     out << " ->";
                     const auto &data = i.get_funData();
                     if(data.empty()) {
@@ -83,6 +83,7 @@ namespace vnd {
         return out.str();
     }
 
+    // NOLINTBEGIN(*-convert-member-functions-to-static)
     auto Transpiler::transpileKeyword(const Token &keyword) -> std::string {
         using enum TokenType;
 
@@ -105,6 +106,7 @@ namespace vnd {
             return "";
         }
     }
+    // NOLINTEND(*-convert-member-functions-to-static)
 
     // Main code generation function
     auto Transpiler::transpileNode(const ASTNode &node) -> std::string {
