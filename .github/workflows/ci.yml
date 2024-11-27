@@ -270,10 +270,11 @@ jobs:
       #    files: |
       #      build/*-*${{ matrix.build_type }}*-*.*
 
+      # out/cobertura.xml
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5.0.7
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           flags: ${{ runner.os }}
           name: ${{ runner.os }}-coverage
-          files: ./build/coverage.xml
+          files: ${{ runner.os == 'Windows' &&  './build/coverage.xml' || './out/cobertura.xml' }}
