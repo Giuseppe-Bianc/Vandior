@@ -257,11 +257,11 @@ jobs:
           OpenCppCoverage.exe --export_type cobertura:coverage.xml --cover_children -- ctest -C ${{matrix.build_type}}
 
 
-      - name: CPack
-        if: matrix.package_generator != ''
-        working-directory: ./build
-        run: |
-          cpack -C ${{matrix.build_type}} -G ${{matrix.package_generator}}
+      #- name: CPack
+      #  if: matrix.package_generator != ''
+      #  working-directory: ./build
+      #  run: |
+      #    cpack -C ${{matrix.build_type}} -G ${{matrix.package_generator}}
 
       #- name: Publish Tagged Release
       #  uses: softprops/action-gh-release@v2
