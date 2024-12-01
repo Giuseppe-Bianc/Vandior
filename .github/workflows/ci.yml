@@ -257,11 +257,11 @@ jobs:
           OpenCppCoverage.exe --export_type cobertura:coverage.xml --cover_children -- ctest -C ${{matrix.build_type}}
 
 
-      - name: CPack
-        if: matrix.package_generator != ''
-        working-directory: ./build
-        run: |
-          cpack -C ${{matrix.build_type}} -G ${{matrix.package_generator}}
+      #- name: CPack
+      #  if: matrix.package_generator != ''
+      #  working-directory: ./build
+      #  run: |
+      #    cpack -C ${{matrix.build_type}} -G ${{matrix.package_generator}}
 
       #- name: Publish Tagged Release
       #  uses: softprops/action-gh-release@v2
@@ -270,10 +270,11 @@ jobs:
       #    files: |
       #      build/*-*${{ matrix.build_type }}*-*.*
 
+      # out/cobertura.xml
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5.0.7
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           flags: ${{ runner.os }}
           name: ${{ runner.os }}-coverage
-          files: ./build/coverage.xml
+          files: ${{ runner.os == 'Windows' &&  './build/coverage.xml' || './out/cobertura.xml' }}
