@@ -2717,6 +2717,74 @@ TEST_CASE("vnd::timeParse", "[Vandior]") {
     auto ast = vnd::timeParse(parser);
     REQUIRE(ast.size() == 1);
 }
+
+TEST_CASE("Transpiler transpile main instruction", "[transpiler]") {
+    vnd::Transpiler transpiler{"main {", "input.vn"};
+    const auto code = transpiler.transpile();
+    REQUIRE(code == "int main(int argc, char **argv) {\n");
+}
+
+TEST_CASE("Transpiler throw exception for missing {", "[transpiler]") {
+    vnd::Transpiler transpiler{"main", "input.vn"};
+    REQUIRE_THROWS_AS(transpiler.transpile(), vnd::ParserException);
+}
+
+TEST_CASE("Transpiler transpile i8 declaration instruction", "[transpiler]") {
+    vnd::Transpiler transpiler{"var num1, num2: i8", "input.vn"};
+    const auto code = transpiler.transpile();
+    REQUIRE(code == "int8_t num1, num2\n");
+}
+
+TEST_CASE("Transpiler transpile declaration instruction", "[transpiler]") {
+    vnd::Transpiler transpiler{"var var1, var2: type", "input.vn"};
+    const auto code = transpiler.transpile();
+    REQUIRE(code == "type var1, var2\n");
+}
+
+TEST_CASE("Transpiler transpile structure instructions", "[transpiler]") {
+    vnd::Transpiler transpiler{"if a == 1 {", "input.vn"};
+    auto code = transpiler.transpile();
+    REQUIRE(code == "if(a == 1) {\n");
+    transpiler = vnd::Transpiler{"while a == 1 {", "input.vn"};
+    code = transpiler.transpile();
+    REQUIRE(code == "while(a == 1) {\n");
+}
+
+TEST_CASE("Transpiler transpile break and continue instructions", "[transpiler]") {
+    vnd::Transpiler transpiler{"break", "input.vn"};
+    auto code = transpiler.transpile();
+    REQUIRE(code == "break\n");
+    transpiler = vnd::Transpiler{"continue", "input.vn"};
+    code = transpiler.transpile();
+    REQUIRE(code == "continue\n");
+}
+
+TEST_CASE("Transpiler transpile void fun instruction", "[transpiler]") {
+    vnd::Transpiler transpiler{"fun a() {", "input.vn"};
+    const auto code = transpiler.transpile();
+    REQUIRE(code == "auto a() -> void {\n");
+}
+
+TEST_CASE("Transpiler transpile single return value fun instruction", "[transpiler]") {
+    vnd::Transpiler transpiler{"fun a(num1: i8, num2: type) i8 {", "input.vn"};
+    const auto code = transpiler.transpile();
+    REQUIRE(code == "auto a(int8_t num1, type num2) -> int8_t {\n");
+}
+
+TEST_CASE("Transpiler transpile multiple return value fun instruction", "[transpiler]") {
+    vnd::Transpiler transpiler{"fun a() type, i8 {", "input.vn"};
+    const auto code = transpiler.transpile();
+    REQUIRE(code == "auto a() -> std::tuple< type , int8_t> {\n");
+}
+
+TEST_CASE("Transpiler transpile return instructions", "[transpiler]") {
+    vnd::Transpiler transpiler{"return", "input.vn"};
+    auto code = transpiler.transpile();
+    REQUIRE(code == "return \n");
+    transpiler = vnd::Transpiler{"return true", "input.vn"};
+    code = transpiler.transpile();
+    REQUIRE(code == "return true\n");
+}
 // clang-format off
 // NOLINTEND(*-include-cleaner, *-avoid-magic-numbers, *-magic-numbers, *-unchecked-optional-access, *-avoid-do-while, *-use-anonymous-namespace, *-qualified-auto, *-suspicious-stringview-data-usage, *-err58-cpp, *-function-cognitive-complexity, *-macro-usage)
 // clang-format on
