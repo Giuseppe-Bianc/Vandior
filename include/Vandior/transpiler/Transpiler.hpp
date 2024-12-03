@@ -32,6 +32,8 @@ namespace vnd {
          * @return The transpiled string representation of the keyword.
          */
         auto transpileKeyword(const Token &keyword) -> std::string;
+        
+        std::string parseDeclaration(std::string input);
 
         /**
          * Transpiles the given ASTNode into a string representation.

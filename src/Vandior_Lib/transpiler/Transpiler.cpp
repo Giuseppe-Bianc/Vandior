@@ -58,7 +58,13 @@ namespace vnd {
         for(const auto ast = _parser.parse(); const auto &i : ast) {
             const auto &node = i.get_nodes().at(0);
             out << transpileKeyword(i.get_token());
-            if(node) { out << transpileNode(*node); }
+            if(node) {
+                auto code = transpileNode(*node);
+                if(i.get_token().getType() == TokenType::K_VAR) { code = parseDeclaration(code);
+                    LWARN("{}", code);
+                }
+                out << code;
+            }
             const auto stTknType = i.get_token().getType();
             if(checkKeyword(stTknType).second) {
                 if(stTknType != TokenType::K_FUN && stTknType != TokenType::K_MAIN) {
@@ -118,6 +124,60 @@ namespace vnd {
         }
     }
     // NOLINTEND(*-convert-member-functions-to-static)
+
+    std::string Transpiler::parseDeclaration(std::string input) {
+        std::ostringstream out;
+        std::vector<std::string> identifiers;
+        std::vector<std::string> values;
+        std::vector<std::string> *current = &identifiers;
+        std::string currentToken;
+        bool isArray = false;
+        bool isType = false;
+        size_t start = input.find_first_of(' ');
+        out << input.substr(0, start);
+        input = input.substr(start);
+        LWARN(input);
+        for(const auto i : input) {
+            if(i == ',' && !isArray && !isType) {
+                current->emplace_back(currentToken);
+                currentToken.clear();
+            } else if(i == '=') {
+                current->emplace_back(currentToken);
+                currentToken.clear();
+                current = &values;
+            } else {
+                if(i == '{' && !isType) {
+                    isArray = true;
+                } else if(i == '}' && isArray) {
+                    isArray = false;
+                } else if(i == '<' && !isArray) {
+                    isType = true;
+                } else if(i == '>' and isType) {
+                    isType = false;
+                }
+                currentToken += i;
+            }
+        }
+        if(!currentToken.empty()) {
+            current->emplace_back(currentToken);
+        }
+        auto it = values.begin();
+        bool first = true;
+        for(const auto &i : identifiers) {
+            if(!first) {
+                out << ",";
+            } else {
+                first = false;
+            }
+            out << i;
+            if(it != values.end()) {
+                out << FORMAT(" ={}", *it);
+                ++it;
+            }
+        }
+        out << ";";
+        return out.str();
+    }
 
     // Main code generation function
     auto Transpiler::transpileNode(const ASTNode &node) -> std::string {
