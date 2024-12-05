@@ -96,31 +96,22 @@ namespace vnd {
         switch(keyword.getType()) {
         case K_MAIN:
             return "int main(int argc, char **argv)";
-            break;
         case K_VAR:
             return keyword.getValue() == "const" ? "const " : "";
-            break;
         case K_IF:
             return "if(";
-            break;
         case K_WHILE:
             return "while(";
-            break;
         case K_FOR:
             return "for(";
-            break;
         case K_BREAK:
             return std::string{keyword.getValue()};
-            break;
         case K_FUN:
             return "auto ";
-            break;
         case K_RETURN:
             return "return ";
-            break;
         default:
             return "";
-            break;
         }
     }
     // NOLINTEND(*-convert-member-functions-to-static)
