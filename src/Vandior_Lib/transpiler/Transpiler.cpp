@@ -166,7 +166,6 @@ namespace vnd {
                 ++it;
             }
         }
-        out << ";";
         return out.str();
     }
 

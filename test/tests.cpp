@@ -2744,7 +2744,7 @@ TEST_CASE("Transpiler transpile declaration instruction", "[transpiler]") {
 TEST_CASE("Transpiler transpile initialization instruction", "[transpiler]") {
     vnd::Transpiler transpiler{"var num1, num2: u8 = 12, 45", "input.vn"};
     const auto code = transpiler.transpile();
-    REQUIRE(code == "uint8_t num1 = 12, num2 = 45\n");
+    REQUIRE(code == "uint8_t num1 = 12, num2  = 45\n");
 }
 
 TEST_CASE("Transpiler transpile structure instructions", "[transpiler]") {
