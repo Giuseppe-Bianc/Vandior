@@ -55,15 +55,16 @@ namespace vnd {
     std::string Transpiler::transpile() {
         createMockfile();
         std::stringstream out;
+        using enum TokenType;
         for(const auto ast = _parser.parse(); const auto &i : ast) {
             const auto &node = i.get_nodes().at(0);
             out << transpileKeyword(i.get_token());
             if(node) { out << transpileNode(*node); }
             const auto stTknType = i.get_token().getType();
             if(checkKeyword(stTknType).second) {
-                if(stTknType != TokenType::K_FUN && stTknType != TokenType::K_MAIN) {
+                if(stTknType != K_FUN && stTknType != K_MAIN) {
                     out << ")";
-                } else if(stTknType == TokenType::K_FUN) {
+                } else if(stTknType == K_FUN) {
                     out << " ->";
                     const auto &data = i.get_funData();
                     if(data.empty()) {
@@ -77,7 +78,7 @@ namespace vnd {
                     }
                 }
                 out << " {";
-            };
+            }
             out << "\n";
         }
         return out.str();
