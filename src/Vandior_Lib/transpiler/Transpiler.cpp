@@ -61,9 +61,7 @@ namespace vnd {
             out << transpileKeyword(i.get_token());
             if(node) {
                 auto code = transpileNode(*node);
-                if(i.get_token().getType() == TokenType::K_VAR) { code = parseDeclaration(code);
-                    LWARN("{}", code);
-                }
+                if(i.get_token().getType() == TokenType::K_VAR) { code = parseDeclaration(code); }
                 out << code;
             }
             const auto stTknType = i.get_token().getType();
@@ -123,14 +121,14 @@ namespace vnd {
         std::vector<std::string> values;
         std::vector<std::string> *current = &identifiers;
         std::string currentToken;
-        bool isArray = false;
-        bool isType = false;
+        std::map<char, char> delimiters = {{'{', '}'}, {'(', ')'}, {'<', '>'}, {'[', ']'}};
+        char currentDelimiter = '\0';
         size_t start = input.find_first_of(' ');
         out << input.substr(0, start);
         input = input.substr(start);
         LWARN(input);
         for(const auto i : input) {
-            if(i == ',' && !isArray && !isType) {
+            if(i == ',' && currentDelimiter == '\0') {
                 current->emplace_back(currentToken);
                 currentToken.clear();
             } else if(i == '=') {
@@ -138,14 +136,10 @@ namespace vnd {
                 currentToken.clear();
                 current = &values;
             } else {
-                if(i == '{' && !isType) {
-                    isArray = true;
-                } else if(i == '}' && isArray) {
-                    isArray = false;
-                } else if(i == '<' && !isArray) {
-                    isType = true;
-                } else if(i == '>' and isType) {
-                    isType = false;
+                if(delimiters.contains(i) && currentDelimiter == '\0') {
+                    currentDelimiter = delimiters.at(i);
+                } else if(i == currentDelimiter) {
+                    currentDelimiter = '\0';
                 }
                 currentToken += i;
             }
