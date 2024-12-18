@@ -121,7 +121,7 @@ namespace vnd {
         std::vector<std::string> values;
         std::vector<std::string> *current = &identifiers;
         std::string currentToken;
-        std::map<char, char> delimiters = {{'{', '}'}, {'(', ')'}, {'<', '>'}, {'[', ']'}};
+        std::map<char, char> delimiters = { {'{', '}'}, {'(', ')'}, {'<', '>'}, {'[', ']'}, {'"', '"'} };
         char currentDelimiter = '\0';
         size_t start = input.find_first_of(' ');
         out << input.substr(0, start);
