@@ -8,7 +8,7 @@ DISABLE_WARNINGS_PUSH(4820)
 namespace vnd {
     constexpr std::hash<bool> bool_hasher;
 #ifdef __llvm__
-    constexpr  std::hash<std::string> string_hasher;
+    constexpr std::hash<std::string> string_hasher;
 #else
     constexpr std::hash<std::filesystem::path> path_hasher;
 #endif
