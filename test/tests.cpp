@@ -151,6 +151,11 @@ TEST_CASE("ValueLabel functionality", "[ValueLabel]") {
     }
 }
 
+TEST_CASE("Times functionality for  nano seconds", "[Times]") {
+    const vnd::Times time(10.0L);  // 1 millisecond
+    REQUIRE(time.getRelevantTimeframe().toString() == "10 ns");
+}
+
 TEST_CASE("Times functionality", "[Times]") {
     using vnd::Times;
     using vnd::TimeValues;
