@@ -124,7 +124,7 @@ namespace vnd {
             } else if(micro > 1.0L) {  // micros
                 return {micro, labelmicro};
             }
-            return {values.get_nano(), labelnano}; // nanos
+            return {values.get_nano(), labelnano};  // nanos
         }
 
     private:
