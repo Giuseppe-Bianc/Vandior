@@ -34,6 +34,14 @@ namespace vnd {
         auto transpileKeyword(const Token &keyword) -> std::string;
 
         /**
+         * Parses a declaration statement.
+         *
+         * @param input the the string to parse.
+         * @return The parsed string.
+         */
+        static std::string parseDeclaration(std::string input);
+
+        /**
          * Transpiles the given ASTNode into a string representation.
          *
          * @param node The ASTNode to transpile.

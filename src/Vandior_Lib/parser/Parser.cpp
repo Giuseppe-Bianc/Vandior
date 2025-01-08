@@ -77,10 +77,13 @@ namespace vnd {
             precedence++;
             if(std::ranges::find(itm, tokenValue) != itm.end()) {
                 if(type == TokenType::K_VAR) {
-                    if(tokenValue == ",") {
-                        precedence++;
-                    } else if(tokenValue == ":") {
+                    if (tokenValue == ",") { precedence++;
+                    }
+                    if(tokenValue == ":") {
                         precedence--;
+                    }
+                    if(tokenValue == "=") {
+                        precedence -= 2;
                     }
                 }
                 return precedence;
