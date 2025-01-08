@@ -231,7 +231,7 @@ namespace vnd {
             incrementLine();
         } else if(charnsl == '\r') [[unlikely]] {
             // Handle '\r' (carriage return), which might be followed by '\n'
-            if(size_t nextPosition = position + 1; nextPosition < _inputSize && _input[nextPosition] == NL) {
+            if(const std::size_t nextPosition = position + 1; nextPosition < _inputSize && _input[nextPosition] == NL) {
                 incrementLine();
                 position++;  // Skip the '\n' that follows '\r'
             } else [[unlikely]] {
