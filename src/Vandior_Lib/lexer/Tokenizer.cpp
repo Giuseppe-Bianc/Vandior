@@ -219,23 +219,35 @@ namespace vnd {
         column++;
     }
 
+    void Tokenizer::incrementLine() noexcept {
+        ++line;
+        column = 0;
+    }
+
+
+
     void Tokenizer::handleWhiteSpaceSingle() noexcept {
-        if(_input[position] == NL) [[unlikely]] {
-            ++line;
-            column = 0;
+        // Check if we're at the start of a line with '\n' or '\r\n'
+        char const charnsl = _input[position];
+        if (charnsl == NL) [[unlikely]] {
+            incrementLine();
+        } else if (charnsl == '\r') [[unlikely]] {
+            // Handle '\r' (carriage return), which might be followed by '\n'
+            if (size_t nextPosition = position + 1; nextPosition < _inputSize && _input[nextPosition] == NL) {
+                incrementLine();
+                position++;  // Skip the '\n' that follows '\r'
+            } else  [[unlikely]] {
+                incrementLine();
+            }
         }
-        position++;
-        column++;
+
+        // Increment position and column to move to the next character
+        incPosAndColumn();
     }
 
     void Tokenizer::handleWhiteSpace() noexcept {
         while(positionIsInText() && C_BOOL(std::isspace(_input[position]))) {
-            if(_input[position] == NL) [[unlikely]] {
-                ++line;
-                column = 0;
-            }
-            position++;
-            column++;
+            handleWhiteSpaceSingle();
         }
     }
 
