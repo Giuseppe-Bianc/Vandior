@@ -2747,6 +2747,12 @@ TEST_CASE("Transpiler transpile initialization instruction", "[transpiler]") {
     REQUIRE(code == "uint8_t num1 = 12, num2  = 45\n");
 }
 
+TEST_CASE("Transpiler transpile vector initialization instruction", "[transpiler]") {
+    vnd::Transpiler transpiler{"var nums: u8[] = u8[]{12, 45}", "input.vn"};
+    const auto code = transpiler.transpile();
+    REQUIRE(code == "vnd::vector<uint8_t> nums  = vnd::vector<uint8_t>({12, 45})\n");
+}
+
 TEST_CASE("Transpiler transpile structure instructions", "[transpiler]") {
     vnd::Transpiler transpiler{"if a == 1 {", "input.vn"};
     auto code = transpiler.transpile();
