@@ -10,7 +10,7 @@ namespace vnd {
     public:
         constexpr TimeValues() noexcept = default;
 
-        explicit constexpr TimeValues(long double nanoseconds_) noexcept
+        explicit constexpr TimeValues(const long double nanoseconds_) noexcept
           : seconds(nanoseconds_ / SECONDSFACTOR), millis(nanoseconds_ / MILLISECONDSFACTOR), micro(nanoseconds_ / MICROSECONDSFACTOR),
             nano(nanoseconds_) {}
 
@@ -39,13 +39,13 @@ namespace vnd {
     public:
         constexpr ValueLabel() noexcept = default;
         // NOLINTNEXTLINE(*-easily-swappable-parameters)
-        constexpr ValueLabel(long double time_val, std::string_view time_label) noexcept : timeVal(time_val), timeLabel(time_label) {}
+        constexpr ValueLabel(const long double time_val, std::string_view time_label) noexcept : timeVal(time_val), timeLabel(time_label) {}
         ValueLabel(const ValueLabel &other) noexcept = default;
         ValueLabel(ValueLabel &&other) noexcept = default;
         ValueLabel &operator=(const ValueLabel &other) noexcept = default;
         ValueLabel &operator=(ValueLabel &&other) noexcept = default;
 
-        [[nodiscard]] std::string transformTimeMicro(long double inputTimeMicro) const noexcept {
+        [[nodiscard]] std::string transformTimeMicro(const long double inputTimeMicro) const noexcept {
             using namespace std::chrono;
 
             const auto durationmicros = duration<long double, std::micro>(inputTimeMicro);
@@ -56,7 +56,7 @@ namespace vnd {
             return FORMAT("{}us,{}ns", C_LD(durationUs.count()), C_LD(durationNs.count()));
         }
 
-        [[nodiscard]] std::string transformTimeMilli(long double inputTimeMilli) const noexcept {
+        [[nodiscard]] std::string transformTimeMilli(const long double inputTimeMilli) const noexcept {
             using namespace std::chrono;
 
             const auto durationmils = duration<long double, std::milli>(inputTimeMilli);
@@ -68,7 +68,7 @@ namespace vnd {
             return FORMAT("{}ms,{}us,{}ns", C_LD(durationMs.count()), C_LD(durationUs.count()), C_LD(durationNs.count()));
         }
 
-        [[nodiscard]] std::string transformTimeSeconds(long double inputTimeSeconds) const noexcept {
+        [[nodiscard]] std::string transformTimeSeconds(const long double inputTimeSeconds) const noexcept {
             using namespace std::chrono;
 
             const auto durationSecs = duration<long double>(inputTimeSeconds);
@@ -98,7 +98,7 @@ namespace vnd {
     public:
         Times() noexcept = default;
 
-        explicit Times(long double nanoseconds_) noexcept : values(nanoseconds_) {}
+        explicit Times(const long double nanoseconds_) noexcept : values(nanoseconds_) {}
 
         explicit Times(const TimeValues &time_values) noexcept : values(time_values) {}
 
@@ -123,9 +123,8 @@ namespace vnd {
                 return {millis, labelmillis};
             } else if(micro > 1.0L) {  // micros
                 return {micro, labelmicro};
-            } else {  // nanos
-                return {values.get_nano(), labelnano};
             }
+            return {values.get_nano(), labelnano};  // nanos
         }
 
     private:

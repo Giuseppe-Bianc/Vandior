@@ -6,6 +6,12 @@
 DISABLE_WARNINGS_PUSH(4820)
 
 namespace vnd {
+    constexpr std::hash<bool> bool_hasher;
+#ifdef __llvm__
+    constexpr std::hash<std::string> string_hasher;
+#else
+    constexpr std::hash<std::filesystem::path> path_hasher;
+#endif
 
     /**
      * @class FolderCreationResult
@@ -111,12 +117,9 @@ namespace vnd {
          * @return The hash value of the object.
          */
         friend std::size_t hash_value(const FolderCreationResult &obj) noexcept {
-            const std::hash<bool> bool_hasher;
 #ifdef __llvm__
-            const std::hash<std::string> string_hasher;
             return bool_hasher(obj.success_) ^ (string_hasher(obj.path_.value_or("").string()) << 1);
 #else
-            const std::hash<std::filesystem::path> path_hasher;
             return bool_hasher(obj.success_) ^ (path_hasher(obj.path_.value_or("")) << 1);
 #endif
         }
