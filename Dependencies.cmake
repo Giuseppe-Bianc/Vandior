@@ -1,6 +1,6 @@
 include(cmake/CPM.cmake)
 
-function(AddSpdlogPackage WcharSupport WcharFilenames SanitizeAddress)
+function(AddSpdlogPackage WcharSupport WcharFilenames)
     CPMAddPackage(
             NAME spdlog
             VERSION 1.15.0
@@ -11,7 +11,7 @@ function(AddSpdlogPackage WcharSupport WcharFilenames SanitizeAddress)
             "SPDLOG_BUILD_PIC ON"
             "SPDLOG_WCHAR_SUPPORT ${WcharSupport}"
             "SPDLOG_WCHAR_FILENAMES ${WcharFilenames}"
-            "SPDLOG_SANITIZE_ADDRESS ${SanitizeAddress}"
+            "SPDLOG_SANITIZE_ADDRESS OFF"
     )
 endfunction()
 
@@ -40,18 +40,10 @@ function(Vandior_setup_dependencies)
     endif ()
 
     if (NOT TARGET spdlog::spdlog)
-        if (MSVC)
-            if (WIN32)
-                AddSpdlogPackage(ON ON OFF)
-            else ()
-                AddSpdlogPackage(OFF OFF OFF)
-            endif ()
+        if (WIN32)
+            AddSpdlogPackage(ON ON)
         else ()
-            if (WIN32)
-                AddSpdlogPackage(ON ON ON)
-            else ()
-                AddSpdlogPackage(OFF OFF ON)
-            endif ()
+            AddSpdlogPackage(OFF OFF)
         endif ()
     endif ()
 
