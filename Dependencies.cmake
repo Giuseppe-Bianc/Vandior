@@ -7,7 +7,6 @@ function(AddSpdlogPackage WcharSupport WcharFilenames)
             GITHUB_REPOSITORY "gabime/spdlog"
             OPTIONS
             "SPDLOG_FMT_EXTERNAL ON"
-            "SPDLOG_ENABLE_PCH ON"
             "SPDLOG_BUILD_PIC ON"
             "SPDLOG_WCHAR_SUPPORT ${WcharSupport}"
             "SPDLOG_WCHAR_FILENAMES ${WcharFilenames}"
