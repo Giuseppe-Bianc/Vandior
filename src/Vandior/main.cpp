@@ -61,7 +61,7 @@ auto main(int argc, const char *const argv[]) -> int {
         std::vector<vnd::Token> tokens;
         vnd::timeTokenizer(tokenizer, tokens);
         LINFO("num tokens {}", tokens.size());
-        LINFO("tokenization done number of new  lines {}", tokens.at(tokens.size()-1).getSourceLocation().getLine());
+        LINFO("tokenization done number of new  lines {}", tokens.at(tokens.size() - 1).getSourceLocation().getLine());
         std::string input;
         std::getline(std::cin, input);
         LINFO("Input: {}", input);

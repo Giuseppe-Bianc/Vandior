@@ -224,19 +224,17 @@ namespace vnd {
         column = 0;
     }
 
-
-
     void Tokenizer::handleWhiteSpaceSingle() noexcept {
         // Check if we're at the start of a line with '\n' or '\r\n'
         char const charnsl = _input[position];
-        if (charnsl == NL) [[unlikely]] {
+        if(charnsl == NL) [[unlikely]] {
             incrementLine();
-        } else if (charnsl == '\r') [[unlikely]] {
+        } else if(charnsl == '\r') [[unlikely]] {
             // Handle '\r' (carriage return), which might be followed by '\n'
-            if (size_t nextPosition = position + 1; nextPosition < _inputSize && _input[nextPosition] == NL) {
+            if(size_t nextPosition = position + 1; nextPosition < _inputSize && _input[nextPosition] == NL) {
                 incrementLine();
                 position++;  // Skip the '\n' that follows '\r'
-            } else  [[unlikely]] {
+            } else [[unlikely]] {
                 incrementLine();
             }
         }
@@ -246,9 +244,7 @@ namespace vnd {
     }
 
     void Tokenizer::handleWhiteSpace() noexcept {
-        while(positionIsInText() && C_BOOL(std::isspace(_input[position]))) {
-            handleWhiteSpaceSingle();
-        }
+        while(positionIsInText() && C_BOOL(std::isspace(_input[position]))) { handleWhiteSpaceSingle(); }
     }
 
     Token Tokenizer::handleBrackets() {
