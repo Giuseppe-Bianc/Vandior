@@ -99,6 +99,11 @@ namespace vnd {
         /**
          * @brief Handles white space characters.
          */
+        void incrementLine() noexcept;
+
+        /**
+         * @brief Handles white space characters.
+         */
         void handleWhiteSpaceSingle() noexcept;
         /**
          * @brief Handles multiple white space characters.

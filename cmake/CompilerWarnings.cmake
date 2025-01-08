@@ -37,6 +37,7 @@ function(
             /wd4996 # Compatibility with C++98
             /wd4464 # relative include path contains '..'
             /wd4514 # unreferenced inline function has been removed
+            /wd4702
             /permissive- # standards conformance mode for MSVC compiler.
     )
   endif()
