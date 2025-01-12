@@ -71,9 +71,9 @@ namespace vnd {
     }
 
     std::size_t Parser::adjustPrecedenceForVar(const std::string_view &tokenValue, std::size_t precedence) noexcept {
-        if (tokenValue == ",") { precedence++; }
-        if (tokenValue == ":") { precedence--; }
-        if (tokenValue == "=") { precedence -= 2; }
+        if(tokenValue == ",") { precedence++; }
+        if(tokenValue == ":") { precedence--; }
+        if(tokenValue == "=") { precedence -= 2; }
         return precedence;
     }
 
@@ -81,12 +81,10 @@ namespace vnd {
         const auto &tokenValue = token.getValue();
         std::size_t precedence = 0;
 
-        for (const auto &itm : operatorPrecedence) {
+        for(const auto &itm : operatorPrecedence) {
             precedence++;
-            if (std::ranges::find(itm, tokenValue) != itm.end()) {
-                if (type == TokenType::K_VAR) {
-                    precedence = adjustPrecedenceForVar(tokenValue, precedence);
-                }
+            if(std::ranges::find(itm, tokenValue) != itm.end()) {
+                if(type == TokenType::K_VAR) { precedence = adjustPrecedenceForVar(tokenValue, precedence); }
                 return precedence;
             }
         }
