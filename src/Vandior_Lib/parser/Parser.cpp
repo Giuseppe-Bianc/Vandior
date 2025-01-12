@@ -70,23 +70,28 @@ namespace vnd {
         return 0;
     }
 
+    std::size_t Parser::adjustPrecedenceForVar(const std::string_view &tokenValue, std::size_t precedence) noexcept {
+        if (tokenValue == ",") { precedence++; }
+        if (tokenValue == ":") { precedence--; }
+        if (tokenValue == "=") { precedence -= 2; }
+        return precedence;
+    }
+
     std::size_t Parser::getOperatorPrecedence(const Token &token, const TokenType &type) noexcept {
         const auto &tokenValue = token.getValue();
         std::size_t precedence = 0;
-        for(const auto &itm : operatorPrecedence) {
+
+        for (const auto &itm : operatorPrecedence) {
             precedence++;
-            if(std::ranges::find(itm, tokenValue) != itm.end()) {
-                if(type == TokenType::K_VAR) {
-                    if(tokenValue == ",") { precedence++; }
-                    if(tokenValue == ":") { precedence--; }
-                    if(tokenValue == "=") { precedence -= 2; }
+            if (std::ranges::find(itm, tokenValue) != itm.end()) {
+                if (type == TokenType::K_VAR) {
+                    precedence = adjustPrecedenceForVar(tokenValue, precedence);
                 }
                 return precedence;
             }
         }
         return 0;
     }
-
 #ifndef __llvm__
     template <typename T> T Parser::handle_from_chars_error(const std::from_chars_result &result, std::string_view str) {
         if(result.ec == std::errc::invalid_argument) { throw std::invalid_argument("parse_integer: invalid argument"); }

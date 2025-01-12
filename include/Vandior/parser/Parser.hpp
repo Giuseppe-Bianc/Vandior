@@ -77,6 +77,9 @@ namespace vnd {
          * @return The precedence level of the unary operator.
          */
         static std::size_t getUnaryOperatorPrecedence(const Token &token) noexcept;
+
+        static std::size_t adjustPrecedenceForVar(const std::string_view &tokenValue, std::size_t precedence) noexcept;
+
         /**
          * @brief Gets the precedence of an operator.
          * @param token The token representing the operator.
