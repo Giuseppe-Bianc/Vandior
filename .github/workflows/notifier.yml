@@ -1,0 +1,39 @@
+name: Telegram Message on Push
+on: [push]
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Extract branch name
+        id: extract_branch
+        run: echo "BRANCH_NAME=${GITHUB_REF##*/}" >> $GITHUB_ENV
+
+      - name: Send Telegram message on push
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TELEGRAM_TO }}
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          message: |
+            New Commit Push Alert
+            
+            Commit Details:
+            - Commit ID: `${{ github.sha }}`
+            - Committer: `${{ github.actor }}`
+            - Commit Message: `${{ github.event.commits[0].message }}`
+            
+            Repository Information:
+            - Repository Name: `${{ github.repository }}`
+            - Branch: `${{ env.BRANCH_NAME }}`
+            
+            Links:
+            - View Commit on GitHub: https://github.com/${{ github.repository }}/commit/${{ github.sha }}
+            - View Repository: https://github.com/${{ github.repository }}
+            
+            Additional Info:
+            - Commit Timestamp: `${{ github.event.head_commit.timestamp }}`
+            - Pushed by: `${{ github.actor }}`
+            - Push Event Type: `${{ github.event_name }}`
+            
+            Date of Push: `${{ github.event.head_commit.timestamp }}`
+            Branch: `${{ env.BRANCH_NAME }}`
