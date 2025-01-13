@@ -32,6 +32,15 @@ template <typename T> std::vector<std::pair<size_t, const T &>> enumerate(const 
     }
     return enumerated;
 }
+
+auto readFile(const std::string &path) -> std::string {
+    if(!std::filesystem::exists(path)) { throw std::exception("File not found"); }
+    std::ifstream file(path);
+    std::ostringstream stream;
+    stream << file.rdbuf();
+    return stream.str();
+}
+
 // NOLINTNEXTLINE(*-function-cognitive-complexity)
 auto main(int argc, const char *const argv[]) -> int {
     // NOLINTNEXTLINE
@@ -63,6 +72,7 @@ auto main(int argc, const char *const argv[]) -> int {
         LINFO("num tokens {}", tokens.size());
         LINFO("tokenization done number of new  lines {}", tokens.at(tokens.size() - 1).getSourceLocation().getLine());
         std::string input;
+        LINFO("{}", readFile(std::string(filename)));
         std::getline(std::cin, input);
         LINFO("Input: {}", input);
         vnd::Parser parser{input, "input.vn"};
