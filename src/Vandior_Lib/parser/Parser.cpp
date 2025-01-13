@@ -11,6 +11,7 @@ namespace vnd {
     std::vector<Statement> Parser::parse() {
         if(tokens.empty()) { return {}; }
         std::vector<Statement> statements;
+        statements.reserve(10);
         emplaceStatement(statements);
         if(tokens.size() == 1 && tokens.at(0).getType() == eofTokenType) {
             statements.back().addNode(nullptr);
