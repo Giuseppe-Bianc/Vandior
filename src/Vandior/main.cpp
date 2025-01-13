@@ -67,13 +67,11 @@ auto main(int argc, const char *const argv[]) -> int {
         const auto str = vnd::readFromFile(porfilename);
         const std::string_view code(str);
         vnd::Tokenizer tokenizer{code, porfilename};
-        std::vector<vnd::Token> tokens;
+        vnd::TokenVec tokens;
         vnd::timeTokenizer(tokenizer, tokens);
         LINFO("num tokens {}", tokens.size());
         LINFO("tokenization done number of new  lines {}", tokens.at(tokens.size() - 1).getSourceLocation().getLine());
-        std::string input;
-        LINFO("{}", readFile(std::string(filename)));
-        std::getline(std::cin, input);
+        std::string input = readFile(std::string(filename));
         LINFO("Input: {}", input);
         vnd::Parser parser{input, "input.vn"};
         for(const auto progrmamAST = vnd::timeParse(parser); const auto &statement : progrmamAST) {

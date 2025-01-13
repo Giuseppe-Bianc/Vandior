@@ -3,6 +3,7 @@
 #include <charconv>
 #include <system_error>
 #include <utility>
+#include "VandiorCore/Log.hpp"
 
 // NOLINTBEGIN(*-include-cleaner, *-no-recursion,*-avoid-magic-numbers, *-magic-numbers, *-err58-cpp, *-suspicious-stringview-data-usage)
 DISABLE_WARNINGS_PUSH(26410 26411 26415 26445 26481)

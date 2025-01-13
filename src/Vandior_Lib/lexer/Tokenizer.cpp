@@ -29,7 +29,7 @@ namespace vnd {
 
     // clang-format on
 
-    std::vector<Token> Tokenizer::tokenize() {
+    TokenVec Tokenizer::tokenize() {
         std::vector<Token> tokens;
         tokens.reserve(_inputSize);
         while(positionIsInText()) {

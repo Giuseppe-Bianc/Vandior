@@ -126,7 +126,6 @@ namespace vnd {
         const size_t start = input.find_first_of(' ');
         out << input.substr(0, start);
         input = input.substr(start);
-        LWARN(input);
         for(const auto i : input) {
             if(i == ',' && currentDelimiter == '\0') {
                 current->emplace_back(currentToken);
