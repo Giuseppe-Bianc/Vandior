@@ -29,8 +29,9 @@ namespace vnd {
 
     // clang-format on
 
-    TokenVec Tokenizer::tokenize() {
-        std::vector<Token> tokens;
+    std::vector<TokenVec> Tokenizer::tokenize() {
+        std::vector<TokenVec> result;
+        TokenVec tokens;
         tokens.reserve(_inputSize);
         while(positionIsInText()) {
             const char &currentChar = _input.at(position);
@@ -67,7 +68,8 @@ namespace vnd {
             }
         }
         tokens.emplace_back(TokenType::EOFT, CodeSourceLocation{_filename, line, column});
-        return tokens;
+        result.push_back(tokens);
+        return result;
     }
 
     bool Tokenizer::positionIsInText() const noexcept { return position < _inputSize; }

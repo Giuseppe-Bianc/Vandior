@@ -11,7 +11,7 @@ DISABLE_WARNINGS_PUSH(
 DISABLE_WARNINGS_POP()
 namespace vnd {
     // NOLINTNEXTLINE(*-use-anonymous-namespace)
-    static auto timeTokenizer(Tokenizer &tokenizer, std::vector<Token> &tokens) -> void {
+    static auto timeTokenizer(Tokenizer &tokenizer, std::vector<TokenVec> &tokens) -> void {
         tokens.clear();
 #ifdef INDEPT
         const AutoTimer timer("tokenization");
@@ -31,14 +31,6 @@ template <typename T> std::vector<std::pair<size_t, const T &>> enumerate(const 
         ++index;
     }
     return enumerated;
-}
-
-auto readFile(const std::string &path) -> std::string {
-    if(!std::filesystem::exists(path)) { throw std::exception("File not found"); }
-    std::ifstream file(path);
-    std::ostringstream stream;
-    stream << file.rdbuf();
-    return stream.str();
 }
 
 // NOLINTNEXTLINE(*-function-cognitive-complexity)
@@ -67,13 +59,16 @@ auto main(int argc, const char *const argv[]) -> int {
         const auto str = vnd::readFromFile(porfilename);
         const std::string_view code(str);
         vnd::Tokenizer tokenizer{code, porfilename};
-        vnd::TokenVec tokens;
+        std::vector<vnd::TokenVec> tokens;
         vnd::timeTokenizer(tokenizer, tokens);
         LINFO("num tokens {}", tokens.size());
-        LINFO("tokenization done number of new  lines {}", tokens.at(tokens.size() - 1).getSourceLocation().getLine());
-        std::string input = readFile(std::string(filename));
+        std::string input = vnd::readFromFile(filename);
         LINFO("Input: {}", input);
-        vnd::Parser parser{input, "input.vn"};
+        tokenizer = vnd::Tokenizer(input, filename);
+        for(auto &i : tokenizer.tokenize()) {
+            for(auto &j : i) { LINFO("{}", j.getValue()); }
+        }
+        /*vnd::Parser parser{input, "input.vn"};
         for(const auto progrmamAST = vnd::timeParse(parser); const auto &statement : progrmamAST) {
             const auto &token = statement.get_token();
             // FIXME: Output the actual token, not the default one.
@@ -86,9 +81,9 @@ auto main(int argc, const char *const argv[]) -> int {
                 LINFO("AST num {}:", index);
                 node ? prettyPrint(*node) : LINFO("EMPTY");
             }
-        }
-        vnd::Transpiler transpiler{input, filename};
-        LINFO("transpiled code: {}", transpiler.transpile());
+        }*/
+        /*vnd::Transpiler transpiler{input, filename};
+        LINFO("transpiled code: {}", transpiler.transpile());*/
     } catch(const std::exception &e) {
         // Handle any other types of exceptions
         LERROR("Unhandled exception in main: {}", e.what());

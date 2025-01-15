@@ -23,7 +23,7 @@ namespace vnd {
          * @brief Tokenize the input string.
          * @return A vector of Token objects.
          */
-        [[nodiscard]] TokenVec tokenize();
+        [[nodiscard]] std::vector<TokenVec> tokenize();
 
     private:
         std::string_view _input;     ///< The input string to tokenize.

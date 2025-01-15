@@ -175,7 +175,7 @@ namespace vnd {
         [[nodiscard]] StringVec extractFunData();
 
         Tokenizer tokenizer;          ///< The tokenizer used to tokenize the input.
-        std::vector<Token> tokens{};  ///< The list of tokens.
+        std::vector<TokenVec> tokens{};  ///< The list of tokens.
         std::size_t tokenSize{};      ///< The size of the token list.
         std::size_t position{};       ///< The current position in the token list.
         Token keyword{};              ///< The keyword token of the current statement.

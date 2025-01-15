@@ -14,7 +14,7 @@ namespace vnd {
         std::vector<Statement> statements;
         statements.reserve(10);
         emplaceStatement(statements);
-        if(tokens.size() == 1 && tokens.at(0).getType() == eofTokenType) {
+        if(tokens.at(0).size() == 1 && tokens.at(0).at(0).getType() == eofTokenType) {
             statements.back().addNode(nullptr);
         } else {
             statements.back().addNode(parseExpression());
@@ -24,18 +24,18 @@ namespace vnd {
 
     void Parser::emplaceStatement(std::vector<Statement> &statements) {
         Token token{};
-        const auto &tokensFront = tokens.front();
+        const auto &tokensFront = tokens.at(0).front();
         StringVec data;
         const auto [fst, snd] = checkKeyword(tokensFront.getType());
         if(fst) {
             token = tokensFront;
-            tokens.erase(tokens.begin());
+            tokens.at(0).erase(tokens.at(0).begin());
             if(token.getType() == TokenType::K_FUN) { data = extractFunData(); }
         }
         if(snd) {
-            const auto tokensSize = tokens.size();
-            if(tokensSize < 2 || tokens.at(tokensSize - 2).getValue() != "{") { throw ParserException(tokensFront); }
-            tokens.erase(tokens.end() - 2);
+            const auto tokensSize = tokens.at(0).size();
+            if(tokensSize < 2 || tokens.at(0).at(tokensSize - 2).getValue() != "{") { throw ParserException(tokensFront); }
+            tokens.at(0).erase(tokens.at(0).end() - 2);
         }
         statements.emplace_back(token, data);
         keyword = token;
@@ -61,8 +61,8 @@ namespace vnd {
                                                   TokenType::TYPE_F32,  TokenType::TYPE_F64,    TokenType::TYPE_C32, TokenType::TYPE_C64,
                                                   TokenType::TYPE_CHAR, TokenType::TYPE_STRING, TokenType::TYPE_BOOL};
 
-    const Token &Parser::getCurrentToken() const { return tokens.at(position); }
-    TokenType Parser::getCurrentTokenType() const { return tokens.at(position).getType(); }
+    const Token &Parser::getCurrentToken() const { return tokens.at(0).at(position); }
+    TokenType Parser::getCurrentTokenType() const { return tokens.at(0).at(position).getType(); }
     bool Parser::isCurrentTokenType(const TokenType &type) const { return getCurrentTokenType() == type; }
     std::size_t Parser::getUnaryOperatorPrecedence(const Token &token) noexcept {
         if(const auto &tokenValue = token.getValue();
@@ -346,11 +346,11 @@ namespace vnd {
 
     StringVec Parser::extractFunData() {
         StringVec result;
-        if(tokens.size() <= 3) { return {}; }
-        auto iter = tokens.end() - 3;
-        while(iter->getType() != TokenType::CLOSE_PARENTESIS && tokens.size() > 3) {
+        if(tokens.at(0).size() <= 3) { return {}; }
+        auto iter = tokens.at(0).end() - 3;
+        while(iter->getType() != TokenType::CLOSE_PARENTESIS && tokens.at(0).size() > 3) {
             result.emplace(result.begin(), iter->getValue());
-            tokens.erase(iter--);
+            tokens.at(0).erase(iter--);
         }
         return result;
     }
