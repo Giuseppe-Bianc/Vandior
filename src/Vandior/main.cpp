@@ -65,10 +65,7 @@ auto main(int argc, const char *const argv[]) -> int {
         std::string input = vnd::readFromFile(filename);
         LINFO("Input: {}", input);
         tokenizer = vnd::Tokenizer(input, filename);
-        for(auto &i : tokenizer.tokenize()) {
-            for(auto &j : i) { LINFO("{}", j.getValue()); }
-        }
-        /*vnd::Parser parser{input, "input.vn"};
+        vnd::Parser parser{input, "input.vn"};
         for(const auto progrmamAST = vnd::timeParse(parser); const auto &statement : progrmamAST) {
             const auto &token = statement.get_token();
             // FIXME: Output the actual token, not the default one.
@@ -81,9 +78,9 @@ auto main(int argc, const char *const argv[]) -> int {
                 LINFO("AST num {}:", index);
                 node ? prettyPrint(*node) : LINFO("EMPTY");
             }
-        }*/
-        /*vnd::Transpiler transpiler{input, filename};
-        LINFO("transpiled code: {}", transpiler.transpile());*/
+        }
+        vnd::Transpiler transpiler{input, filename};
+        LINFO("transpiled code: {}", transpiler.transpile());
     } catch(const std::exception &e) {
         // Handle any other types of exceptions
         LERROR("Unhandled exception in main: {}", e.what());

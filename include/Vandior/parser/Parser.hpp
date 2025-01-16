@@ -20,7 +20,7 @@ namespace vnd {
          * @param fileName The name of the file being parsed.
          */
         [[nodiscard]] explicit Parser(const std::string_view &input, const std::string_view &fileName)
-          : tokenizer{input, fileName}, tokens{tokenizer.tokenize()}, tokenSize(tokens.size()) {}
+          : tokenizer{input, fileName}, tokens{tokenizer.tokenize()} {}
 
         /**
          * @brief Parses the tokens into an AST.
@@ -176,6 +176,7 @@ namespace vnd {
 
         Tokenizer tokenizer;          ///< The tokenizer used to tokenize the input.
         std::vector<TokenVec> tokens{};  ///< The list of tokens.
+        TokenVec *currentStatement;
         std::size_t tokenSize{};      ///< The size of the token list.
         std::size_t position{};       ///< The current position in the token list.
         Token keyword{};              ///< The keyword token of the current statement.

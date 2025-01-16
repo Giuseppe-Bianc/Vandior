@@ -13,36 +13,45 @@ namespace vnd {
         if(tokens.empty()) { return {}; }
         std::vector<Statement> statements;
         statements.reserve(10);
-        emplaceStatement(statements);
-        if(tokens.at(0).size() == 1 && tokens.at(0).at(0).getType() == eofTokenType) {
-            statements.back().addNode(nullptr);
-        } else {
-            statements.back().addNode(parseExpression());
+        for(auto &i : tokens) {
+            currentStatement = &i;
+            if(!currentStatement->empty() && currentStatement->back().getType() == eofTokenType) { currentStatement->pop_back(); }
+            tokenSize = currentStatement->size();
+            position = 0;
+            emplaceStatement(statements);
+            if(currentStatement->empty()) {
+                statements.back().addNode(nullptr);
+            } else {
+                statements.back().addNode(parseExpression());
+            }
         }
         return statements;
     }
 
     void Parser::emplaceStatement(std::vector<Statement> &statements) {
         Token token{};
-        const auto &tokensFront = tokens.at(0).front();
+        const auto &tokensFront = currentStatement->front();
         StringVec data;
         const auto [fst, snd] = checkKeyword(tokensFront.getType());
         if(fst) {
             token = tokensFront;
-            tokens.at(0).erase(tokens.at(0).begin());
+            position++;
             if(token.getType() == TokenType::K_FUN) { data = extractFunData(); }
         }
         if(snd) {
-            const auto tokensSize = tokens.at(0).size();
-            if(tokensSize < 2 || tokens.at(0).at(tokensSize - 2).getValue() != "{") { throw ParserException(tokensFront); }
-            tokens.at(0).erase(tokens.at(0).end() - 2);
+            const int bracketPosition = 1;
+            const auto tokensSize = currentStatement->size();
+            if(tokensSize < bracketPosition || currentStatement->at(tokensSize - bracketPosition).getValue() != "{") {
+                throw ParserException(tokensFront);
+            }
+            position++;
         }
         statements.emplace_back(token, data);
         keyword = token;
     }
 
     void Parser::consumeToken() noexcept {
-        if(position < tokenSize) { position++; }
+        if(position < tokenSize - 1) { position++; }
     }
 
     const std::vector<StrViewVec> Parser::operatorPrecedence = {{","},
@@ -61,9 +70,13 @@ namespace vnd {
                                                   TokenType::TYPE_F32,  TokenType::TYPE_F64,    TokenType::TYPE_C32, TokenType::TYPE_C64,
                                                   TokenType::TYPE_CHAR, TokenType::TYPE_STRING, TokenType::TYPE_BOOL};
 
-    const Token &Parser::getCurrentToken() const { return tokens.at(0).at(position); }
-    TokenType Parser::getCurrentTokenType() const { return tokens.at(0).at(position).getType(); }
-    bool Parser::isCurrentTokenType(const TokenType &type) const { return getCurrentTokenType() == type; }
+    const Token &Parser::getCurrentToken() const {
+        return currentStatement->at(position);
+    }
+    TokenType Parser::getCurrentTokenType() const { return currentStatement->at(position).getType(); }
+    bool Parser::isCurrentTokenType(const TokenType &type) const {
+        return getCurrentTokenType() == type;
+    }
     std::size_t Parser::getUnaryOperatorPrecedence(const Token &token) noexcept {
         if(const auto &tokenValue = token.getValue();
            tokenValue == "+" || tokenValue == "-" || tokenValue == "!" || tokenValue == "++" || tokenValue == "--") {
@@ -266,7 +279,6 @@ namespace vnd {
     }
     std::unique_ptr<ASTNode> Parser::parseUnary(std::size_t parentPrecendence) {
         const auto &currentToken = getCurrentToken();
-
         const auto unaryOperatorPrecedence = getUnaryOperatorPrecedence(currentToken);
         if(unaryOperatorPrecedence != 0 && unaryOperatorPrecedence >= parentPrecendence) {
             consumeToken();
@@ -304,7 +316,7 @@ namespace vnd {
             return;
         }
         auto elements = parseExpression();
-        if(!isCurrentTokenType(CLOSE_SQ_PARENTESIS)) { throw ParserException(getCurrentToken()); }
+        //if(!isCurrentTokenType(CLOSE_SQ_PARENTESIS)) { throw ParserException(getCurrentToken()); }
         consumeToken();
         auto index = MAKE_UNIQUE(IndexNode, std::move(elements), token);
         if(!parseArray(index)) { parseIndex<IndexNode>(index); }
@@ -346,11 +358,11 @@ namespace vnd {
 
     StringVec Parser::extractFunData() {
         StringVec result;
-        if(tokens.at(0).size() <= 3) { return {}; }
-        auto iter = tokens.at(0).end() - 3;
-        while(iter->getType() != TokenType::CLOSE_PARENTESIS && tokens.at(0).size() > 3) {
+        if(currentStatement->size() <= 3) { return {}; }
+        auto iter = currentStatement->end() - 3;
+        while(iter->getType() != TokenType::CLOSE_PARENTESIS && currentStatement->size() > 3) {
             result.emplace(result.begin(), iter->getValue());
-            tokens.at(0).erase(iter--);
+            currentStatement->erase(iter--);
         }
         return result;
     }

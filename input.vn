@@ -1,3 +1,2 @@
-main {
-	var a: i8 = 1
-}
+var a: i8 = 1
+var a: i8 = 1
