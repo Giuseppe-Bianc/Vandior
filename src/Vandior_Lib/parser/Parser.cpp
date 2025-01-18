@@ -19,11 +19,7 @@ namespace vnd {
             tokenSize = currentStatement->size();
             position = 0;
             emplaceStatement(statements);
-            if(currentStatement->empty()) {
-                statements.back().addNode(nullptr);
-            } else {
-                statements.back().addNode(parseExpression());
-            }
+            statements.back().addNode(position < tokenSize ? parseExpression() : nullptr);
         }
         return statements;
     }
@@ -44,7 +40,7 @@ namespace vnd {
             if(tokensSize < bracketPosition || currentStatement->at(tokensSize - bracketPosition).getValue() != "{") {
                 throw ParserException(tokensFront);
             }
-            position++;
+            tokenSize--;
         }
         statements.emplace_back(token, data);
         keyword = token;
