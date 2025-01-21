@@ -47,15 +47,24 @@ auto main(int argc, const char *const argv[]) -> int {
         bool show_version = false;
         bool compile = false;
         bool run = false;
+        bool clean = false;
         app.add_flag("--version, -v", show_version, "Show version information");
         app.add_flag("--compile, -c", compile, "Compile the resulting code");
         app.add_flag("--run, -r", run, "Compile the resulting code and execute it");
+        app.add_flag("--clean, -x", clean, "Clean before building");
         CLI11_PARSE(app, argc, argv)
         if(show_version) {
             LINFO("{}", Vandior::cmake::project_version);
             return EXIT_SUCCESS;
         }
         const auto porfilename = path.value_or(filename.data());
+        if(clean) {
+            const auto folderPath = vnd::GetBuildFolder(fs::path(porfilename));
+            LINFO("folder  to delete {}", folderPath);
+            auto unused = vnd::FolderDeletionResult::deleteFolder(folderPath);
+            LINFO("Cleaning the project");
+            // return EXIT_SUCCESS;
+        }
         const auto str = vnd::readFromFile(porfilename);
         const std::string_view code(str);
         vnd::Tokenizer tokenizer{code, porfilename};

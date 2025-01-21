@@ -8,7 +8,7 @@ function(Vandior_enable_cache)
         message(STATUS
                 "Using custom compiler cache system: '${CACHE_OPTION}'. Supported options are: ${CACHE_OPTION_VALUES}"
         )
-    endif()
+    endif ()
 
     # Find the binary for the selected cache system (either ccache or sccache)
     find_program(CACHE_BINARY "${CACHE_OPTION}" HINTS ENV PATH)
@@ -17,7 +17,7 @@ function(Vandior_enable_cache)
         message(STATUS "Compiler cache system '${CACHE_BINARY}' found. Enabling cache.")
         set(CMAKE_CXX_COMPILER_LAUNCHER "${CACHE_BINARY}" CACHE FILEPATH "C++ compiler cache")
         set(CMAKE_C_COMPILER_LAUNCHER "${CACHE_BINARY}" CACHE FILEPATH "C compiler cache")
-    else()
+    else ()
         message(WARNING "Selected cache system '${CACHE_OPTION}' was not found. Compiler cache will not be used.")
-    endif()
+    endif ()
 endfunction()

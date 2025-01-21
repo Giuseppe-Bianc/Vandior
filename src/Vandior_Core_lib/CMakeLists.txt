@@ -31,7 +31,7 @@ target_include_directories(vandior_core_lib
 if (Vandior_BUILD_FUZZ_TESTS)
     target_link_libraries(vandior_core_lib PRIVATE -fsanitize=fuzzer-no-link)
     target_compile_options(vandior_core_lib PRIVATE -fsanitize=fuzzer-no-link)
-endif()
+endif ()
 
 target_compile_features(vandior_core_lib PUBLIC cxx_std_${CMAKE_CXX_STANDARD})
 

@@ -198,6 +198,7 @@ Choose "Visual Studio 16 2019" as the generator. To tell Visual studio to use `c
 
 Once you have selected all the options you would like to use, you can build the
 project (all targets):
+
 ```bash
     cmake --build ./build
 ```
@@ -210,7 +211,8 @@ For Visual Studio, give the build configuration (Release, RelWithDeb, Debug, etc
 
 ### (3) Build the project on Unix from the terminal
 
-To build and manage the project on a Unix-based system, you can utilize the following shell scripts. Each script serves a specific purpose, allowing you to build, test, and analyze your code efficiently.
+To build and manage the project on a Unix-based system, you can utilize the following shell scripts. Each script serves
+a specific purpose, allowing you to build, test, and analyze your code efficiently.
 
 1. **`build_and_run.sh`**
     - **Purpose**: Compiles the project and executes the resulting binary.
@@ -222,14 +224,16 @@ To build and manage the project on a Unix-based system, you can utilize the foll
 
 2. **`build_and_test_coverage.sh`**
     - **Purpose**: Builds the project, runs tests, and generates a code coverage report using `gcovr`.
-    - **Usage**: This script is particularly useful for verifying that your tests cover a significant portion of your codebase.
+    - **Usage**: This script is particularly useful for verifying that your tests cover a significant portion of your
+      codebase.
     - **How to Use**: Run the script to perform the build, testing, and coverage analysis:
       ```bash
       ./build_and_test_coverage.sh
       ```
 
 3. **`build_and_valgrind.sh`**
-    - **Purpose**: Compiles the code and runs the Valgrind program to check for memory leaks (using **Memcheck**) or performance profiling (using **Callgrind**).
+    - **Purpose**: Compiles the code and runs the Valgrind program to check for memory leaks (using **Memcheck**) or
+      performance profiling (using **Callgrind**).
     - **Usage**: This is essential for ensuring memory safety and optimizing code performance.
     - **How to Use**: Execute the script to start Valgrind analysis:
       ```bash
@@ -237,7 +241,8 @@ To build and manage the project on a Unix-based system, you can utilize the foll
       ```
 
 4. **`cleanHtmlAndCss.sh`**
-    - **Purpose**: Cleans up HTML and CSS files, as well as the `cobertura.xml` file, to maintain a tidy project environment.
+    - **Purpose**: Cleans up HTML and CSS files, as well as the `cobertura.xml` file, to maintain a tidy project
+      environment.
     - **Usage**: Regular cleanup is important to avoid clutter and ensure your project remains organized.
     - **How to Use**: Simply run the script to perform cleanup:
       ```bash
@@ -246,7 +251,8 @@ To build and manage the project on a Unix-based system, you can utilize the foll
 
 ## Making Scripts Executable
 
-Before using any of the scripts, you need to make them executable. You can do this by running the following commands in the terminal:
+Before using any of the scripts, you need to make them executable. You can do this by running the following commands in
+the terminal:
 
 ```bash
 chmod +x build_and_run.sh
@@ -254,6 +260,7 @@ chmod +x build_and_test_coverage.sh
 chmod +x build_and_valgrind.sh
 chmod +x cleanHtmlAndCss.sh
 ```
+
 ### Running the tests
 
 You can use the `ctest` command run the tests.
