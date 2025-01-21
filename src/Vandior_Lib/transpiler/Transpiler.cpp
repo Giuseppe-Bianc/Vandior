@@ -109,6 +109,10 @@ namespace vnd {
             return "auto ";
         case K_RETURN:
             return "return ";
+        case OPEN_CUR_PARENTESIS:
+            return "{";
+        case CLOSE_CUR_PARENTESIS:
+            return "}";
         default:
             return "";
         }

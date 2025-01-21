@@ -26,8 +26,13 @@ namespace vnd {
 
     void Parser::emplaceStatement(std::vector<Statement> &statements) {
         Token token{};
-        const auto &tokensFront = currentStatement->front();
         StringVec data;
+        const auto &tokensFront = currentStatement->front();
+        if(tokensFront.getType() == TokenType::OPEN_CUR_PARENTESIS || tokensFront.getType() == TokenType::CLOSE_CUR_PARENTESIS) {
+            statements.emplace_back(tokensFront, data);
+            position++;
+            return;
+        }
         const auto [fst, snd] = checkKeyword(tokensFront.getType());
         if(fst) {
             token = tokensFront;

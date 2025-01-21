@@ -2,3 +2,7 @@ main {
 	var a: i8 = 1
 	if a == 1 {
 		break
+	}
+	{
+	}
+}
