@@ -52,27 +52,37 @@ Flags:
 [//]: # (Using -c and -r together is the same as using only -r.)
 
 [//]: # ()
+
 [//]: # ()
+
 [//]: # (To manually compile the output C++ code:)
 
 [//]: # ()
+
 [//]: # ()
+
 [//]: # (### Windows)
 
 [//]: # ()
+
 [//]: # ()
+
 [//]: # (```powershell)
 
 [//]: # ()
+
 [//]: # (g++ -std=c++20 input_file.cpp -I %VNHOME%)
 
 [//]: # ()
+
 [//]: # (```)
 
 [//]: # ()
+
 [//]: # (### Unix)
 
 [//]: # ()
+
 [//]: # (```bash)
 
 [//]: # (g++ -std=c++20 input_file.cpp -I $VNHOME)

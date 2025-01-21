@@ -11,7 +11,7 @@ function(Vandior_enable_doxygen DOXYGEN_THEME)
     # Default to top README file as the main page if not specified
     if (NOT DEFINED DOXYGEN_USE_MDFILE_AS_MAINPAGE AND EXISTS "${PROJECT_SOURCE_DIR}/README.md")
         set(DOXYGEN_USE_MDFILE_AS_MAINPAGE "${PROJECT_SOURCE_DIR}/README.md")
-    endif()
+    endif ()
 
     # Set default values
     set(DOXYGEN_QUIET YES)
@@ -29,12 +29,12 @@ function(Vandior_enable_doxygen DOXYGEN_THEME)
                 "${CMAKE_CURRENT_BINARY_DIR}/vcpkg_installed/*"
                 "${CMAKE_CURRENT_BINARY_DIR}/_deps/*"
         )
-    endif()
+    endif ()
 
     # Set Doxygen default theme if none provided
     if (NOT DOXYGEN_THEME)
         set(DOXYGEN_THEME "awesome-sidebar")
-    endif()
+    endif ()
 
     if (DOXYGEN_THEME STREQUAL "awesome" OR DOXYGEN_THEME STREQUAL "awesome-sidebar")
         # Use a modern doxygen theme
@@ -49,10 +49,10 @@ function(Vandior_enable_doxygen DOXYGEN_THEME)
         if (DOXYGEN_THEME STREQUAL "awesome-sidebar")
             list(APPEND DOXYGEN_HTML_EXTRA_STYLESHEET
                     "${doxygen_theme_SOURCE_DIR}/doxygen-awesome-sidebar-only.css")
-        endif()
-    else()
+        endif ()
+    else ()
         message(WARNING "Unknown Doxygen theme '${DOXYGEN_THEME}'. Using default theme.")
-    endif()
+    endif ()
 
     # Find Doxygen and Dot if available
     find_package(Doxygen REQUIRED OPTIONAL_COMPONENTS dot)

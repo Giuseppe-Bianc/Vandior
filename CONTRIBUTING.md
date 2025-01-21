@@ -1,50 +1,56 @@
 # Contributing to vandior
 
-First of all, thank you for your interest in contributing to Vulk! We appreciate your time and effort in helping improve this project. This document provides guidelines and instructions for contributing to vandior.
+First of all, thank you for your interest in contributing to Vulk! We appreciate your time and effort in helping improve
+this project. This document provides guidelines and instructions for contributing to vandior.
 
 ## Table of Contents
 
 - [Code of Conduct](#code-of-conduct)
 - [Getting Started](#getting-started)
 - [How to Contribute](#how-to-contribute)
-  - [Reporting Bugs](#reporting-bugs)
-  - [Suggesting Enhancements](#suggesting-enhancements)
-  - [Submitting Pull Requests](#submitting-pull-requests)
+    - [Reporting Bugs](#reporting-bugs)
+    - [Suggesting Enhancements](#suggesting-enhancements)
+    - [Submitting Pull Requests](#submitting-pull-requests)
 - [Style Guides](#style-guides)
-  - [Coding Style](#coding-style)
-  - [Commit Messages](#commit-messages)
+    - [Coding Style](#coding-style)
+    - [Commit Messages](#commit-messages)
 - [Additional Resources](#additional-resources)
 
-## Code of Conduct {#code-of-conduct}
+## Code of Conduct
 
-By participating in this project, you are expected to uphold our [Code of Conduct](CODE_OF_CONDUCT.md). Please take a moment to read it before contributing.
+By participating in this project, you are expected to uphold our [Code of Conduct](CODE_OF_CONDUCT.md). Please take a
+moment to read it before contributing.
 
-## Getting Started {#getting-started}
+## Getting Started
 
-To start contributing to vandior, you should first fork the repository and clone it to your local machine. After that, create a new branch from the `main` branch to work on your changes.
+To start contributing to vandior, you should first fork the repository and clone it to your local machine. After that,
+create a new branch from the `main` branch to work on your changes.
 
-## How to Contribute {#how-to-contribute}
+## How to Contribute
 
-Contributing to vandior can be done in various ways, such as reporting bugs, suggesting enhancements, submitting pull requests, and helping with documentation. Below are the guidelines for each type of contribution.
+Contributing to vandior can be done in various ways, such as reporting bugs, suggesting enhancements, submitting pull
+requests, and helping with documentation. Below are the guidelines for each type of contribution.
 
-### Reporting Bugs {#reporting-bugs}
+### Reporting Bugs
 
-If you find a bug in the project, please report it by creating a new issue on the GitHub repository. When reporting a bug, please include the following information:
+If you find a bug in the project, please report it by creating a new issue on the GitHub repository. When reporting a
+bug, please include the following information:
 
 - A clear and descriptive title for the issue
 - A detailed description of the bug, including steps to reproduce it
 - The expected behavior and the actual behavior
 - Any relevant screenshots or error messages
 
-### Suggesting Enhancements {#suggesting-enhancements}
+### Suggesting Enhancements
 
-If you have an idea for a new feature or an improvement to the existing functionality, please create a new issue on the GitHub repository. When suggesting an enhancement, please include the following information:
+If you have an idea for a new feature or an improvement to the existing functionality, please create a new issue on the
+GitHub repository. When suggesting an enhancement, please include the following information:
 
 - A clear and descriptive title for the issue
 - A detailed description of the proposed enhancement, including examples of how it would work
 - An explanation of why this enhancement would be useful to the project and its users
 
-### Submitting Pull Requests {#submitting-pull-requests}
+### Submitting Pull Requests
 
 To submit a pull request with your changes, please follow these steps:
 
@@ -55,11 +61,12 @@ To submit a pull request with your changes, please follow these steps:
 5. Push your changes to your fork on GitHub.
 6. Create a new pull request on the vandior repository, providing a clear and concise description of your changes.
 
-for more informations look in [Pull Request Template](https://github.com/Giuseppe-Bianc/Vulk/blob/main/.github/pull_request_template.md)
+for more informations look
+in [Pull Request Template](https://github.com/Giuseppe-Bianc/Vulk/blob/main/.github/pull_request_template.md)
 
-## Style Guides {#style-guides}
+## Style Guides
 
-### Coding Style {#coding-style}
+### Coding Style
 
 When contributing code to vandior, please follow these guidelines:
 
@@ -68,11 +75,12 @@ When contributing code to vandior, please follow these guidelines:
 - Add comments to explain complex or non-obvious parts of your code.
 - Follow the language-specific coding conventions and best practices.
 
-### Commit Messages {#commit-messages}
+### Commit Messages
 
-When committing your changes, please use clear and descriptive commit messages that explain the purpose of your changes. This will help other contributors understand your changes and make it easier to review your pull requests.
+When committing your changes, please use clear and descriptive commit messages that explain the purpose of your changes.
+This will help other contributors understand your changes and make it easier to review your pull requests.
 
-## Additional Resources {#additional-resources}
+## Additional Resources
 
 For more information on contributing to open-source projects, you can refer to the following resources:
 
@@ -81,10 +89,14 @@ For more information on contributing to open-source projects, you can refer to t
 
 ## License
 
-By contributing to vandior, you agree that your contributions will be licensed under the [MIT License](https://github.com/Giuseppe-Bianc/vandior/blob/main/LICENSE). This means that anyone is free to use, modify, and distribute your contributions as long as they adhere to the terms of the license.
+By contributing to vandior, you agree that your contributions will be licensed under
+the [MIT License](https://github.com/Giuseppe-Bianc/vandior/blob/main/LICENSE). This means that anyone is free to use,
+modify, and distribute your contributions as long as they adhere to the terms of the license.
 
 ## Contact
 
-If you have any questions or need further assistance with contributing to vandior, please feel free to reach out to the project maintainers through the GitHub repository or by [contacting us](mailto:bianconig6@gmail.com).
+If you have any questions or need further assistance with contributing to vandior, please feel free to reach out to the
+project maintainers through the GitHub repository or by [contacting us](mailto:bianconig6@gmail.com).
 
-Once again, thank you for your interest in contributing to vandior. We look forward to working with you to make this project even better!
+Once again, thank you for your interest in contributing to vandior. We look forward to working with you to make this
+project even better!
