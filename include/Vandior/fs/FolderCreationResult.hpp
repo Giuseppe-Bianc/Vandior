@@ -1,17 +1,11 @@
 // NOLINTBEGIN(*-include-cleaner)
 #pragma once
 
-#include "headers.hpp"
+#include "FSConstats.hpp"
 
 DISABLE_WARNINGS_PUSH(4820)
 
 namespace vnd {
-    constexpr std::hash<bool> bool_hasher;
-#ifdef __llvm__
-    constexpr std::hash<std::string> string_hasher;
-#else
-    constexpr std::hash<std::filesystem::path> path_hasher;
-#endif
 
     /**
      * @class FolderCreationResult
@@ -176,7 +170,7 @@ namespace vnd {
                 auto parentDir = filePath.parent_path();
 
                 // Construct the path for the new directory
-                return vnd::FolderCreationResult::createFolder(folderName, parentDir);
+                return createFolder(folderName, parentDir);
             } catch(const fs::filesystem_error &e) {
                 // Handle specific filesystem errors
                 LERROR("Filesystem error: {} (Path1: '{}', Path2: '{}', Error code: {})", e.what(), e.path1(), e.path2(), e.code().value());

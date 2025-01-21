@@ -40,7 +40,7 @@ project correctly. If this isn't set, the compiler may run into errors or not wo
 environment variable correctly is a key part of ensuring that the project runs smoothly.
 
 ```bash
-vandior -i input_file.vn [-c] [-r]
+vandior -i input_file.vn [-c] [-r] [-x]
 ```
 
 Flags:
@@ -48,43 +48,25 @@ Flags:
 - --input (-i): the vn input source file;
 - --compile (-c): compiles the resulting C++ file if no error occurs;
 - --run (-r): Compiles and executes the resulting C++ file if no error occurs.
+- --clean (-x): Clean before building.
 
 [//]: # (Using -c and -r together is the same as using only -r.)
-
 [//]: # ()
-
 [//]: # ()
-
 [//]: # (To manually compile the output C++ code:)
-
 [//]: # ()
-
 [//]: # ()
-
 [//]: # (### Windows)
-
 [//]: # ()
-
 [//]: # ()
-
 [//]: # (```powershell)
-
 [//]: # ()
-
 [//]: # (g++ -std=c++20 input_file.cpp -I %VNHOME%)
-
 [//]: # ()
-
 [//]: # (```)
-
 [//]: # ()
-
 [//]: # (### Unix)
-
 [//]: # ()
-
 [//]: # (```bash)
-
 [//]: # (g++ -std=c++20 input_file.cpp -I $VNHOME)
-
 [//]: # (```)
