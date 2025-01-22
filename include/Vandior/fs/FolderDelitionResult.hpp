@@ -11,7 +11,6 @@ namespace vnd {
     public:
         using OSOperationResult::OSOperationResult;
 
-
         /**
          * @brief Deletes a folder at the specified path, including its contents.
          * @param folderPath The path of the folder to delete.

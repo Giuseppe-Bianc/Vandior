@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include "FolderCreationResult.hpp"
-#include "FolderDelitionResult.hpp"
 #include "FileCreationResult.hpp"
 #include "FileDelitionResult.hpp"
+#include "FolderCreationResult.hpp"
+#include "FolderDelitionResult.hpp"
