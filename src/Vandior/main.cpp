@@ -61,9 +61,7 @@ auto main(int argc, const char *const argv[]) -> int {
             const auto folderPath = vnd::GetBuildFolder(fs::path(porfilename));
             LINFO("Cleaning the project");
             auto folderDeleted = vnd::FolderDeletionResult::deleteFolder(folderPath);
-            if(folderDeleted.success()) {
-                LINFO("Cleaning of the project done");
-            }
+            if(folderDeleted.success()) { LINFO("Cleaning of the project done"); }
         }
         const auto str = vnd::readFromFile(porfilename);
         const std::string_view code(str);
