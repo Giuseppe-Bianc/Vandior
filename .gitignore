@@ -40,7 +40,5 @@ Thumbs.db
 /clBuild
 /ingnoref
 /.cache
-/input.cpp
-examples/vnbuild/src/
-/vnbuild/src/
+/vnbuild/
 !/out/
