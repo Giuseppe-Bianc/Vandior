@@ -42,7 +42,9 @@ namespace vnd {
 
         const auto generatorName = GENERATOR_FULLNAME;
 
-        outfile << FORMAT("// This is an automatically generated file by {}, do not modify. for more information got to  https://github.com/Giuseppe-Bianc/Vandior", generatorName);
+        outfile << FORMAT("// This is an automatically generated file by {}, do not modify. for more information got to  "
+                          "https://github.com/Giuseppe-Bianc/Vandior",
+                          generatorName);
         outfile << fileContent;
 
         // Il file viene chiuso automaticamente qui

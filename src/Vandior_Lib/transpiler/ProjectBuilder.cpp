@@ -36,7 +36,6 @@ namespace vnd {
             return;
         }
 
-
 #ifdef INDEPT
         LINFO("Build folder path {}", _vnSrcFolder.value());  // NOLINT(*-unchecked-optional-access)
 #endif
@@ -123,7 +122,6 @@ namespace vnd {
             outfile << "elseif (CMAKE_CXX_COMPILER_ID STREQUAL \\\"MSVC\\\")\n";
             outfile << "    target_compile_options(${PROJECT_NAME} PRIVATE /W4)\n";
             outfile << "endif()\n";
-
 
             outfile.close();
             return fs::exists(cmakeListsPath);
