@@ -80,8 +80,7 @@ namespace vnd {
                 return {false, folderPath};
             }
         }
-
-   };
+    };
 
 }  // namespace vnd
 
