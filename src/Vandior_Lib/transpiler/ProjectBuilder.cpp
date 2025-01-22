@@ -6,7 +6,8 @@
 #include "Vandior/transpiler/ProjectBuilder.hpp"
 namespace vnd {
     // Costruttore che prende il nome del file come parametro
-    ProjectBuilder::ProjectBuilder(const std::string_view &filename) noexcept : _filename(filename) {}
+    ProjectBuilder::ProjectBuilder(const std::string_view &filename, bool createCmakeListsFile) noexcept
+      : _createCmakeListsFile(createCmakeListsFile), _filename(filename) {}
 
     // Metodo pubblico per avviare la costruzione del progetto
     void ProjectBuilder::buildProject() {
@@ -26,6 +27,9 @@ namespace vnd {
 #ifdef INDEPT
         LINFO("{}", folderTime);
 #endif
+        if(_createCmakeListsFile) {
+            if(!createCMakeListsFile()) { LERROR("Failed to create CMakeLists.txt file."); }
+        }
 
         if(!createMainFile()) {
             LERROR("Failed to create main file.");
@@ -78,6 +82,53 @@ namespace vnd {
         }
         return false;
     }
+
+    bool ProjectBuilder::createCMakeListsFile() {
+        if(_vnBuildFolder.has_value()) {
+#ifdef INDEPT
+            const vnd::AutoTimer timer("CMakeLists.txt file creation");
+#endif
+            const auto cmakeListsPath = _vnBuildFolder.value() / "CMakeLists.txt";
+            std::ofstream outfile(cmakeListsPath);
+
+            if(!outfile.is_open()) {
+                LERROR("Failed to open file {}", cmakeListsPath);
+                return false;
+            }
+
+            const auto generatorName = GENERATOR_FULLNAME;
+            outfile << FORMAT("# This is an automatically generated file by {}, do not modify. for more information got to  "
+                              "https://github.com/Giuseppe-Bianc/Vandior\n",
+                              generatorName);
+
+            outfile << "cmake_minimum_required(VERSION 3.0)\n\n";
+            const auto projectname = _vnBuildFolder.value().parent_path().stem();
+            outfile << FORMAT("project({}s VERSION 1.0 LANGUAGES CXX C)\n\n", projectname);
+            outfile << "set(CMAKE_CXX_STANDARD 20)\n";
+            outfile << "set(CMAKE_CXX_STANDARD_REQUIRED ON)\n";
+            outfile << "set(CMAKE_CXX_EXTENSIONS OFF)\n\n";
+
+            outfile << "file(GLOB_RECURSE sources      src/*.cpp src/*.h)\n";
+            outfile << "add_executable(${PROJECT_NAME} ${SOURCES})\n\n";
+
+            outfile << "set_target_properties(${PROJECT_NAME} PROPERTIES\n";
+            outfile << "    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin\n";
+            outfile << "    ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib\n";
+            outfile << "    LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib\n";
+            outfile << ")\n\n";
+
+            outfile << "if (CMAKE_CXX_COMPILER_ID STREQUAL \\\"GNU\\\" OR CMAKE_CXX_COMPILER_ID STREQUAL \\\"Clang\\\")\n";
+            outfile << "    target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -pedantic)\n";
+            outfile << "elseif (CMAKE_CXX_COMPILER_ID STREQUAL \\\"MSVC\\\")\n";
+            outfile << "    target_compile_options(${PROJECT_NAME} PRIVATE /W4)\n";
+            outfile << "endif()\n";
+
+            outfile.close();
+            return fs::exists(cmakeListsPath);
+        }
+        return false;
+    }
+
 }  // namespace vnd
 
 // NOLINTEND(*-include-cleaner)

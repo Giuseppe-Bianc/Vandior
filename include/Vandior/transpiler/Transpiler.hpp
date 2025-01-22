@@ -8,7 +8,7 @@
 namespace vnd {
     class Transpiler {
     public:
-        Transpiler(const std::string_view &input, const std::string_view &filename);
+        Transpiler(const std::string_view &input, const std::string_view &filename, bool createCmakeListsFile = false);
         std::string transpile();
 
         /**

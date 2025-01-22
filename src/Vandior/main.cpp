@@ -48,22 +48,23 @@ auto main(int argc, const char *const argv[]) -> int {
         bool compile = false;
         bool run = false;
         bool clean = false;
+        bool create_cmake = false;
         app.add_flag("--version, -v", show_version, "Show version information");
         app.add_flag("--compile, -c", compile, "Compile the resulting code");
         app.add_flag("--run, -r", run, "Compile the resulting code and execute it");
         app.add_flag("--clean, -x", clean, "Clean before building");
+        app.add_flag("--cmake, -m", create_cmake, "Create a CMakeLists.txt file");
         CLI11_PARSE(app, argc, argv)
         if(show_version) {
             LINFO("{}", Vandior::cmake::project_version);
             return EXIT_SUCCESS;
         }
-        const auto porfilename = path.value_or(filename.data());
+        const auto porfilename = fs::canonical(fs::path(path.value_or(filename.data())).lexically_normal()).string();
         if(clean) {
             const auto folderPath = vnd::GetBuildFolder(fs::path(porfilename));
-            LINFO("folder  to delete {}", folderPath);
-            auto unused = vnd::FolderDeletionResult::deleteFolder(folderPath);
             LINFO("Cleaning the project");
-            // return EXIT_SUCCESS;
+            auto folderDeleted = vnd::FolderDeletionResult::deleteFolder(folderPath);
+            if(folderDeleted.success()) { LINFO("Cleaning of the project done"); }
         }
         const auto str = vnd::readFromFile(porfilename);
         const std::string_view code(str);
@@ -88,7 +89,7 @@ auto main(int argc, const char *const argv[]) -> int {
                 node ? prettyPrint(*node) : LINFO("EMPTY");
             }
         }
-        vnd::Transpiler transpiler{input, filename};
+        vnd::Transpiler transpiler{input, porfilename, create_cmake};
         LINFO("transpiled code: {}", transpiler.transpile());
     } catch(const std::exception &e) {
         // Handle any other types of exceptions
