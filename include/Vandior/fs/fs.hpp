@@ -7,3 +7,5 @@
 
 #include "FolderCreationResult.hpp"
 #include "FolderDelitionResult.hpp"
+#include "FileCreationResult.hpp"
+#include "FileDelitionResult.hpp"

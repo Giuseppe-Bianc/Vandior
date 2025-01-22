@@ -1,7 +1,7 @@
 // NOLINTBEGIN(*-include-cleaner)
 #pragma once
 
-#include "FolderOperationResult.hpp"
+#include "OSOperationResult.hpp"
 
 DISABLE_WARNINGS_PUSH(4820)
 
@@ -11,9 +11,9 @@ namespace vnd {
      * @class FolderCreationResult
      * @brief Represents the result of a folder creation operation.
      */
-    class FolderCreationResult : public FolderOperationResult {
+    class FolderCreationResult : public OSOperationResult {
     public:
-        using FolderOperationResult::FolderOperationResult;
+        using OSOperationResult::OSOperationResult;
 
         [[nodiscard]] static auto createFolder(std::string_view folderName, const fs::path &parentDir) -> FolderCreationResult {
             // Validate the parameters

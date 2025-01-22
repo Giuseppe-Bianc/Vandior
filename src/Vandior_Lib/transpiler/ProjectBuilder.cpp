@@ -88,13 +88,7 @@ namespace vnd {
 #ifdef INDEPT
             const vnd::AutoTimer timer("CMakeLists.txt file creation");
 #endif
-            const auto cmakeListsPath = _vnBuildFolder.value() / "CMakeLists.txt";
-            std::ofstream outfile(cmakeListsPath);
-
-            if(!outfile.is_open()) {
-                LERROR("Failed to open file {}", cmakeListsPath);
-                return false;
-            }
+            std::stringstream outfile;
 
             const auto generatorName = GENERATOR_FULLNAME;
             outfile << FORMAT("# This is an automatically generated file by {}, do not modify. for more information got to  "
@@ -122,9 +116,9 @@ namespace vnd {
             outfile << "elseif (CMAKE_CXX_COMPILER_ID STREQUAL \\\"MSVC\\\")\n";
             outfile << "    target_compile_options(${PROJECT_NAME} PRIVATE /W4)\n";
             outfile << "endif()\n";
+            const auto result = vnd::FileCreationResult::createFile(_vnBuildFolder.value(), "CMakeLists.txt", outfile);
 
-            outfile.close();
-            return fs::exists(cmakeListsPath);
+            return result.success();
         }
         return false;
     }

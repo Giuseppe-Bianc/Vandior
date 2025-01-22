@@ -1,45 +1,16 @@
 // NOLINTBEGIN(*-include-cleaner)
 #pragma once
 
-#include "FolderOperationResult.hpp"
+#include "FileDelitionResult.hpp"
+#include "OSOperationResult.hpp"
 
 DISABLE_WARNINGS_PUSH(4820)
 
 namespace vnd {
-    class FolderDeletionResult : public FolderOperationResult {
+    class FolderDeletionResult : public OSOperationResult {
     public:
-        using FolderOperationResult::FolderOperationResult;
+        using OSOperationResult::OSOperationResult;
 
-        /**
-         * @brief Deletes a file at the specified path.
-         * @param filePath The path of the file to delete.
-         * @return A FolderDeletionResult object indicating the result of the operation.
-         */
-        [[nodiscard]] static auto deleteFile(const fs::path &filePath) -> FolderDeletionResult {
-            try {
-                if(fs::exists(filePath)) {
-                    if(fs::is_regular_file(filePath)) {
-                        fs::remove(filePath);
-#ifdef INDEPT
-                        LINFO("File '{}' deleted successfully.", filePath);
-#endif
-                        return {true, filePath};
-                    } else {
-                        LERROR("The path '{}' is not a file.", filePath);
-                        return {false, filePath};
-                    }
-                } else {
-                    LERROR("File '{}' does not exist.", filePath);
-                    return {false, filePath};
-                }
-            } catch(const fs::filesystem_error &e) {
-                LERROR("Failed to delete file '{}': {}", filePath, e.what());
-                return {false, filePath};
-            } catch(...) {
-                LERROR("An unknown error occurred while deleting file '{}'.", filePath);
-                return {false, filePath};
-            }
-        }
 
         /**
          * @brief Deletes a folder at the specified path, including its contents.
@@ -55,7 +26,7 @@ namespace vnd {
                             if(fs::is_directory(entry)) {
                                 auto unused = deleteFolder(entry.path());
                             } else {
-                                auto unused2 = deleteFile(entry.path());
+                                auto unused2 = FileDelitionResult::deleteFile(entry.path());
                             }
                         }
                         // Remove the folder itself
