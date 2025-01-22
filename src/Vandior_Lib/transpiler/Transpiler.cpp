@@ -23,8 +23,8 @@ namespace vnd {
         return {};  // Default-constructed value
     }
 
-    Transpiler::Transpiler(const std::string_view &input, const std::string_view &filename)
-      : _filename(filename), _projectBuilder(filename), _parser(input, _filename) {
+    Transpiler::Transpiler(const std::string_view &input, const std::string_view &filename, bool createCmakeListsFile)
+      : _filename(filename), _projectBuilder(_filename, createCmakeListsFile), _parser(input, _filename) {
         _projectBuilder.buildProject();
         _vnBuildFolder = getValueOrLog(_projectBuilder.getBuildFolderPath(), "Failed to get build folder path.");
         _vnBuildSrcFolder = getValueOrLog(_projectBuilder.getSrcFolderPath(), "Failed to get src folder path.");
@@ -42,7 +42,7 @@ namespace vnd {
 
         const auto generatorName = GENERATOR_FULLNAME;
 
-        outfile << FORMAT("// This is an automatically generated file by {}, do not modify.", generatorName);
+        outfile << FORMAT("// This is an automatically generated file by {}, do not modify. for more information got to  https://github.com/Giuseppe-Bianc/Vandior", generatorName);
         outfile << fileContent;
 
         // Il file viene chiuso automaticamente qui

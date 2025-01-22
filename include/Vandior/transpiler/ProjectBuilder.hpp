@@ -9,7 +9,7 @@ namespace vnd {
     class ProjectBuilder {
     public:
         // Costruttore che prende il nome del file come parametro
-        explicit ProjectBuilder(const std::string_view &filename) noexcept;
+        explicit ProjectBuilder(const std::string_view &filename, bool createCmakeListsFile = false) noexcept;
 
         // Metodo pubblico per avviare la costruzione del progetto
         void buildProject();
@@ -24,6 +24,7 @@ namespace vnd {
         [[nodiscard]] std::optional<fs::path> getMainOutputFilePath() const;
 
     private:
+        bool _createCmakeListsFile;
         std::string_view _filename;                   // Nome del file di input
         std::optional<fs::path> _vnBuildFolder;       // Percorso della cartella 'vnbuild'
         std::optional<fs::path> _vnSrcFolder;         // Percorso della cartella 'src'
@@ -37,6 +38,8 @@ namespace vnd {
 
         // Metodo per creare il file principale .cpp all'interno della cartella 'src'
         [[nodiscard]] bool createMainFile();
+
+        [[nodiscard]] bool createCMakeListsFile();
     };
 
 }  // namespace vnd

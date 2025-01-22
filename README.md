@@ -40,7 +40,7 @@ project correctly. If this isn't set, the compiler may run into errors or not wo
 environment variable correctly is a key part of ensuring that the project runs smoothly.
 
 ```bash
-vandior -i input_file.vn [-c] [-r] [-x]
+vandior -i input_file.vn [-c] [-r] [-x] [-m]
 ```
 
 Flags:
@@ -49,6 +49,7 @@ Flags:
 - --compile (-c): compiles the resulting C++ file if no error occurs;
 - --run (-r): Compiles and executes the resulting C++ file if no error occurs.
 - --clean (-x): Clean before building.
+- --cmake (-m): Create a CMakeLists.txt file.
 
 [//]: # (Using -c and -r together is the same as using only -r.)
 [//]: # ()
