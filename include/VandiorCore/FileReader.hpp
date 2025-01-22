@@ -24,8 +24,8 @@ namespace vnd {
         static std::mutex fileReadMutex;
         const std::scoped_lock lock(fileReadMutex);  // Ensure thread safety
         const auto filePath = fs::path(filename);
-        if(!fs::exists(filePath)) { throw FILEREADEREERRORF("File not found: {}", filePath.string()); }
-        if(!fs::is_regular_file(filePath)) { throw FILEREADEREERRORF("Path is not a regular file: {}", filePath.string()); }
+        if(!fs::exists(filePath)) { throw FILEREADEREERRORF("File not found: {}", filePath); }
+        if(!fs::is_regular_file(filePath)) { throw FILEREADEREERRORF("Path is not a regular file: {}", filePath); }
 
 #ifdef INDEPT
         // Optional timer for performance measurement.
