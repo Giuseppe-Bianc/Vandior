@@ -81,10 +81,7 @@ namespace vnd {
             }
         }
 
-    private:
-        bool success_ = false;          ///< The success status of the folder or file deletion.
-        std::optional<fs::path> path_;  ///< The path of the deleted folder or file.
-    };
+   };
 
 }  // namespace vnd
 

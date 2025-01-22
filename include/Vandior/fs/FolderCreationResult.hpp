@@ -70,10 +70,6 @@ namespace vnd {
                 return {false, {}};
             }
         }
-
-    private:
-        bool success_ = false;          ///< The success status of the folder creation.
-        std::optional<fs::path> path_;  ///< The path of the created folder.
     };
 
 }  // namespace vnd
