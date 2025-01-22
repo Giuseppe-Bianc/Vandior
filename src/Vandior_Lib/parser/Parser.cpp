@@ -28,6 +28,11 @@ namespace vnd {
         Token token{};
         StringVec data;
         const auto &tokensFront = currentStatement->front();
+        if((tokensFront.getType() == TokenType::OPEN_CUR_PARENTESIS || tokensFront.getType() == TokenType::CLOSE_CUR_PARENTESIS ||
+            tokensFront.getType() == TokenType::K_BREAK) &&
+           tokenSize > 1) {
+            throw ParserException(tokensFront);
+        }
         if(tokensFront.getType() == TokenType::OPEN_CUR_PARENTESIS || tokensFront.getType() == TokenType::CLOSE_CUR_PARENTESIS) {
             statements.emplace_back(tokensFront, data);
             position++;
