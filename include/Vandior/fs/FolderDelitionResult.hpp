@@ -16,7 +16,7 @@ namespace vnd {
          * @param folderPath The path of the folder to delete.
          * @return A FolderDeletionResult object indicating the result of the operation.
          */
-        [[nodiscard]] static auto deleteFolder(const fs::path &folderPath) -> FolderDeletionResult { // NOLINT(*-no-recursion)
+        [[nodiscard]] static auto deleteFolder(const fs::path &folderPath) -> FolderDeletionResult {  // NOLINT(*-no-recursion)
             try {
                 if(!fs::exists(folderPath)) {
                     LERROR("Folder '{}' does not exist.", folderPath);
