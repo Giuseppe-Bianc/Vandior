@@ -16,37 +16,46 @@ namespace vnd {
          * @param folderPath The path of the folder to delete.
          * @return A FolderDeletionResult object indicating the result of the operation.
          */
-        [[nodiscard]] static auto deleteFolder(const fs::path &folderPath) -> FolderDeletionResult {
+        [[nodiscard]] static auto deleteFolder(const fs::path &folderPath) -> FolderDeletionResult { // NOLINT(*-no-recursion)
             try {
-                if(fs::exists(folderPath)) {
-                    if(fs::is_directory(folderPath)) {
-                        // Recursively delete all contents of the folder
-                        for(const auto &entry : fs::directory_iterator(folderPath)) {
-                            if(fs::is_directory(entry)) {
-                                auto unused = deleteFolder(entry.path());
-                            } else {
-                                auto unused2 = FileDelitionResult::deleteFile(entry.path());
-                            }
-                        }
-                        // Remove the folder itself
-                        fs::remove(folderPath);
-#ifdef INDEPT
-                        LINFO("Folder '{}' deleted successfully.", folderPath);
-#endif
-                        return {true, folderPath};
-                    } else {
-                        LERROR("The path '{}' is not a folder.", folderPath);
-                        return {false, folderPath};
-                    }
-                } else {
+                if(!fs::exists(folderPath)) {
                     LERROR("Folder '{}' does not exist.", folderPath);
                     return {false, folderPath};
                 }
+                if(!fs::is_directory(folderPath)) {
+                    LERROR("The path '{}' is not a folder.", folderPath);
+                    return {false, folderPath};
+                }
+
+                // Recursively delete folder contents
+                for(const auto &entry : fs::directory_iterator(folderPath)) {
+                    if(fs::is_directory(entry)) {
+                        if(auto result = deleteFolder(entry.path()); !result.success()) {
+                            LERROR("Failed to delete subfolder '{}'.", entry.path());
+                            return {false, folderPath};
+                        }
+                    } else {
+                        if(auto fileResult = FileDelitionResult::deleteFile(entry.path()); !fileResult.success()) {
+                            LERROR("Failed to delete file '{}'.", entry.path());
+                            return {false, folderPath};
+                        }
+                    }
+                }
+
+                // Remove the folder itself
+                fs::remove(folderPath);
+#ifdef INDEPT
+                LINFO("Folder '{}' deleted successfully.", folderPath);
+#endif
+                return {true, folderPath};
             } catch(const fs::filesystem_error &e) {
-                LERROR("Failed to delete folder '{}': {}", folderPath, e.what());
+                LERROR("Filesystem error while deleting folder '{}': {}", folderPath, e.what());
+                return {false, folderPath};
+            } catch(const std::exception &e) {
+                LERROR("Exception while deleting folder '{}': {}", folderPath, e.what());
                 return {false, folderPath};
             } catch(...) {
-                LERROR("An unknown error occurred while deleting folder '{}'.", folderPath);
+                LERROR("Unknown error occurred while deleting folder '{}'.", folderPath);
                 return {false, folderPath};
             }
         }
