@@ -16,7 +16,7 @@ information:
 - **Reproduction Steps**: Detailed instructions or code to reproduce the issue.
 - **Additional Information**: Any supporting material such as screenshots, logs, or proof of concept (PoC) code.
 
-### Our Commitment:
+### Our Commitment
 
 - **Acknowledgement**: We will confirm receipt of your report within **48 hours**.
 - **Resolution**: We will aim to address the issue as quickly as possible and keep you updated throughout the process.
@@ -31,7 +31,7 @@ We actively support the following versions of our project. Please ensure you are
 benefit from security fixes:
 
 | Version | Status             |
-|---------|--------------------|
+| ------- | ------------------ |
 | 1.x.x   | :white_check_mark: |
 | 0.x.x   | :x:                |
 
@@ -54,7 +54,7 @@ We will prioritize addressing critical and high-severity vulnerabilities as swif
 If you experience or suspect a security incident related to our project, such as unauthorized access, data breaches, or
 suspicious activities, please notify us immediately at [gbianconi6@gmail.com](mailto:gbianconi6@gmail.com).
 
-### Incident Response Process:
+### Incident Response Process
 
 - **Initial Response**: We will acknowledge the report and begin investigating within **48 hours** of receiving your
   notification.
