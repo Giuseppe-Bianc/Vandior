@@ -1080,6 +1080,19 @@ TEST_CASE("Token Comparison Inequality", "[Token]") {
     REQUIRE(token1 != token2);
 }
 
+TEST_CASE("TokenizerUtility CommaOrColonType", "[tokenizer]") {
+    using enum vnd::TokenType;
+    REQUIRE(vnd::TokenizerUtility::CommaOrColonType('a')==UNKNOWN);
+    REQUIRE(vnd::TokenizerUtility::CommaOrColonType(',')==COMMA);
+    REQUIRE(vnd::TokenizerUtility::CommaOrColonType(':')==COLON);
+}
+
+TEST_CASE("TokenizerUtility CommaOrColonValue", "[tokenizer]") {
+    REQUIRE(vnd::TokenizerUtility::CommaOrColonValue('a')=="unknown");
+    REQUIRE(vnd::TokenizerUtility::CommaOrColonValue(',')==",");
+    REQUIRE(vnd::TokenizerUtility::CommaOrColonValue(':')==":");
+}
+
 TEST_CASE("tokenizer emit identifier token", "[tokenizer]") {
     vnd::Tokenizer tokenizer{"a a_ a0 a000_ _a", filename};
     std::vector<vnd::Token> tokens = tokenizer.tokenize();
