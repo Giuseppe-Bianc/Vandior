@@ -92,12 +92,12 @@ namespace vnd {
 
             const auto generatorName = GENERATOR_FULLNAME;
             const auto projectname = _vnBuildFolder.value().parent_path().stem();
-            outfile << FORMAT("# This is an automatically generated file by {}, do not modify.\n", generatorName, NEWL);
+            outfile << FORMAT("# This is an automatically generated file by {}, do not modify.\n", generatorName);
             outfile << R"(# for more information got to  https://github.com/Giuseppe-Bianc/Vandior
 cmake_minimum_required(VERSION 3.21)
 
 )";
-            outfile << FORMAT("project({0}s VERSION 1.0 LANGUAGES CXX C)\n\n", projectname, NEWL);
+            outfile << FORMAT("project({0}s VERSION 1.0 LANGUAGES CXX C)\n\n", projectname);
 
             outfile << R"(set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -114,9 +114,11 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -pedantic)
-elseif (CMAKE_CXX_COMPILER_ID
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+    target_compile_options(${PROJECT_NAME} PRIVATE /W4)
+    set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})
+endif()
 )";
-
             const auto result = vnd::FileCreationResult::createFile(_vnBuildFolder.value(), "CMakeLists.txt", outfile);
 
             return result.success();

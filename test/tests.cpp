@@ -2518,7 +2518,7 @@ TEST_CASE("NullptrNode basic functionality", "[NullptrNode]") {
     }
 }
 
-TEST_CASE("Transpiler creates correct folders and files", "[transpiler]") {
+TEST_CASE("Transpiler creates correct folders and files c++", "[transpiler]") {
     const std::string transpilerfilename = "testfile.vnd";
 
     vnd::Transpiler transpiler(long_input, transpilerfilename);
@@ -2532,7 +2532,9 @@ TEST_CASE("Transpiler creates correct folders and files", "[transpiler]") {
         REQUIRE(fs::exists(srcFolder));
 
         const fs::path cppFile = srcFolder / "testfile.cpp";
+        const fs::path cmakeListsFile = buildFolder / "CMakeLists.txt";
         REQUIRE(fs::exists(cppFile));
+        REQUIRE(fs::exists(cmakeListsFile));
 
         std::ifstream file(cppFile);
         std::string fileContent((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
@@ -2540,6 +2542,48 @@ TEST_CASE("Transpiler creates correct folders and files", "[transpiler]") {
         REQUIRE_THAT(fileContent, ContainsSubstring("Hello, World!"));  // Check for the presence of "Hello, World!"
         REQUIRE_THAT(fileContent, StartsWith("// This is an automatically generated file by Vandior"));
         REQUIRE_THAT(fileContent, EndsWith("return 0;\n}\n"));
+    }
+
+    SECTION("Clean up") {
+        transpiler.transpile();
+
+        const fs::path buildFolder("vnbuild");
+        [[maybe_unused]] auto unused = fs::remove_all(buildFolder);
+        REQUIRE_FALSE(fs::exists(buildFolder));  // Folder should not exist
+    }
+}
+
+TEST_CASE("Transpiler creates correct folders and files c++ cmake", "[transpiler]") {
+    const std::string transpilerfilename = "testfile.vnd";
+
+    vnd::Transpiler transpiler(long_input, transpilerfilename, true);
+
+    SECTION("Folder and file creation") {
+        transpiler.transpile();
+
+        const fs::path buildFolder("vnbuild");
+        const fs::path srcFolder = buildFolder / "src";
+        REQUIRE(fs::exists(buildFolder));
+        REQUIRE(fs::exists(srcFolder));
+
+        const fs::path cppFile = srcFolder / "testfile.cpp";
+        const fs::path cmakeListsFile = buildFolder / "CMakeLists.txt";
+        REQUIRE(fs::exists(cppFile));
+        REQUIRE(fs::exists(cmakeListsFile));
+
+        std::ifstream file(cppFile);
+        std::string fileContent((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+
+        REQUIRE_THAT(fileContent, ContainsSubstring("Hello, World!"));  // Check for the presence of "Hello, World!"
+        REQUIRE_THAT(fileContent, StartsWith("// This is an automatically generated file by Vandior"));
+        REQUIRE_THAT(fileContent, EndsWith("return 0;\n}\n"));
+
+        std::ifstream cmakeListsfile(cmakeListsFile);
+        std::string cmakeListsfileContent((std::istreambuf_iterator<char>(cmakeListsfile)), std::istreambuf_iterator<char>());
+        REQUIRE_THAT(cmakeListsfileContent, ContainsSubstring("# for more information got to  https://github.com/Giuseppe-Bianc/Vandior"));
+        REQUIRE_THAT(cmakeListsfileContent, ContainsSubstring("set_target_properties(${PROJECT_NAME} PROPERTIES"));
+        REQUIRE_THAT(cmakeListsfileContent, StartsWith("# This is an automatically generated file by Vandior"));
+        REQUIRE_THAT(cmakeListsfileContent, EndsWith("endif()\n"));
     }
 
     SECTION("Clean up") {
