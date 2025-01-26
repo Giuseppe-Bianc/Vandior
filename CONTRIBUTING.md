@@ -8,12 +8,12 @@ this project. This document provides guidelines and instructions for contributin
 - [Code of Conduct](#code-of-conduct)
 - [Getting Started](#getting-started)
 - [How to Contribute](#how-to-contribute)
-    - [Reporting Bugs](#reporting-bugs)
-    - [Suggesting Enhancements](#suggesting-enhancements)
-    - [Submitting Pull Requests](#submitting-pull-requests)
+  - [Reporting Bugs](#reporting-bugs)
+  - [Suggesting Enhancements](#suggesting-enhancements)
+  - [Submitting Pull Requests](#submitting-pull-requests)
 - [Style Guides](#style-guides)
-    - [Coding Style](#coding-style)
-    - [Commit Messages](#commit-messages)
+  - [Coding Style](#coding-style)
+  - [Commit Messages](#commit-messages)
 - [Additional Resources](#additional-resources)
 
 ## Code of Conduct

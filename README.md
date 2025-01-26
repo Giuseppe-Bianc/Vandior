@@ -24,12 +24,12 @@ To run this program smoothly, please ensure the following prerequisites are in p
 
 ## More Details
 
-* [Dependency Setup](README_dependencies.md): This section provides a comprehensive guide to setting up the necessary
+- [Dependency Setup](README_dependencies.md): This section provides a comprehensive guide to setting up the necessary
   dependencies for Vandior.It walks you through each step of the process, ensuring that you have everything you need to
   get started.
-* [Building Details](README_building.md): Here, you can find detailed instructions on how to build Vandior. Whether
+- [Building Details](README_building.md): Here, you can find detailed instructions on how to build Vandior. Whether
   you're a seasoned developer or a novice, these instructions will help you get Vandior up and running on your machine.
-* [Docker](README_docker.md): This section provides information on how to use Vandior with Docker. If you're looking to
+- [Docker](README_docker.md): This section provides information on how to use Vandior with Docker. If you're looking to
   containerize your Vandior applications, this guide will be invaluable.
 
 ## Usage
