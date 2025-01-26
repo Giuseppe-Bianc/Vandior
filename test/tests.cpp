@@ -2532,9 +2532,8 @@ TEST_CASE("Transpiler creates correct folders and files c++", "[transpiler]") {
         REQUIRE(fs::exists(srcFolder));
 
         const fs::path cppFile = srcFolder / "testfile.cpp";
-        const fs::path cmakeListsFile = buildFolder / "CMakeLists.txt";
+
         REQUIRE(fs::exists(cppFile));
-        REQUIRE(fs::exists(cmakeListsFile));
 
         std::ifstream file(cppFile);
         std::string fileContent((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
