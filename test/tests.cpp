@@ -1082,7 +1082,9 @@ TEST_CASE("Token Comparison Inequality", "[Token]") {
 
 TEST_CASE("tokenizer emit identifier token", "[tokenizer]") {
     vnd::Tokenizer tokenizer{"a a_ a0 a000_ _a", filename};
-    std::vector<vnd::Token> tokens = tokenizer.tokenize();
+    std::vector<vnd::TokenVec> result = tokenizer.tokenize();
+    REQUIRE(result.size() == 1);
+    vnd::TokenVec tokens = result.front();
     REQUIRE(tokens.size() == 6);
     REQUIRE(tokens[0] == vnd::Token(identf, "a", vnd::CodeSourceLocation(filename, 1, 1)));
     REQUIRE(tokens[1] == vnd::Token(identf, "a_", vnd::CodeSourceLocation(filename, 1, 3)));
@@ -1093,19 +1095,26 @@ TEST_CASE("tokenizer emit identifier token", "[tokenizer]") {
 
 TEST_CASE("tokenizer emit identifier token new line", "[tokenizer]") {
     vnd::Tokenizer tokenizer{"a a_\na0 a000_ _a", filename};
-    std::vector<vnd::Token> tokens = tokenizer.tokenize();
-    REQUIRE(tokens.size() == 6);
+    std::vector<vnd::TokenVec> result = tokenizer.tokenize();
+    REQUIRE(result.size() == 2);
+    vnd::TokenVec tokens = result.at(0);
+    REQUIRE(tokens.size() == 2);
     REQUIRE(tokens[0] == vnd::Token(identf, "a", vnd::CodeSourceLocation(filename, 1, 1)));
     REQUIRE(tokens[1] == vnd::Token(identf, "a_", vnd::CodeSourceLocation(filename, 1, 3)));
-    REQUIRE(tokens[2] == vnd::Token(identf, "a0", vnd::CodeSourceLocation(filename, 2, 1)));
-    REQUIRE(tokens[3] == vnd::Token(identf, "a000_", vnd::CodeSourceLocation(filename, 2, 4)));
-    REQUIRE(tokens[4] == vnd::Token(identf, "_a", vnd::CodeSourceLocation(filename, 2, 10)));
+    tokens = result.at(1);
+    REQUIRE(tokens.size() == 4);
+    REQUIRE(tokens[0] == vnd::Token(identf, "a0", vnd::CodeSourceLocation(filename, 2, 1)));
+    REQUIRE(tokens[1] == vnd::Token(identf, "a000_", vnd::CodeSourceLocation(filename, 2, 4)));
+    REQUIRE(tokens[2] == vnd::Token(identf, "_a", vnd::CodeSourceLocation(filename, 2, 10)));
+    REQUIRE(tokens[3].getType() == vnd::eofTokenType);
 }
 
 TEST_CASE("tokenizer emit integer token for hexadecimals numbers", "[tokenizer]") {
     // hexadecimals 0xhexnum a-f A-F 0-9
     vnd::Tokenizer tokenizer{"#0 #23 #24 #ff #7f", filename};
-    std::vector<vnd::Token> tokens = tokenizer.tokenize();
+    std::vector<vnd::TokenVec> result = tokenizer.tokenize();
+    REQUIRE(result.size() == 1);
+    vnd::TokenVec tokens = result.front();
     REQUIRE(tokens.size() == 6);
     REQUIRE(tokens[0] == vnd::Token(inte, "#0", vnd::CodeSourceLocation(filename, 1, 0)));
     REQUIRE(tokens[1] == vnd::Token(inte, "#23", vnd::CodeSourceLocation(filename, 1, 3)));
@@ -1123,7 +1132,9 @@ TEST_CASE("tokenizer emit exception on  malformed exadecimal number or octal num
 TEST_CASE("tokenizer emit integer token for octal numbers", "[tokenizer]") {
     // octal 0oOctnum 0-7
     vnd::Tokenizer tokenizer{"#o0 #o23 #o24", filename};
-    std::vector<vnd::Token> tokens = tokenizer.tokenize();
+    std::vector<vnd::TokenVec> result = tokenizer.tokenize();
+    REQUIRE(result.size() == 1);
+    vnd::TokenVec tokens = result.front();
     REQUIRE(tokens.size() == 4);
     REQUIRE(tokens[0] == vnd::Token(inte, "#o0", vnd::CodeSourceLocation(filename, 1, 0)));
     REQUIRE(tokens[1] == vnd::Token(inte, "#o23", vnd::CodeSourceLocation(filename, 1, 4)));
@@ -1132,7 +1143,9 @@ TEST_CASE("tokenizer emit integer token for octal numbers", "[tokenizer]") {
 
 TEST_CASE("tokenizer emit integer token", "[tokenizer]") {
     vnd::Tokenizer tokenizer{"42 333 550 34000000", filename};
-    std::vector<vnd::Token> tokens = tokenizer.tokenize();
+    std::vector<vnd::TokenVec> result = tokenizer.tokenize();
+    REQUIRE(result.size() == 1);
+    vnd::TokenVec tokens = result.front();
     REQUIRE(tokens.size() == 5);
     REQUIRE(tokens[0] == vnd::Token(inte, "42", vnd::CodeSourceLocation(filename, 1, 1)));
     REQUIRE(tokens[1] == vnd::Token(inte, "333", vnd::CodeSourceLocation(filename, 1, 4)));
@@ -1142,17 +1155,24 @@ TEST_CASE("tokenizer emit integer token", "[tokenizer]") {
 
 TEST_CASE("tokenizer emit integer token new line", "[tokenizer]") {
     vnd::Tokenizer tokenizer{"42 333\n550 34000000", filename};
-    std::vector<vnd::Token> tokens = tokenizer.tokenize();
-    REQUIRE(tokens.size() == 5);
+    std::vector<vnd::TokenVec> result = tokenizer.tokenize();
+    REQUIRE(result.size() == 2);
+    vnd::TokenVec tokens = result.at(0);
+    REQUIRE(tokens.size() == 2);
     REQUIRE(tokens[0] == vnd::Token(inte, "42", vnd::CodeSourceLocation(filename, 1, 1)));
     REQUIRE(tokens[1] == vnd::Token(inte, "333", vnd::CodeSourceLocation(filename, 1, 4)));
-    REQUIRE(tokens[2] == vnd::Token(inte, "550", vnd::CodeSourceLocation(filename, 2, 1)));
-    REQUIRE(tokens[3] == vnd::Token(inte, "34000000", vnd::CodeSourceLocation(filename, 2, 5)));
+    tokens = result.at(1);
+    REQUIRE(tokens.size() == 3);
+    REQUIRE(tokens[0] == vnd::Token(inte, "550", vnd::CodeSourceLocation(filename, 2, 1)));
+    REQUIRE(tokens[1] == vnd::Token(inte, "34000000", vnd::CodeSourceLocation(filename, 2, 5)));
+    REQUIRE(tokens[2].getType() == vnd::eofTokenType);  
 }
 
 TEST_CASE("tokenizer emit double token", "[tokenizer]") {
     vnd::Tokenizer tokenizer{"1. 1.0 1e+1 1E+1 1.1e+1 1.1E+1 1e-1 1E-1 1.1e-1 1.1E-1 .4e12 4i 5.4if .7f", filename};
-    std::vector<vnd::Token> tokens = tokenizer.tokenize();
+    std::vector<vnd::TokenVec> result = tokenizer.tokenize();
+    REQUIRE(result.size() == 1);
+    vnd::TokenVec tokens = result.front();
     REQUIRE(tokens.size() == 15);
     REQUIRE(tokens[0] == vnd::Token(doub, "1.", vnd::CodeSourceLocation(filename, 1, 1)));
     REQUIRE(tokens[1] == vnd::Token(doub, "1.0", vnd::CodeSourceLocation(filename, 1, 4)));
@@ -1173,7 +1193,9 @@ TEST_CASE("tokenizer emit double token", "[tokenizer]") {
 TEST_CASE("tokenizer emit operator token", "[tokenizer]") {
     using enum vnd::TokenType;
     vnd::Tokenizer tokenizer{"* / = , : < > ! | & + - ^ . %", filename};
-    std::vector<vnd::Token> tokens = tokenizer.tokenize();
+    std::vector<vnd::TokenVec> result = tokenizer.tokenize();
+    REQUIRE(result.size() == 1);
+    vnd::TokenVec tokens = result.front();
     REQUIRE(tokens.size() == 16);
     REQUIRE(tokens[0] == vnd::Token(STAR, "*", vnd::CodeSourceLocation(filename, 1, 1)));
     REQUIRE(tokens[1] == vnd::Token(DIVIDE, "/", vnd::CodeSourceLocation(filename, 1, 3)));
@@ -1196,7 +1218,9 @@ TEST_CASE("tokenizer emit operator token", "[tokenizer]") {
 TEST_CASE("tokenizer emit operationEqual token", "[tokenizer]") {
     using enum vnd::TokenType;
     vnd::Tokenizer tokenizer{"+= -= *= /= %=", filename};
-    std::vector<vnd::Token> tokens = tokenizer.tokenize();
+    std::vector<vnd::TokenVec> result = tokenizer.tokenize();
+    REQUIRE(result.size() == 1);
+    vnd::TokenVec tokens = result.front();
     REQUIRE(tokens.size() == 6);
     REQUIRE(tokens[0] == vnd::Token(PLUSEQUAL, "+=", vnd::CodeSourceLocation(filename, 1, 1)));
     REQUIRE(tokens[1] == vnd::Token(MINUSEQUAL, "-=", vnd::CodeSourceLocation(filename, 1, 4)));
@@ -1208,7 +1232,9 @@ TEST_CASE("tokenizer emit operationEqual token", "[tokenizer]") {
 TEST_CASE("tokenizer emit boolean operator token", "[tokenizer]") {
     using enum vnd::TokenType;
     vnd::Tokenizer tokenizer{"== >= <= !=", filename};
-    std::vector<vnd::Token> tokens = tokenizer.tokenize();
+    std::vector<vnd::TokenVec> result = tokenizer.tokenize();
+    REQUIRE(result.size() == 1);
+    vnd::TokenVec tokens = result.front();
     REQUIRE(tokens.size() == 5);
     REQUIRE(tokens[0] == vnd::Token(EQUALEQUAL, "==", vnd::CodeSourceLocation(filename, 1, 1)));
     REQUIRE(tokens[1] == vnd::Token(GREATEREQUAL, ">=", vnd::CodeSourceLocation(filename, 1, 4)));
@@ -1218,7 +1244,9 @@ TEST_CASE("tokenizer emit boolean operator token", "[tokenizer]") {
 
 TEST_CASE("tokenizer emit logical operator token", "[tokenizer]") {
     vnd::Tokenizer tokenizer{"&& ||", filename};
-    std::vector<vnd::Token> tokens = tokenizer.tokenize();
+    std::vector<vnd::TokenVec> result = tokenizer.tokenize();
+    REQUIRE(result.size() == 1);
+    vnd::TokenVec tokens = result.front();
     REQUIRE(tokens.size() == 3);
     REQUIRE(tokens[0] == vnd::Token(vnd::TokenType::ANDAND, "&&", vnd::CodeSourceLocation(filename, 1, 1)));
     REQUIRE(tokens[1] == vnd::Token(vnd::TokenType::OROR, "||", vnd::CodeSourceLocation(filename, 1, 4)));
@@ -1226,7 +1254,9 @@ TEST_CASE("tokenizer emit logical operator token", "[tokenizer]") {
 
 TEST_CASE("tokenizer emit unary operator token", "[tokenizer]") {
     vnd::Tokenizer tokenizer{"++ --", filename};
-    std::vector<vnd::Token> tokens = tokenizer.tokenize();
+    std::vector<vnd::TokenVec> result = tokenizer.tokenize();
+    REQUIRE(result.size() == 1);
+    vnd::TokenVec tokens = result.front();
     REQUIRE(tokens.size() == 3);
     REQUIRE(tokens[0] == vnd::Token(vnd::TokenType::PLUSPLUS, "++", vnd::CodeSourceLocation(filename, 1, 1)));
     REQUIRE(tokens[1] == vnd::Token(vnd::TokenType::MINUSMINUS, "--", vnd::CodeSourceLocation(filename, 1, 4)));
@@ -1234,7 +1264,9 @@ TEST_CASE("tokenizer emit unary operator token", "[tokenizer]") {
 
 TEST_CASE("tokenizer emit parenthesis token", "[tokenizer]") {
     vnd::Tokenizer tokenizer{"( )", filename};
-    std::vector<vnd::Token> tokens = tokenizer.tokenize();
+    std::vector<vnd::TokenVec> result = tokenizer.tokenize();
+    REQUIRE(result.size() == 1);
+    vnd::TokenVec tokens = result.front();
     REQUIRE(tokens.size() == 3);
     REQUIRE(tokens[0] == vnd::Token(vnd::TokenType::OPEN_PARENTESIS, "(", vnd::CodeSourceLocation(filename, 1, 1)));
     REQUIRE(tokens[1] == vnd::Token(vnd::TokenType::CLOSE_PARENTESIS, ")", vnd::CodeSourceLocation(filename, 1, 3)));
@@ -1242,7 +1274,9 @@ TEST_CASE("tokenizer emit parenthesis token", "[tokenizer]") {
 
 TEST_CASE("tokenizer emit square parenthesis token", "[tokenizer]") {
     vnd::Tokenizer tokenizer{"[ ]", filename};
-    std::vector<vnd::Token> tokens = tokenizer.tokenize();
+    std::vector<vnd::TokenVec> result = tokenizer.tokenize();
+    REQUIRE(result.size() == 1);
+    vnd::TokenVec tokens = result.front();
     REQUIRE(tokens.size() == 3);
     REQUIRE(tokens[0] == vnd::Token(vnd::TokenType::OPEN_SQ_PARENTESIS, "[", vnd::CodeSourceLocation(filename, 1, 1)));
     REQUIRE(tokens[1] == vnd::Token(vnd::TokenType::CLOSE_SQ_PARENTESIS, "]", vnd::CodeSourceLocation(filename, 1, 3)));
@@ -1250,7 +1284,9 @@ TEST_CASE("tokenizer emit square parenthesis token", "[tokenizer]") {
 
 TEST_CASE("Tokenizer emit square curly token", "[Tokenizer]") {
     vnd::Tokenizer tokenizer{"{ }", filename};
-    std::vector<vnd::Token> tokens = tokenizer.tokenize();
+    std::vector<vnd::TokenVec> result = tokenizer.tokenize();
+    REQUIRE(result.size() == 1);
+    vnd::TokenVec tokens = result.front();
     REQUIRE(tokens.size() == 3);
     REQUIRE(tokens[0] == vnd::Token(vnd::TokenType::OPEN_CUR_PARENTESIS, "{", vnd::CodeSourceLocation(filename, 1, 1)));
     REQUIRE(tokens[1] == vnd::Token(vnd::TokenType::CLOSE_CUR_PARENTESIS, "}", vnd::CodeSourceLocation(filename, 1, 3)));
@@ -1260,7 +1296,9 @@ TEST_CASE("Tokenizer emit char token", "[Tokenizer]") {
     using enum vnd::TokenType;
     constexpr std::string_view code2 = R"('a' '\\' '')";
     vnd::Tokenizer tokenizer{code2, filename};
-    std::vector<vnd::Token> tokens = tokenizer.tokenize();
+    std::vector<vnd::TokenVec> result = tokenizer.tokenize();
+    REQUIRE(result.size() == 1);
+    vnd::TokenVec tokens = result.front();
     REQUIRE(tokens.size() == 4);
     REQUIRE(tokens[0] == vnd::Token(CHAR, "a", vnd::CodeSourceLocation(filename, 1, 2)));
     REQUIRE(tokens[1] == vnd::Token(CHAR, R"(\\)", vnd::CodeSourceLocation(filename, 1, t_colum)));
@@ -1277,7 +1315,9 @@ TEST_CASE("Tokenizer emit string token", "[Tokenizer]") {
     using enum vnd::TokenType;
     constexpr std::string_view code2 = R"("a" "\\" "")";
     vnd::Tokenizer tokenizer{code2, filename};
-    std::vector<vnd::Token> tokens = tokenizer.tokenize();
+    std::vector<vnd::TokenVec> result = tokenizer.tokenize();
+    REQUIRE(result.size() == 1);
+    vnd::TokenVec tokens = result.front();
     REQUIRE(tokens.size() == 4);
     REQUIRE(tokens[0] == vnd::Token(STRING, "a", vnd::CodeSourceLocation(filename, 1, 1)));
     REQUIRE(tokens[1] == vnd::Token(STRING, R"(\\)", vnd::CodeSourceLocation(filename, 1, 5)));
@@ -1287,7 +1327,9 @@ TEST_CASE("Tokenizer emit string token", "[Tokenizer]") {
 TEST_CASE("tokenizer emit unknown token on non closed char token", "[tokenizer]") {
     constexpr std::string_view code2 = R"('a")";
     vnd::Tokenizer tokenizer{code2, filename};
-    std::vector<vnd::Token> tokens = tokenizer.tokenize();
+    std::vector<vnd::TokenVec> result = tokenizer.tokenize();
+    REQUIRE(result.size() == 1);
+    vnd::TokenVec tokens = result.front();
     REQUIRE(tokens.size() == 2);
     REQUIRE(tokens[0] == vnd::Token(vnd::TokenType::UNKNOWN, R"(a")", vnd::CodeSourceLocation(filename, 1, 2)));
 }
@@ -1296,7 +1338,9 @@ TEST_CASE("tokenizer emit comment token", "[tokenizer]") {
     SECTION("Basic single-line comment") {
         constexpr std::string_view code2 = R"(// line comment)";
         vnd::Tokenizer tokenizer{code2, filename};
-        std::vector<vnd::Token> tokens = tokenizer.tokenize();
+        std::vector<vnd::TokenVec> result = tokenizer.tokenize();
+        REQUIRE(result.size() == 1);
+        vnd::TokenVec tokens = result.front();
         REQUIRE(tokens.size() == 2);
         REQUIRE(tokens[0] == vnd::Token(vnd::TokenType::COMMENT, "// line comment", vnd::CodeSourceLocation(filename, 1, 1)));
     }
@@ -1305,20 +1349,26 @@ TEST_CASE("tokenizer emit comment token", "[tokenizer]") {
         const std::string input = "// Comment with symbols !@#$%^&*()123456\n";
         vnd::Tokenizer tokenizer{input, filename};
 
-        std::vector<vnd::Token> tokens = tokenizer.tokenize();
-        REQUIRE(tokens.size() == 2);
+        std::vector<vnd::TokenVec> result = tokenizer.tokenize();
+        REQUIRE(result.size() == 2);
+        vnd::TokenVec tokens = result.front();
+        REQUIRE(tokens.size() == 1);
         REQUIRE(tokens[0].getType() == vnd::TokenType::COMMENT);
         REQUIRE(tokens[0].getValue() == "// Comment with symbols !@#$%^&*()123456");
+        REQUIRE(result.at(1).front().getType() == vnd::eofTokenType);
     }
 
     SECTION("Single-line comment with no text") {
         const std::string input = "//\n";
         vnd::Tokenizer tokenizer{input, filename};
 
-        std::vector<vnd::Token> tokens = tokenizer.tokenize();
-        REQUIRE(tokens.size() == 2);
+        std::vector<vnd::TokenVec> result = tokenizer.tokenize();
+        REQUIRE(result.size() == 2);
+        vnd::TokenVec tokens = result.front();
+        REQUIRE(tokens.size() == 1);
         REQUIRE(tokens[0].getType() == vnd::TokenType::COMMENT);
         REQUIRE(tokens[0].getValue() == "//");
+        REQUIRE(result.at(1).front().getType() == vnd::eofTokenType);
     }
 }
 
@@ -1326,7 +1376,9 @@ TEST_CASE("tokenizer emit multiline comment token", "[tokenizer]") {
     SECTION("Basic multi-line comment") {
         constexpr std::string_view code2 = R"(/*multi\nline\ncomment*/)";
         vnd::Tokenizer tokenizer{code2, filename};
-        std::vector<vnd::Token> tokens = tokenizer.tokenize();
+        std::vector<vnd::TokenVec> result = tokenizer.tokenize();
+        REQUIRE(result.size() == 1);
+        vnd::TokenVec tokens = result.front();
         REQUIRE(tokens.size() == 2);
         REQUIRE(tokens[0] == vnd::Token(vnd::TokenType::COMMENT, R"(/*multi\nline\ncomment*/)", vnd::CodeSourceLocation(filename, 1, 1)));
     }
@@ -1334,7 +1386,9 @@ TEST_CASE("tokenizer emit multiline comment token", "[tokenizer]") {
     SECTION("Multi-line comment with asterisks inside") {
         const std::string input = "/* This * is * a * multi-line comment */";
         vnd::Tokenizer tokenizer{input, filename};
-        std::vector<vnd::Token> tokens = tokenizer.tokenize();
+        std::vector<vnd::TokenVec> result = tokenizer.tokenize();
+        REQUIRE(result.size() == 1);
+        vnd::TokenVec tokens = result.front();
         REQUIRE(tokens.size() == 2);
         REQUIRE(tokens[0].getType() == vnd::TokenType::COMMENT);
         REQUIRE(tokens[0].getValue() == "/* This * is * a * multi-line comment */");
@@ -1346,32 +1400,36 @@ TEST_CASE("tokenizer emit mixed Comments", "[tokenizer]") {
         const std::string input = "// Single line\n/* Multi-line */";
         vnd::Tokenizer tokenizer(input, "testFile");
 
-        auto tokens = tokenizer.tokenize();
+        std::vector<vnd::TokenVec> result = tokenizer.tokenize();
+        REQUIRE(result.size() == 2);
+        vnd::TokenVec tokens = result.at(0);
         REQUIRE(tokens[0].getType() == vnd::TokenType::COMMENT);
         REQUIRE(tokens[0].getValue() == "// Single line");
-
-        REQUIRE(tokens[1].getType() == vnd::TokenType::COMMENT);
-        REQUIRE(tokens[1].getValue() == "/* Multi-line */");
+        tokens = result.at(1);
+        REQUIRE(tokens[0].getType() == vnd::TokenType::COMMENT);
+        REQUIRE(tokens[0].getValue() == "/* Multi-line */");
     }
 
     SECTION("Multi-line comment followed by single-line comment") {
         const std::string input = "/* Multi-line */\n// Single line";
         vnd::Tokenizer tokenizer(input, "testFile");
 
-        auto tokens = tokenizer.tokenize();
+        std::vector<vnd::TokenVec> result = tokenizer.tokenize();
+        REQUIRE(result.size() == 2);
+        vnd::TokenVec tokens = result.at(0);
         REQUIRE(tokens[0].getType() == vnd::TokenType::COMMENT);
         REQUIRE(tokens[0].getValue() == "/* Multi-line */");
-
-        REQUIRE(tokens[1].getType() == vnd::TokenType::COMMENT);
-        REQUIRE(tokens[1].getValue() == "// Single line");
+        tokens = result.at(1);
+        REQUIRE(tokens[0].getType() == vnd::TokenType::COMMENT);
+        REQUIRE(tokens[0].getValue() == "// Single line");
     }
 }
 
 TEST_CASE("tokenizer edge cases for comments", "[tokenizer]") {
     const std::string input = "/* Comment with ** inside */";
     vnd::Tokenizer tokenizer(input, "testFile");
-
-    auto token = tokenizer.tokenize()[0];
+    
+    auto token = tokenizer.tokenize().front().front();
     REQUIRE(token.getType() == vnd::TokenType::COMMENT);
     REQUIRE(token.getValue() == "/* Comment with ** inside */");
 }
