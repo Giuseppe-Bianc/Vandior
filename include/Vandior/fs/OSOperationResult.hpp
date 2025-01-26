@@ -8,10 +8,10 @@ DISABLE_WARNINGS_PUSH(4820)
 namespace vnd {
 
     /**
-     * @class FolderOperationResult
+     * @class OSOperationResult
      * @brief Represents the result of a folder operation (creation or deletion).
      */
-    class FolderOperationResult {
+    class OSOperationResult {
     public:
         /**
          * @brief Checks if the operation was successful.
@@ -59,34 +59,34 @@ namespace vnd {
         /**
          * @brief Default constructor
          */
-        FolderOperationResult() = default;
+        OSOperationResult() = default;
 
         /**
          * @brief Constructs a FolderOperationResult with the specified success status and path.
          * @param success The success status of the operation.
          * @param path The path involved in the operation.
          */
-        FolderOperationResult(const bool success, const fs::path &path) : success_{success}, path_{path} {}
+        OSOperationResult(const bool success, const fs::path &path) : success_{success}, path_{path} {}
 
         /**
          * @brief Copy constructor for FolderOperationResult.
          */
-        FolderOperationResult(const FolderOperationResult &other) = default;
+        OSOperationResult(const OSOperationResult &other) = default;
 
         /**
          * @brief Move constructor for FolderOperationResult.
          */
-        FolderOperationResult(FolderOperationResult &&other) noexcept = default;
+        OSOperationResult(OSOperationResult &&other) noexcept = default;
 
         /**
          * @brief Copy assignment operator for FolderOperationResult.
          */
-        FolderOperationResult &operator=(const FolderOperationResult &other) = default;
+        OSOperationResult &operator=(const OSOperationResult &other) = default;
 
         /**
          * @brief Move assignment operator for FolderOperationResult.
          */
-        FolderOperationResult &operator=(FolderOperationResult &&other) noexcept = default;
+        OSOperationResult &operator=(OSOperationResult &&other) noexcept = default;
 
         /**
          * @brief Equality operator for FolderOperationResult.
@@ -94,11 +94,11 @@ namespace vnd {
          * @param rhs The right-hand side FolderOperationResult.
          * @return True if both FolderOperationResult objects are equal, false otherwise.
          */
-        friend bool operator==(const FolderOperationResult &lhs, const FolderOperationResult &rhs) noexcept = default;
+        friend bool operator==(const OSOperationResult &lhs, const OSOperationResult &rhs) noexcept = default;
 
-        ~FolderOperationResult() = default;
+        ~OSOperationResult() = default;
 
-        friend void swap(FolderOperationResult &lhs, FolderOperationResult &rhs) noexcept {
+        friend void swap(OSOperationResult &lhs, OSOperationResult &rhs) noexcept {
             std::swap(lhs.success_, rhs.success_);
             std::swap(lhs.path_, rhs.path_);
         }
@@ -108,7 +108,7 @@ namespace vnd {
          * @param obj The FolderOperationResult object to hash.
          * @return The hash value of the object.
          */
-        friend std::size_t hash_value(const FolderOperationResult &obj) noexcept {
+        friend std::size_t hash_value(const OSOperationResult &obj) noexcept {
 #ifdef __llvm__
             return bool_hasher(obj.success_) ^ (string_hasher(obj.path_.value_or("").string()) << 1);
 #else
@@ -122,7 +122,7 @@ namespace vnd {
          * @param obj The FolderOperationResult object to output.
          * @return The output stream after writing the FolderOperationResult object.
          */
-        friend std::ostream &operator<<(std::ostream &oss, const FolderOperationResult &obj) {
+        friend std::ostream &operator<<(std::ostream &oss, const OSOperationResult &obj) {
             const auto pathValue = obj.path_.value_or("");
             if(pathValue.empty()) { return oss << FORMAT("success_: {}, path_: None", obj.success_); }
             return oss << FORMAT("success_: {}, path_: {}", obj.success_, pathValue);
