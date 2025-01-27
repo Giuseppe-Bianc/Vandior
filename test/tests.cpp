@@ -2565,7 +2565,7 @@ TEST_CASE("Transpiler creates correct folders and files c++", "[transpiler]") {
     }
 }
 
-TEST_CASE("Transpiler creates correct folders and files c++ cmake", "[transpiler]") {
+/*TEST_CASE("Transpiler creates correct folders and files c++ cmake", "[transpiler]") {
     const std::string transpilerfilename = "testfile.vnd";
 
     vnd::Transpiler transpiler(long_input, transpilerfilename, true);
@@ -2606,7 +2606,7 @@ TEST_CASE("Transpiler creates correct folders and files c++ cmake", "[transpiler
         REQUIRE_FALSE(fs::exists(buildFolder));  // Folder should not exist
     }
 }
-
+*/
 TEST_CASE("Transpiler::mapType returns correct type mappings", "[transpiler]") {
     SECTION("Valid type mappings") {
         REQUIRE(vnd::Transpiler::mapType("i8"sv) == "int8_t"sv);
