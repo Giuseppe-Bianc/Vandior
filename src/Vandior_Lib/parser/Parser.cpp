@@ -1,9 +1,9 @@
 #include "Vandior/parser/Parser.hpp"
 #include "Vandior/parser/ParserException.hpp"
+#include "VandiorCore/Log.hpp"
 #include <charconv>
 #include <system_error>
 #include <utility>
-#include "VandiorCore/Log.hpp"
 
 // NOLINTBEGIN(*-include-cleaner, *-no-recursion,*-avoid-magic-numbers, *-magic-numbers, *-err58-cpp, *-suspicious-stringview-data-usage)
 DISABLE_WARNINGS_PUSH(26410 26411 26415 26445 26481)
@@ -42,9 +42,7 @@ namespace vnd {
         if(fst) {
             token = tokensFront;
             position++;
-            if(token.getType() == TokenType::K_FUN) {
-                data = extractFunData();
-            }
+            if(token.getType() == TokenType::K_FUN) { data = extractFunData(); }
         }
         if(snd) {
             const int bracketPosition = 1;
@@ -78,13 +76,9 @@ namespace vnd {
                                                   TokenType::TYPE_F32,  TokenType::TYPE_F64,    TokenType::TYPE_C32, TokenType::TYPE_C64,
                                                   TokenType::TYPE_CHAR, TokenType::TYPE_STRING, TokenType::TYPE_BOOL};
 
-    const Token &Parser::getCurrentToken() const {
-        return currentStatement->at(position);
-    }
+    const Token &Parser::getCurrentToken() const { return currentStatement->at(position); }
     TokenType Parser::getCurrentTokenType() const { return currentStatement->at(position).getType(); }
-    bool Parser::isCurrentTokenType(const TokenType &type) const {
-        return getCurrentTokenType() == type;
-    }
+    bool Parser::isCurrentTokenType(const TokenType &type) const { return getCurrentTokenType() == type; }
     std::size_t Parser::getUnaryOperatorPrecedence(const Token &token) noexcept {
         if(const auto &tokenValue = token.getValue();
            tokenValue == "+" || tokenValue == "-" || tokenValue == "!" || tokenValue == "++" || tokenValue == "--") {
@@ -324,7 +318,7 @@ namespace vnd {
             return;
         }
         auto elements = parseExpression();
-        //if(!isCurrentTokenType(CLOSE_SQ_PARENTESIS)) { throw ParserException(getCurrentToken()); }
+        // if(!isCurrentTokenType(CLOSE_SQ_PARENTESIS)) { throw ParserException(getCurrentToken()); }
         consumeToken();
         auto index = MAKE_UNIQUE(IndexNode, std::move(elements), token);
         if(!parseArray(index)) { parseIndex<IndexNode>(index); }

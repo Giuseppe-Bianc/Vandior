@@ -1178,7 +1178,7 @@ TEST_CASE("tokenizer emit integer token new line", "[tokenizer]") {
     REQUIRE(tokens.size() == 3);
     REQUIRE(tokens[0] == vnd::Token(inte, "550", vnd::CodeSourceLocation(filename, 2, 1)));
     REQUIRE(tokens[1] == vnd::Token(inte, "34000000", vnd::CodeSourceLocation(filename, 2, 5)));
-    REQUIRE(tokens[2].getType() == vnd::eofTokenType);  
+    REQUIRE(tokens[2].getType() == vnd::eofTokenType);
 }
 
 TEST_CASE("tokenizer emit double token", "[tokenizer]") {
@@ -1441,7 +1441,7 @@ TEST_CASE("tokenizer emit mixed Comments", "[tokenizer]") {
 TEST_CASE("tokenizer edge cases for comments", "[tokenizer]") {
     const std::string input = "/* Comment with ** inside */";
     vnd::Tokenizer tokenizer(input, "testFile");
-    
+
     auto token = tokenizer.tokenize().front().front();
     REQUIRE(token.getType() == vnd::TokenType::COMMENT);
     REQUIRE(token.getValue() == "/* Comment with ** inside */");
