@@ -368,10 +368,11 @@ namespace vnd {
         StringVec result;
         auto offset = (currentStatement->back().isType(eofTokenType) ? 3 : 2);
         if(currentStatement->size() <= offset) { return {}; }
-        auto iter = currentStatement->end() - offset;
-        while(iter->getType() != TokenType::CLOSE_PARENTESIS && currentStatement->size() > 3) {
+        auto iter = std::prev(currentStatement->end(), offset);
+        while(iter->getType() != TokenType::CLOSE_PARENTESIS && std::distance(currentStatement->begin(), iter) >= 3) {
             result.emplace(result.begin(), iter->getValue());
-            currentStatement->erase(iter--);
+            iter = currentStatement->erase(iter);
+            --iter;
         }
         return result;
     }
