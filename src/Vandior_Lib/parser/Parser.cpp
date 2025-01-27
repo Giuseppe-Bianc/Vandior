@@ -42,7 +42,9 @@ namespace vnd {
         if(fst) {
             token = tokensFront;
             position++;
-            if(token.getType() == TokenType::K_FUN) { data = extractFunData(); }
+            if(token.getType() == TokenType::K_FUN) {
+                data = extractFunData();
+            }
         }
         if(snd) {
             const int bracketPosition = 1;
@@ -364,8 +366,9 @@ namespace vnd {
 
     StringVec Parser::extractFunData() {
         StringVec result;
-        if(currentStatement->size() <= 3) { return {}; }
-        auto iter = currentStatement->end() - 3;
+        auto offset = (currentStatement->back().isType(eofTokenType) ? 3 : 2);
+        if(currentStatement->size() <= offset) { return {}; }
+        auto iter = currentStatement->end() - offset;
         while(iter->getType() != TokenType::CLOSE_PARENTESIS && currentStatement->size() > 3) {
             result.emplace(result.begin(), iter->getValue());
             currentStatement->erase(iter--);
