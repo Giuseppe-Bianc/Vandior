@@ -244,11 +244,19 @@ jobs:
       - name: Unix - Test and coverage
         if: runner.os != 'Windows'
         working-directory: ./build
-        # Execute tests defined by the CMake configuration.
-        # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
         run: |
-          ctest -C ${{matrix.build_type}} -j ${{ steps.cpu-cores.outputs.count }}
+          # Run the tests
+          ctest -C ${{matrix.build_type}} -j ${{ steps.cpu-cores.outputs.count }} --output-on-failure || {
+            echo "Tests failed. Showing logs...";
+            for log_file in $(find ./Testing/Temporary -name LastTest.log -o -name LastTestsFailed.log); do
+              echo "=== $log_file ===";
+              cat "$log_file";
+            done;
+            exit 1;
+          }
+          # Generate coverage reports
           gcovr -j ${{env.nproc}} --verbose --root ../ --config ../gcovr.cfg --gcov-executable '${{ matrix.gcov_executable }}' --exclude-unreachable-branches --exclude-noncode-lines --gcov-ignore-errors=no_working_dir_found
+
 
       - name: Windows - Test and coverage
         if: runner.os == 'Windows'
