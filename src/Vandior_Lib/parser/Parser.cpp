@@ -348,7 +348,7 @@ namespace vnd {
         if(tokens.size() <= 3) { return {}; }
         auto iter = std::prev(tokens.end(), 3);
         while(iter->getType() != TokenType::CLOSE_PARENTESIS && std::distance(tokens.begin(), iter) >= 3) {
-            result.emplace(result.begin(), std::move(iter->getValue()));
+            result.emplace(result.begin(), iter->getValue());
             iter = tokens.erase(iter);
             --iter;
         }
