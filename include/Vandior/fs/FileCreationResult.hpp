@@ -38,10 +38,13 @@ namespace vnd {
                 }
                 return {false, filePath};
             } catch(const fs::filesystem_error &e) {
-                LERROR("Failed to create '{}': {}", filePath, e.what());
+                LERROR("Filesystem error while creating file '{}': {}", filePath, e.what());
+                return {false, filePath};
+            } catch(const std::exception &e) {
+                LERROR("Exception while creating file '{}': {}", filePath, e.what());
                 return {false, filePath};
             } catch(...) {
-                LERROR("An unknown error occurred while deleting file '{}'.", filePath);
+                LERROR("An unknown error occurred while creating file '{}'.", filePath);
                 return {false, filePath};
             }
         }

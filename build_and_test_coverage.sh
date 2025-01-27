@@ -2,6 +2,7 @@
 readonly VANDIOR_ROOT="$PWD"
 
 readonly COBERTURA_F="$VANDIOR_ROOT/out/cobertura.xml"
+readonly COBERTURA_HTML="$VANDIOR_ROOT/out/coverage/index.html"
 
 readonly COVERAGE_DIR="$VANDIOR_ROOT/out/coverage"
 readonly BUID_DIR="$VANDIOR_ROOT/build"
@@ -45,9 +46,11 @@ if [ -d "$BUID_DIR" ]; then
     cd  "$BUID_DIR"
     echo "Current working directory: $(pwd)"
     ctest -C Debug
+    read -p "Press any key to run gcovr... " -n 1 -s
     clear
     echo "Current working directory: $(pwd)"
     gcovr -j 3  --root ../ --config ../gcovr.cfg --gcov-executable 'gcov' --exclude-unreachable-branches --exclude-noncode-lines
+    xdg-open $COBERTURA_HTML
     echo "complete."
 else
     echo "Directory $BUID_DIR does not exist."

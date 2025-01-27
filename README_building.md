@@ -25,7 +25,6 @@ To dodge any potential hiccups in the compilation process, it's a good idea to d
 variables. This helps to circumvent any possible conflicts or compatibility issues. It's especially handy when multiple
 compilers are installed and you need to pick a specific one for a task.
 
-
 <details>
 <summary>Commands for setting the compilers </summary>
 
@@ -33,64 +32,84 @@ compilers are installed and you need to pick a specific one for a task.
 
   Set your desired compiler (`clang`, `gcc`, etc):
 
-    - Temporarily (only for the current shell)
+  - Temporarily (only for the current shell)
 
       Run one of the followings in the terminal:
 
-        - clang
+    - clang
 
-          	CC=clang CXX=clang++
+            ```bash
+           CC=clang CXX=clang++
+            ```
 
-        - gcc
+    - gcc
 
-          	CC=gcc CXX=g++
+             ```bash
+           CC=gcc CXX=g++
+            ```
 
-    - Permanent:
+  - Permanent:
 
       Open `~/.bashrc` using your text editor:
 
-      	gedit ~/.bashrc
+       ```bash
+       gedit ~/.bashrc
+       ```
 
       Add `CC` and `CXX` to point to the compilers:
 
-      	export CC=clang
-      	export CXX=clang++
+       ```bash
+       export CC=clang
+       export CXX=clang++
+        ```
 
       Save and close the file.
 
 - Windows:
 
-    - Permanent:
+  - Permanent:
 
       Run one of the followings in PowerShell:
 
-        - Visual Studio generator and compiler (cl)
+    - Visual Studio generator and compiler (cl)
 
-          	[Environment]::SetEnvironmentVariable("CC", "cl.exe", "User")
-          	[Environment]::SetEnvironmentVariable("CXX", "cl.exe", "User")
-          	refreshenv
+             ```powershell
+            [Environment]::SetEnvironmentVariable("CC", "cl.exe", "User")
+            [Environment]::SetEnvironmentVariable("CXX", "cl.exe", "User")
+            refreshenv
+            ```
 
           Set the architecture
           using [vcvarsall](https://docs.microsoft.com/en-us/cpp/build/building-on-the-command-line?view=vs-2019#vcvarsall-syntax):
 
-          	vcvarsall.bat x64
+           vcvarsall.bat x64
 
-        - clang
+            ```powershell
+            vcvarsall.bat x64
+            ```
 
-          	[Environment]::SetEnvironmentVariable("CC", "clang.exe", "User")
-          	[Environment]::SetEnvironmentVariable("CXX", "clang++.exe", "User")
-          	refreshenv
+    - clang
 
-        - gcc
+            ```powershell
+           [Environment]::SetEnvironmentVariable("CC", "clang.exe", "User")
+           [Environment]::SetEnvironmentVariable("CXX", "clang++.exe", "User")
+           refreshenv
+            ```
 
-          	[Environment]::SetEnvironmentVariable("CC", "gcc.exe", "User")
-          	[Environment]::SetEnvironmentVariable("CXX", "g++.exe", "User")
-          	refreshenv
+    - gcc
 
-    - Temporarily (only for the current shell):
+            ```powershell
+           [Environment]::SetEnvironmentVariable("CC", "gcc.exe", "User")
+           [Environment]::SetEnvironmentVariable("CXX", "g++.exe", "User")
+           refreshenv
+            ```
 
-      	$Env:CC="clang.exe"
-      	$Env:CXX="clang++.exe"
+  - Temporarily (only for the current shell):
+
+      ```powershell
+      $Env:CC="clang.exe"
+      $Env:CXX="clang++.exe"
+      ```
 
 </details>
 
@@ -99,12 +118,12 @@ compilers are installed and you need to pick a specific one for a task.
 To configure the project, you could use `cmake`, or `ccmake` or `cmake-gui`. Each of them are explained in the
 following:
 
-#### (2.a) Configuring via cmake:
+#### (2.a) Configuring via cmake
 
 With Cmake directly:
 
 ```bash
-    cmake -S . -B ./build
+cmake -S . -B ./build
 ```
 
 Cmake will automatically create the `./build` folder if it does not exist, and it wil configure the project.
@@ -113,22 +132,22 @@ Instead, if you have CMake version 3.21+, you can use one of the configuration p
 CmakePresets.json file.
 
 ```bash
-    cmake . --preset <configure-preset>
-    cmake --build
+cmake . --preset <configure-preset>
+cmake --build
 ```
 
-#### (2.b) Configuring via ccmake:
+#### (2.b) Configuring via ccmake
 
 With the Cmake Curses Dialog Command Line tool:
 
 ```bash
-    ccmake -S . -B ./build
+ccmake -S . -B ./build
 ```
 
 Once `ccmake` has finished setting up, press 'c' to configure the project,
 press 'g' to generate, and 'q' to quit.
 
-#### (2.c) Configuring via cmake-gui:
+#### (2.c) Configuring via cmake-gui
 
 To use the GUI of the cmake:
 
@@ -218,6 +237,7 @@ a specific purpose, allowing you to build, test, and analyze your code efficient
     - **Purpose**: Compiles the project and executes the resulting binary.
     - **Usage**: After building, this script will run your code to ensure it operates as expected.
     - **How to Use**: Simply execute the script from the terminal:
+
       ```bash
       ./build_and_run.sh
       ```
@@ -227,6 +247,7 @@ a specific purpose, allowing you to build, test, and analyze your code efficient
     - **Usage**: This script is particularly useful for verifying that your tests cover a significant portion of your
       codebase.
     - **How to Use**: Run the script to perform the build, testing, and coverage analysis:
+
       ```bash
       ./build_and_test_coverage.sh
       ```
@@ -236,6 +257,7 @@ a specific purpose, allowing you to build, test, and analyze your code efficient
       performance profiling (using **Callgrind**).
     - **Usage**: This is essential for ensuring memory safety and optimizing code performance.
     - **How to Use**: Execute the script to start Valgrind analysis:
+
       ```bash
       ./build_and_valgrind.sh
       ```
@@ -245,6 +267,7 @@ a specific purpose, allowing you to build, test, and analyze your code efficient
       environment.
     - **Usage**: Regular cleanup is important to avoid clutter and ensure your project remains organized.
     - **How to Use**: Simply run the script to perform cleanup:
+
       ```bash
       ./cleanHtmlAndCss.sh
       ```
@@ -270,4 +293,3 @@ cd ./build
 ctest -C Debug
 cd ../
 ```
-
