@@ -23,9 +23,11 @@ namespace vnd {
          * @brief Tokenize the input string.
          * @return A vector of Token objects.
          */
-        [[nodiscard]] TokenVec tokenize();
+        [[nodiscard]] std::vector<TokenVec> tokenize();
 
     private:
+        std::vector<TokenVec> result;
+        TokenVec tokens;
         std::string_view _input;     ///< The input string to tokenize.
         std::string_view _filename;  ///< The name of the file being tokenized.
         std::size_t _inputSize;      ///< The size of the input string

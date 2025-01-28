@@ -11,7 +11,7 @@ DISABLE_WARNINGS_PUSH(
 DISABLE_WARNINGS_POP()
 namespace vnd {
     // NOLINTNEXTLINE(*-use-anonymous-namespace)
-    static auto timeTokenizer(Tokenizer &tokenizer, std::vector<Token> &tokens) -> void {
+    static auto timeTokenizer(Tokenizer &tokenizer, std::vector<TokenVec> &tokens) -> void {
         tokens.clear();
 #ifdef INDEPT
         const AutoTimer timer("tokenization");
@@ -32,11 +32,12 @@ template <typename T> std::vector<std::pair<size_t, const T &>> enumerate(const 
     }
     return enumerated;
 }
+
 // NOLINTNEXTLINE(*-function-cognitive-complexity)
 auto main(int argc, const char *const argv[]) -> int {
     // NOLINTNEXTLINE
     INIT_LOG()
-    std::cout << FORMATST("messagio da {}\n", "std::format");
+    std::cout << FORMATST("messaggio da {}\n", "std::format");
     try {
         CLI::App app{FORMAT("{} version {}", Vandior::cmake::project_name, Vandior::cmake::project_version)};  // NOLINT(*-include-cleaner)
         // std::optional<std::string> message;  // NOLINT(*-include-cleaner)
@@ -81,12 +82,12 @@ auto main(int argc, const char *const argv[]) -> int {
         const auto str = vnd::readFromFile(porfilename);
         const std::string_view code(str);
         vnd::Tokenizer tokenizer{code, porfilename};
-        std::vector<vnd::Token> tokens;
+        std::vector<vnd::TokenVec> tokens;
         vnd::timeTokenizer(tokenizer, tokens);
         LINFO("num tokens {}", tokens.size());
-        std::string input;
-        std::getline(std::cin, input);
+        std::string input = vnd::readFromFile(filename);
         LINFO("Input: {}", input);
+        tokenizer = vnd::Tokenizer(input, filename);
         vnd::Parser parser{input, "input.vn"};
         for(const auto progrmamAST = vnd::timeParse(parser); const auto &statement : progrmamAST) {
             const auto &token = statement.get_token();

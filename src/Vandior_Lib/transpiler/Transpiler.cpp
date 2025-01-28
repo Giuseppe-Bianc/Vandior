@@ -111,6 +111,10 @@ namespace vnd {
             return "auto ";
         case K_RETURN:
             return "return ";
+        case OPEN_CUR_PARENTESIS:
+            return "{";
+        case CLOSE_CUR_PARENTESIS:
+            return "}";
         default:
             return "";
         }
@@ -128,7 +132,6 @@ namespace vnd {
         const size_t start = input.find_first_of(' ');
         out << input.substr(0, start);
         input = input.substr(start);
-        LWARN(input);
         for(const auto i : input) {
             if(i == ',' && currentDelimiter == '\0') {
                 current->emplace_back(currentToken);

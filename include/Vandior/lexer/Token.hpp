@@ -193,7 +193,6 @@ namespace vnd {
     };
 
     using TokenVec = std::vector<Token>;
-    using TokenVecIter = TokenVec::iterator;
 
 }  // namespace vnd
 

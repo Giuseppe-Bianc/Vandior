@@ -29,8 +29,7 @@ namespace vnd {
 
     // clang-format on
 
-    std::vector<Token> Tokenizer::tokenize() {
-        std::vector<Token> tokens;
+    std::vector<TokenVec> Tokenizer::tokenize() {
         tokens.reserve(_inputSize);
         while(positionIsInText()) {
             const char &currentChar = _input.at(position);
@@ -67,7 +66,8 @@ namespace vnd {
             }
         }
         tokens.emplace_back(TokenType::EOFT, CodeSourceLocation{_filename, line, column});
-        return tokens;
+        result.push_back(tokens);
+        return result;
     }
 
     bool Tokenizer::positionIsInText() const noexcept { return position < _inputSize; }
@@ -220,6 +220,8 @@ namespace vnd {
     }
 
     void Tokenizer::incrementLine() noexcept {
+        result.push_back(tokens);
+        tokens = {};
         ++line;
         column = 0;
     }
@@ -305,7 +307,7 @@ namespace vnd {
     }
 
     std::vector<Token> Tokenizer::handleOperators() {
-        std::vector<Token> tokens;
+        std::vector<Token> code;
         const auto start = position;
         extractVarLenOperator();
         auto value = _input.substr(start, position - start);
@@ -320,11 +322,11 @@ namespace vnd {
                 token = Token{singoleCharOp(oneCharOp[0]), oneCharOp, {_filename, line, column - oneCharOp.size()}};
             }
 
-            tokens.emplace_back(token);
+            code.emplace_back(token);
             value.remove_prefix(token.getValueSize());
         }
 
-        return tokens;
+        return code;
     }
 
     template <StringOrStringView T> void Tokenizer::handleError(const T &value, const std::string_view &errorMsg) {
