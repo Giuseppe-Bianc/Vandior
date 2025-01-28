@@ -12,7 +12,6 @@ namespace vnd {
 #endif
     inline auto GetBuildFolder(const fs::path &parentDir) -> fs::path {
         fs::path parent = parentDir.lexically_normal();
-        ;
         if(parent.filename() == "") { parent = parent.parent_path(); }
         if(parent == "..") { return parent / "vnbuild"; }
         return parent.parent_path() / "vnbuild";

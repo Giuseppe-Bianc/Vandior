@@ -13,8 +13,8 @@ namespace vnd {
         if(tokens.empty()) { return {}; }
         std::vector<Statement> statements;
         statements.reserve(10);
-        for(auto &i : tokens) {
-            currentStatement = &i;
+        for(auto &innerTokens : tokens) {
+            currentStatement = &innerTokens;
             if(!currentStatement->empty() && currentStatement->back().getType() == eofTokenType) { currentStatement->pop_back(); }
             tokenSize = currentStatement->size();
             position = 0;
@@ -28,12 +28,13 @@ namespace vnd {
         Token token{};
         StringVec data;
         const auto &tokensFront = currentStatement->front();
-        if((tokensFront.getType() == TokenType::OPEN_CUR_PARENTESIS || tokensFront.getType() == TokenType::CLOSE_CUR_PARENTESIS ||
-            tokensFront.getType() == TokenType::K_BREAK) &&
+        using enum TokenType;
+        if((tokensFront.getType() == OPEN_CUR_PARENTESIS || tokensFront.getType() == CLOSE_CUR_PARENTESIS ||
+            tokensFront.getType() == K_BREAK) &&
            tokenSize > 1) {
             throw ParserException(tokensFront);
         }
-        if(tokensFront.getType() == TokenType::OPEN_CUR_PARENTESIS || tokensFront.getType() == TokenType::CLOSE_CUR_PARENTESIS) {
+        if(tokensFront.getType() == OPEN_CUR_PARENTESIS || tokensFront.getType() == CLOSE_CUR_PARENTESIS) {
             statements.emplace_back(tokensFront, data);
             position++;
             return;
@@ -42,7 +43,7 @@ namespace vnd {
         if(fst) {
             token = tokensFront;
             position++;
-            if(token.getType() == TokenType::K_FUN) { data = extractFunData(); }
+            if(token.getType() == K_FUN) { data = extractFunData(); }
         }
         if(snd) {
             const int bracketPosition = 1;
@@ -361,7 +362,7 @@ namespace vnd {
     StringVec Parser::extractFunData() {
         StringVec result;
         auto offset = (currentStatement->back().isType(eofTokenType) ? 3 : 2);
-        if(currentStatement->size() <= offset) { return {}; }
+        if(currentStatement->size() <= C_ST(offset)) { return {}; }
         auto iter = std::prev(currentStatement->end(), offset);
         while(iter->getType() != TokenType::CLOSE_PARENTESIS && std::distance(currentStatement->begin(), iter) >= 3) {
             result.emplace(result.begin(), iter->getValue());
