@@ -2560,7 +2560,7 @@ TEST_CASE("GetBuildFolder - Edge Cases") {
 
     SECTION("Empty path") {
         const fs::path inputPath = fs::path("").make_preferred();
-        const fs::path expectedOutput = fs::path("vnbuild").make_preferred(); // No parent; expects vnbuild in current directory
+        const fs::path expectedOutput = fs::path("vnbuild").make_preferred();  // No parent; expects vnbuild in current directory
         REQUIRE(vnd::GetBuildFolder(inputPath) == expectedOutput);
     }
 
@@ -2594,7 +2594,6 @@ TEST_CASE("GetBuildFolder - Edge Cases") {
         REQUIRE(vnd::GetBuildFolder(inputPath) == expectedOutput);
     }
 }
-
 
 TEST_CASE("Transpiler creates correct folders and files c++", "[transpiler]") {
     const std::string transpilerfilename = "testfile.vnd";
