@@ -2531,6 +2531,71 @@ TEST_CASE("NullptrNode basic functionality", "[NullptrNode]") {
     }
 }
 
+TEST_CASE("GetBuildFolder - Standard Cases") {
+    SECTION("Normal path without trailing slash") {
+        const fs::path inputPath = fs::path("home/user/project").make_preferred();
+        const fs::path expectedOutput = fs::path("home/user/vnbuild").make_preferred();
+        REQUIRE(vnd::GetBuildFolder(inputPath) == expectedOutput);
+    }
+
+    SECTION("Path with trailing slash") {
+        const fs::path inputPath = fs::path("home/user/project/").make_preferred();
+        const fs::path expectedOutput = fs::path("home/user/vnbuild").make_preferred();
+        REQUIRE(vnd::GetBuildFolder(inputPath) == expectedOutput);
+    }
+
+    SECTION("Nested directory structure") {
+        const fs::path inputPath = fs::path("home/user/projects/client/app").make_preferred();
+        const fs::path expectedOutput = fs::path("home/user/projects/client/vnbuild").make_preferred();
+        REQUIRE(vnd::GetBuildFolder(inputPath) == expectedOutput);
+    }
+}
+
+TEST_CASE("GetBuildFolder - Edge Cases") {
+    SECTION("Root directory input") {
+        const fs::path inputPath = fs::path("/").make_preferred();
+        const fs::path expectedOutput = fs::path("/vnbuild").make_preferred();
+        REQUIRE(vnd::GetBuildFolder(inputPath) == expectedOutput);
+    }
+
+    SECTION("Empty path") {
+        const fs::path inputPath = fs::path("").make_preferred();
+        const fs::path expectedOutput = fs::path("vnbuild").make_preferred(); // No parent; expects vnbuild in current directory
+        REQUIRE(vnd::GetBuildFolder(inputPath) == expectedOutput);
+    }
+
+    SECTION("Relative path") {
+        const fs::path inputPath = fs::path("folder/subfolder").make_preferred();
+        const fs::path expectedOutput = fs::path("folder/vnbuild").make_preferred();
+        REQUIRE(vnd::GetBuildFolder(inputPath) == expectedOutput);
+    }
+
+    SECTION("Single directory path") {
+        const fs::path inputPath = fs::path("parent").make_preferred();
+        const fs::path expectedOutput = fs::path("vnbuild").make_preferred();
+        REQUIRE(vnd::GetBuildFolder(inputPath) == expectedOutput);
+    }
+
+    SECTION("Current directory input") {
+        const fs::path inputPath = fs::path(".").make_preferred();
+        const fs::path expectedOutput = fs::path("vnbuild").make_preferred();
+        REQUIRE(vnd::GetBuildFolder(inputPath) == expectedOutput);
+    }
+
+    SECTION("Parent directory input") {
+        const fs::path inputPath = fs::path("..").make_preferred();
+        const fs::path expectedOutput = fs::path("../vnbuild").make_preferred();
+        REQUIRE(vnd::GetBuildFolder(inputPath) == expectedOutput);
+    }
+
+    SECTION("Path with special characters") {
+        const fs::path inputPath = fs::path("/path/with special@chars!").make_preferred();
+        const fs::path expectedOutput = fs::path("/path/vnbuild").make_preferred();
+        REQUIRE(vnd::GetBuildFolder(inputPath) == expectedOutput);
+    }
+}
+
+
 TEST_CASE("Transpiler creates correct folders and files c++", "[transpiler]") {
     const std::string transpilerfilename = "testfile.vnd";
 

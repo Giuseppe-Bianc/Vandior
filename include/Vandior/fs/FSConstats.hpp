@@ -10,7 +10,17 @@ namespace vnd {
 #else
     constexpr std::hash<fs::path> path_hasher;
 #endif
-    inline auto GetBuildFolder(const fs::path &parentDir) -> fs::path { return parentDir.parent_path() / "vnbuild"; }
+    inline auto GetBuildFolder(const fs::path &parentDir) -> fs::path {
+        fs::path parent = parentDir.lexically_normal();;
+        if (parent.filename() == "") {
+            parent = parent.parent_path();
+        }
+        if (parent == "..") {
+            return parent / "vnbuild";
+        }
+        return parent.parent_path() / "vnbuild";
+    }
+
 }  // namespace vnd
 
 // NOLINTEND(*-include-cleaner)
