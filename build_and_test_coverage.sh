@@ -42,6 +42,8 @@ cd  "$VANDIOR_ROOT"
 clear
 cmake -S . -B ./build -Wno-dev -GNinja -DVandior_WARNINGS_AS_ERRORS=ON -DVandior_ENABLE_CLANG_TIDY:BOOL=ON  -DVandior_ENABLE_COVERAGE:BOOL=ON -DVandior_ENABLE_CPPCHECK:BOOL=OFF
 cmake --build ./build --target tests -j 3
+cmake --build ./build --target constexpr_tests -j 3
+cmake --build ./build --target relaxed_constexpr_tests -j 3
 if [ -d "$BUID_DIR" ]; then
     cd  "$BUID_DIR"
     echo "Current working directory: $(pwd)"
