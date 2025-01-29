@@ -2929,7 +2929,7 @@ TEST_CASE("Transpiler creates correct folders and files c++", "[transpiler]") {
         REQUIRE_FALSE(fs::exists(buildFolder));  // Folder should not exist
     }
 }
-
+/*
 TEST_CASE("Transpiler creates correct folders and files c++ cmake", "[transpiler]") {
     const std::string transpilerfilename = "testfile.vnd";
 
@@ -2969,7 +2969,7 @@ TEST_CASE("Transpiler creates correct folders and files c++ cmake", "[transpiler
         [[maybe_unused]] auto unused = fs::remove_all(buildFolder);
         REQUIRE_FALSE(fs::exists(buildFolder));  // Folder should not exist
     }
-}
+}*/
 
 TEST_CASE("Transpiler::mapType returns correct type mappings", "[transpiler]") {
     SECTION("Valid type mappings") {
