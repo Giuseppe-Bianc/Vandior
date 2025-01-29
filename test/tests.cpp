@@ -252,9 +252,7 @@ TEST_CASE("get_current_timestamp() tests", "[timestamp]") {
 
 static fs::path createTestFolderStructure() {
     fs::path testFolder = fs::temp_directory_path() / "test_folder_deletion";
-    if (fs::exists(testFolder)) {
-        fs::remove_all(testFolder);
-    }
+    if(fs::exists(testFolder)) { fs::remove_all(testFolder); }
 
     fs::create_directories(testFolder / "subfolder1");
     fs::create_directories(testFolder / "subfolder2" / "nested");
@@ -295,7 +293,7 @@ TEST_CASE("deleteFolder: Attempt to delete a file path instead of a folder", "[F
     const auto result = vnd::FolderDeletionResult::deleteFolder(testFile);
 
     REQUIRE_FALSE(result.success());
-    REQUIRE(fs::exists(testFile)); // Ensure the file is not accidentally deleted
+    REQUIRE(fs::exists(testFile));  // Ensure the file is not accidentally deleted
 
     // Cleanup
     fs::remove(testFile);
@@ -337,7 +335,6 @@ TEST_CASE("deleteFolder: Handle exceptions gracefully", "[FolderDeletionResult]"
 
     REQUIRE_FALSE(result.success());
 }
-
 
 TEST_CASE("singleCharOp function tests", "[singleCharOp]") {
     // Test valid operators
