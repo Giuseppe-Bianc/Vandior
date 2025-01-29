@@ -1,5 +1,5 @@
 // clang-format off
-// NOLINTBEGIN(*-include-cleaner, *-avoid-magic-numbers, *-magic-numbers, *-unchecked-optional-access, *-avoid-do-while, *-use-anonymous-namespace, *-qualified-auto, *-suspicious-stringview-data-usage, *-err58-cpp, *-function-cognitive-complexity, *-macro-usage)
+// NOLINTBEGIN(*-include-cleaner, *-avoid-magic-numbers, *-magic-numbers, *-unchecked-optional-access, *-avoid-do-while, *-use-anonymous-namespace, *-qualified-auto, *-suspicious-stringview-data-usage, *-err58-cpp, *-function-cognitive-complexity, *-macro-usage, *-unnecessary-copy-initialization)
 // clang-format on
 
 #include <catch2/catch_test_macros.hpp>
@@ -27,26 +27,22 @@ using Catch::Matchers::StartsWith;
 
 TEST_CASE("extractTabs basic functionality", "[extractTabs]") {
     SECTION("String with only tabs") {
-        const auto input = "\t\t\t\t"sv;
-        const auto result = extractTabs(input);
-        REQUIRE(result == input);  // Only tabs, so the result should be the same as the input
+        const auto result = extractTabs(inputTabs);
+        REQUIRE(result == inputTabs);  // Only tabs, so the result should be the same as the input
     }
 
     SECTION("String with tabs followed by other characters") {
-        const auto input = "\t\t\tHello, World!"sv;
-        const auto result = extractTabs(input);
+        const auto result = extractTabs(inputMixed);
         REQUIRE(result == "\t\t\t");
     }
 
     SECTION("String without any tabs") {
-        const auto input = "Hello, World!"sv;
-        const auto result = extractTabs(input);
+        const auto result = extractTabs(inputText);
         REQUIRE(result.empty());  // No tabs, so the result should be empty
     }
 
     SECTION("String with no leading tabs but tabs in middle") {
-        const auto input = "Hello\tWorld"sv;
-        const auto result = extractTabs(input);
+        const auto result = extractTabs(inputMixedMidle);
         REQUIRE(result.empty());  // No leading tabs
     }
 
@@ -57,26 +53,22 @@ TEST_CASE("extractTabs basic functionality", "[extractTabs]") {
     }
 
     SECTION("String with mixed whitespace and tabs") {
-        const auto input = "\t \t\tHello"sv;
-        const auto result = extractTabs(input);
+        const auto result = extractTabs(inputMixedSpace);
         REQUIRE(result == "\t");
     }
 
     SECTION("String with multiple tabs and spaces") {
-        const auto input = "\t\t  \t\tWorld"sv;
-        const auto result = extractTabs(input);
+        const auto result = extractTabs(inputMixedSpace2);
         REQUIRE(result == "\t\t");  // Only leading tabs should be extracted, ignoring spaces
     }
 
     SECTION("String with only spaces") {
-        const auto input = "     "sv;
-        const auto result = extractTabs(input);
+        const auto result = extractTabs(inputSpace);
         REQUIRE(result.empty());  // No tabs should result in an empty output
     }
 
     SECTION("String with a mix of leading tabs and spaces") {
-        const auto input = "\t \t Hello"sv;
-        const auto result = extractTabs(input);
+        const auto result = extractTabs(inputMixedSpace3);
         REQUIRE(result == "\t");  // Only tabs until first non-tab character
     }
 }
@@ -262,6 +254,74 @@ static fs::path createTestFolderStructure() {
     std::ofstream(testFolder / "subfolder2" / "nested" / "file3.txt") << "File 3 content";
 
     return testFolder;
+}
+
+TEST_CASE("deleteFile: Successfully delete an existing file", "[FileDelitionResult]") {
+    const fs::path testFile = fs::temp_directory_path() / "test_file_to_delete.txt";
+
+    // Create the test file
+    std::ofstream(testFile) << "Sample content for deletion test";
+    REQUIRE(fs::exists(testFile));
+
+    const auto result = vnd::FileDelitionResult::deleteFile(testFile);
+
+    REQUIRE(result.success());
+    REQUIRE(!fs::exists(testFile));
+}
+
+TEST_CASE("deleteFile: Attempt to delete a non-existent file", "[FileDelitionResult]") {
+    const fs::path nonExistentFile = fs::temp_directory_path() / "non_existent_file.txt";
+
+    REQUIRE(!fs::exists(nonExistentFile));
+
+    const auto result = vnd::FileDelitionResult::deleteFile(nonExistentFile);
+
+    REQUIRE_FALSE(result.success());
+}
+
+TEST_CASE("deleteFile: Attempt to delete a directory instead of a file", "[FileDelitionResult]") {
+    const fs::path testDirectory = fs::temp_directory_path() / "test_directory";
+    fs::create_directories(testDirectory);
+
+    REQUIRE(fs::exists(testDirectory));
+    REQUIRE(fs::is_directory(testDirectory));
+
+    const auto result = vnd::FileDelitionResult::deleteFile(testDirectory);
+
+    REQUIRE_FALSE(result.success());
+    REQUIRE(fs::exists(testDirectory));  // Ensure the directory is not accidentally deleted
+
+    // Cleanup
+    fs::remove_all(testDirectory);
+}
+
+/*TEST_CASE("deleteFile: Handle file with read-only permissions", "[FileDelitionResult]") {
+    fs::path readOnlyFile = fs::temp_directory_path() / "read_only_file.txt";
+
+    // Create the test file and set to read-only
+    std::ofstream(readOnlyFile) << "Read-only file content";
+    REQUIRE(fs::exists(readOnlyFile));
+
+#ifdef _WIN32
+    _chmod(readOnlyFile.string().c_str(), _S_IREAD);
+#else
+    chmod(readOnlyFile.string().c_str(), S_IRUSR);
+#endif
+
+    auto result = vnd::FileDelitionResult::deleteFile(readOnlyFile);
+
+    REQUIRE(result.success());
+    REQUIRE(!fs::exists(readOnlyFile));
+
+    // No need to reset permissions since the file is deleted
+}*/
+
+TEST_CASE("deleteFile: Handle exceptions gracefully", "[FileDelitionResult]") {
+    const fs::path invalidPath;
+
+    const auto result = vnd::FileDelitionResult::deleteFile(invalidPath);
+
+    REQUIRE_FALSE(result.success());
 }
 
 TEST_CASE("deleteFolder: Successfully delete an existing folder structure", "[FolderDeletionResult]") {
@@ -2921,7 +2981,7 @@ TEST_CASE("prettyPrint: array elements", "[prettyPrint]") {
     REQUIRE_NOTHROW(prettyPrint(*ast, "", true));
 }
 
-TEST_CASE("prettyPrint: base literlas types", "[prettyPrint]") {
+TEST_CASE("prettyPrint: base literals types", "[prettyPrint]") {
     vnd::Parser parser("12, 12.2f, 12.2, 12.2if, 12.2i, 'c', \"asdfgh\", true, false, nullptr", filename);
     auto programAst = parser.parse();
     REQUIRE(programAst.size() == 1);
@@ -3069,5 +3129,5 @@ TEST_CASE("Transpiler transpile return instructions", "[transpiler]") {
     REQUIRE(code == "return true\n");
 }
 // clang-format off
-// NOLINTEND(*-include-cleaner, *-avoid-magic-numbers, *-magic-numbers, *-unchecked-optional-access, *-avoid-do-while, *-use-anonymous-namespace, *-qualified-auto, *-suspicious-stringview-data-usage, *-err58-cpp, *-function-cognitive-complexity, *-macro-usage)
+// NOLINTEND(*-include-cleaner, *-avoid-magic-numbers, *-magic-numbers, *-unchecked-optional-access, *-avoid-do-while, *-use-anonymous-namespace, *-qualified-auto, *-suspicious-stringview-data-usage, *-err58-cpp, *-function-cognitive-complexity, *-macro-usage, *-unnecessary-copy-initialization)
 // clang-format on
