@@ -11,8 +11,8 @@ this project. This document provides guidelines and instructions for contributin
   - [Reporting Bugs](#reporting-bugs-reporting-bugs)
   - [Suggesting Enhancements](#suggesting-enhancements-suggesting-enhancements)
   - [Submitting Pull Requests](#submitting-pull-requests-submitting-pull-requests)
-- [Style Guides](#style-guides)
-  - [Coding Style](#coding-style)
+- [Style Guides](#style-guides-style-guides)
+  - [Coding Style](#coding-style-coding-style)
   - [Commit Messages](#commit-messages-commit-messages)
 - [Additional Resources](#additional-resources-additional-resources)
 
@@ -64,9 +64,9 @@ To submit a pull request with your changes, please follow these steps:
 for more informations look
 in [Pull Request Template](https://github.com/Giuseppe-Bianc/Vandior/blob/main/.github/pull_request_template.md)
 
-## Style Guides
+## Style Guides {#style-guides}
 
-### Coding Style
+### Coding Style {#coding-style}
 
 When contributing code to vandior, please follow these guidelines:
 
