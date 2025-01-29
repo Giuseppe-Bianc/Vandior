@@ -258,7 +258,6 @@ TEST_CASE("createFile: Successfully create a file with content", "[FileCreationR
 
     const std::string filecontent = vnd::readFromFile(createdFilePath.string());
 
-
     REQUIRE(filecontent == content.str());
 
     // Cleanup
@@ -271,7 +270,7 @@ TEST_CASE("createFile: Attempt to create a file in a non-existent directory", "[
     std::stringstream content;
     content << "Content for non-existent directory test.";
 
-    const  auto result = vnd::FileCreationResult::createFile(nonExistentDir, fileName, content);
+    const auto result = vnd::FileCreationResult::createFile(nonExistentDir, fileName, content);
 
     REQUIRE_FALSE(result.success());
     REQUIRE(!fs::exists(nonExistentDir / fileName));
@@ -339,7 +338,6 @@ TEST_CASE("createFile: Attempt to create a file with empty content", "[FileCreat
     // Cleanup
     fs::remove_all(testDir);
 }
-
 
 static fs::path createTestFolderStructure() {
     fs::path testFolder = fs::temp_directory_path() / "test_folder_deletion";
