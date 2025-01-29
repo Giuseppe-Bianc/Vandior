@@ -5,16 +5,16 @@ this project. This document provides guidelines and instructions for contributin
 
 ## Table of Contents
 
-- [Code of Conduct](#code-of-conduct)
-- [Getting Started](#getting-started)
-- [How to Contribute](#how-to-contribute)
-  - [Reporting Bugs](#reporting-bugs)
-  - [Suggesting Enhancements](#suggesting-enhancements)
-  - [Submitting Pull Requests](#submitting-pull-requests)
+- [Code of Conduct](#code-of-conduct-code-of-conduct)
+- [Getting Started](#getting-started-getting-started)
+- [How to Contribute](#how-to-contribute-how-to-contribute)
+  - [Reporting Bugs](#reporting-bugs-reporting-bugs)
+  - [Suggesting Enhancements](#suggesting-enhancements-suggesting-enhancements)
+  - [Submitting Pull Requests](#submitting-pull-requests-submitting-pull-requests)
 - [Style Guides](#style-guides)
   - [Coding Style](#coding-style)
-  - [Commit Messages](#commit-messages)
-- [Additional Resources](#additional-resources)
+  - [Commit Messages](#commit-messages-commit-messages)
+- [Additional Resources](#additional-resources-additional-resources)
 
 ## Code of Conduct {#code-of-conduct}
 
@@ -62,7 +62,7 @@ To submit a pull request with your changes, please follow these steps:
 6. Create a new pull request on the vandior repository, providing a clear and concise description of your changes.
 
 for more informations look
-in [Pull Request Template](https://github.com/Giuseppe-Bianc/Vulk/blob/main/.github/pull_request_template.md)
+in [Pull Request Template](https://github.com/Giuseppe-Bianc/Vandior/blob/main/.github/pull_request_template.md)
 
 ## Style Guides
 
