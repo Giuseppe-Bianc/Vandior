@@ -250,6 +250,95 @@ TEST_CASE("get_current_timestamp() tests", "[timestamp]") {
     }
 }
 
+static fs::path createTestFolderStructure() {
+    fs::path testFolder = fs::temp_directory_path() / "test_folder_deletion";
+    if (fs::exists(testFolder)) {
+        fs::remove_all(testFolder);
+    }
+
+    fs::create_directories(testFolder / "subfolder1");
+    fs::create_directories(testFolder / "subfolder2" / "nested");
+
+    std::ofstream(testFolder / "file1.txt") << "File 1 content";
+    std::ofstream(testFolder / "subfolder1" / "file2.txt") << "File 2 content";
+    std::ofstream(testFolder / "subfolder2" / "nested" / "file3.txt") << "File 3 content";
+
+    return testFolder;
+}
+
+TEST_CASE("deleteFolder: Successfully delete an existing folder structure", "[FolderDeletionResult]") {
+    const fs::path testFolder = createTestFolderStructure();
+    REQUIRE(fs::exists(testFolder));
+
+    const auto result = vnd::FolderDeletionResult::deleteFolder(testFolder);
+
+    REQUIRE(result.success());
+    REQUIRE(!fs::exists(testFolder));
+}
+
+TEST_CASE("deleteFolder: Attempt to delete a non-existent folder", "[FolderDeletionResult]") {
+    const fs::path nonExistentFolder = fs::temp_directory_path() / "non_existent_folder";
+    REQUIRE(!fs::exists(nonExistentFolder));
+
+    const auto result = vnd::FolderDeletionResult::deleteFolder(nonExistentFolder);
+
+    REQUIRE_FALSE(result.success());
+}
+
+TEST_CASE("deleteFolder: Attempt to delete a file path instead of a folder", "[FolderDeletionResult]") {
+    const fs::path testFile = fs::temp_directory_path() / "test_file.txt";
+
+    // Create the test file
+    std::ofstream(testFile) << "Test content";
+    REQUIRE(fs::exists(testFile));
+
+    const auto result = vnd::FolderDeletionResult::deleteFolder(testFile);
+
+    REQUIRE_FALSE(result.success());
+    REQUIRE(fs::exists(testFile)); // Ensure the file is not accidentally deleted
+
+    // Cleanup
+    fs::remove(testFile);
+}
+
+/*TEST_CASE("deleteFolder: Handle folder with read-only file", "[FolderDeletionResult]") {
+    fs::path testFolder = createTestFolderStructure();
+    fs::path readOnlyFile = testFolder / "file1.txt";
+
+    // Set the file to read-only using std::filesystem::permissions
+    fs::permissions(readOnlyFile, fs::perms::owner_read, fs::perm_options::replace);
+
+    auto result = vnd::FolderDeletionResult::deleteFolder(testFolder);
+
+    REQUIRE_FALSE(result.success());
+
+    // Restore file permissions and clean up
+    fs::permissions(readOnlyFile, fs::perms::owner_all, fs::perm_options::replace);
+    fs::remove_all(testFolder);
+}*/
+
+TEST_CASE("deleteFolder: Folder with nested subfolders and files", "[FolderDeletionResult]") {
+    const fs::path testFolder = createTestFolderStructure();
+
+    REQUIRE(fs::exists(testFolder));
+    REQUIRE(fs::exists(testFolder / "subfolder1"));
+    REQUIRE(fs::exists(testFolder / "subfolder2" / "nested" / "file3.txt"));
+
+    auto result = vnd::FolderDeletionResult::deleteFolder(testFolder);
+
+    REQUIRE(result.success());
+    REQUIRE(!fs::exists(testFolder));
+}
+
+TEST_CASE("deleteFolder: Handle exceptions gracefully", "[FolderDeletionResult]") {
+    const fs::path invalidPath;
+
+    const auto result = vnd::FolderDeletionResult::deleteFolder(invalidPath);
+
+    REQUIRE_FALSE(result.success());
+}
+
+
 TEST_CASE("singleCharOp function tests", "[singleCharOp]") {
     // Test valid operators
     REQUIRE(vnd::singoleCharOp('-') == vnd::TokenType::MINUS);
