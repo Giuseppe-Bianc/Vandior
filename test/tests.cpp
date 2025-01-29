@@ -242,6 +242,105 @@ TEST_CASE("get_current_timestamp() tests", "[timestamp]") {
     }
 }
 
+TEST_CASE("createFile: Successfully create a file with content", "[FileCreationResult]") {
+    const fs::path testDir = fs::temp_directory_path() / "test_file_creation";
+    fs::create_directories(testDir);
+
+    const std::string fileName = "test_file.txt";
+    std::stringstream content;
+    content << "Hello, this is a test file.";
+
+    auto result = vnd::FileCreationResult::createFile(testDir, fileName, content);
+
+    const fs::path createdFilePath = testDir / fileName;
+    REQUIRE(result.success());
+    REQUIRE(fs::exists(createdFilePath));
+
+    const std::string filecontent = vnd::readFromFile(createdFilePath.string());
+
+
+    REQUIRE(filecontent == content.str());
+
+    // Cleanup
+    fs::remove_all(testDir);
+}
+
+TEST_CASE("createFile: Attempt to create a file in a non-existent directory", "[FileCreationResult]") {
+    const fs::path nonExistentDir = fs::temp_directory_path() / "non_existent_directory";
+    const std::string fileName = "test_file.txt";
+    std::stringstream content;
+    content << "Content for non-existent directory test.";
+
+    const  auto result = vnd::FileCreationResult::createFile(nonExistentDir, fileName, content);
+
+    REQUIRE_FALSE(result.success());
+    REQUIRE(!fs::exists(nonExistentDir / fileName));
+}
+
+TEST_CASE("createFile: Handle file creation when file already exists", "[FileCreationResult]") {
+    const fs::path testDir = fs::temp_directory_path() / "test_file_creation_existing";
+    fs::create_directories(testDir);
+
+    const std::string fileName = "existing_file.txt";
+    std::stringstream initialContent;
+    initialContent << "Initial content.";
+
+    const fs::path existingFilePath = testDir / fileName;
+    std::ofstream outfile(existingFilePath);
+    outfile << initialContent.rdbuf();
+    outfile.close();
+
+    REQUIRE(fs::exists(existingFilePath));
+
+    std::stringstream newContent;
+    newContent << "New content that overwrites.";
+
+    auto result = vnd::FileCreationResult::createFile(testDir, fileName, newContent);
+
+    REQUIRE(result.success());
+    REQUIRE(fs::exists(existingFilePath));
+
+    const std::string filecontent = vnd::readFromFile(existingFilePath.string());
+
+    REQUIRE(filecontent == newContent.str());
+
+    // Cleanup
+    fs::remove_all(testDir);
+}
+
+/*TEST_CASE("createFile: Handle exceptions during file creation", "[FileCreationResult]") {
+    const fs::path invalidPath;
+    std::string fileName = "invalid_file.txt";
+    std::stringstream content;
+    content << "This content should not be written.";
+
+    auto result = vnd::FileCreationResult::createFile(invalidPath, fileName, content);
+
+    REQUIRE_FALSE(result.success());
+}*/
+
+TEST_CASE("createFile: Attempt to create a file with empty content", "[FileCreationResult]") {
+    const fs::path testDir = fs::temp_directory_path() / "test_empty_content";
+    fs::create_directories(testDir);
+
+    const std::string fileName = "empty_content_file.txt";
+    const std::stringstream emptyContent;
+
+    auto result = vnd::FileCreationResult::createFile(testDir, fileName, emptyContent);
+
+    const fs::path createdFilePath = testDir / fileName;
+    REQUIRE(result.success());
+    REQUIRE(fs::exists(createdFilePath));
+
+    const std::string filecontent = vnd::readFromFile(createdFilePath.string());
+
+    REQUIRE(filecontent.empty());
+
+    // Cleanup
+    fs::remove_all(testDir);
+}
+
+
 static fs::path createTestFolderStructure() {
     fs::path testFolder = fs::temp_directory_path() / "test_folder_deletion";
     if(fs::exists(testFolder)) { fs::remove_all(testFolder); }
