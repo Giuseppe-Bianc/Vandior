@@ -16,22 +16,22 @@ this project. This document provides guidelines and instructions for contributin
   - [Commit Messages](#commit-messages)
 - [Additional Resources](#additional-resources)
 
-## Code of Conduct
+## Code of Conduct {#code-of-conduct}
 
 By participating in this project, you are expected to uphold our [Code of Conduct](CODE_OF_CONDUCT.md). Please take a
 moment to read it before contributing.
 
-## Getting Started
+## Getting Started {#getting-started}
 
 To start contributing to vandior, you should first fork the repository and clone it to your local machine. After that,
 create a new branch from the `main` branch to work on your changes.
 
-## How to Contribute
+## How to Contribute {#how-to-contribute}
 
 Contributing to vandior can be done in various ways, such as reporting bugs, suggesting enhancements, submitting pull
 requests, and helping with documentation. Below are the guidelines for each type of contribution.
 
-### Reporting Bugs
+### Reporting Bugs {#reporting-bugs}
 
 If you find a bug in the project, please report it by creating a new issue on the GitHub repository. When reporting a
 bug, please include the following information:
@@ -41,7 +41,7 @@ bug, please include the following information:
 - The expected behavior and the actual behavior
 - Any relevant screenshots or error messages
 
-### Suggesting Enhancements
+### Suggesting Enhancements {#suggesting-enhancements}
 
 If you have an idea for a new feature or an improvement to the existing functionality, please create a new issue on the
 GitHub repository. When suggesting an enhancement, please include the following information:
@@ -50,7 +50,7 @@ GitHub repository. When suggesting an enhancement, please include the following 
 - A detailed description of the proposed enhancement, including examples of how it would work
 - An explanation of why this enhancement would be useful to the project and its users
 
-### Submitting Pull Requests
+### Submitting Pull Requests {#submitting-pull-requests}
 
 To submit a pull request with your changes, please follow these steps:
 
@@ -75,12 +75,12 @@ When contributing code to vandior, please follow these guidelines:
 - Add comments to explain complex or non-obvious parts of your code.
 - Follow the language-specific coding conventions and best practices.
 
-### Commit Messages
+### Commit Messages {#commit-messages}
 
 When committing your changes, please use clear and descriptive commit messages that explain the purpose of your changes.
 This will help other contributors understand your changes and make it easier to review your pull requests.
 
-## Additional Resources
+## Additional Resources {#additional-resources}
 
 For more information on contributing to open-source projects, you can refer to the following resources:
 
