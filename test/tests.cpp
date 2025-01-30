@@ -105,27 +105,27 @@ TEST_CASE("ValueLabel functionality", "[ValueLabel]") {
     using vnd::ValueLabel;
 
     SECTION("Transform time in microseconds") {
-        const ValueLabel value(1500.0L, "us");
-        REQUIRE(value.transformTimeMicro(1500.0L) == "1500us,0ns");
+        const ValueLabel value(time_val_micro, "us");
+        REQUIRE(value.transformTimeMicro(time_val_micro) == "1500us,0ns");
 
-        const ValueLabel valueNonExact(1500.5L, "us");
-        REQUIRE(valueNonExact.transformTimeMicro(1500.5L) == "1500us,500ns");
+        const ValueLabel valueNonExact(time_val_micro2, "us");
+        REQUIRE(valueNonExact.transformTimeMicro(time_val_micro2) == "1500us,500ns");
     }
 
     SECTION("Transform time in milliseconds") {
-        const ValueLabel value(2.5L, "ms");
-        REQUIRE(value.transformTimeMilli(2.5L) == "2ms,500us,0ns");
+        const ValueLabel value(time_val_milli, "ms");
+        REQUIRE(value.transformTimeMilli(time_val_milli) == "2ms,500us,0ns");
 
-        const ValueLabel valueNonExact(2.505L, "ms");
-        REQUIRE(valueNonExact.transformTimeMilli(2.505L) == "2ms,505us,0ns");
+        const ValueLabel valueNonExact(time_val_milli2, "ms");
+        REQUIRE(valueNonExact.transformTimeMilli(time_val_milli2) == "2ms,505us,0ns");
     }
 
     SECTION("Transform time in seconds") {
-        const ValueLabel value(1.0L, "s");
-        REQUIRE(value.transformTimeSeconds(1.0L) == "1s,0ms,0us,0ns");
+        const ValueLabel value(time_val_second, "s");
+        REQUIRE(value.transformTimeSeconds(time_val_second) == "1s,0ms,0us,0ns");
 
-        const ValueLabel valueNonExact(1.005001L, "s");
-        REQUIRE(valueNonExact.transformTimeSeconds(1.005001L) == "1s,5ms,1us,0ns");
+        const ValueLabel valueNonExact(time_val_second2, "s");
+        REQUIRE(valueNonExact.transformTimeSeconds(time_val_second2) == "1s,5ms,1us,0ns");
     }
 
     SECTION("ToString based on time label") {
@@ -2832,6 +2832,19 @@ TEST_CASE("NullptrNode basic functionality", "[NullptrNode]") {
         auto node = ast->safe_as<vnd::NullptrNode>();
         REQUIRE(node->comp_print() == "NULL");
     }
+}
+
+TEST_CASE("Statement basic functionality", "[Statement]") {
+    using enum vnd::TokenType;
+    const auto statement = vnd::Statement(vnd::Token(K_RETURN, "return", vnd::CodeSourceLocation(filename, t_line, t_colum)), {});
+
+    REQUIRE(statement.get_token().getType() == K_RETURN);
+
+    REQUIRE(statement.getType() == NodeType::Statement);
+
+    REQUIRE(statement.print().empty());
+
+    REQUIRE(statement.comp_print().empty());
 }
 
 TEST_CASE("GetBuildFolder - Standard Cases") {
