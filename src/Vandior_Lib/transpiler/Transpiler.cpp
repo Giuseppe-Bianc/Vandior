@@ -31,28 +31,13 @@ namespace vnd {
         _mainOutputFilePath = getValueOrLog(_projectBuilder.getMainOutputFilePath(), "Failed to get main output file path.");
     }
     void Transpiler::createMockfile() {
-        // Apre il file in modalità scrittura con RAII, nessuna necessità di close() manuale
-        std::ofstream outfile(_mainOutputFilePath);
-
-        // Verifica se il file è stato aperto correttamente
-        if(!outfile.is_open()) {
-            LERROR("Errore nell'aprire il file {}", _mainOutputFilePath);
-            return;
-        }
-
         const auto generatorName = GENERATOR_FULLNAME;
 
-        outfile << FORMAT("// This is an automatically generated file by {}, do not modify. for more information got to  "
-                          "https://github.com/Giuseppe-Bianc/Vandior",
-                          generatorName);
-        outfile << fileContent;
-
-        // Il file viene chiuso automaticamente qui
-
-#ifdef INDEPT
-        // Usa std::format per la formattazione delle stringhe (C++20)
-        LINFO("File {} creato con successo!", _mainOutputFilePath);
-#endif  // INDEPT
+        std::stringstream fileContents;
+        fileContents << FORMAT("// This is an automatically generated file by {}, do not modify.\n", generatorName);
+        fileContents << "// for more information got to https://github.com/Giuseppe-Bianc/Vandior\n";
+        fileContents << fileContent;
+        [[maybe_unused]]auto file_creation_result = FileCreationResult::createFileFromPath(_mainOutputFilePath, fileContents);
     }
     std::string Transpiler::transpile() {
         createMockfile();
