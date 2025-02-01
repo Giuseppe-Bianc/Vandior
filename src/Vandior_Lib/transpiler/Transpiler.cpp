@@ -37,7 +37,7 @@ namespace vnd {
         fileContents << FORMAT("// This is an automatically generated file by {}, do not modify.\n", generatorName);
         fileContents << "// for more information got to https://github.com/Giuseppe-Bianc/Vandior\n";
         fileContents << fileContent;
-        [[maybe_unused]]auto file_creation_result = FileCreationResult::createFileFromPath(_mainOutputFilePath, fileContents);
+        [[maybe_unused]] auto file_creation_result = FileCreationResult::createFileFromPath(_mainOutputFilePath, fileContents);
     }
     std::string Transpiler::transpile() {
         createMockfile();

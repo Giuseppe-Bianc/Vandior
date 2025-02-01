@@ -28,8 +28,7 @@ namespace vnd {
          * @param fileContent the content of the file.
          * @return A FolderCreationResult object indicating the result of the operation.
          */
-        [[nodiscard]] static auto createFileFromPath(const fs::path &filePath, const std::stringstream &fileContent)
-            -> FileCreationResult {
+        [[nodiscard]] static auto createFileFromPath(const fs::path &filePath, const std::stringstream &fileContent) -> FileCreationResult {
             try {
                 std::ofstream outfile(filePath);
                 if(!outfile.is_open()) {
