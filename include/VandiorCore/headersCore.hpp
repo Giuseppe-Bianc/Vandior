@@ -104,6 +104,7 @@ DISABLE_WARNINGS_POP()
 
 static inline constexpr std::string_view comma = ",";
 static inline constexpr std::string_view colon = ":";
+static inline constexpr std::string_view VANDIOR_BUILDFOLDER = "vnbuild";
 static inline constexpr auto commacr = ',';
 static inline constexpr auto coloncr = ':';
 static inline constexpr auto slashcr = '/';

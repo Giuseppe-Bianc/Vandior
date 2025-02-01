@@ -2888,7 +2888,7 @@ TEST_CASE("GetBuildFolder - Edge Cases") {
 
     SECTION("Empty path") {
         const fs::path inputPath = fs::path("").make_preferred();
-        const fs::path expectedOutput = fs::path("vnbuild").make_preferred();  // No parent; expects vnbuild in current directory
+        const fs::path expectedOutput = fs::path(VANDIOR_BUILDFOLDER).make_preferred();  // No parent; expects vnbuild in current directory
         REQUIRE(vnd::GetBuildFolder(inputPath) == expectedOutput);
     }
 
@@ -2900,13 +2900,13 @@ TEST_CASE("GetBuildFolder - Edge Cases") {
 
     SECTION("Single directory path") {
         const fs::path inputPath = fs::path("parent").make_preferred();
-        const fs::path expectedOutput = fs::path("vnbuild").make_preferred();
+        const fs::path expectedOutput = fs::path(VANDIOR_BUILDFOLDER).make_preferred();
         REQUIRE(vnd::GetBuildFolder(inputPath) == expectedOutput);
     }
 
     SECTION("Current directory input") {
         const fs::path inputPath = fs::path(".").make_preferred();
-        const fs::path expectedOutput = fs::path("vnbuild").make_preferred();
+        const fs::path expectedOutput = fs::path(VANDIOR_BUILDFOLDER).make_preferred();
         REQUIRE(vnd::GetBuildFolder(inputPath) == expectedOutput);
     }
 
@@ -2931,7 +2931,7 @@ TEST_CASE("Transpiler creates correct folders and files c++", "[transpiler]") {
     SECTION("Folder and file creation") {
         transpiler.transpile();
 
-        const fs::path buildFolder("vnbuild");
+        const fs::path buildFolder(VANDIOR_BUILDFOLDER);
         const fs::path srcFolder = (buildFolder / "src").make_preferred();
         REQUIRE(fs::exists(buildFolder));
         REQUIRE(fs::exists(srcFolder));
@@ -2949,7 +2949,7 @@ TEST_CASE("Transpiler creates correct folders and files c++", "[transpiler]") {
     SECTION("Clean up") {
         transpiler.transpile();
 
-        const fs::path buildFolder("vnbuild");
+        const fs::path buildFolder(VANDIOR_BUILDFOLDER);
         [[maybe_unused]] auto unused = fs::remove_all(buildFolder);
         REQUIRE_FALSE(fs::exists(buildFolder));  // Folder should not exist
     }
@@ -2963,7 +2963,7 @@ TEST_CASE("Transpiler creates correct folders and files c++ cmake", "[transpiler
     SECTION("Folder and file creation") {
         transpiler.transpile();
 
-        const fs::path buildFolder("vnbuild");
+        const fs::path buildFolder(VANDIOR_BUILDFOLDER);
         const fs::path srcFolder = (buildFolder / "src").make_preferred();
         REQUIRE(fs::exists(buildFolder));
         REQUIRE(fs::exists(srcFolder));
@@ -2990,7 +2990,7 @@ TEST_CASE("Transpiler creates correct folders and files c++ cmake", "[transpiler
     SECTION("Clean up") {
         transpiler.transpile();
 
-        const fs::path buildFolder("vnbuild");
+        const fs::path buildFolder(VANDIOR_BUILDFOLDER);
         [[maybe_unused]] auto unused = fs::remove_all(buildFolder);
         REQUIRE_FALSE(fs::exists(buildFolder));  // Folder should not exist
     }

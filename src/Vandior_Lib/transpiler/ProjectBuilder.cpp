@@ -52,7 +52,7 @@ namespace vnd {
 
     // Metodo per creare la cartella 'vnbuild'
     bool ProjectBuilder::createBuildFolder() {
-        const auto resultFolderCreation = vnd::FolderCreationResult::createFolderNextToFile(_filename.data(), "vnbuild");
+        const auto resultFolderCreation = vnd::FolderCreationResult::createFolderNextToFile(_filename.data(), VANDIOR_BUILDFOLDER);
         _vnBuildFolder = resultFolderCreation.pathcref();
 
         if(!resultFolderCreation.success()) { return false; }
