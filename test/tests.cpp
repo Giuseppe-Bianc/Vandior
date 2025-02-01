@@ -2731,57 +2731,69 @@ TEST_CASE("Parser emit index compat print", "[parser]") {
     REQUIRE(typeNode->get_index()->comp_print() == FORMAT("INDEX"));
 }
 
-/*TEST_CASE("Parser emit empty array node print", "[parser]") {
-    vnd::Parser parser("{}", filename);
+TEST_CASE("Parser emit empty array node print", "[parser]") {
+    vnd::Parser parser("val asd = {}", filename);
     auto programAst = parser.parse();
     REQUIRE(programAst.size() == 1);
     auto ast = programAst[0].get_nodes().at(0).get();
     REQUIRE(ast != nullptr);
-    REQUIRE(ast->getType() == NodeType::Array);
+    REQUIRE(ast->getType() == NodeType::BinaryExpression);
     REQUIRE(ast->get_parent() == nullptr);
-    const auto *arrayNode = ast->as<vnd::ArrayNode>();
+    const auto *binaryNode = ast->as<vnd::BinaryExpressionNode>();
+    REQUIRE(binaryNode != nullptr);
+    REQUIRE(binaryNode->getRight()->getType() == NodeType::Array);
+    const auto *arrayNode = binaryNode->getRight()->as<vnd::ArrayNode>();
     REQUIRE(arrayNode != nullptr);
     REQUIRE(arrayNode->print() == "ARRAY()");
 }
 
 TEST_CASE("Parser emit empty array compat node print", "[parser]") {
-    vnd::Parser parser("{}", filename);
+    vnd::Parser parser("val asd = {}", filename);
     auto programAst = parser.parse();
     REQUIRE(programAst.size() == 1);
     auto ast = programAst[0].get_nodes().at(0).get();
     REQUIRE(ast != nullptr);
-    REQUIRE(ast->getType() == NodeType::Array);
+    REQUIRE(ast->getType() == NodeType::BinaryExpression);
     REQUIRE(ast->get_parent() == nullptr);
-    const auto *arrayNode = ast->as<vnd::ArrayNode>();
+    const auto *binaryNode = ast->as<vnd::BinaryExpressionNode>();
+    REQUIRE(binaryNode != nullptr);
+    REQUIRE(binaryNode->getRight()->getType() == NodeType::Array);
+    const auto *arrayNode = binaryNode->getRight()->as<vnd::ArrayNode>();
     REQUIRE(arrayNode != nullptr);
     REQUIRE(arrayNode->comp_print() == "ARRAY");
 }
 
 TEST_CASE("Parser emit array node print", "[parser]") {
-    vnd::Parser parser("{1, 2}", filename);
+    vnd::Parser parser("val asd = {1, 2}", filename);
     auto programAst = parser.parse();
     REQUIRE(programAst.size() == 1);
     auto ast = programAst[0].get_nodes().at(0).get();
     REQUIRE(ast != nullptr);
-    REQUIRE(ast->getType() == NodeType::Array);
+    REQUIRE(ast->getType() == NodeType::BinaryExpression);
     REQUIRE(ast->get_parent() == nullptr);
-    const auto *arrayNode = ast->as<vnd::ArrayNode>();
+    const auto *binaryNode = ast->as<vnd::BinaryExpressionNode>();
+    REQUIRE(binaryNode != nullptr);
+    REQUIRE(binaryNode->getRight()->getType() == NodeType::Array);
+    const auto *arrayNode = binaryNode->getRight()->as<vnd::ArrayNode>();
     REQUIRE(arrayNode != nullptr);
     REQUIRE(arrayNode->print() == FORMAT("ARRAY({})", arrayNode->get_elements()->comp_print()));
 }
 
 TEST_CASE("Parser emit array compat node print", "[parser]") {
-    vnd::Parser parser("{1, 2}", filename);
+    vnd::Parser parser("val asd = {1, 2}", filename);
     auto programAst = parser.parse();
     REQUIRE(programAst.size() == 1);
     auto ast = programAst[0].get_nodes().at(0).get();
     REQUIRE(ast != nullptr);
-    REQUIRE(ast->getType() == NodeType::Array);
+    REQUIRE(ast->getType() == NodeType::BinaryExpression);
     REQUIRE(ast->get_parent() == nullptr);
-    const auto *arrayNode = ast->as<vnd::ArrayNode>();
+    const auto *binaryNode = ast->as<vnd::BinaryExpressionNode>();
+    REQUIRE(binaryNode != nullptr);
+    REQUIRE(binaryNode->getRight()->getType() == NodeType::Array);
+    const auto *arrayNode = binaryNode->getRight()->as<vnd::ArrayNode>();
     REQUIRE(arrayNode != nullptr);
     REQUIRE(arrayNode->comp_print() == "ARRAY");
-}*/
+}
 
 TEST_CASE("Parser emit empty callable node", "[parser]") {
     vnd::Parser parser("function()", filename);
