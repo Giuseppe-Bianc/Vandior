@@ -2954,8 +2954,8 @@ TEST_CASE("Transpiler creates correct folders and files c++", "[transpiler]") {
         REQUIRE_FALSE(fs::exists(buildFolder));  // Folder should not exist
     }
 }
-/*
-TEST_CASE("Transpiler creates correct folders and files c++ cmake", "[transpiler]") {
+
+TEST_CASE("Transpiler creates correct folders and cmake file", "[transpiler]") {
     const std::string transpilerfilename = "testfile.vnd";
 
     vnd::Transpiler transpiler(long_input, transpilerfilename, true);
@@ -2967,17 +2967,8 @@ TEST_CASE("Transpiler creates correct folders and files c++ cmake", "[transpiler
         const fs::path srcFolder = (buildFolder / "src").make_preferred();
         REQUIRE(fs::exists(buildFolder));
         REQUIRE(fs::exists(srcFolder));
-
-        const fs::path cppFile = (srcFolder / "testfile.cpp").make_preferred();
         const fs::path cmakeListsFile = (buildFolder / "CMakeLists.txt").make_preferred();
-        REQUIRE(fs::exists(cppFile));
         REQUIRE(fs::exists(cmakeListsFile));
-        std::string fileContent = vnd::readFromFile(cppFile.string());
-
-        REQUIRE_THAT(fileContent, ContainsSubstring("Hello, World!"));  // Check for the presence of "Hello, World!"
-        REQUIRE_THAT(fileContent, ContainsSubstring("return 0;"));
-        REQUIRE_THAT(fileContent, StartsWith("// This is an automatically generated file by Vandior"));
-        REQUIRE_THAT(fileContent, EndsWith("\n"));
 
         std::string cmakeListsfileContent = vnd::readFromFile(cmakeListsFile.string());
         REQUIRE_THAT(cmakeListsfileContent, ContainsSubstring("# for more information got to  https://github.com/Giuseppe-Bianc/Vandior"));
@@ -2994,7 +2985,7 @@ TEST_CASE("Transpiler creates correct folders and files c++ cmake", "[transpiler
         [[maybe_unused]] auto unused = fs::remove_all(buildFolder);
         REQUIRE_FALSE(fs::exists(buildFolder));  // Folder should not exist
     }
-}*/
+}
 
 TEST_CASE("Transpiler::mapType returns correct type mappings", "[transpiler]") {
     SECTION("Valid type mappings") {
