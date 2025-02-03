@@ -737,13 +737,13 @@ TEST_CASE("Operator <=>: Different line numbers", "[CodeSourceLocation][spaceshi
 
 // Test per verificare la differenza nel numero di colonna.
 TEST_CASE("Operator <=>: Different column numbers", "[CodeSourceLocation][spaceship]") {
-    vnd::CodeSourceLocation loc1("file.cpp", 10, 5);
-    vnd::CodeSourceLocation loc2("file.cpp", 10, 15);
+    const vnd::CodeSourceLocation loc1("file.cpp", 10, 5);
+    const vnd::CodeSourceLocation loc2("file.cpp", 10, 15);
 
-    auto cmp = loc1 <=> loc2;
+    const auto cmp = loc1 <=> loc2;
     REQUIRE(cmp == std::strong_ordering::less);
 
-    auto cmp_rev = loc2 <=> loc1;
+    const auto cmp_rev = loc2 <=> loc1;
     REQUIRE(cmp_rev == std::strong_ordering::greater);
 }
 
