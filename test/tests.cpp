@@ -693,12 +693,58 @@ TEST_CASE("CodeSourceLocation unknown() creates object with default values", "[C
 }
 
 TEST_CASE("CodeSourceLocation equality and inequality operators work correctly", "[CodeSourceLocation]") {
-    vnd::CodeSourceLocation location1(ffilename, t_line4, t_colum2);
-    vnd::CodeSourceLocation location2(ffilename, t_line4, t_colum2);
-    vnd::CodeSourceLocation location3("file2.cpp", t_line4, t_colum2);
+    const vnd::CodeSourceLocation location1(ffilename, t_line4, t_colum2);
+    const vnd::CodeSourceLocation location2(ffilename, t_line4, t_colum2);
+    const vnd::CodeSourceLocation location3("file2.cpp", t_line4, t_colum2);
 
     REQUIRE(location1 == location2);
     REQUIRE(location1 != location3);
+}
+
+TEST_CASE("Operator <=>: Identical CodeSourceLocation objects", "[CodeSourceLocation][spaceship]") {
+    const vnd::CodeSourceLocation loc1("file.cpp", 10, 5);
+    const vnd::CodeSourceLocation loc2("file.cpp", 10, 5);
+
+    // Verifica che la comparazione restituisca 0 (ossia uguali).
+    const auto cmp = loc1 <=> loc2;
+    REQUIRE(cmp == std::strong_ordering::equal);
+    REQUIRE(loc1 == loc2);
+}
+
+TEST_CASE("Operator <=>: Different file names", "[CodeSourceLocation][spaceship]") {
+    const vnd::CodeSourceLocation loc1("a.cpp", 10, 5);
+    const vnd::CodeSourceLocation loc2("b.cpp", 10, 5);
+
+    const auto cmp = loc1 <=> loc2;
+    // Poiché "a.cpp" è less di "b.cpp" in ordine lessicografico.
+    REQUIRE(cmp == std::strong_ordering::less);
+
+    const auto cmp_rev = loc2 <=> loc1;
+    REQUIRE(cmp_rev == std::strong_ordering::greater);
+}
+
+// Test per verificare la differenza nel numero di linea.
+TEST_CASE("Operator <=>: Different line numbers", "[CodeSourceLocation][spaceship]") {
+    const vnd::CodeSourceLocation loc1("file.cpp", 5, 10);
+    const vnd::CodeSourceLocation loc2("file.cpp", 10, 10);
+
+    const auto cmp = loc1 <=> loc2;
+    REQUIRE(cmp == std::strong_ordering::less);
+
+    const auto cmp_rev = loc2 <=> loc1;
+    REQUIRE(cmp_rev == std::strong_ordering::greater);
+}
+
+// Test per verificare la differenza nel numero di colonna.
+TEST_CASE("Operator <=>: Different column numbers", "[CodeSourceLocation][spaceship]") {
+    vnd::CodeSourceLocation loc1("file.cpp", 10, 5);
+    vnd::CodeSourceLocation loc2("file.cpp", 10, 15);
+
+    auto cmp = loc1 <=> loc2;
+    REQUIRE(cmp == std::strong_ordering::less);
+
+    auto cmp_rev = loc2 <=> loc1;
+    REQUIRE(cmp_rev == std::strong_ordering::greater);
 }
 
 TEST_CASE("CodeSourceLocation toString() produces expected string", "[CodeSourceLocation]") {
