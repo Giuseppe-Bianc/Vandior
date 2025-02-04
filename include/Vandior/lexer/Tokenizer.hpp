@@ -3,6 +3,7 @@
 
 #include "Vandior/lexer/Token.hpp"
 #include "Vandior/lexer/TokenizerUtility.hpp"
+#include "Vandior/lexer/TokenizerConstants.hpp"
 #include <string>
 
 namespace vnd {
