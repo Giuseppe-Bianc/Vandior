@@ -5,9 +5,9 @@
 
 namespace vnd {
 
-static inline constexpr auto icr = 'i';
-static inline constexpr auto fcr = 'f';
-// clang-format off
+    static inline constexpr auto icr = 'i';
+    static inline constexpr auto fcr = 'f';
+    // clang-format off
 static inline constexpr std::array<std::pair<std::string_view, TokenType>, 14> multiCharOperators = {{
     {"+=", TokenType::PLUSEQUAL}, {"-=", TokenType::MINUSEQUAL}, {"*=", TokenType::STAREQUAL},
     {"/=", TokenType::DIVIDEEQUAL}, {"^=", TokenType::XOREQUAL}, {"%=", TokenType::PERCENTEQUAL},
@@ -28,6 +28,6 @@ static inline constexpr std::array<std::pair<std::string_view, TokenType>, 15> k
     {"nullptr"sv, TokenType::K_NULLPTR},{"true"sv, TokenType::BOOLEAN},{"false"sv, TokenType::BOOLEAN}
 }};
 
-// clang-format on
-}
-// NOLINTEND(*-include-cleaner)
+    // clang-format on
+}  // namespace vnd
+   // NOLINTEND(*-include-cleaner)
