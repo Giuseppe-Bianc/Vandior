@@ -233,9 +233,10 @@ jobs:
         run: |
           cmake --build ./build --config ${{matrix.build_type}} --parallel ${{ steps.cpu-cores.outputs.count }}
       - name: Build
+        if: runner.os == 'Windows'
         # Execute the build.  You can specify a specific target with "--target <NAME>"
         run: |
-          cmake --build ./build --config ${{matrix.build_type}}
+          cmake --build ./build --config ${{matrix.build_type}} --parallel ${{ steps.cpu-cores.outputs.count }}
 
 
       #- name: Create Coverage Directory
