@@ -30,7 +30,7 @@ jobs:
         os:
           - ubuntu-22.04
           #- macos-10.15
-          - windows-2019
+          - windows-2022
         compiler:
           - llvm-18.1.3
           - gcc-13
@@ -48,13 +48,7 @@ jobs:
           - ON
           - OFF
 
-        exclude:
-          - os: windows-2019
-            compiler: llvm-18.1.3
-            packaging_maintainer_mode: ON
-            enable_indepth: OFF
-          - os: windows-2019
-            compiler: gcc-13
+        #exclude:
           #- os: macos-10.15
 
         include:
@@ -137,18 +131,6 @@ jobs:
 
           - os: ubuntu-22.04
             compiler: gcc-13
-            generator: "Ninja Multi-Config"
-            build_type: Debug
-            enable_indepth: On
-
-          - os: windows-2019
-            compiler: llvm-18.1.3
-            generator: "Ninja Multi-Config"
-            build_type: Release
-            enable_indepth: On
-
-          - os: windows-2019
-            compiler: llvm-18.1.3
             generator: "Ninja Multi-Config"
             build_type: Debug
             enable_indepth: On
