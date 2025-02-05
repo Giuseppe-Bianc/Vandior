@@ -3235,6 +3235,7 @@ TEST_CASE("Transpiler transpile structure instructions", "[transpiler]") {
     vnd::Transpiler transpiler{"if a == 1 {", "input.vn"};
     auto code = transpiler.transpile();
     REQUIRE(code == "if(a == 1) {\n");
+    [[maybe_unused]] auto unused2 = fs::remove_all(fs::path(VANDIOR_BUILDFOLDER));
     transpiler = vnd::Transpiler{"while a == 1 {", "input.vn"};
     code = transpiler.transpile();
     REQUIRE(code == "while(a == 1) {\n");
@@ -3245,6 +3246,7 @@ TEST_CASE("Transpiler transpile break and continue instructions", "[transpiler]"
     vnd::Transpiler transpiler{"break", "input.vn"};
     auto code = transpiler.transpile();
     REQUIRE(code == "break\n");
+    [[maybe_unused]] auto unused2 = fs::remove_all(fs::path(VANDIOR_BUILDFOLDER));
     transpiler = vnd::Transpiler{"continue", "input.vn"};
     code = transpiler.transpile();
     REQUIRE(code == "continue\n");
