@@ -87,4 +87,4 @@ static inline constexpr long double time_val_milli2 = 2.505L;
 static inline constexpr long double time_val_second = 1.0L;
 static inline constexpr long double time_val_second2 = 1.005001L;
 
-//NOLINTEND(*-include-cleaner)
+// NOLINTEND(*-include-cleaner)
