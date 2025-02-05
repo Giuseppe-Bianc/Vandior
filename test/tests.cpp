@@ -1032,7 +1032,7 @@ TEST_CASE("vnd::timeParse", "[Vandior]") {
     const auto ast = vnd::timeParse(parser);
     REQUIRE(ast.size() == 1);
 }
-//lexer
+// lexer
 namespace {
     void modifyToken(vnd::Token &token) {
         token.setType(vnd::TokenType::INTEGER);
@@ -1790,7 +1790,7 @@ TEST_CASE("construct a EOFT token", "[token]") {  // NOLINT(*-function-cognitive
     REQUIRE(token.compat_to_string() == "(typ: EOF, sl:(f:unknown, l:0, c:0))");
 }
 
-//parser
+// parser
 TEST_CASE("ASTNode type conversion using as<T>()", "[ast]") {
     const vnd::Token token{vnd::TokenType::IDENTIFIER, "id", vnd::CodeSourceLocation{filename, t_line, t_colum}};
     vnd::VariableNode dummyNode("id", token);
