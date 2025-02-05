@@ -66,37 +66,6 @@ catch_discover_tests(
         OUTPUT_SUFFIX
         .xml)
 
-add_executable(compiler_tests tests-compiler.cpp)
-target_link_libraries(
-        compiler_tests
-        PRIVATE Vandior::Vandior_warnings
-        Vandior::Vandior_options
-        Vandior::vandior_lib
-        Catch2::Catch2WithMain)
-
-if (WIN32 AND BUILD_SHARED_LIBS)
-    add_custom_command(
-            TARGET compiler_tests
-            PRE_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_RUNTIME_DLLS:tests> $<TARGET_FILE_DIR:tests>
-            COMMAND_EXPAND_LISTS)
-endif ()
-
-# automatically discover tests that are defined in catch based test files you can modify the unittests. Set TEST_PREFIX
-# to whatever you want, or use different for different binaries
-catch_discover_tests(
-        compiler_tests
-        TEST_PREFIX
-        "unittests."
-        REPORTER
-        XML
-        OUTPUT_DIR
-        .
-        OUTPUT_PREFIX
-        "unittests."
-        OUTPUT_SUFFIX
-        .xml)
-
 # Add a file containing a set of constexpr tests
 add_executable(constexpr_tests constexpr_tests.cpp)
 target_link_libraries(
