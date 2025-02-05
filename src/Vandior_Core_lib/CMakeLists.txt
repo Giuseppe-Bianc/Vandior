@@ -18,7 +18,7 @@ target_link_libraries(vandior_core_lib
         PUBLIC
         fmt::fmt
         spdlog::spdlog
-        glm::glm
+        #glm::glm
         #nlohmann_json::nlohmann_json
 )
 

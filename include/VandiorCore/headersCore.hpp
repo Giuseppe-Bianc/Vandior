@@ -55,8 +55,8 @@ DISABLE_WARNINGS_PUSH(
 #include <vector>
 // clang-format on
 #include "cast/casts.hpp"
-#include "glm_matld.hpp"
-#include "glm_prety_string_cast.hpp"
+//#include "glm_matld.hpp"
+//#include "glm_prety_string_cast.hpp"
 #include "move.hpp"
 // This file will be generated automatically when cur_you run the CMake
 // configuration step. It creates a namespace called `Vandior`. You can modify
@@ -254,68 +254,68 @@ template <std::integral T> [[nodiscard]] constexpr auto find_divisors(T num) noe
 /** \cond */
 
 // NOLINTEND(*-macro-usage)
-
-/**
- * @brief Specialization of fmt::formatter for glm::vec.
- */
-template <typename T, glm::length_t L, glm::qualifier Q> struct fmt::formatter<glm::vec<L, T, Q>> : formatter<std::string_view> {
-    /**
-     * @brief Format function for glm::vec.
-     * @param vector The vector to be formatted.
-     * @param ctx The format context.
-     * @return The formatted string.
-     */
-    auto format(const glm::vec<L, T, Q> &vector, format_context &ctx) const -> format_context::iterator {
-        return formatter<std::string_view>::format(glmp::to_string(vector), ctx);
-    }
-};
-
-/**
- * @brief Specialization of fmt::formatter for glm::mat.
- */
-template <typename T, glm::length_t C, glm::length_t R, glm::qualifier Q>
-struct fmt::formatter<glm::mat<C, R, T, Q>> : formatter<std::string_view> {
-    /**
-     * @brief Format function for glm::mat.
-     * @param matrix The matrix to be formatted.
-     * @param ctx The format context.
-     * @return The formatted string.
-     */
-    auto format(const glm::mat<C, R, T, Q> &matrix, format_context &ctx) const -> format_context::iterator {
-        return formatter<std::string_view>::format(glmp::to_string(matrix), ctx);
-    }
-};
-
-/**
- * @brief Specialization of fmt::formatter for glm::qua.
- */
-template <typename T, glm::qualifier Q> struct fmt::formatter<glm::qua<T, Q>> : formatter<std::string_view> {
-    /**
-     * @brief Format function for glm::qua.
-     * @param quaternion The quaternion to be formatted.
-     * @param ctx The format context.
-     * @return The formatted string.
-     */
-    template <typename FormatContext> auto format(const glm::qua<T, Q> &quaternion, format_context &ctx) const -> format_context::iterator {
-        return formatter<std::string_view>::format(glmp::to_string(quaternion), ctx);
-    }
-};
-
-/**
- * @brief Specialization of fmt::formatter for std::complex.
- */
-template <typename T> struct fmt::formatter<std::complex<T>> : fmt::formatter<std::string_view> {
-    /**
-     * @brief Formats the std::complex for printing.
-     * @param num The value to be formatted.
-     * @param ctx The formatting context.
-     * @return The formatted string.
-     */
-    auto format(const std::complex<T> &num, format_context &ctx) const -> format_context::iterator {
-        std::string name = FORMAT("({}, {})", std::real(num), std::imag(num));
-        return fmt::formatter<std::string_view>::format(name, ctx);
-    }
-};
+//
+// /**
+//  * @brief Specialization of fmt::formatter for glm::vec.
+//  */
+// template <typename T, glm::length_t L, glm::qualifier Q> struct fmt::formatter<glm::vec<L, T, Q>> : formatter<std::string_view> {
+//     /**
+//      * @brief Format function for glm::vec.
+//      * @param vector The vector to be formatted.
+//      * @param ctx The format context.
+//      * @return The formatted string.
+//      */
+//     auto format(const glm::vec<L, T, Q> &vector, format_context &ctx) const -> format_context::iterator {
+//         return formatter<std::string_view>::format(glmp::to_string(vector), ctx);
+//     }
+// };
+//
+// /**
+//  * @brief Specialization of fmt::formatter for glm::mat.
+//  */
+// template <typename T, glm::length_t C, glm::length_t R, glm::qualifier Q>
+// struct fmt::formatter<glm::mat<C, R, T, Q>> : formatter<std::string_view> {
+//     /**
+//      * @brief Format function for glm::mat.
+//      * @param matrix The matrix to be formatted.
+//      * @param ctx The format context.
+//      * @return The formatted string.
+//      */
+//     auto format(const glm::mat<C, R, T, Q> &matrix, format_context &ctx) const -> format_context::iterator {
+//         return formatter<std::string_view>::format(glmp::to_string(matrix), ctx);
+//     }
+// };
+//
+// /**
+//  * @brief Specialization of fmt::formatter for glm::qua.
+//  */
+// template <typename T, glm::qualifier Q> struct fmt::formatter<glm::qua<T, Q>> : formatter<std::string_view> {
+//     /**
+//      * @brief Format function for glm::qua.
+//      * @param quaternion The quaternion to be formatted.
+//      * @param ctx The format context.
+//      * @return The formatted string.
+//      */
+//     template <typename FormatContext> auto format(const glm::qua<T, Q> &quaternion, format_context &ctx) const -> format_context::iterator {
+//         return formatter<std::string_view>::format(glmp::to_string(quaternion), ctx);
+//     }
+// };
+//
+// /**
+//  * @brief Specialization of fmt::formatter for std::complex.
+//  */
+// template <typename T> struct fmt::formatter<std::complex<T>> : fmt::formatter<std::string_view> {
+//     /**
+//      * @brief Formats the std::complex for printing.
+//      * @param num The value to be formatted.
+//      * @param ctx The formatting context.
+//      * @return The formatted string.
+//      */
+//     auto format(const std::complex<T> &num, format_context &ctx) const -> format_context::iterator {
+//         std::string name = FORMAT("({}, {})", std::real(num), std::imag(num));
+//         return fmt::formatter<std::string_view>::format(name, ctx);
+//     }
+// };
 /** \endcond */
 
 /**
