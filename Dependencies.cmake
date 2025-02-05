@@ -1,7 +1,7 @@
 include(cmake/CPM.cmake)
 
 function(AddSpdlogPackage WcharSupport WcharFilenames)
-    cpmaddpackage((
+    cpmaddpackage(
             NAME spdlog
             VERSION 1.15.1
             GITHUB_REPOSITORY "gabime/spdlog"
