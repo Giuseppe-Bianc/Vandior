@@ -2971,6 +2971,7 @@ TEST_CASE("GetBuildFolder - Edge Cases") {
 
 TEST_CASE("Transpiler creates correct folders and files c++", "[transpiler]") {
     const std::string transpilerfilename = "testfile.vnd";
+    [[maybe_unused]] auto unused = fs::remove_all(fs::path(VANDIOR_BUILDFOLDER));
 
     vnd::Transpiler transpiler(long_input, transpilerfilename);
 
@@ -2996,13 +2997,14 @@ TEST_CASE("Transpiler creates correct folders and files c++", "[transpiler]") {
         transpiler.transpile();
 
         const fs::path buildFolder(VANDIOR_BUILDFOLDER);
-        [[maybe_unused]] auto unused = fs::remove_all(buildFolder);
+        [[maybe_unused]] auto unused2 = fs::remove_all(buildFolder);
         REQUIRE_FALSE(fs::exists(buildFolder));  // Folder should not exist
     }
 }
 
 TEST_CASE("Transpiler creates correct folders and cmake file", "[transpiler]") {
     const std::string transpilerfilename = "testfile.vnd";
+    [[maybe_unused]] auto unused = fs::remove_all(fs::path(VANDIOR_BUILDFOLDER));
 
     vnd::Transpiler transpiler(long_input, transpilerfilename, true);
 
@@ -3028,7 +3030,7 @@ TEST_CASE("Transpiler creates correct folders and cmake file", "[transpiler]") {
         transpiler.transpile();
 
         const fs::path buildFolder(VANDIOR_BUILDFOLDER);
-        [[maybe_unused]] auto unused = fs::remove_all(buildFolder);
+        [[maybe_unused]] auto unused2 = fs::remove_all(buildFolder);
         REQUIRE_FALSE(fs::exists(buildFolder));  // Folder should not exist
     }
 }
@@ -3206,41 +3208,48 @@ TEST_CASE("vnd::timeParse", "[Vandior]") {
 }
 
 TEST_CASE("Transpiler transpile main instruction", "[transpiler]") {
+    [[maybe_unused]] auto unused = fs::remove_all(fs::path(VANDIOR_BUILDFOLDER));
     vnd::Transpiler transpiler{"main {", "input.vn"};
     const auto code = transpiler.transpile();
     REQUIRE(code == "int main(int argc, char **argv) {\n");
 }
 
 TEST_CASE("Transpiler throw exception for missing {", "[transpiler]") {
+    [[maybe_unused]] auto unused = fs::remove_all(fs::path(VANDIOR_BUILDFOLDER));
     vnd::Transpiler transpiler{"main", "input.vn"};
     REQUIRE_THROWS_AS(transpiler.transpile(), vnd::ParserException);
 }
 
 TEST_CASE("Transpiler transpile i8 declaration instruction", "[transpiler]") {
+    [[maybe_unused]] auto unused = fs::remove_all(fs::path(VANDIOR_BUILDFOLDER));
     vnd::Transpiler transpiler{"var num1, num2: i8", "input.vn"};
     const auto code = transpiler.transpile();
     REQUIRE(code == "int8_t num1, num2\n");
 }
 
 TEST_CASE("Transpiler transpile declaration instruction", "[transpiler]") {
+    [[maybe_unused]] auto unused = fs::remove_all(fs::path(VANDIOR_BUILDFOLDER));
     vnd::Transpiler transpiler{"var var1, var2: type", "input.vn"};
     const auto code = transpiler.transpile();
     REQUIRE(code == "type var1, var2\n");
 }
 
 TEST_CASE("Transpiler transpile initialization instruction", "[transpiler]") {
+    [[maybe_unused]] auto unused = fs::remove_all(fs::path(VANDIOR_BUILDFOLDER));
     vnd::Transpiler transpiler{"var num1, num2: u8 = 12, 45", "input.vn"};
     const auto code = transpiler.transpile();
     REQUIRE(code == "uint8_t num1 = 12, num2  = 45\n");
 }
 
 TEST_CASE("Transpiler transpile vector initialization instruction", "[transpiler]") {
+    [[maybe_unused]] auto unused = fs::remove_all(fs::path(VANDIOR_BUILDFOLDER));
     vnd::Transpiler transpiler{"var nums: u8[] = u8[]{12, 45}", "input.vn"};
     const auto code = transpiler.transpile();
     REQUIRE(code == "vnd::vector<uint8_t> nums  = vnd::vector<uint8_t>({12, 45})\n");
 }
 
 TEST_CASE("Transpiler transpile structure instructions", "[transpiler]") {
+    [[maybe_unused]] auto unused = fs::remove_all(fs::path(VANDIOR_BUILDFOLDER));
     vnd::Transpiler transpiler{"if a == 1 {", "input.vn"};
     auto code = transpiler.transpile();
     REQUIRE(code == "if(a == 1) {\n");
@@ -3250,6 +3259,7 @@ TEST_CASE("Transpiler transpile structure instructions", "[transpiler]") {
 }
 
 TEST_CASE("Transpiler transpile break and continue instructions", "[transpiler]") {
+    [[maybe_unused]] auto unused = fs::remove_all(fs::path(VANDIOR_BUILDFOLDER));
     vnd::Transpiler transpiler{"break", "input.vn"};
     auto code = transpiler.transpile();
     REQUIRE(code == "break\n");
@@ -3259,27 +3269,32 @@ TEST_CASE("Transpiler transpile break and continue instructions", "[transpiler]"
 }
 
 TEST_CASE("Transpiler transpile void fun instruction", "[transpiler]") {
+    [[maybe_unused]] auto unused = fs::remove_all(fs::path(VANDIOR_BUILDFOLDER));
     vnd::Transpiler transpiler{"fun a() {", "input.vn"};
     const auto code = transpiler.transpile();
     REQUIRE(code == "auto a() -> void {\n");
 }
 
 TEST_CASE("Transpiler transpile single return value fun instruction", "[transpiler]") {
+    [[maybe_unused]] auto unused = fs::remove_all(fs::path(VANDIOR_BUILDFOLDER));
     vnd::Transpiler transpiler{"fun a(num1: i8, num2: type) i8 {", "input.vn"};
     const auto code = transpiler.transpile();
     REQUIRE(code == "auto a(int8_t num1, type num2) -> int8_t {\n");
 }
 
 TEST_CASE("Transpiler transpile multiple return value fun instruction", "[transpiler]") {
+    [[maybe_unused]] auto unused = fs::remove_all(fs::path(VANDIOR_BUILDFOLDER));
     vnd::Transpiler transpiler{"fun a() type, i8 {", "input.vn"};
     const auto code = transpiler.transpile();
     REQUIRE(code == "auto a() -> std::tuple< type , int8_t> {\n");
 }
 
 TEST_CASE("Transpiler transpile return instructions", "[transpiler]") {
+    [[maybe_unused]] auto unused = fs::remove_all(fs::path(VANDIOR_BUILDFOLDER));
     vnd::Transpiler transpiler{"return", "input.vn"};
     auto code = transpiler.transpile();
     REQUIRE(code == "return \n");
+    [[maybe_unused]] auto unused2 = fs::remove_all(fs::path(VANDIOR_BUILDFOLDER));
     transpiler = vnd::Transpiler{"return true", "input.vn"};
     code = transpiler.transpile();
     REQUIRE(code == "return true\n");
