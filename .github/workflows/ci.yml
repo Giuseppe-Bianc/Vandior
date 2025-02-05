@@ -248,7 +248,9 @@ jobs:
         # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
         run: |
           ctest -C ${{matrix.build_type}} -j ${{ steps.cpu-cores.outputs.count }}
-          gcovr -j ${{env.nproc}} --verbose --root ../ --config ../gcovr.cfg --gcov-executable '${{ matrix.gcov_executable }}' --exclude-unreachable-branches --exclude-noncode-lines --gcov-ignore-errors=no_working_dir_found
+          gcovr -j ${{env.nproc}} --verbose --delete --root ../ --print-summary --xml-pretty --xml coverage.xml . --gcov-executable '${{ matrix.gcov_executable }}' --exclude-unreachable-branches --exclude-noncode-lines
+
+#  gcovr -j ${{env.nproc}} --verbose --root ../ --config ../gcovr.cfg --gcov-executable '${{ matrix.gcov_executable }}' --exclude-unreachable-branches --exclude-noncode-lines --gcov-ignore-errors=no_working_dir_found
 
       - name: Windows - Test and coverage
         if: runner.os == 'Windows'
