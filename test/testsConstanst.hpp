@@ -2,10 +2,31 @@
  * Created by gbian on 12/10/2024.
  * Copyright (c) 2024 All rights reserved.
  */
-
+// NOLINTBEGIN(*-include-cleaner)
 #pragma once
 
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/matchers/catch_matchers.hpp>
+#include <catch2/matchers/catch_matchers_container_properties.hpp>
+#include <catch2/matchers/catch_matchers_exception.hpp>
+#include <catch2/matchers/catch_matchers_string.hpp>
+#include <future>
+
 #include <Vandior/vandior.hpp>
+
+using namespace std::literals::string_view_literals;
+
+using Catch::Matchers::ContainsSubstring;
+using Catch::Matchers::EndsWith;
+using Catch::Matchers::Message;
+using Catch::Matchers::MessageMatches;
+using Catch::Matchers::StartsWith;
+//  using Catch::Matchers::SizeIs;
+//  using Catch::Matchers::Equals;
+
+#define REQ_FORMAT(type, string) REQUIRE(FORMAT("{}", type) == (string));
+#define REQ_FORMAT_COMPTOK(type, string) REQUIRE(FORMAT("{}", comp_tokType(type)) == (string));
+#define MSG_FORMAT(...) Message(FORMAT(__VA_ARGS__))
 
 static inline constexpr std::size_t t_line = 5;
 static inline constexpr std::size_t t_line2 = 42;
@@ -65,3 +86,5 @@ static inline constexpr long double time_val_milli = 2.5L;
 static inline constexpr long double time_val_milli2 = 2.505L;
 static inline constexpr long double time_val_second = 1.0L;
 static inline constexpr long double time_val_second2 = 1.005001L;
+
+//NOLINTEND(*-include-cleaner)
