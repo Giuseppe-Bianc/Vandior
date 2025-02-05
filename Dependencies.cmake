@@ -1,7 +1,7 @@
 include(cmake/CPM.cmake)
 
 function(AddSpdlogPackage WcharSupport WcharFilenames)
-    cpmaddpackage(
+    CPMAddPackage(
             NAME spdlog
             VERSION 1.15.1
             GITHUB_REPOSITORY "gabime/spdlog"
@@ -13,6 +13,7 @@ function(AddSpdlogPackage WcharSupport WcharFilenames)
             "SPDLOG_WCHAR_FILENAMES ${WcharFilenames}"
             "SPDLOG_SANITIZE_ADDRESS OFF"
     )
+
 endfunction()
 
 # Done as a function so that updates to variables like
@@ -21,7 +22,7 @@ endfunction()
 function(Vandior_setup_dependencies)
 
     if (NOT TARGET glm::glm)
-        cpmaddpackage(
+        CPMAddPackage(
                 NAME glm
                 GIT_REPOSITORY https://github.com/g-truc/glm.git
                 GIT_TAG master # Use "master" for the latest version
@@ -36,7 +37,7 @@ function(Vandior_setup_dependencies)
     # already been provided to us by a parent project
 
     if (NOT TARGET fmtlib::fmtlib)
-        cpmaddpackage("gh:fmtlib/fmt#11.1.3")
+        CPMAddPackage("gh:fmtlib/fmt#11.1.3")
     endif ()
 
     if (NOT TARGET spdlog::spdlog)
@@ -48,11 +49,11 @@ function(Vandior_setup_dependencies)
     endif ()
 
     if (NOT TARGET Catch2::Catch2WithMain)
-        cpmaddpackage("gh:catchorg/Catch2@3.8.0")
+        CPMAddPackage("gh:catchorg/Catch2@3.8.0")
     endif ()
 
     if (NOT TARGET CLI11::CLI11)
-        cpmaddpackage("gh:CLIUtils/CLI11@2.4.2")
+        CPMAddPackage("gh:CLIUtils/CLI11@2.4.2")
     endif ()
     #    if (NOT TARGET nlohmann_json::nlohmann_json)
     #        CPMAddPackage(
