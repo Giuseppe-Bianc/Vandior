@@ -31,7 +31,7 @@ namespace {
         token.setLine(1);
         token.setColumn(1);
     }
-}
+}  // namespace
 
 TEST_CASE("CodeSourceLocation default constructor sets default values", "[CodeSourceLocation]") {
     const vnd::CodeSourceLocation location;
@@ -1949,7 +1949,6 @@ TEST_CASE("Statement basic functionality", "[Statement]") {
     REQUIRE(statement.comp_print().empty());
 }
 
-
 TEST_CASE("prettyPrint: BinaryExpressionNode", "[prettyPrint]") {
     vnd::Parser parser("a + b", filename);
     auto programAst = parser.parse();
@@ -2077,7 +2076,6 @@ TEST_CASE("printParentNode: parent index", "[printParentNode]") {
     REQUIRE(ast != nullptr);
     REQUIRE_NOTHROW(printParentNode(*ast->as<vnd::VariableNode>()->get_index()->as<vnd::IndexNode>()->get_index(), ""));
 }
-
 
 TEST_CASE("Transpiler creates correct folders and files c++", "[transpiler]") {
     const std::string transpilerfilename = "testfile.vnd";
