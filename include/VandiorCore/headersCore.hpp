@@ -55,8 +55,8 @@ DISABLE_WARNINGS_PUSH(
 #include <vector>
 // clang-format on
 #include "cast/casts.hpp"
-//#include "glm_matld.hpp"
-//#include "glm_prety_string_cast.hpp"
+// #include "glm_matld.hpp"
+// #include "glm_prety_string_cast.hpp"
 #include "move.hpp"
 // This file will be generated automatically when cur_you run the CMake
 // configuration step. It creates a namespace called `Vandior`. You can modify
@@ -296,7 +296,8 @@ template <std::integral T> [[nodiscard]] constexpr auto find_divisors(T num) noe
 //      * @param ctx The format context.
 //      * @return The formatted string.
 //      */
-//     template <typename FormatContext> auto format(const glm::qua<T, Q> &quaternion, format_context &ctx) const -> format_context::iterator {
+//     template <typename FormatContext> auto format(const glm::qua<T, Q> &quaternion, format_context &ctx) const ->
+//     format_context::iterator {
 //         return formatter<std::string_view>::format(glmp::to_string(quaternion), ctx);
 //     }
 // };
