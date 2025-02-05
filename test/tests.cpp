@@ -2971,68 +2971,50 @@ TEST_CASE("GetBuildFolder - Edge Cases") {
 
 TEST_CASE("Transpiler creates correct folders and files c++", "[transpiler]") {
     const std::string transpilerfilename = "testfile.vnd";
+    LINFO("Removing build folder  c++ file");
     [[maybe_unused]] auto unused = fs::remove_all(fs::path(VANDIOR_BUILDFOLDER));
 
     vnd::Transpiler transpiler(long_input, transpilerfilename);
+    transpiler.transpile();
 
-    SECTION("Folder and file creation") {
-        transpiler.transpile();
+    const fs::path buildFolder(VANDIOR_BUILDFOLDER);
+    const fs::path srcFolder = (buildFolder / "src").make_preferred();
+    REQUIRE(fs::exists(buildFolder));
+    REQUIRE(fs::exists(srcFolder));
 
-        const fs::path buildFolder(VANDIOR_BUILDFOLDER);
-        const fs::path srcFolder = (buildFolder / "src").make_preferred();
-        REQUIRE(fs::exists(buildFolder));
-        REQUIRE(fs::exists(srcFolder));
+    const fs::path cppFile = (srcFolder / "testfile.cpp").make_preferred();
+    REQUIRE(fs::exists(cppFile));
+    std::string fileContent = vnd::readFromFile(cppFile.string());
 
-        const fs::path cppFile = (srcFolder / "testfile.cpp").make_preferred();
-        REQUIRE(fs::exists(cppFile));
-        std::string fileContent = vnd::readFromFile(cppFile.string());
-
-        REQUIRE_THAT(fileContent, ContainsSubstring("Hello, World!"));  // Check for the presence of "Hello, World!"
-        REQUIRE_THAT(fileContent, ContainsSubstring("return 0;"));
-        REQUIRE_THAT(fileContent, StartsWith("// This is an automatically generated file by Vandior"));
-        REQUIRE_THAT(fileContent, EndsWith("\n"));
-    }
-
-    SECTION("Clean up") {
-        transpiler.transpile();
-
-        const fs::path buildFolder(VANDIOR_BUILDFOLDER);
-        [[maybe_unused]] auto unused2 = fs::remove_all(buildFolder);
-        REQUIRE_FALSE(fs::exists(buildFolder));  // Folder should not exist
-    }
+    REQUIRE_THAT(fileContent, ContainsSubstring("Hello, World!"));  // Check for the presence of "Hello, World!"
+    REQUIRE_THAT(fileContent, ContainsSubstring("return 0;"));
+    REQUIRE_THAT(fileContent, StartsWith("// This is an automatically generated file by Vandior"));
+    REQUIRE_THAT(fileContent, EndsWith("\n"));
+    [[maybe_unused]] auto unused2 = fs::remove_all(buildFolder);
+    REQUIRE_FALSE(fs::exists(buildFolder));  // Folder should not exist
 }
 
 TEST_CASE("Transpiler creates correct folders and cmake file", "[transpiler]") {
     const std::string transpilerfilename = "testfile.vnd";
+    LINFO("Removing build folder cmake file");
     [[maybe_unused]] auto unused = fs::remove_all(fs::path(VANDIOR_BUILDFOLDER));
-
     vnd::Transpiler transpiler(long_input, transpilerfilename, true);
 
-    SECTION("Folder and file creation") {
-        transpiler.transpile();
+    transpiler.transpile();
 
-        const fs::path buildFolder(VANDIOR_BUILDFOLDER);
-        const fs::path srcFolder = (buildFolder / "src").make_preferred();
-        REQUIRE(fs::exists(buildFolder));
-        REQUIRE(fs::exists(srcFolder));
-        const fs::path cmakeListsFile = (buildFolder / "CMakeLists.txt").make_preferred();
-        REQUIRE(fs::exists(cmakeListsFile));
+    const fs::path buildFolder(VANDIOR_BUILDFOLDER);
+    const fs::path cmakeListsFile = (buildFolder / "CMakeLists.txt").make_preferred();
+    REQUIRE(fs::exists(cmakeListsFile));
 
-        std::string cmakeListsfileContent = vnd::readFromFile(cmakeListsFile.string());
-        REQUIRE_THAT(cmakeListsfileContent, ContainsSubstring("# for more information got to  https://github.com/Giuseppe-Bianc/Vandior"));
-        REQUIRE_THAT(cmakeListsfileContent, ContainsSubstring("set_target_properties(${PROJECT_NAME} PROPERTIES"));
-        REQUIRE_THAT(cmakeListsfileContent, ContainsSubstring("endif()"));
-        REQUIRE_THAT(cmakeListsfileContent, StartsWith("# This is an automatically generated file by Vandior"));
-        REQUIRE_THAT(cmakeListsfileContent, EndsWith("\n"));
-    }
+    std::string cmakeListsfileContent = vnd::readFromFile(cmakeListsFile.string());
+    REQUIRE_THAT(cmakeListsfileContent, ContainsSubstring("# for more information got to  https://github.com/Giuseppe-Bianc/Vandior"));
+    REQUIRE_THAT(cmakeListsfileContent, ContainsSubstring("set_target_properties(${PROJECT_NAME} PROPERTIES"));
+    REQUIRE_THAT(cmakeListsfileContent, ContainsSubstring("endif()"));
+    REQUIRE_THAT(cmakeListsfileContent, StartsWith("# This is an automatically generated file by Vandior"));
+    REQUIRE_THAT(cmakeListsfileContent, EndsWith("\n"));
 
-    SECTION("Clean up") {
-        transpiler.transpile();
-
-        const fs::path buildFolder(VANDIOR_BUILDFOLDER);
-        [[maybe_unused]] auto unused2 = fs::remove_all(buildFolder);
-        REQUIRE_FALSE(fs::exists(buildFolder));  // Folder should not exist
-    }
+    [[maybe_unused]] auto unused2 = fs::remove_all(buildFolder);
+    REQUIRE_FALSE(fs::exists(buildFolder));  // Folder should not exist
 }
 
 TEST_CASE("Transpiler::mapType returns correct type mappings", "[transpiler]") {
