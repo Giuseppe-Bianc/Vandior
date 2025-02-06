@@ -157,7 +157,7 @@ function(Vandior_package_project)
     # download ForwardArguments
     FetchContent_Declare(
             _fargs
-            URL https://github.com/polysquare/cmake-forward-arguments/archive/8c50d1f956172edb34e95efa52a2d5cb1f686ed2.zip)
+            URL https://github.com/polysquare/cmake-forward-arguments/archive/refs/tags/v1.0.0.zip)
     FetchContent_GetProperties(_fargs)
     if (NOT _fargs_POPULATED)
         FetchContent_Populate(_fargs)
@@ -177,10 +177,9 @@ function(Vandior_package_project)
             "${_multiValueArgs};DEPENDENCIES;PRIVATE_DEPENDENCIES")
 
     # download ycm
-    FetchContent_Declare(_ycm URL https://github.com/robotology/ycm/archive/refs/tags/v0.13.0.zip)
-    FetchContent_GetProperties(_ycm)
+    FetchContent_Declare(_ycm URL https://github.com/robotology/ycm/archive/refs/tags/v0.18.1.zip )
     if (NOT _ycm_POPULATED)
-        FetchContent_Populate(_ycm)
+        FetchContent_MakeAvailable(_ycm)
     endif ()
     include("${_ycm_SOURCE_DIR}/modules/InstallBasicPackageFiles.cmake")
 
