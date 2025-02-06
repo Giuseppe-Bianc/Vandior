@@ -36,6 +36,7 @@ namespace vnd {
         std::size_t line = 1;        ///< Current line number.
         std::size_t column = 1;      ///< Current column number.
         std::vector<TokenType> brackets;
+        size_t bracketNum = 0;
         // ArenaAllocator<CodeSourceLocation> _locationAllocator;  ///< Allocator for CodeSourceLocation objects.
 
         /**
