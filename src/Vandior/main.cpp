@@ -82,8 +82,7 @@ auto main(int argc, const char *const argv[]) -> int {
         vnd::Tokenizer tokenizer{code, porfilename};
         std::vector<vnd::TokenVec> tokens;
         vnd::timeTokenizer(tokenizer, tokens);
-
-        vnd::count_total_num_tokens(tokens);
+        LINFO("num tokens {}", tokens.size());
         LINFO("Input:\n{}", code);
         vnd::Parser parser{code, "input.vn"};
         for(const auto progrmamAST = vnd::timeParse(parser); const auto &statement : progrmamAST) {
