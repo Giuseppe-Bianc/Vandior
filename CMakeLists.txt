@@ -41,8 +41,6 @@ include(Dependencies.cmake)
 Vandior_setup_dependencies()
 
 Vandior_local_options()
-include(cmake/Doxygen.cmake)
-Vandior_enable_doxygen("")
 
 # don't know if this should be set globally from here or not...
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)

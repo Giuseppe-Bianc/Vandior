@@ -2,6 +2,7 @@ include(cmake/SystemLink.cmake)
 include(cmake/LibFuzzer.cmake)
 include(CMakeDependentOption)
 include(CheckCXXCompilerFlag)
+include(cmake/Doxygen.cmake)
 
 
 macro(Vandior_supports_sanitizers)
@@ -21,6 +22,8 @@ endmacro()
 macro(Vandior_setup_options)
     option(Vandior_ENABLE_HARDENING "Enable hardening" ON)
     option(Vandior_ENABLE_COVERAGE "Enable coverage reporting" OFF)
+    option(Vandior_ENABLE_DOXYGEN "Enable Doxygen documentation generation" OFF)  # Add this line
+
     cmake_dependent_option(
             Vandior_ENABLE_GLOBAL_HARDENING
             "Attempt to push hardening options to built dependencies"
@@ -78,7 +81,8 @@ macro(Vandior_setup_options)
                 Vandior_ENABLE_COVERAGE
                 Vandior_ENABLE_PCH
                 Vandior_ENABLE_CACHE
-                Vandior_ENABLE_INDEPT)  # Mark as advanced if not top-level
+                Vandior_ENABLE_INDEPT
+                Vandior_ENABLE_DOXYGEN)  # Mark as advanced if not top-level
     endif ()
 
     Vandior_check_libfuzzer_support(LIBFUZZER_SUPPORTED)
@@ -203,4 +207,8 @@ macro(Vandior_local_options)
         Vandior_enable_hardening(Vandior_options OFF ${ENABLE_UBSAN_MINIMAL_RUNTIME})
     endif ()
 
+    # Doxygen configuration
+    if (Vandior_ENABLE_DOXYGEN)
+        Vandior_enable_doxygen("")
+    endif ()
 endmacro()
