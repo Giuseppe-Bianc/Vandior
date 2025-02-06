@@ -230,7 +230,30 @@ namespace vnd {
         incPosAndColumn();
         const auto value = _input.substr(start, position - start);
         const auto type = getBracketsType(value);
+        switch(type) {
+        case TokenType::OPEN_PARENTESIS:
+        case TokenType::OPEN_SQ_PARENTESIS:
+        case TokenType::OPEN_CUR_PARENTESIS:
+            brackets.push_back(type);
+            break;
+        case TokenType::CLOSE_PARENTESIS:
+            removeBrackets(TokenType::OPEN_PARENTESIS);
+            break;
+        case TokenType::CLOSE_SQ_PARENTESIS:
+            removeBrackets(TokenType::OPEN_SQ_PARENTESIS);
+            break;
+        case TokenType::CLOSE_CUR_PARENTESIS:
+            removeBrackets(TokenType::OPEN_CUR_PARENTESIS);
+            break;
+        default:
+            break;
+        }
         return {type, value, {_filename, line, column - value.size()}};
+    }
+
+    void Tokenizer::removeBrackets(const TokenType &type) {
+        if(brackets.empty() || brackets.back() != type) { throw std::runtime_error("Wrong bracket"); }
+        brackets.pop_back();
     }
 
     Token Tokenizer::handleChar() {
