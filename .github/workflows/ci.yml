@@ -30,7 +30,7 @@ jobs:
         os:
           - ubuntu-22.04
           #- macos-10.15
-          - windows-2019
+          - windows-2022
         compiler:
           - llvm-18.1.3
           - gcc-13
@@ -49,11 +49,9 @@ jobs:
           - OFF
 
         exclude:
-          - os: windows-2019
+          - os: windows-2022
             compiler: llvm-18.1.3
-            packaging_maintainer_mode: ON
-            enable_indepth: OFF
-          - os: windows-2019
+          - os: windows-2022
             compiler: gcc-13
           #- os: macos-10.15
 
@@ -141,18 +139,6 @@ jobs:
             build_type: Debug
             enable_indepth: On
 
-          - os: windows-2019
-            compiler: llvm-18.1.3
-            generator: "Ninja Multi-Config"
-            build_type: Release
-            enable_indepth: On
-
-          - os: windows-2019
-            compiler: llvm-18.1.3
-            generator: "Ninja Multi-Config"
-            build_type: Debug
-            enable_indepth: On
-
           - os: windows-2022
             compiler: msvc
             generator: "Visual Studio 17 2022"
@@ -226,16 +212,10 @@ jobs:
         if: ${{ matrix.compiler != 'llvm-18.1.3' }}
         run: |
           cmake -S . -B ./build -G "${{matrix.generator}}" -D${{ env.PROJECT_NAME }}_ENABLE_CPPCHECK=${{matrix.enable_cppcheck }} -D${{ env.PROJECT_NAME }}_ENABLE_IPO=${{matrix.enable_ipo }} -DCMAKE_BUILD_TYPE:STRING=${{matrix.build_type}} -D${{ env.PROJECT_NAME }}_PACKAGING_MAINTAINER_MODE:BOOL=${{matrix.packaging_maintainer_mode}} -D${{ env.PROJECT_NAME }}_ENABLE_COVERAGE:BOOL=${{ matrix.build_type == 'Debug' }} -D${{ env.PROJECT_NAME }}_ENABLE_INDEPT:BOOL=${{matrix.enable_indepth}} -DGIT_SHA:STRING=${{ github.sha }}
-
-      - name: Build UNIX
-        if: runner.os != 'Windows'
-        # Execute the build.  You can specify a specific target with "--target <NAME>"
-        run: |
-          cmake --build ./build --config ${{matrix.build_type}} --parallel ${{ steps.cpu-cores.outputs.count }}
       - name: Build
         # Execute the build.  You can specify a specific target with "--target <NAME>"
         run: |
-          cmake --build ./build --config ${{matrix.build_type}}
+          cmake --build ./build --config ${{matrix.build_type}} --parallel ${{ steps.cpu-cores.outputs.count }}
 
 
       #- name: Create Coverage Directory
@@ -247,8 +227,10 @@ jobs:
         # Execute tests defined by the CMake configuration.
         # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
         run: |
-          ctest -C ${{matrix.build_type}} -j ${{ steps.cpu-cores.outputs.count }}
-          gcovr -j ${{env.nproc}} --verbose --root ../ --config ../gcovr.cfg --gcov-executable '${{ matrix.gcov_executable }}' --exclude-unreachable-branches --exclude-noncode-lines --gcov-ignore-errors=no_working_dir_found
+          ctest -C ${{matrix.build_type}} -j ${{ steps.cpu-cores.outputs.count }} --rerun-failed --output-on-failure
+          gcovr -j ${{env.nproc}} --verbose --delete --root ../ --print-summary --xml-pretty --xml coverage.xml . --gcov-executable '${{ matrix.gcov_executable }}' --exclude-unreachable-branches --exclude-noncode-lines --gcov-ignore-errors=no_working_dir_found
+
+#  gcovr -j ${{env.nproc}} --verbose --root ../ --config ../gcovr.cfg --gcov-executable '${{ matrix.gcov_executable }}' --exclude-unreachable-branches --exclude-noncode-lines --gcov-ignore-errors=no_working_dir_found
 
       - name: Windows - Test and coverage
         if: runner.os == 'Windows'

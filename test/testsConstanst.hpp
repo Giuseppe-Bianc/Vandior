@@ -2,9 +2,8 @@
  * Created by gbian on 12/10/2024.
  * Copyright (c) 2024 All rights reserved.
  */
-
+// NOLINTBEGIN(*-include-cleaner)
 #pragma once
-
 #include <Vandior/vandior.hpp>
 
 static inline constexpr std::size_t t_line = 5;
@@ -65,3 +64,5 @@ static inline constexpr long double time_val_milli = 2.5L;
 static inline constexpr long double time_val_milli2 = 2.505L;
 static inline constexpr long double time_val_second = 1.0L;
 static inline constexpr long double time_val_second2 = 1.005001L;
+
+// NOLINTEND(*-include-cleaner)

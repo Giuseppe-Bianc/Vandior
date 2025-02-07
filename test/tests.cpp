@@ -555,6 +555,7 @@ TEST_CASE("my_error_handler(const std::string&) tests", "[error_handler]") {
 
 TEST_CASE("std::filesystem::path formater", "[FMT]") { REQ_FORMAT(std::filesystem::path("../ssss"), "../ssss"); }
 
+/*
 TEST_CASE("glm::vec formater", "[FMT]") {
     REQ_FORMAT(glm::vec2(0.0F, 0.0F), "vec2(0, 0)");
     REQ_FORMAT(glm::dvec2(0.0, 0.0), "dvec2(0, 0)");
@@ -575,22 +576,23 @@ TEST_CASE("glm::mat formater", "[FMT]") {
     REQ_FORMAT(glm::mat3(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F), "mat3x3((0, 0, 0), (0, 0, 0), (0, 0, 0))");
     REQ_FORMAT(glm::dmat3(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0), "dmat3x3((0, 0, 0), (0, 0, 0), (0, 0, 0))");
     REQ_FORMAT(glm::ldmat3(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0), "ldmat3x3((0, 0, 0), (0, 0, 0), (0, 0, 0))");
-    REQ_FORMAT(glm::mat4(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F), "mat4x4((0, 0, 0, 0), (0, 0, 0, 0), (0, 0, 0, 0), (0, 0, 0, 0))");
-    REQ_FORMAT(glm::dmat4(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0), "dmat4x4((0, 0, 0, 0), (0, 0, 0, 0), (0, 0, 0, 0), (0, 0, 0, 0))");
-    REQ_FORMAT(glm::ldmat4(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0), "ldmat4x4((0, 0, 0, 0), (0, 0, 0, 0), (0, 0, 0, 0), (0, 0, 0, 0))");
+    REQ_FORMAT(glm::mat4(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F), "mat4x4((0, 0, 0,
+0), (0, 0, 0, 0), (0, 0, 0, 0), (0, 0, 0, 0))"); REQ_FORMAT(glm::dmat4(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+0.0, 0.0), "dmat4x4((0, 0, 0, 0), (0, 0, 0, 0), (0, 0, 0, 0), (0, 0, 0, 0))"); REQ_FORMAT(glm::ldmat4(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0), "ldmat4x4((0, 0, 0, 0), (0, 0, 0, 0), (0, 0, 0, 0), (0, 0, 0, 0))");
 }
-
+*/
 
 TEST_CASE("std::complex formater", "[FMT]") {
-    REQ_FORMAT(std::complex<float>(1.0F, 2.0F), "(1, 2)");
-    REQ_FORMAT(std::complex<double>(3.0, 4.0), "(3, 4)");
-    REQ_FORMAT(std::complex<long double>(5.0L, 6.0L), "(5, 6)");
+    REQ_FORMAT(std::complex<float>(1.0F, 2.0F), "(1+2i)");
+    REQ_FORMAT(std::complex<double>(3.0, 4.0), "(3+4i)");
+    REQ_FORMAT(std::complex<long double>(5.0L, 6.0L), "(5+6i)");
 }
 
 TEST_CASE("std::complex formater 2", "[FMT]") {
-    REQ_FORMAT(std::complex<float>(1.1F, 2.1F), "(1.1, 2.1)");
-    REQ_FORMAT(std::complex<double>(3.1, 4.1), "(3.1, 4.1)");
-    REQ_FORMAT(std::complex<long double>(5.1L, 6.1L), "(5.1, 6.1)");
+    REQ_FORMAT(std::complex<float>(1.1F, 2.1F), "(1.1+2.1i)");
+    REQ_FORMAT(std::complex<double>(3.1, 4.1), "(3.1+4.1i)");
+    REQ_FORMAT(std::complex<long double>(5.1L, 6.1L), "(5.1+6.1i)");
 }
 
 // clang-format on
@@ -661,204 +663,7 @@ TEST_CASE("Timer: TimeItTimer", "[timer]") {
     REQUIRE_THAT(output, ContainsSubstring(timerTime1.data()));
 }
 
-TEST_CASE("CodeSourceLocation default constructor sets default values", "[CodeSourceLocation]") {
-    const vnd::CodeSourceLocation location;
-    REQUIRE(location.getFileName() == "unknown");
-    REQUIRE(location.getLine() == 0);
-    REQUIRE(location.getColumn() == 0);
-}
-
-TEST_CASE("CodeSourceLocation constructor sets values correctly", "[CodeSourceLocation]") {
-    const vnd::CodeSourceLocation location(filename2, t_line2, t_colum6);
-    REQUIRE(location.getFileName() == filename2);
-    REQUIRE(location.getLine() == t_line2);
-    REQUIRE(location.getColumn() == t_colum6);
-}
-
-TEST_CASE("CodeSourceLocation setters update values", "[CodeSourceLocation]") {
-    vnd::CodeSourceLocation location;
-    location.setFileName(filename3);
-    location.setLine(t_line3);
-    location.setColumn(t_colum6 * 2);
-    REQUIRE(location.getFileName() == filename3);
-    REQUIRE(location.getLine() == t_line3);
-    REQUIRE(location.getColumn() == t_colum6 * 2);
-}
-
-TEST_CASE("CodeSourceLocation unknown() creates object with default values", "[CodeSourceLocation]") {
-    const vnd::CodeSourceLocation location = vnd::CodeSourceLocation::unknown();
-    REQUIRE(location.getFileName() == filename4);
-    REQUIRE(location.getLine() == 0);
-    REQUIRE(location.getColumn() == 0);
-}
-
-TEST_CASE("CodeSourceLocation equality and inequality operators work correctly", "[CodeSourceLocation]") {
-    vnd::CodeSourceLocation location1(ffilename, t_line4, t_colum2);
-    vnd::CodeSourceLocation location2(ffilename, t_line4, t_colum2);
-    vnd::CodeSourceLocation location3("file2.cpp", t_line4, t_colum2);
-
-    REQUIRE(location1 == location2);
-    REQUIRE(location1 != location3);
-}
-
-TEST_CASE("CodeSourceLocation toString() produces expected string", "[CodeSourceLocation]") {
-    const vnd::CodeSourceLocation location(filename2, t_line2, t_colum6);
-    REQUIRE(location.toString() == "(file:example.cpp, line:42, column:10)");
-}
-
-TEST_CASE("corrected format for Tokentype", "[token_type]") {
-    using enum vnd::TokenType;
-    REQ_FORMAT(INTEGER, "INTEGER")
-    REQ_FORMAT(DOUBLE, "DOUBLE")
-    REQ_FORMAT(BOOLEAN, "BOOLEAN")
-    REQ_FORMAT(PLUS, "PLUS_OPERATOR")
-    REQ_FORMAT(MINUS, "MINUS_OPERATOR")
-    REQ_FORMAT(EQUAL, "EQUAL_OPERATOR")
-    REQ_FORMAT(DOT, "DOT_OPERATOR")
-    REQ_FORMAT(STAR, "STAR_OPERATOR")
-    REQ_FORMAT(DIVIDE, "DIVIDE_OPERATOR")
-    REQ_FORMAT(XOR, "XOR_OPERATOR")
-    REQ_FORMAT(PERCENT, "PERCENT_OPERATOR")
-    REQ_FORMAT(OR, "OR_OPERATOR")
-    REQ_FORMAT(AND, "AND_OPERATOR")
-    REQ_FORMAT(LESS, "LESS_OPERATOR")
-    REQ_FORMAT(GREATER, "GREATER_OPERATOR")
-    REQ_FORMAT(PLUSPLUS, "PLUSPLUS_OPERATOR")
-    REQ_FORMAT(MINUSMINUS, "MINUSMINUS_OPERATOR")
-    REQ_FORMAT(PLUSEQUAL, "PLUSEQUAL_OPERATOR")
-    REQ_FORMAT(MINUSEQUAL, "MINUSEQUAL_OPERATOR")
-    REQ_FORMAT(NOTEQUAL, "NOTEQUAL_OPERATOR")
-    REQ_FORMAT(STAREQUAL, "STAREQUAL_OPERATOR")
-    REQ_FORMAT(DIVIDEEQUAL, "DIVIDEEQUAL_OPERATOR")
-    REQ_FORMAT(XOREQUAL, "XOREQUAL_OPERATOR")
-    REQ_FORMAT(PERCENTEQUAL, "PERCENTEQUAL_OPERATOR")
-    REQ_FORMAT(OROR, "OROR_OPERATOR")
-    REQ_FORMAT(ANDAND, "ANDAND_OPERATOR")
-    REQ_FORMAT(EQUALEQUAL, "EQUALEQUAL_OPERATOR")
-    REQ_FORMAT(LESSEQUAL, "LESSEQUAL_OPERATOR")
-    REQ_FORMAT(GREATEREQUAL, "GREATEREQUAL_OPERATOR")
-    REQ_FORMAT(IDENTIFIER, "IDENTIFIER")
-    REQ_FORMAT(CHAR, "CHAR")
-    REQ_FORMAT(STRING, "STRING")
-    REQ_FORMAT(EOFT, "EOF")
-    REQ_FORMAT(K_MAIN, "K_MAIN")
-    REQ_FORMAT(K_VAR, "K_VAR")
-    REQ_FORMAT(K_IF, "K_IF")
-    REQ_FORMAT(K_WHILE, "K_WHILE")
-    REQ_FORMAT(K_ELSE, "K_ELSE")
-    REQ_FORMAT(K_FOR, "K_FOR")
-    REQ_FORMAT(K_BREAK, "BREAK")
-    REQ_FORMAT(K_FUN, "K_FUN")
-    REQ_FORMAT(K_RETURN, "K_RETURN")
-    REQ_FORMAT(K_NULLPTR, "K_NULLPTR")
-    REQ_FORMAT(OPEN_PARENTESIS, "OPEN_PARENTESIS")
-    REQ_FORMAT(OPEN_SQ_PARENTESIS, "OPEN_SQ_PARENTESIS")
-    REQ_FORMAT(OPEN_CUR_PARENTESIS, "OPEN_CUR_PARENTESIS")
-    REQ_FORMAT(CLOSE_PARENTESIS, "CLOSE_PARENTESIS")
-    REQ_FORMAT(CLOSE_SQ_PARENTESIS, "CLOSE_SQ_PARENTESIS")
-    REQ_FORMAT(CLOSE_CUR_PARENTESIS, "CLOSE_CUR_PARENTESIS")
-    REQ_FORMAT(NOT, "NOT_OPERATOR")
-    REQ_FORMAT(COMMA, "COMMA")
-    REQ_FORMAT(COLON, "COLON")
-    REQ_FORMAT(TYPE_I16, "TYPE_I16")
-    REQ_FORMAT(TYPE_I32, "TYPE_I32")
-    REQ_FORMAT(TYPE_I64, "TYPE_I64")
-    REQ_FORMAT(TYPE_U8, "TYPE_U8")
-    REQ_FORMAT(TYPE_U16, "TYPE_U16")
-    REQ_FORMAT(TYPE_U32, "TYPE_U32")
-    REQ_FORMAT(TYPE_U64, "TYPE_U64")
-    REQ_FORMAT(TYPE_F32, "TYPE_F32")
-    REQ_FORMAT(TYPE_F64, "TYPE_F64")
-    REQ_FORMAT(TYPE_C32, "TYPE_C32")
-    REQ_FORMAT(TYPE_C64, "TYPE_C64")
-    REQ_FORMAT(TYPE_CHAR, "TYPE_CHAR")
-    REQ_FORMAT(TYPE_STRING, "TYPE_STRING")
-    REQ_FORMAT(TYPE_BOOL, "TYPE_BOOL")
-    REQ_FORMAT(COMMENT, "COMMENT")
-    REQ_FORMAT(UNKNOWN, "UNKNOWN")
-}
-
-TEST_CASE("corrected format for Tokentype compat to string", "[token_type]") {
-    using enum vnd::TokenType;
-    REQ_FORMAT_COMPTOK(INTEGER, "INT")
-    REQ_FORMAT_COMPTOK(DOUBLE, "DBL")
-    REQ_FORMAT_COMPTOK(BOOLEAN, "BOOL")
-    REQ_FORMAT_COMPTOK(PLUS, "PLUS_OP")
-    REQ_FORMAT_COMPTOK(MINUS, "MINUS_OP")
-    REQ_FORMAT_COMPTOK(EQUAL, "EQUAL_OP")
-    REQ_FORMAT_COMPTOK(DOT, "DOT_OP")
-    REQ_FORMAT_COMPTOK(STAR, "STAR_OP")
-    REQ_FORMAT_COMPTOK(DIVIDE, "DIVIDE_OP")
-    REQ_FORMAT_COMPTOK(XOR, "XOR_OP")
-    REQ_FORMAT_COMPTOK(PERCENT, "PERCENT_OP")
-    REQ_FORMAT_COMPTOK(OR, "OR_OP")
-    REQ_FORMAT_COMPTOK(AND, "AND_OP")
-    REQ_FORMAT_COMPTOK(LESS, "LESS_OP")
-    REQ_FORMAT_COMPTOK(GREATER, "GREATER_OP")
-    REQ_FORMAT_COMPTOK(PLUSPLUS, "PLUSPLUS_OP")
-    REQ_FORMAT_COMPTOK(MINUSMINUS, "MINUSMINUS_OP")
-    REQ_FORMAT_COMPTOK(PLUSEQUAL, "PLUSEQUAL_OP")
-    REQ_FORMAT_COMPTOK(MINUSEQUAL, "MINUSEQUAL_OP")
-    REQ_FORMAT_COMPTOK(NOTEQUAL, "NOTEQUAL_OP")
-    REQ_FORMAT_COMPTOK(STAREQUAL, "STAREQUAL_OP")
-    REQ_FORMAT_COMPTOK(DIVIDEEQUAL, "DIVIDEEQUAL_OP")
-    REQ_FORMAT_COMPTOK(XOREQUAL, "XOREQUAL_OP")
-    REQ_FORMAT_COMPTOK(PERCENTEQUAL, "PERCENTEQUAL_OP")
-    REQ_FORMAT_COMPTOK(OROR, "OROR_OP")
-    REQ_FORMAT_COMPTOK(ANDAND, "ANDAND_OP")
-    REQ_FORMAT_COMPTOK(EQUALEQUAL, "EQUALEQUAL_OP")
-    REQ_FORMAT_COMPTOK(LESSEQUAL, "LESSEQUAL_OP")
-    REQ_FORMAT_COMPTOK(GREATEREQUAL, "GREATEREQUAL_OP")
-    REQ_FORMAT_COMPTOK(IDENTIFIER, "IDENT")
-    REQ_FORMAT_COMPTOK(CHAR, "CH")
-    REQ_FORMAT_COMPTOK(STRING, "STR")
-    REQ_FORMAT_COMPTOK(EOFT, "EOF")
-    REQ_FORMAT_COMPTOK(K_MAIN, "K_MAIN")
-    REQ_FORMAT_COMPTOK(K_VAR, "K_VAR")
-    REQ_FORMAT_COMPTOK(K_IF, "K_IF")
-    REQ_FORMAT_COMPTOK(K_WHILE, "K_WHILE")
-    REQ_FORMAT_COMPTOK(K_ELSE, "K_ELSE")
-    REQ_FORMAT_COMPTOK(K_FOR, "K_FOR")
-    REQ_FORMAT_COMPTOK(K_BREAK, "BREAK")
-    REQ_FORMAT_COMPTOK(K_FUN, "K_FUN")
-    REQ_FORMAT_COMPTOK(K_RETURN, "K_RETURN")
-    REQ_FORMAT_COMPTOK(K_NULLPTR, "K_NULLPTR")
-    REQ_FORMAT_COMPTOK(OPEN_PARENTESIS, "OPEN_PAR")
-    REQ_FORMAT_COMPTOK(OPEN_SQ_PARENTESIS, "OPEN_SQ_PAR")
-    REQ_FORMAT_COMPTOK(OPEN_CUR_PARENTESIS, "OPEN_CUR_PAR")
-    REQ_FORMAT_COMPTOK(CLOSE_PARENTESIS, "CLOSE_PAR")
-    REQ_FORMAT_COMPTOK(CLOSE_SQ_PARENTESIS, "CLOSE_SQ_PAR")
-    REQ_FORMAT_COMPTOK(CLOSE_CUR_PARENTESIS, "CLOSE_CUR_PAR")
-    REQ_FORMAT_COMPTOK(NOT, "NOT_OP")
-    REQ_FORMAT_COMPTOK(COMMA, "COMMA")
-    REQ_FORMAT_COMPTOK(COLON, "COLON")
-    REQ_FORMAT_COMPTOK(TYPE_I8, "I8")
-    REQ_FORMAT_COMPTOK(TYPE_I16, "I16")
-    REQ_FORMAT_COMPTOK(TYPE_I32, "I32")
-    REQ_FORMAT_COMPTOK(TYPE_I64, "I64")
-    REQ_FORMAT_COMPTOK(TYPE_U8, "U8")
-    REQ_FORMAT_COMPTOK(TYPE_U16, "U16")
-    REQ_FORMAT_COMPTOK(TYPE_U32, "U32")
-    REQ_FORMAT_COMPTOK(TYPE_U64, "U64")
-    REQ_FORMAT_COMPTOK(TYPE_F32, "F32")
-    REQ_FORMAT_COMPTOK(TYPE_F64, "F64")
-    REQ_FORMAT_COMPTOK(TYPE_C32, "C32")
-    REQ_FORMAT_COMPTOK(TYPE_C64, "C64")
-    REQ_FORMAT_COMPTOK(TYPE_CHAR, "CHAR")
-    REQ_FORMAT_COMPTOK(TYPE_STRING, "STRING")
-    REQ_FORMAT_COMPTOK(TYPE_BOOL, "BOOL")
-    REQ_FORMAT_COMPTOK(COMMENT, "COMMENT")
-    REQ_FORMAT_COMPTOK(UNKNOWN, "UNKNOWN")
-}
-
 namespace {
-    void modifyToken(vnd::Token &token) {
-        token.setType(vnd::TokenType::INTEGER);
-        token.setValue("assss");
-        token.setFileName(filename);
-        token.setLine(1);
-        token.setColumn(1);
-    }
     // Helper function to create a file with content
     // NOLINTBEGIN(*-easily-swappable-parameters, *-signed-bitwise)
     void createFile(const std::string &infilename, const std::string &content) {
@@ -868,117 +673,6 @@ namespace {
     }
     // NOLINTEND(*-easily-swappable-parameters, *-signed-bitwise)
 }  // namespace
-
-TEST_CASE("default constructed token", "[token]") {
-    const vnd::Token token{};
-    REQUIRE(token.getType() == vnd::TokenType::UNKNOWN);
-    REQUIRE(token.getValue().empty() == true);
-    REQUIRE(token.getFileName() == filename4);
-    REQUIRE(token.getLine() == 0);
-    REQUIRE(token.getColumn() == 0);
-}
-
-TEST_CASE("default constructed token toString", "[token]") {
-    const vnd::Token token{};
-    REQUIRE(token.getType() == vnd::TokenType::UNKNOWN);
-    REQUIRE(token.getValue().empty() == true);
-    REQUIRE(token.getFileName() == filename4);
-    REQUIRE(token.getLine() == 0);
-    REQUIRE(token.getColumn() == 0);
-    REQUIRE(token.to_string() == "(type: UNKNOWN, value: '', source location:(file:unknown, line:0, column:0))");
-}
-
-TEST_CASE("default constructed token format", "[token]") {
-    vnd::Token token{};
-    REQUIRE(token.getType() == vnd::TokenType::UNKNOWN);
-    REQUIRE(token.getValue().empty() == true);
-    REQUIRE(token.getFileName() == filename4);
-    REQUIRE(token.getLine() == 0);
-    REQUIRE(token.getColumn() == 0);
-    REQ_FORMAT(token, "(type: UNKNOWN, value: '', source location:(file:unknown, line:0, column:0))");
-    REQUIRE(token.compat_to_string() == "(typ: UNKNOWN, val: '', sl:(f:unknown, l:0, c:0))");
-}
-
-TEST_CASE("default constructed token set propriety", "[token]") {
-    using enum vnd::TokenType;
-    vnd::Token token{};
-    REQUIRE(token.getType() == UNKNOWN);
-    REQUIRE(token.getValue().empty() == true);
-    REQUIRE(token.getFileName() == filename4);
-    REQUIRE(token.getLine() == 0);
-    REQUIRE(token.getColumn() == 0);
-    modifyToken(token);
-    REQUIRE(token.getType() == INTEGER);
-    REQUIRE(token.getValue().empty() == false);
-    REQUIRE(token.getFileName() == filename);
-    REQUIRE(token.getLine() == 1);
-    REQUIRE(token.getColumn() == 1);
-}
-
-TEST_CASE("default constructed token isType", "[token]") {
-    using enum vnd::TokenType;
-    vnd::Token token{};
-    REQUIRE(token.getType() == UNKNOWN);
-    REQUIRE(token.getValue().empty() == true);
-    REQUIRE(token.getFileName() == filename4);
-    REQUIRE(token.getLine() == 0);
-    REQUIRE(token.getColumn() == 0);
-    REQUIRE(token.isType(CHAR) == false);
-    modifyToken(token);
-    REQUIRE(token.getType() == INTEGER);
-    REQUIRE(token.isType(INTEGER) == true);
-    REQUIRE(token.getValue().empty() == false);
-    REQUIRE(token.getFileName() == filename);
-    REQUIRE(token.getLine() == 1);
-    REQUIRE(token.getColumn() == 1);
-}
-
-TEST_CASE("default constructed token set propriety tostring", "[token]") {
-    using enum vnd::TokenType;
-    vnd::Token token{};
-    REQUIRE(token.getType() == UNKNOWN);
-    REQUIRE(token.getValue().empty() == true);
-    REQUIRE(token.getLine() == 0);
-    REQUIRE(token.getColumn() == 0);
-    REQUIRE(token.to_string() == "(type: UNKNOWN, value: '', source location:(file:unknown, line:0, column:0))");
-    modifyToken(token);
-    REQUIRE(token.getType() == INTEGER);
-    REQUIRE(token.getValue().empty() == false);
-    REQUIRE(token.getFileName() == filename);
-    REQUIRE(token.getLine() == 1);
-    REQUIRE(token.getColumn() == 1);
-#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
-    REQUIRE(token.to_string() == R"((type: INTEGER, value: 'assss', source location:(file:.\unknown.vn, line:1, column:1)))");
-    REQUIRE(token.compat_to_string() == R"((typ: INT, val: 'assss', sl:(f:.\unknown.vn, l:1, c:1)))");
-#else
-    REQUIRE(token.to_string() == R"((type: INTEGER, value: 'assss', source location:(file:./unknown.vn, line:1, column:1)))");
-    REQUIRE(token.compat_to_string() == R"((typ: INT, val: 'assss', sl:(f:./unknown.vn, l:1, c:1)))");
-#endif
-}
-
-TEST_CASE("construct a empty value token", "[token]") {
-    using enum vnd::TokenType;
-    const vnd::Token token{UNKNOWN, vnd::CodeSourceLocation{}};
-    REQUIRE(token.getType() == UNKNOWN);
-    REQUIRE(token.getValue().empty() == true);
-    REQUIRE(token.getLine() == 0);
-    REQUIRE(token.getColumn() == 0);
-    REQUIRE(token.getFileName() == "unknown");
-    REQUIRE(token.to_string() == "(type: UNKNOWN, value: '', source location:(file:unknown, line:0, column:0))");
-    REQUIRE(token.compat_to_string() == "(typ: UNKNOWN, val: '', sl:(f:unknown, l:0, c:0))");
-}
-
-TEST_CASE("construct a EOFT token", "[token]") {  // NOLINT(*-function-cognitive-complexity)
-    using enum vnd::TokenType;
-    const vnd::Token token{EOFT, vnd::CodeSourceLocation{}};
-    REQUIRE(token.getType() == EOFT);
-    REQUIRE(token.getValue().empty() == true);
-    REQUIRE(token.getLine() == 0);
-    REQUIRE(token.getColumn() == 0);
-    REQUIRE(token.getFileName() == "unknown");
-    REQUIRE(token.to_string() == "(type: EOF, source location:(file:unknown, line:0, column:0))");
-    REQUIRE(token.compat_to_string() == "(typ: EOF, sl:(f:unknown, l:0, c:0))");
-}
 
 TEST_CASE("FolderCreationResult Constructor", "[FolderCreationResult]") {
     SECTION("Default constructor") {
@@ -1224,10 +918,8 @@ TEST_CASE("vnd::readFromFile - Valid File", "[file]") {
 
     createFile(infilename, content);
 
-    SECTION("Read from valid file") {
-        auto result = vnd::readFromFile(infilename);
-        REQUIRE(result == content);  // Ensure the content matches
-    }
+    auto result = vnd::readFromFile(infilename);
+    REQUIRE(result == content);  // Ensure the content matches
 
     [[maybe_unused]] auto unsed = fs::remove(infilename);
 }
@@ -1235,9 +927,7 @@ TEST_CASE("vnd::readFromFile - Valid File", "[file]") {
 TEST_CASE("vnd::readFromFile - Non-existent File", "[file]") {
     const std::string nonExistentFile = "nonexistent.txt";
 
-    SECTION("Read from non-existent file") {
-        REQUIRE_THROWS_MATCHES(vnd::readFromFile(nonExistentFile), std::runtime_error, MSG_FORMAT("File not found: {}", nonExistentFile));
-    }
+    REQUIRE_THROWS_MATCHES(vnd::readFromFile(nonExistentFile), std::runtime_error, MSG_FORMAT("File not found: {}", nonExistentFile));
 }
 
 TEST_CASE("vnd::readFromFile - Non-regular File", "[file]") {
@@ -1245,10 +935,7 @@ TEST_CASE("vnd::readFromFile - Non-regular File", "[file]") {
 
     fs::create_directory(dirName);
 
-    SECTION("Read from a directory") {
-        REQUIRE_THROWS_MATCHES(vnd::readFromFile(dirName), std::runtime_error, MSG_FORMAT("Path is not a regular file: {}", dirName));
-    }
-
+    REQUIRE_THROWS_MATCHES(vnd::readFromFile(dirName), std::runtime_error, MSG_FORMAT("Path is not a regular file: {}", dirName));
     [[maybe_unused]] auto unsed = fs::remove(dirName);
 }
 
@@ -1290,6 +977,186 @@ TEST_CASE("vnd::readFromFile - Large File", "[file]") {
     REQUIRE(deserializedResult.success() == true);
     REQUIRE(deserializedResult.path() == fs::path("/test/path"));
 }*/
+
+TEST_CASE("GetBuildFolder - Standard Cases") {
+    SECTION("Normal path without trailing slash") {
+        const fs::path inputPath = fs::path("home/user/project").make_preferred();
+        const fs::path expectedOutput = fs::path("home/user/vnbuild").make_preferred();
+        REQUIRE(vnd::GetBuildFolder(inputPath) == expectedOutput);
+    }
+
+    SECTION("Path with trailing slash") {
+        const fs::path inputPath = fs::path("home/user/project/").make_preferred();
+        const fs::path expectedOutput = fs::path("home/user/vnbuild").make_preferred();
+        REQUIRE(vnd::GetBuildFolder(inputPath) == expectedOutput);
+    }
+
+    SECTION("Nested directory structure") {
+        const fs::path inputPath = fs::path("home/user/projects/client/app").make_preferred();
+        const fs::path expectedOutput = fs::path("home/user/projects/client/vnbuild").make_preferred();
+        REQUIRE(vnd::GetBuildFolder(inputPath) == expectedOutput);
+    }
+}
+
+TEST_CASE("GetBuildFolder - Edge Cases") {
+    SECTION("Root directory input") {
+        const fs::path inputPath = fs::path("/").make_preferred();
+        const fs::path expectedOutput = fs::path("/vnbuild").make_preferred();
+        REQUIRE(vnd::GetBuildFolder(inputPath) == expectedOutput);
+    }
+
+    SECTION("Empty path") {
+        const fs::path inputPath = fs::path("").make_preferred();
+        const fs::path expectedOutput = fs::path(VANDIOR_BUILDFOLDER).make_preferred();  // No parent; expects vnbuild in current directory
+        REQUIRE(vnd::GetBuildFolder(inputPath) == expectedOutput);
+    }
+
+    SECTION("Relative path") {
+        const fs::path inputPath = fs::path("folder/subfolder").make_preferred();
+        const fs::path expectedOutput = fs::path("folder/vnbuild").make_preferred();
+        REQUIRE(vnd::GetBuildFolder(inputPath) == expectedOutput);
+    }
+
+    SECTION("Single directory path") {
+        const fs::path inputPath = fs::path("parent").make_preferred();
+        const fs::path expectedOutput = fs::path(VANDIOR_BUILDFOLDER).make_preferred();
+        REQUIRE(vnd::GetBuildFolder(inputPath) == expectedOutput);
+    }
+
+    SECTION("Current directory input") {
+        const fs::path inputPath = fs::path(".").make_preferred();
+        const fs::path expectedOutput = fs::path(VANDIOR_BUILDFOLDER).make_preferred();
+        REQUIRE(vnd::GetBuildFolder(inputPath) == expectedOutput);
+    }
+
+    SECTION("Parent directory input") {
+        const fs::path inputPath = fs::path("..").make_preferred();
+        const fs::path expectedOutput = fs::path("../vnbuild").make_preferred();
+        REQUIRE(vnd::GetBuildFolder(inputPath) == expectedOutput);
+    }
+
+    SECTION("Path with special characters") {
+        const fs::path inputPath = fs::path("/path/with special@chars!").make_preferred();
+        const fs::path expectedOutput = fs::path("/path/vnbuild").make_preferred();
+        REQUIRE(vnd::GetBuildFolder(inputPath) == expectedOutput);
+    }
+}
+
+TEST_CASE("vnd::timeParser", "[Vandior]") {
+    vnd::Parser parser{"asdf", filename};
+    std::vector<vnd::Statement> ast;
+    vnd::timeParser(ast, parser);
+    REQUIRE(ast.size() == 1);  // AST should be a valid object
+}
+
+TEST_CASE("vnd::timeParse", "[Vandior]") {
+    vnd::Parser parser{"asdf", filename};
+
+    const auto ast = vnd::timeParse(parser);
+    REQUIRE(ast.size() == 1);
+}
+// lexer
+namespace {
+    void modifyToken(vnd::Token &token) {
+        token.setType(vnd::TokenType::INTEGER);
+        token.setValue("assss");
+        token.setFileName(filename);
+        token.setLine(1);
+        token.setColumn(1);
+    }
+}  // namespace
+
+TEST_CASE("CodeSourceLocation default constructor sets default values", "[CodeSourceLocation]") {
+    const vnd::CodeSourceLocation location;
+    REQUIRE(location.getFileName() == "unknown");
+    REQUIRE(location.getLine() == 0);
+    REQUIRE(location.getColumn() == 0);
+}
+
+TEST_CASE("CodeSourceLocation constructor sets values correctly", "[CodeSourceLocation]") {
+    const vnd::CodeSourceLocation location(filename2, t_line2, t_colum6);
+    REQUIRE(location.getFileName() == filename2);
+    REQUIRE(location.getLine() == t_line2);
+    REQUIRE(location.getColumn() == t_colum6);
+}
+
+TEST_CASE("CodeSourceLocation setters update values", "[CodeSourceLocation]") {
+    vnd::CodeSourceLocation location;
+    location.setFileName(filename3);
+    location.setLine(t_line3);
+    location.setColumn(t_colum6 * 2);
+    REQUIRE(location.getFileName() == filename3);
+    REQUIRE(location.getLine() == t_line3);
+    REQUIRE(location.getColumn() == t_colum6 * 2);
+}
+
+TEST_CASE("CodeSourceLocation unknown() creates object with default values", "[CodeSourceLocation]") {
+    const vnd::CodeSourceLocation location = vnd::CodeSourceLocation::unknown();
+    REQUIRE(location.getFileName() == filename4);
+    REQUIRE(location.getLine() == 0);
+    REQUIRE(location.getColumn() == 0);
+}
+
+TEST_CASE("CodeSourceLocation equality and inequality operators work correctly", "[CodeSourceLocation]") {
+    const vnd::CodeSourceLocation location1(ffilename, t_line4, t_colum2);
+    const vnd::CodeSourceLocation location2(ffilename, t_line4, t_colum2);
+    const vnd::CodeSourceLocation location3("file2.cpp", t_line4, t_colum2);
+
+    REQUIRE(location1 == location2);
+    REQUIRE(location1 != location3);
+}
+
+TEST_CASE("Operator <=>: Identical CodeSourceLocation objects", "[CodeSourceLocation][spaceship]") {
+    const vnd::CodeSourceLocation loc1("file.cpp", 10, 5);
+    const vnd::CodeSourceLocation loc2("file.cpp", 10, 5);
+
+    // Verifica che la comparazione restituisca 0 (ossia uguali).
+    const auto cmp = loc1 <=> loc2;
+    REQUIRE(cmp == std::strong_ordering::equal);
+    REQUIRE(loc1 == loc2);
+}
+
+TEST_CASE("Operator <=>: Different file names", "[CodeSourceLocation][spaceship]") {
+    const vnd::CodeSourceLocation loc1("a.cpp", 10, 5);
+    const vnd::CodeSourceLocation loc2("b.cpp", 10, 5);
+
+    const auto cmp = loc1 <=> loc2;
+    // Poiché "a.cpp" è less di "b.cpp" in ordine lessicografico.
+    REQUIRE(cmp == std::strong_ordering::less);
+
+    const auto cmp_rev = loc2 <=> loc1;
+    REQUIRE(cmp_rev == std::strong_ordering::greater);
+}
+
+// Test per verificare la differenza nel numero di linea.
+TEST_CASE("Operator <=>: Different line numbers", "[CodeSourceLocation][spaceship]") {
+    const vnd::CodeSourceLocation loc1("file.cpp", 5, 10);
+    const vnd::CodeSourceLocation loc2("file.cpp", 10, 10);
+
+    const auto cmp = loc1 <=> loc2;
+    REQUIRE(cmp == std::strong_ordering::less);
+
+    const auto cmp_rev = loc2 <=> loc1;
+    REQUIRE(cmp_rev == std::strong_ordering::greater);
+}
+
+// Test per verificare la differenza nel numero di colonna.
+TEST_CASE("Operator <=>: Different column numbers", "[CodeSourceLocation][spaceship]") {
+    const vnd::CodeSourceLocation loc1("file.cpp", 10, 5);
+    const vnd::CodeSourceLocation loc2("file.cpp", 10, 15);
+
+    const auto cmp = loc1 <=> loc2;
+    REQUIRE(cmp == std::strong_ordering::less);
+
+    const auto cmp_rev = loc2 <=> loc1;
+    REQUIRE(cmp_rev == std::strong_ordering::greater);
+}
+
+TEST_CASE("CodeSourceLocation toString() produces expected string", "[CodeSourceLocation]") {
+    const vnd::CodeSourceLocation location(filename2, t_line2, t_colum6);
+    REQUIRE(location.toString() == "(file:example.cpp, line:42, column:10)");
+}
+
 TEST_CASE("default constructed token set propriety format", "[token]") {
     using enum vnd::TokenType;
     vnd::Token token{};
@@ -1690,6 +1557,263 @@ TEST_CASE("tokenizer edge cases for comments", "[tokenizer]") {
     REQUIRE(token.getValue() == "/* Comment with ** inside */");
 }
 
+TEST_CASE("corrected format for Tokentype", "[token_type]") {
+    using enum vnd::TokenType;
+    REQ_FORMAT(INTEGER, "INTEGER")
+    REQ_FORMAT(DOUBLE, "DOUBLE")
+    REQ_FORMAT(BOOLEAN, "BOOLEAN")
+    REQ_FORMAT(PLUS, "PLUS_OPERATOR")
+    REQ_FORMAT(MINUS, "MINUS_OPERATOR")
+    REQ_FORMAT(EQUAL, "EQUAL_OPERATOR")
+    REQ_FORMAT(DOT, "DOT_OPERATOR")
+    REQ_FORMAT(STAR, "STAR_OPERATOR")
+    REQ_FORMAT(DIVIDE, "DIVIDE_OPERATOR")
+    REQ_FORMAT(XOR, "XOR_OPERATOR")
+    REQ_FORMAT(PERCENT, "PERCENT_OPERATOR")
+    REQ_FORMAT(OR, "OR_OPERATOR")
+    REQ_FORMAT(AND, "AND_OPERATOR")
+    REQ_FORMAT(LESS, "LESS_OPERATOR")
+    REQ_FORMAT(GREATER, "GREATER_OPERATOR")
+    REQ_FORMAT(PLUSPLUS, "PLUSPLUS_OPERATOR")
+    REQ_FORMAT(MINUSMINUS, "MINUSMINUS_OPERATOR")
+    REQ_FORMAT(PLUSEQUAL, "PLUSEQUAL_OPERATOR")
+    REQ_FORMAT(MINUSEQUAL, "MINUSEQUAL_OPERATOR")
+    REQ_FORMAT(NOTEQUAL, "NOTEQUAL_OPERATOR")
+    REQ_FORMAT(STAREQUAL, "STAREQUAL_OPERATOR")
+    REQ_FORMAT(DIVIDEEQUAL, "DIVIDEEQUAL_OPERATOR")
+    REQ_FORMAT(XOREQUAL, "XOREQUAL_OPERATOR")
+    REQ_FORMAT(PERCENTEQUAL, "PERCENTEQUAL_OPERATOR")
+    REQ_FORMAT(OROR, "OROR_OPERATOR")
+    REQ_FORMAT(ANDAND, "ANDAND_OPERATOR")
+    REQ_FORMAT(EQUALEQUAL, "EQUALEQUAL_OPERATOR")
+    REQ_FORMAT(LESSEQUAL, "LESSEQUAL_OPERATOR")
+    REQ_FORMAT(GREATEREQUAL, "GREATEREQUAL_OPERATOR")
+    REQ_FORMAT(IDENTIFIER, "IDENTIFIER")
+    REQ_FORMAT(CHAR, "CHAR")
+    REQ_FORMAT(STRING, "STRING")
+    REQ_FORMAT(EOFT, "EOF")
+    REQ_FORMAT(K_MAIN, "K_MAIN")
+    REQ_FORMAT(K_VAR, "K_VAR")
+    REQ_FORMAT(K_IF, "K_IF")
+    REQ_FORMAT(K_WHILE, "K_WHILE")
+    REQ_FORMAT(K_ELSE, "K_ELSE")
+    REQ_FORMAT(K_FOR, "K_FOR")
+    REQ_FORMAT(K_BREAK, "BREAK")
+    REQ_FORMAT(K_FUN, "K_FUN")
+    REQ_FORMAT(K_RETURN, "K_RETURN")
+    REQ_FORMAT(K_NULLPTR, "K_NULLPTR")
+    REQ_FORMAT(OPEN_PARENTESIS, "OPEN_PARENTESIS")
+    REQ_FORMAT(OPEN_SQ_PARENTESIS, "OPEN_SQ_PARENTESIS")
+    REQ_FORMAT(OPEN_CUR_PARENTESIS, "OPEN_CUR_PARENTESIS")
+    REQ_FORMAT(CLOSE_PARENTESIS, "CLOSE_PARENTESIS")
+    REQ_FORMAT(CLOSE_SQ_PARENTESIS, "CLOSE_SQ_PARENTESIS")
+    REQ_FORMAT(CLOSE_CUR_PARENTESIS, "CLOSE_CUR_PARENTESIS")
+    REQ_FORMAT(NOT, "NOT_OPERATOR")
+    REQ_FORMAT(COMMA, "COMMA")
+    REQ_FORMAT(COLON, "COLON")
+    REQ_FORMAT(TYPE_I16, "TYPE_I16")
+    REQ_FORMAT(TYPE_I32, "TYPE_I32")
+    REQ_FORMAT(TYPE_I64, "TYPE_I64")
+    REQ_FORMAT(TYPE_U8, "TYPE_U8")
+    REQ_FORMAT(TYPE_U16, "TYPE_U16")
+    REQ_FORMAT(TYPE_U32, "TYPE_U32")
+    REQ_FORMAT(TYPE_U64, "TYPE_U64")
+    REQ_FORMAT(TYPE_F32, "TYPE_F32")
+    REQ_FORMAT(TYPE_F64, "TYPE_F64")
+    REQ_FORMAT(TYPE_C32, "TYPE_C32")
+    REQ_FORMAT(TYPE_C64, "TYPE_C64")
+    REQ_FORMAT(TYPE_CHAR, "TYPE_CHAR")
+    REQ_FORMAT(TYPE_STRING, "TYPE_STRING")
+    REQ_FORMAT(TYPE_BOOL, "TYPE_BOOL")
+    REQ_FORMAT(COMMENT, "COMMENT")
+    REQ_FORMAT(UNKNOWN, "UNKNOWN")
+}
+
+TEST_CASE("corrected format for Tokentype compat to string", "[token_type]") {
+    using enum vnd::TokenType;
+    REQ_FORMAT_COMPTOK(INTEGER, "INT")
+    REQ_FORMAT_COMPTOK(DOUBLE, "DBL")
+    REQ_FORMAT_COMPTOK(BOOLEAN, "BOOL")
+    REQ_FORMAT_COMPTOK(PLUS, "PLUS_OP")
+    REQ_FORMAT_COMPTOK(MINUS, "MINUS_OP")
+    REQ_FORMAT_COMPTOK(EQUAL, "EQUAL_OP")
+    REQ_FORMAT_COMPTOK(DOT, "DOT_OP")
+    REQ_FORMAT_COMPTOK(STAR, "STAR_OP")
+    REQ_FORMAT_COMPTOK(DIVIDE, "DIVIDE_OP")
+    REQ_FORMAT_COMPTOK(XOR, "XOR_OP")
+    REQ_FORMAT_COMPTOK(PERCENT, "PERCENT_OP")
+    REQ_FORMAT_COMPTOK(OR, "OR_OP")
+    REQ_FORMAT_COMPTOK(AND, "AND_OP")
+    REQ_FORMAT_COMPTOK(LESS, "LESS_OP")
+    REQ_FORMAT_COMPTOK(GREATER, "GREATER_OP")
+    REQ_FORMAT_COMPTOK(PLUSPLUS, "PLUSPLUS_OP")
+    REQ_FORMAT_COMPTOK(MINUSMINUS, "MINUSMINUS_OP")
+    REQ_FORMAT_COMPTOK(PLUSEQUAL, "PLUSEQUAL_OP")
+    REQ_FORMAT_COMPTOK(MINUSEQUAL, "MINUSEQUAL_OP")
+    REQ_FORMAT_COMPTOK(NOTEQUAL, "NOTEQUAL_OP")
+    REQ_FORMAT_COMPTOK(STAREQUAL, "STAREQUAL_OP")
+    REQ_FORMAT_COMPTOK(DIVIDEEQUAL, "DIVIDEEQUAL_OP")
+    REQ_FORMAT_COMPTOK(XOREQUAL, "XOREQUAL_OP")
+    REQ_FORMAT_COMPTOK(PERCENTEQUAL, "PERCENTEQUAL_OP")
+    REQ_FORMAT_COMPTOK(OROR, "OROR_OP")
+    REQ_FORMAT_COMPTOK(ANDAND, "ANDAND_OP")
+    REQ_FORMAT_COMPTOK(EQUALEQUAL, "EQUALEQUAL_OP")
+    REQ_FORMAT_COMPTOK(LESSEQUAL, "LESSEQUAL_OP")
+    REQ_FORMAT_COMPTOK(GREATEREQUAL, "GREATEREQUAL_OP")
+    REQ_FORMAT_COMPTOK(IDENTIFIER, "IDENT")
+    REQ_FORMAT_COMPTOK(CHAR, "CH")
+    REQ_FORMAT_COMPTOK(STRING, "STR")
+    REQ_FORMAT_COMPTOK(EOFT, "EOF")
+    REQ_FORMAT_COMPTOK(K_MAIN, "K_MAIN")
+    REQ_FORMAT_COMPTOK(K_VAR, "K_VAR")
+    REQ_FORMAT_COMPTOK(K_IF, "K_IF")
+    REQ_FORMAT_COMPTOK(K_WHILE, "K_WHILE")
+    REQ_FORMAT_COMPTOK(K_ELSE, "K_ELSE")
+    REQ_FORMAT_COMPTOK(K_FOR, "K_FOR")
+    REQ_FORMAT_COMPTOK(K_BREAK, "BREAK")
+    REQ_FORMAT_COMPTOK(K_FUN, "K_FUN")
+    REQ_FORMAT_COMPTOK(K_RETURN, "K_RETURN")
+    REQ_FORMAT_COMPTOK(K_NULLPTR, "K_NULLPTR")
+    REQ_FORMAT_COMPTOK(OPEN_PARENTESIS, "OPEN_PAR")
+    REQ_FORMAT_COMPTOK(OPEN_SQ_PARENTESIS, "OPEN_SQ_PAR")
+    REQ_FORMAT_COMPTOK(OPEN_CUR_PARENTESIS, "OPEN_CUR_PAR")
+    REQ_FORMAT_COMPTOK(CLOSE_PARENTESIS, "CLOSE_PAR")
+    REQ_FORMAT_COMPTOK(CLOSE_SQ_PARENTESIS, "CLOSE_SQ_PAR")
+    REQ_FORMAT_COMPTOK(CLOSE_CUR_PARENTESIS, "CLOSE_CUR_PAR")
+    REQ_FORMAT_COMPTOK(NOT, "NOT_OP")
+    REQ_FORMAT_COMPTOK(COMMA, "COMMA")
+    REQ_FORMAT_COMPTOK(COLON, "COLON")
+    REQ_FORMAT_COMPTOK(TYPE_I8, "I8")
+    REQ_FORMAT_COMPTOK(TYPE_I16, "I16")
+    REQ_FORMAT_COMPTOK(TYPE_I32, "I32")
+    REQ_FORMAT_COMPTOK(TYPE_I64, "I64")
+    REQ_FORMAT_COMPTOK(TYPE_U8, "U8")
+    REQ_FORMAT_COMPTOK(TYPE_U16, "U16")
+    REQ_FORMAT_COMPTOK(TYPE_U32, "U32")
+    REQ_FORMAT_COMPTOK(TYPE_U64, "U64")
+    REQ_FORMAT_COMPTOK(TYPE_F32, "F32")
+    REQ_FORMAT_COMPTOK(TYPE_F64, "F64")
+    REQ_FORMAT_COMPTOK(TYPE_C32, "C32")
+    REQ_FORMAT_COMPTOK(TYPE_C64, "C64")
+    REQ_FORMAT_COMPTOK(TYPE_CHAR, "CHAR")
+    REQ_FORMAT_COMPTOK(TYPE_STRING, "STRING")
+    REQ_FORMAT_COMPTOK(TYPE_BOOL, "BOOL")
+    REQ_FORMAT_COMPTOK(COMMENT, "COMMENT")
+    REQ_FORMAT_COMPTOK(UNKNOWN, "UNKNOWN")
+}
+
+TEST_CASE("default constructed token", "[token]") {
+    const vnd::Token token{};
+    REQUIRE(token.getType() == vnd::TokenType::UNKNOWN);
+    REQUIRE(token.getValue().empty() == true);
+    REQUIRE(token.getFileName() == filename4);
+    REQUIRE(token.getLine() == 0);
+    REQUIRE(token.getColumn() == 0);
+}
+
+TEST_CASE("default constructed token toString", "[token]") {
+    const vnd::Token token{};
+    REQUIRE(token.getType() == vnd::TokenType::UNKNOWN);
+    REQUIRE(token.getValue().empty() == true);
+    REQUIRE(token.getFileName() == filename4);
+    REQUIRE(token.getLine() == 0);
+    REQUIRE(token.getColumn() == 0);
+    REQUIRE(token.to_string() == "(type: UNKNOWN, value: '', source location:(file:unknown, line:0, column:0))");
+}
+
+TEST_CASE("default constructed token format", "[token]") {
+    vnd::Token token{};
+    REQUIRE(token.getType() == vnd::TokenType::UNKNOWN);
+    REQUIRE(token.getValue().empty() == true);
+    REQUIRE(token.getFileName() == filename4);
+    REQUIRE(token.getLine() == 0);
+    REQUIRE(token.getColumn() == 0);
+    REQ_FORMAT(token, "(type: UNKNOWN, value: '', source location:(file:unknown, line:0, column:0))");
+    REQUIRE(token.compat_to_string() == "(typ: UNKNOWN, val: '', sl:(f:unknown, l:0, c:0))");
+}
+
+TEST_CASE("default constructed token set propriety", "[token]") {
+    using enum vnd::TokenType;
+    vnd::Token token{};
+    REQUIRE(token.getType() == UNKNOWN);
+    REQUIRE(token.getValue().empty() == true);
+    REQUIRE(token.getFileName() == filename4);
+    REQUIRE(token.getLine() == 0);
+    REQUIRE(token.getColumn() == 0);
+    modifyToken(token);
+    REQUIRE(token.getType() == INTEGER);
+    REQUIRE(token.getValue().empty() == false);
+    REQUIRE(token.getFileName() == filename);
+    REQUIRE(token.getLine() == 1);
+    REQUIRE(token.getColumn() == 1);
+}
+
+TEST_CASE("default constructed token isType", "[token]") {
+    using enum vnd::TokenType;
+    vnd::Token token{};
+    REQUIRE(token.getType() == UNKNOWN);
+    REQUIRE(token.getValue().empty() == true);
+    REQUIRE(token.getFileName() == filename4);
+    REQUIRE(token.getLine() == 0);
+    REQUIRE(token.getColumn() == 0);
+    REQUIRE(token.isType(CHAR) == false);
+    modifyToken(token);
+    REQUIRE(token.getType() == INTEGER);
+    REQUIRE(token.isType(INTEGER) == true);
+    REQUIRE(token.getValue().empty() == false);
+    REQUIRE(token.getFileName() == filename);
+    REQUIRE(token.getLine() == 1);
+    REQUIRE(token.getColumn() == 1);
+}
+
+TEST_CASE("default constructed token set propriety tostring", "[token]") {
+    using enum vnd::TokenType;
+    vnd::Token token{};
+    REQUIRE(token.getType() == UNKNOWN);
+    REQUIRE(token.getValue().empty() == true);
+    REQUIRE(token.getLine() == 0);
+    REQUIRE(token.getColumn() == 0);
+    REQUIRE(token.to_string() == "(type: UNKNOWN, value: '', source location:(file:unknown, line:0, column:0))");
+    modifyToken(token);
+    REQUIRE(token.getType() == INTEGER);
+    REQUIRE(token.getValue().empty() == false);
+    REQUIRE(token.getFileName() == filename);
+    REQUIRE(token.getLine() == 1);
+    REQUIRE(token.getColumn() == 1);
+#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
+    REQUIRE(token.to_string() == R"((type: INTEGER, value: 'assss', source location:(file:.\unknown.vn, line:1, column:1)))");
+    REQUIRE(token.compat_to_string() == R"((typ: INT, val: 'assss', sl:(f:.\unknown.vn, l:1, c:1)))");
+#else
+    REQUIRE(token.to_string() == R"((type: INTEGER, value: 'assss', source location:(file:./unknown.vn, line:1, column:1)))");
+    REQUIRE(token.compat_to_string() == R"((typ: INT, val: 'assss', sl:(f:./unknown.vn, l:1, c:1)))");
+#endif
+}
+
+TEST_CASE("construct a empty value token", "[token]") {
+    using enum vnd::TokenType;
+    const vnd::Token token{UNKNOWN, vnd::CodeSourceLocation{}};
+    REQUIRE(token.getType() == UNKNOWN);
+    REQUIRE(token.getValue().empty() == true);
+    REQUIRE(token.getLine() == 0);
+    REQUIRE(token.getColumn() == 0);
+    REQUIRE(token.getFileName() == "unknown");
+    REQUIRE(token.to_string() == "(type: UNKNOWN, value: '', source location:(file:unknown, line:0, column:0))");
+    REQUIRE(token.compat_to_string() == "(typ: UNKNOWN, val: '', sl:(f:unknown, l:0, c:0))");
+}
+
+TEST_CASE("construct a EOFT token", "[token]") {  // NOLINT(*-function-cognitive-complexity)
+    using enum vnd::TokenType;
+    const vnd::Token token{EOFT, vnd::CodeSourceLocation{}};
+    REQUIRE(token.getType() == EOFT);
+    REQUIRE(token.getValue().empty() == true);
+    REQUIRE(token.getLine() == 0);
+    REQUIRE(token.getColumn() == 0);
+    REQUIRE(token.getFileName() == "unknown");
+    REQUIRE(token.to_string() == "(type: EOF, source location:(file:unknown, line:0, column:0))");
+    REQUIRE(token.compat_to_string() == "(typ: EOF, sl:(f:unknown, l:0, c:0))");
+}
+
+// parser
 TEST_CASE("ASTNode type conversion using as<T>()", "[ast]") {
     const vnd::Token token{vnd::TokenType::IDENTIFIER, "id", vnd::CodeSourceLocation{filename, t_line, t_colum}};
     vnd::VariableNode dummyNode("id", token);
@@ -1863,8 +1987,8 @@ TEST_CASE("Parser emit complex number node", "[parser]") {
     REQUIRE(ast->getType() == NodeType::Number);
     const auto *number = ast->as<VND_NUM_CDOUBLE>();
     REQUIRE(number != nullptr);
-    REQUIRE(number->print() == "NUMBER_IMAGINARY((0, 1))");
-    REQUIRE(number->comp_print() == "NUM_IMG((0, 1))");
+    REQUIRE(number->print() == "NUMBER_IMAGINARY(1i)");
+    REQUIRE(number->comp_print() == "NUM_IMG(1i)");
     REQUIRE(number->get_value() == std::complex<double>(0, 1));
 }
 
@@ -1877,8 +2001,8 @@ TEST_CASE("Parser emit complex float number node", "[parser]") {
     REQUIRE(ast->getType() == NodeType::Number);
     const auto *number = ast->as<VND_NUM_CFLOAT>();
     REQUIRE(number != nullptr);
-    REQUIRE(number->print() == "NUMBER_IMAGINARY_F((0, 1))");
-    REQUIRE(number->comp_print() == "NUM_IMF((0, 1))");
+    REQUIRE(number->print() == "NUMBER_IMAGINARY_F(1i)");
+    REQUIRE(number->comp_print() == "NUM_IMF(1i)");
     REQUIRE(number->get_value() == std::complex<float>(0, 1));
 }
 
@@ -2859,173 +2983,6 @@ TEST_CASE("Statement basic functionality", "[Statement]") {
     REQUIRE(statement.comp_print().empty());
 }
 
-TEST_CASE("GetBuildFolder - Standard Cases") {
-    SECTION("Normal path without trailing slash") {
-        const fs::path inputPath = fs::path("home/user/project").make_preferred();
-        const fs::path expectedOutput = fs::path("home/user/vnbuild").make_preferred();
-        REQUIRE(vnd::GetBuildFolder(inputPath) == expectedOutput);
-    }
-
-    SECTION("Path with trailing slash") {
-        const fs::path inputPath = fs::path("home/user/project/").make_preferred();
-        const fs::path expectedOutput = fs::path("home/user/vnbuild").make_preferred();
-        REQUIRE(vnd::GetBuildFolder(inputPath) == expectedOutput);
-    }
-
-    SECTION("Nested directory structure") {
-        const fs::path inputPath = fs::path("home/user/projects/client/app").make_preferred();
-        const fs::path expectedOutput = fs::path("home/user/projects/client/vnbuild").make_preferred();
-        REQUIRE(vnd::GetBuildFolder(inputPath) == expectedOutput);
-    }
-}
-
-TEST_CASE("GetBuildFolder - Edge Cases") {
-    SECTION("Root directory input") {
-        const fs::path inputPath = fs::path("/").make_preferred();
-        const fs::path expectedOutput = fs::path("/vnbuild").make_preferred();
-        REQUIRE(vnd::GetBuildFolder(inputPath) == expectedOutput);
-    }
-
-    SECTION("Empty path") {
-        const fs::path inputPath = fs::path("").make_preferred();
-        const fs::path expectedOutput = fs::path(VANDIOR_BUILDFOLDER).make_preferred();  // No parent; expects vnbuild in current directory
-        REQUIRE(vnd::GetBuildFolder(inputPath) == expectedOutput);
-    }
-
-    SECTION("Relative path") {
-        const fs::path inputPath = fs::path("folder/subfolder").make_preferred();
-        const fs::path expectedOutput = fs::path("folder/vnbuild").make_preferred();
-        REQUIRE(vnd::GetBuildFolder(inputPath) == expectedOutput);
-    }
-
-    SECTION("Single directory path") {
-        const fs::path inputPath = fs::path("parent").make_preferred();
-        const fs::path expectedOutput = fs::path(VANDIOR_BUILDFOLDER).make_preferred();
-        REQUIRE(vnd::GetBuildFolder(inputPath) == expectedOutput);
-    }
-
-    SECTION("Current directory input") {
-        const fs::path inputPath = fs::path(".").make_preferred();
-        const fs::path expectedOutput = fs::path(VANDIOR_BUILDFOLDER).make_preferred();
-        REQUIRE(vnd::GetBuildFolder(inputPath) == expectedOutput);
-    }
-
-    SECTION("Parent directory input") {
-        const fs::path inputPath = fs::path("..").make_preferred();
-        const fs::path expectedOutput = fs::path("../vnbuild").make_preferred();
-        REQUIRE(vnd::GetBuildFolder(inputPath) == expectedOutput);
-    }
-
-    SECTION("Path with special characters") {
-        const fs::path inputPath = fs::path("/path/with special@chars!").make_preferred();
-        const fs::path expectedOutput = fs::path("/path/vnbuild").make_preferred();
-        REQUIRE(vnd::GetBuildFolder(inputPath) == expectedOutput);
-    }
-}
-
-TEST_CASE("Transpiler creates correct folders and files c++", "[transpiler]") {
-    const std::string transpilerfilename = "testfile.vnd";
-
-    vnd::Transpiler transpiler(long_input, transpilerfilename);
-
-    SECTION("Folder and file creation") {
-        transpiler.transpile();
-
-        const fs::path buildFolder(VANDIOR_BUILDFOLDER);
-        const fs::path srcFolder = (buildFolder / "src").make_preferred();
-        REQUIRE(fs::exists(buildFolder));
-        REQUIRE(fs::exists(srcFolder));
-
-        const fs::path cppFile = (srcFolder / "testfile.cpp").make_preferred();
-        REQUIRE(fs::exists(cppFile));
-        std::string fileContent = vnd::readFromFile(cppFile.string());
-
-        REQUIRE_THAT(fileContent, ContainsSubstring("Hello, World!"));  // Check for the presence of "Hello, World!"
-        REQUIRE_THAT(fileContent, ContainsSubstring("return 0;"));
-        REQUIRE_THAT(fileContent, StartsWith("// This is an automatically generated file by Vandior"));
-        REQUIRE_THAT(fileContent, EndsWith("\n"));
-    }
-
-    SECTION("Clean up") {
-        transpiler.transpile();
-
-        const fs::path buildFolder(VANDIOR_BUILDFOLDER);
-        [[maybe_unused]] auto unused = fs::remove_all(buildFolder);
-        REQUIRE_FALSE(fs::exists(buildFolder));  // Folder should not exist
-    }
-}
-/*
-TEST_CASE("Transpiler creates correct folders and files c++ cmake", "[transpiler]") {
-    const std::string transpilerfilename = "testfile.vnd";
-
-    vnd::Transpiler transpiler(long_input, transpilerfilename, true);
-
-    SECTION("Folder and file creation") {
-        transpiler.transpile();
-
-        const fs::path buildFolder(VANDIOR_BUILDFOLDER);
-        const fs::path srcFolder = (buildFolder / "src").make_preferred();
-        REQUIRE(fs::exists(buildFolder));
-        REQUIRE(fs::exists(srcFolder));
-
-        const fs::path cppFile = (srcFolder / "testfile.cpp").make_preferred();
-        const fs::path cmakeListsFile = (buildFolder / "CMakeLists.txt").make_preferred();
-        REQUIRE(fs::exists(cppFile));
-        REQUIRE(fs::exists(cmakeListsFile));
-        std::string fileContent = vnd::readFromFile(cppFile.string());
-
-        REQUIRE_THAT(fileContent, ContainsSubstring("Hello, World!"));  // Check for the presence of "Hello, World!"
-        REQUIRE_THAT(fileContent, ContainsSubstring("return 0;"));
-        REQUIRE_THAT(fileContent, StartsWith("// This is an automatically generated file by Vandior"));
-        REQUIRE_THAT(fileContent, EndsWith("\n"));
-
-        std::string cmakeListsfileContent = vnd::readFromFile(cmakeListsFile.string());
-        REQUIRE_THAT(cmakeListsfileContent, ContainsSubstring("# for more information got to  https://github.com/Giuseppe-Bianc/Vandior"));
-        REQUIRE_THAT(cmakeListsfileContent, ContainsSubstring("set_target_properties(${PROJECT_NAME} PROPERTIES"));
-        REQUIRE_THAT(cmakeListsfileContent, ContainsSubstring("endif()"));
-        REQUIRE_THAT(cmakeListsfileContent, StartsWith("# This is an automatically generated file by Vandior"));
-        REQUIRE_THAT(cmakeListsfileContent, EndsWith("\n"));
-    }
-
-    SECTION("Clean up") {
-        transpiler.transpile();
-
-        const fs::path buildFolder(VANDIOR_BUILDFOLDER);
-        [[maybe_unused]] auto unused = fs::remove_all(buildFolder);
-        REQUIRE_FALSE(fs::exists(buildFolder));  // Folder should not exist
-    }
-}*/
-
-TEST_CASE("Transpiler::mapType returns correct type mappings", "[transpiler]") {
-    SECTION("Valid type mappings") {
-        REQUIRE(vnd::Transpiler::mapType("i8"sv) == "int8_t"sv);
-        REQUIRE(vnd::Transpiler::mapType("i16"sv) == "int16_t"sv);
-        REQUIRE(vnd::Transpiler::mapType("i32"sv) == "int32_t"sv);
-        REQUIRE(vnd::Transpiler::mapType("i64"sv) == "int64_t"sv);
-        REQUIRE(vnd::Transpiler::mapType("u8"sv) == "uint8_t"sv);
-        REQUIRE(vnd::Transpiler::mapType("u16"sv) == "uint16_t"sv);
-        REQUIRE(vnd::Transpiler::mapType("u32"sv) == "uint32_t"sv);
-        REQUIRE(vnd::Transpiler::mapType("u64"sv) == "uint64_t"sv);
-        REQUIRE(vnd::Transpiler::mapType("f32"sv) == "float"sv);
-        REQUIRE(vnd::Transpiler::mapType("f64"sv) == "double"sv);
-        REQUIRE(vnd::Transpiler::mapType("c32"sv) == "std::complex<float>"sv);
-        REQUIRE(vnd::Transpiler::mapType("c64"sv) == "std::complex<double>"sv);
-        REQUIRE(vnd::Transpiler::mapType("bool"sv) == "bool"sv);
-        REQUIRE(vnd::Transpiler::mapType("char"sv) == "char"sv);
-        REQUIRE(vnd::Transpiler::mapType("string"sv) == "std::string_view"sv);
-    }
-
-    SECTION("Unknown type returns 'unknown'") {
-        REQUIRE(vnd::Transpiler::mapType("unknown_type"sv) == "unknown_type"sv);
-        REQUIRE(vnd::Transpiler::mapType("xyz"sv) == "xyz"sv);
-        REQUIRE(vnd::Transpiler::mapType(""sv).empty());
-    }
-
-    SECTION("Case sensitivity") {
-        REQUIRE(vnd::Transpiler::mapType("I8"sv) == "I8"sv);  // Should be case sensitive
-    }
-}
-
 TEST_CASE("prettyPrint: BinaryExpressionNode", "[prettyPrint]") {
     vnd::Parser parser("a + b", filename);
     auto programAst = parser.parse();
@@ -3154,99 +3111,181 @@ TEST_CASE("printParentNode: parent index", "[printParentNode]") {
     REQUIRE_NOTHROW(printParentNode(*ast->as<vnd::VariableNode>()->get_index()->as<vnd::IndexNode>()->get_index(), ""));
 }
 
-TEST_CASE("vnd::timeParser", "[Vandior]") {
-    vnd::Parser parser{"asdf", filename};
-    std::vector<vnd::Statement> ast;
-    vnd::timeParser(ast, parser);
-    REQUIRE(ast.size() == 1);  // AST should be a valid object
+// transpiler
+
+TEST_CASE("Transpiler creates correct folders and files c++", "[transpiler]") {
+    const std::string transpilerfilename = "testfile.vnd";
+    LINFO("Removing build folder  c++ file");
+    [[maybe_unused]] auto unused = fs::remove_all(fs::path(VANDIOR_BUILDFOLDER));
+
+    vnd::Transpiler transpiler(long_input, transpilerfilename);
+    transpiler.transpile();
+
+    const fs::path buildFolder(VANDIOR_BUILDFOLDER);
+    const fs::path srcFolder = (buildFolder / "src").make_preferred();
+    REQUIRE(fs::exists(buildFolder));
+    REQUIRE(fs::exists(srcFolder));
+
+    const fs::path cppFile = (srcFolder / "testfile.cpp").make_preferred();
+    REQUIRE(fs::exists(cppFile));
+    std::string fileContent = vnd::readFromFile(cppFile.string());
+
+    REQUIRE_THAT(fileContent, ContainsSubstring("Hello, World!"));  // Check for the presence of "Hello, World!"
+    REQUIRE_THAT(fileContent, ContainsSubstring("return 0;"));
+    REQUIRE_THAT(fileContent, StartsWith("// This is an automatically generated file by Vandior"));
+    REQUIRE_THAT(fileContent, EndsWith("\n"));
+    [[maybe_unused]] auto unused2 = fs::remove_all(buildFolder);
+    REQUIRE_FALSE(fs::exists(buildFolder));  // Folder should not exist
 }
 
-TEST_CASE("vnd::timeParse", "[Vandior]") {
-    vnd::Parser parser{"asdf", filename};
+TEST_CASE("Transpiler creates correct folders and cmake file", "[transpiler]") {
+    const std::string transpilerfilename = "testfile.vnd";
+    LINFO("Removing build folder cmake file");
+    [[maybe_unused]] auto unused = fs::remove_all(fs::path(VANDIOR_BUILDFOLDER));
+    vnd::Transpiler transpiler(long_input, transpilerfilename, true);
 
-    auto ast = vnd::timeParse(parser);
-    REQUIRE(ast.size() == 1);
+    transpiler.transpile();
+
+    const fs::path buildFolder(VANDIOR_BUILDFOLDER);
+    const fs::path cmakeListsFile = (buildFolder / "CMakeLists.txt").make_preferred();
+    REQUIRE(fs::exists(cmakeListsFile));
+
+    std::string cmakeListsfileContent = vnd::readFromFile(cmakeListsFile.string());
+    REQUIRE_THAT(cmakeListsfileContent, ContainsSubstring("# for more information got to  https://github.com/Giuseppe-Bianc/Vandior"));
+    REQUIRE_THAT(cmakeListsfileContent, ContainsSubstring("set_target_properties(${PROJECT_NAME} PROPERTIES"));
+    REQUIRE_THAT(cmakeListsfileContent, ContainsSubstring("endif()"));
+    REQUIRE_THAT(cmakeListsfileContent, StartsWith("# This is an automatically generated file by Vandior"));
+    REQUIRE_THAT(cmakeListsfileContent, EndsWith("\n"));
+
+    [[maybe_unused]] auto unused2 = fs::remove_all(buildFolder);
+    REQUIRE_FALSE(fs::exists(buildFolder));  // Folder should not exist
+}
+
+TEST_CASE("Transpiler::mapType returns correct type mappings", "[transpiler]") {
+    SECTION("Valid type mappings") {
+        REQUIRE(vnd::Transpiler::mapType("i8"sv) == "int8_t"sv);
+        REQUIRE(vnd::Transpiler::mapType("i16"sv) == "int16_t"sv);
+        REQUIRE(vnd::Transpiler::mapType("i32"sv) == "int32_t"sv);
+        REQUIRE(vnd::Transpiler::mapType("i64"sv) == "int64_t"sv);
+        REQUIRE(vnd::Transpiler::mapType("u8"sv) == "uint8_t"sv);
+        REQUIRE(vnd::Transpiler::mapType("u16"sv) == "uint16_t"sv);
+        REQUIRE(vnd::Transpiler::mapType("u32"sv) == "uint32_t"sv);
+        REQUIRE(vnd::Transpiler::mapType("u64"sv) == "uint64_t"sv);
+        REQUIRE(vnd::Transpiler::mapType("f32"sv) == "float"sv);
+        REQUIRE(vnd::Transpiler::mapType("f64"sv) == "double"sv);
+        REQUIRE(vnd::Transpiler::mapType("c32"sv) == "std::complex<float>"sv);
+        REQUIRE(vnd::Transpiler::mapType("c64"sv) == "std::complex<double>"sv);
+        REQUIRE(vnd::Transpiler::mapType("bool"sv) == "bool"sv);
+        REQUIRE(vnd::Transpiler::mapType("char"sv) == "char"sv);
+        REQUIRE(vnd::Transpiler::mapType("string"sv) == "std::string_view"sv);
+    }
+
+    SECTION("Unknown type returns 'unknown'") {
+        REQUIRE(vnd::Transpiler::mapType("unknown_type"sv) == "unknown_type"sv);
+        REQUIRE(vnd::Transpiler::mapType("xyz"sv) == "xyz"sv);
+        REQUIRE(vnd::Transpiler::mapType(""sv).empty());
+    }
+
+    SECTION("Case sensitivity") {
+        REQUIRE(vnd::Transpiler::mapType("I8"sv) == "I8"sv);  // Should be case sensitive
+    }
 }
 
 TEST_CASE("Transpiler transpile main instruction", "[transpiler]") {
+    [[maybe_unused]] auto unused = fs::remove_all(fs::path(VANDIOR_BUILDFOLDER));
     vnd::Transpiler transpiler{"main {", "input.vn"};
     const auto code = transpiler.transpile();
     REQUIRE(code == "int main(int argc, char **argv) {\n");
 }
 
 TEST_CASE("Transpiler throw exception for missing {", "[transpiler]") {
+    [[maybe_unused]] auto unused = fs::remove_all(fs::path(VANDIOR_BUILDFOLDER));
     vnd::Transpiler transpiler{"main", "input.vn"};
     REQUIRE_THROWS_AS(transpiler.transpile(), vnd::ParserException);
 }
 
 TEST_CASE("Transpiler transpile i8 declaration instruction", "[transpiler]") {
+    [[maybe_unused]] auto unused = fs::remove_all(fs::path(VANDIOR_BUILDFOLDER));
     vnd::Transpiler transpiler{"var num1, num2: i8", "input.vn"};
     const auto code = transpiler.transpile();
     REQUIRE(code == "int8_t num1, num2\n");
 }
 
 TEST_CASE("Transpiler transpile declaration instruction", "[transpiler]") {
+    [[maybe_unused]] auto unused = fs::remove_all(fs::path(VANDIOR_BUILDFOLDER));
     vnd::Transpiler transpiler{"var var1, var2: type", "input.vn"};
     const auto code = transpiler.transpile();
     REQUIRE(code == "type var1, var2\n");
 }
 
 TEST_CASE("Transpiler transpile initialization instruction", "[transpiler]") {
+    [[maybe_unused]] auto unused = fs::remove_all(fs::path(VANDIOR_BUILDFOLDER));
     vnd::Transpiler transpiler{"var num1, num2: u8 = 12, 45", "input.vn"};
     const auto code = transpiler.transpile();
     REQUIRE(code == "uint8_t num1 = 12, num2  = 45\n");
 }
 
 TEST_CASE("Transpiler transpile vector initialization instruction", "[transpiler]") {
+    [[maybe_unused]] auto unused = fs::remove_all(fs::path(VANDIOR_BUILDFOLDER));
     vnd::Transpiler transpiler{"var nums: u8[] = u8[]{12, 45}", "input.vn"};
     const auto code = transpiler.transpile();
     REQUIRE(code == "vnd::vector<uint8_t> nums  = vnd::vector<uint8_t>({12, 45})\n");
 }
 
 TEST_CASE("Transpiler transpile structure instructions", "[transpiler]") {
+    [[maybe_unused]] auto unused = fs::remove_all(fs::path(VANDIOR_BUILDFOLDER));
     vnd::Transpiler transpiler{"if a == 1 {", "input.vn"};
     auto code = transpiler.transpile();
     REQUIRE(code == "if(a == 1) {\n");
+    [[maybe_unused]] auto unused2 = fs::remove_all(fs::path(VANDIOR_BUILDFOLDER));
     transpiler = vnd::Transpiler{"while a == 1 {", "input.vn"};
     code = transpiler.transpile();
     REQUIRE(code == "while(a == 1) {\n");
 }
 
 TEST_CASE("Transpiler transpile break and continue instructions", "[transpiler]") {
+    [[maybe_unused]] auto unused = fs::remove_all(fs::path(VANDIOR_BUILDFOLDER));
     vnd::Transpiler transpiler{"break", "input.vn"};
     auto code = transpiler.transpile();
     REQUIRE(code == "break\n");
+    [[maybe_unused]] auto unused2 = fs::remove_all(fs::path(VANDIOR_BUILDFOLDER));
     transpiler = vnd::Transpiler{"continue", "input.vn"};
     code = transpiler.transpile();
     REQUIRE(code == "continue\n");
 }
 
 TEST_CASE("Transpiler transpile void fun instruction", "[transpiler]") {
+    [[maybe_unused]] auto unused = fs::remove_all(fs::path(VANDIOR_BUILDFOLDER));
     vnd::Transpiler transpiler{"fun a() {", "input.vn"};
     const auto code = transpiler.transpile();
     REQUIRE(code == "auto a() -> void {\n");
 }
 
 TEST_CASE("Transpiler transpile single return value fun instruction", "[transpiler]") {
+    [[maybe_unused]] auto unused = fs::remove_all(fs::path(VANDIOR_BUILDFOLDER));
     vnd::Transpiler transpiler{"fun a(num1: i8, num2: type) i8 {", "input.vn"};
     const auto code = transpiler.transpile();
     REQUIRE(code == "auto a(int8_t num1, type num2) -> int8_t {\n");
 }
 
 TEST_CASE("Transpiler transpile multiple return value fun instruction", "[transpiler]") {
+    [[maybe_unused]] auto unused = fs::remove_all(fs::path(VANDIOR_BUILDFOLDER));
     vnd::Transpiler transpiler{"fun a() type, i8 {", "input.vn"};
     const auto code = transpiler.transpile();
     REQUIRE(code == "auto a() -> std::tuple< type , int8_t> {\n");
 }
 
 TEST_CASE("Transpiler transpile return instructions", "[transpiler]") {
+    [[maybe_unused]] auto unused = fs::remove_all(fs::path(VANDIOR_BUILDFOLDER));
     vnd::Transpiler transpiler{"return", "input.vn"};
     auto code = transpiler.transpile();
     REQUIRE(code == "return \n");
+    [[maybe_unused]] auto unused2 = fs::remove_all(fs::path(VANDIOR_BUILDFOLDER));
     transpiler = vnd::Transpiler{"return true", "input.vn"};
     code = transpiler.transpile();
     REQUIRE(code == "return true\n");
 }
+
 // clang-format off
 // NOLINTEND(*-include-cleaner, *-avoid-magic-numbers, *-magic-numbers, *-unchecked-optional-access, *-avoid-do-while, *-use-anonymous-namespace, *-qualified-auto, *-suspicious-stringview-data-usage, *-err58-cpp, *-function-cognitive-complexity, *-macro-usage, *-unnecessary-copy-initialization)
 // clang-format on

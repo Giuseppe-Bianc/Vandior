@@ -18,12 +18,19 @@ namespace vnd {
 #endif
         tokens = tokenizer.tokenize();
     }
+    // NOLINTNEXTLINE(*-use-anonymous-namespace)
+    void count_total_num_tokens(const std::vector<vnd::TokenVec> &tokens) {
+        vnd::AutoTimer const timer("Counting total number of tokens");
+        const std::size_t totalTokenSize = std::accumulate(tokens.begin(), tokens.end(), std::size_t{0},
+                                                           [](std::size_t sum, const vnd::TokenVec &inner) { return sum + inner.size(); });
+        LINFO("num tokens {}", totalTokenSize);
+    }
+
 }  // namespace vnd
 
 DISABLE_WARNINGS_PUSH(26461 26821)
 
 // static inline constexpr auto sequence = std::views::iota(0, 9999);
-
 // NOLINTNEXTLINE(*-function-cognitive-complexity)
 auto main(int argc, const char *const argv[]) -> int {
     // NOLINTNEXTLINE

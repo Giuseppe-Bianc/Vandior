@@ -1,6 +1,6 @@
 include(GenerateExportHeader)
 
-find_package(glm REQUIRED)
+#find_package(glm REQUIRED)
 add_library(vandior_core_lib vandiorCore.cpp)
 
 add_library(Vandior::vandior_core_lib ALIAS vandior_core_lib)
@@ -18,7 +18,7 @@ target_link_libraries(vandior_core_lib
         PUBLIC
         fmt::fmt
         spdlog::spdlog
-        glm::glm
+        #glm::glm
         #nlohmann_json::nlohmann_json
 )
 

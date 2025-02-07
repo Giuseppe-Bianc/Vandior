@@ -2,6 +2,7 @@
 // NOLINTBEGIN(*-include-cleaner)
 
 #include "Vandior/lexer/Token.hpp"
+#include "Vandior/lexer/TokenizerConstants.hpp"
 #include "Vandior/lexer/TokenizerUtility.hpp"
 #include <string>
 

@@ -13,6 +13,7 @@ function(AddSpdlogPackage WcharSupport WcharFilenames)
             "SPDLOG_WCHAR_FILENAMES ${WcharFilenames}"
             "SPDLOG_SANITIZE_ADDRESS OFF"
     )
+
 endfunction()
 
 # Done as a function so that updates to variables like
@@ -20,7 +21,7 @@ endfunction()
 # targets
 function(Vandior_setup_dependencies)
 
-    if (NOT TARGET glm::glm)
+    #[[if (NOT TARGET glm::glm)
         CPMAddPackage(
                 NAME glm
                 GIT_REPOSITORY https://github.com/g-truc/glm.git
@@ -30,7 +31,7 @@ function(Vandior_setup_dependencies)
                 "GLM_ENABLE_CXX_20 ON"
                 "GLM_ENABLE_SIMD_AVX2 ON"
         )
-    endif ()
+    endif ()]]
 
     # For each dependency, see if it's
     # already been provided to us by a parent project
