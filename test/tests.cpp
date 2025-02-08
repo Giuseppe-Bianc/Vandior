@@ -1450,9 +1450,9 @@ TEST_CASE("Tokenizer emit string token", "[Tokenizer]") {
 TEST_CASE("tokenizer emit unknown token on non closed char token", "[tokenizer]") {
     constexpr std::string_view code2 = R"('a")";
     vnd::Tokenizer tokenizer{code2, filename};
-    std::vector<vnd::TokenVec> result = tokenizer.tokenize();
+    const std::vector<vnd::TokenVec> result = tokenizer.tokenize();
     REQUIRE(result.size() == 1);
-    vnd::TokenVec tokens = result.front();
+    const vnd::TokenVec tokens = result.front();
     REQUIRE(tokens.size() == 2);
     REQUIRE(tokens[0] == vnd::Token(vnd::TokenType::UNKNOWN, R"(a")", vnd::CodeSourceLocation(filename, 1, 2)));
 }
@@ -3066,7 +3066,7 @@ TEST_CASE("prettyPrint: base literals types", "[prettyPrint]") {
     REQUIRE_NOTHROW(prettyPrint(*ast, "", true));
 }
 
-class UnknownNode : public vnd::ASTNode {
+class UnknownNode final : public vnd::ASTNode {
 public:
     UnknownNode() : ASTNode(vnd::Token{}) {}
     [[nodiscard]] NodeType getType() const noexcept override { return NodeType::Unknown; }
