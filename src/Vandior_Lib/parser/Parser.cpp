@@ -9,6 +9,7 @@
 DISABLE_WARNINGS_PUSH(26410 26411 26415 26445 26481)
 
 namespace vnd {
+    static inline constexpr int bracketPosition = 1;
     std::vector<Statement> Parser::parse() {
         if(tokens.empty()) { return {}; }
         std::vector<Statement> statements;
@@ -46,7 +47,6 @@ namespace vnd {
             if(token.getType() == K_FUN) { data = extractFunData(); }
         }
         if(snd) {
-            const int bracketPosition = 1;
             const auto tokensSize = currentStatement->size();
             if(tokensSize < bracketPosition || currentStatement->at(tokensSize - bracketPosition).getValue() != "{") {
                 throw ParserException(tokensFront);
@@ -361,7 +361,7 @@ namespace vnd {
 
     StringVec Parser::extractFunData() {
         StringVec result;
-        auto offset = (currentStatement->back().isType(eofTokenType) ? 3 : 2);
+        const auto offset = (currentStatement->back().isType(eofTokenType) ? 3 : 2);
         if(currentStatement->size() <= C_ST(offset)) { return {}; }
         auto iter = std::prev(currentStatement->end(), offset);
         while(iter->getType() != TokenType::CLOSE_PARENTESIS && std::distance(currentStatement->begin(), iter) >= 3) {

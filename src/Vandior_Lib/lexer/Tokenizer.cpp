@@ -33,9 +33,8 @@ namespace vnd {
             } else if(TokenizerUtility::isQuotation(currentChar)) [[likely]] {
                 tokens.emplace_back(handleString());
             } else if(TokenizerUtility::isCommaColon(currentChar)) {
-                auto value = currentChar;
                 incPosAndColumn();
-                tokens.emplace_back(TokenizerUtility::CommaOrColonType(value), TokenizerUtility::CommaOrColonValue(value),
+                tokens.emplace_back(TokenizerUtility::CommaOrColonType(currentChar), TokenizerUtility::CommaOrColonValue(currentChar),
                                     CodeSourceLocation{_filename, line, column - 1});
             } else [[unlikely]] {
                 handleError(std::string(1, currentChar), "Unknown Character");

@@ -20,7 +20,7 @@ namespace vnd {
          * @param fileName The name of the file being parsed.
          */
         [[nodiscard]] explicit Parser(const std::string_view &input, const std::string_view &fileName)
-          : tokenizer{input, fileName}, tokens{tokenizer.tokenize()} {}
+          : tokenizer{input, fileName}, tokens{tokenizer.tokenize()}, currentStatement{nullptr} {}
 
         /**
          * @brief Parses the tokens into an AST.
