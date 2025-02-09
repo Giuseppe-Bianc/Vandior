@@ -15,7 +15,7 @@ env:
 
 jobs:
   Test:
-    name: ${{matrix.os}} ${{matrix.compiler}} ${{matrix.build_type}} ${{matrix.packaging_maintainer_mode == 'ON' && '(maintainer mode)' || ''}} ${{matrix.enable_indepth == 'ON' && '(indepth)' || ''}}
+    name: ${{matrix.os}}--${{matrix.compiler}}-${{matrix.build_type}}${{matrix.packaging_maintainer_mode == 'ON' && '(maintainer mode)' || ''}}${{matrix.enable_indepth == 'ON' && '(indepth)' || ''}}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -230,7 +230,7 @@ jobs:
           ctest -C ${{matrix.build_type}} -j ${{ steps.cpu-cores.outputs.count }} --rerun-failed --output-on-failure
           gcovr -j ${{env.nproc}} --verbose --delete --root ../ --print-summary --xml-pretty --xml coverage.xml . --gcov-executable '${{ matrix.gcov_executable }}' --exclude-unreachable-branches --exclude-noncode-lines --gcov-ignore-errors=no_working_dir_found
 
-#  gcovr -j ${{env.nproc}} --verbose --root ../ --config ../gcovr.cfg --gcov-executable '${{ matrix.gcov_executable }}' --exclude-unreachable-branches --exclude-noncode-lines --gcov-ignore-errors=no_working_dir_found
+      #  gcovr -j ${{env.nproc}} --verbose --root ../ --config ../gcovr.cfg --gcov-executable '${{ matrix.gcov_executable }}' --exclude-unreachable-branches --exclude-noncode-lines --gcov-ignore-errors=no_working_dir_found
 
       - name: Windows - Test and coverage
         if: runner.os == 'Windows'

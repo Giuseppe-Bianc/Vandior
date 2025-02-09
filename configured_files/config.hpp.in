@@ -1,5 +1,8 @@
+// NOLINTBEGIN
 #ifndef Vandior_CONFIG_HPP
 #define Vandior_CONFIG_HPP
+
+#include <string_view>
 
 // this is a basic example of how a CMake configured file might look
 // in this particular case, we are using it to set the version number of our executable
@@ -15,3 +18,4 @@ inline constexpr std::string_view git_short_sha = "@GIT_SHORT_SHA@";
 }// namespace Vandior::cmake
 
 #endif
+// NOLINTEND
