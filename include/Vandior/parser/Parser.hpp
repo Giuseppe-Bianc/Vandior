@@ -20,7 +20,7 @@ namespace vnd {
          * @param fileName The name of the file being parsed.
          */
         [[nodiscard]] explicit Parser(const std::string_view &input, const std::string_view &fileName)
-          : tokenizer{input, fileName}, tokens{tokenizer.tokenize()}, currentStatement{nullptr} {}
+          : tokenizer{input, fileName}, tokens{tokenizer.tokenize()} {}
 
         /**
          * @brief Parses the tokens into an AST.
@@ -68,9 +68,9 @@ namespace vnd {
          * @brief Gets the current token.
          * @return A reference to the current token.
          */
-        const Token &getCurrentToken() const;
-        TokenType getCurrentTokenType() const;
-        bool isCurrentTokenType(const TokenType &type) const;
+        [[nodiscard]] const Token &getCurrentToken() const;
+        [[nodiscard]] TokenType getCurrentTokenType() const;
+        [[nodiscard]] bool isCurrentTokenType(const TokenType &type) const;
         /**
          * @brief Gets the precedence of an unary operator.
          * @param token The token representing the unary operator.
@@ -174,12 +174,12 @@ namespace vnd {
          */
         [[nodiscard]] StringVec extractFunData();
 
-        Tokenizer tokenizer;             ///< The tokenizer used to tokenize the input.
-        std::vector<TokenVec> tokens{};  ///< The list of tokens.
-        TokenVec *currentStatement;
-        std::size_t tokenSize{};  ///< The size of the token list.
-        std::size_t position{};   ///< The current position in the token list.
-        Token keyword{};          ///< The keyword token of the current statement.
+        Tokenizer tokenizer;                  ///< The tokenizer used to tokenize the input.
+        std::vector<TokenVec> tokens{};       ///< The list of tokens.
+        TokenVec *currentStatement{nullptr};  ///< The current statement being parsed.
+        std::size_t tokenSize{};              ///< The size of the token list.
+        std::size_t position{};               ///< The current position in the token list.
+        Token keyword{};                      ///< The keyword token of the current statement.
     };
 }  // namespace vnd
 
