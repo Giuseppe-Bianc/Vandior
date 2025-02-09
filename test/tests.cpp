@@ -1557,6 +1557,26 @@ TEST_CASE("tokenizer edge cases for comments", "[tokenizer]") {
     REQUIRE(token.getValue() == "/* Comment with ** inside */");
 }
 
+TEST_CASE("Tokenizer emit exception for mismacted  paren", "[parser]") {
+    vnd::Tokenizer tokenizer{"1 + 2 +( 2+3*3", filename};
+    REQUIRE_THROWS_MATCHES(tokenizer.tokenize(), std::runtime_error, Message("Mismatch bracket"));
+}
+
+TEST_CASE("Tokenizer emit mismatched square brackets exception", "[parser]") {
+    vnd::Tokenizer tokenizer("Object[size", filename);
+    REQUIRE_THROWS_MATCHES(tokenizer.tokenize(), std::runtime_error, Message("Mismatch bracket"));
+}
+
+TEST_CASE("Tokenizer emit mismatched curly brackets exception", "[parser]") {
+    vnd::Tokenizer tokenizer("string[size]{", filename);
+    REQUIRE_THROWS_MATCHES(tokenizer.tokenize(), std::runtime_error, Message("Mismatch bracket"));
+}
+
+TEST_CASE("Tokenizer emit mismatched closed brackets exception", "[parser]") {
+    vnd::Tokenizer tokenizer("string[size)", filename);
+    REQUIRE_THROWS_MATCHES(tokenizer.tokenize(), std::runtime_error, Message("Mismatch bracket"));
+}
+
 TEST_CASE("corrected format for Tokentype", "[token_type]") {
     using enum vnd::TokenType;
     REQ_FORMAT(INTEGER, "INTEGER")
@@ -2613,20 +2633,6 @@ TEST_CASE("Parser pars complex expression", "[parser]") {
     // clang-format on
 }
 
-TEST_CASE("Parser emit exception for mismacted  paren", "[parser]") {
-    vnd::Parser tokenizer{"1 + 2 +( 2+3*3", filename};
-#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
-    REQUIRE_THROWS_MATCHES(
-        tokenizer.parse(), vnd::ParserException,
-        Message(R"(Unexpected token: (type: OPEN_PARENTESIS, value: '(', source location:(file:.\unknown.vn, line:1, column:8)))"));
-#else
-    REQUIRE_THROWS_MATCHES(
-        tokenizer.parse(), vnd::ParserException,
-        Message(R"(Unexpected token: (type: OPEN_PARENTESIS, value: '(', source location:(file:./unknown.vn, line:1, column:8)))"));
-
-#endif
-}
-
 TEST_CASE("Parser emit exception for uncomplete expression", "[parser]") {
     vnd::Parser tokenizer{"1 + 2 *", filename};
 #if defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
@@ -2781,27 +2787,6 @@ TEST_CASE("Parser emit exception on multiline comment", "[parser]") {
 #endif
 }
 
-/* TEST_CASE("Parser emit mismatched square brackets exception", "[parser]") {
-    vnd::Parser parser("Object[size", filename);
-#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
-    REQUIRE_THROWS_MATCHES(parser.parse(), vnd::ParserException,
-                           Message(R"(Unexpected token: (type: EOF, source location:(file:.\unknown.vn, line:1, column:12)))"));
-#else
-    REQUIRE_THROWS_MATCHES(parser.parse(), vnd::ParserException,
-                           Message(R"(Unexpected token: (type: EOF, source location:(file:./unknown.vn, line:1, column:12)))"));
-#endif
-}
-
-TEST_CASE("Parser emit mismatched curly brackets exception", "[parser]") {
-    vnd::Parser parser("string[size]{", filename);
-#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
-    REQUIRE_THROWS_MATCHES(parser.parse(), vnd::ParserException,
-                           Message(R"(Unexpected token: (type: EOF, source location:(file:.\unknown.vn, line:1, column:14)))"));
-#else
-    REQUIRE_THROWS_MATCHES(parser.parse(), vnd::ParserException,
-                           Message(R"(Unexpected token: (type: EOF, source location:(file:./unknown.vn, line:1, column:14)))"));
-#endif
-}*/
 TEST_CASE("Parser emit empty index node print", "[parser]") {
     vnd::Parser parser("i8[]", filename);
     auto programAst = parser.parse();
@@ -3193,9 +3178,9 @@ TEST_CASE("Transpiler::mapType returns correct type mappings", "[transpiler]") {
 
 TEST_CASE("Transpiler transpile main instruction", "[transpiler]") {
     [[maybe_unused]] auto unused = fs::remove_all(fs::path(VANDIOR_BUILDFOLDER));
-    vnd::Transpiler transpiler{"main {", "input.vn"};
+    vnd::Transpiler transpiler{"main {\n}", "input.vn"};
     const auto code = transpiler.transpile();
-    REQUIRE(code == "int main(int argc, char **argv) {\n");
+    REQUIRE(code == "int main(int argc, char **argv) {\n}\n");
 }
 
 TEST_CASE("Transpiler throw exception for missing {", "[transpiler]") {
@@ -3234,13 +3219,13 @@ TEST_CASE("Transpiler transpile vector initialization instruction", "[transpiler
 
 TEST_CASE("Transpiler transpile structure instructions", "[transpiler]") {
     [[maybe_unused]] auto unused = fs::remove_all(fs::path(VANDIOR_BUILDFOLDER));
-    vnd::Transpiler transpiler{"if a == 1 {", "input.vn"};
+    vnd::Transpiler transpiler{"if a == 1 {\n}", "input.vn"};
     auto code = transpiler.transpile();
-    REQUIRE(code == "if(a == 1) {\n");
+    REQUIRE(code == "if(a == 1) {\n}\n");
     [[maybe_unused]] auto unused2 = fs::remove_all(fs::path(VANDIOR_BUILDFOLDER));
-    transpiler = vnd::Transpiler{"while a == 1 {", "input.vn"};
+    transpiler = vnd::Transpiler{"while a == 1 {\n}", "input.vn"};
     code = transpiler.transpile();
-    REQUIRE(code == "while(a == 1) {\n");
+    REQUIRE(code == "while(a == 1) {\n}\n");
 }
 
 TEST_CASE("Transpiler transpile break and continue instructions", "[transpiler]") {
@@ -3256,23 +3241,23 @@ TEST_CASE("Transpiler transpile break and continue instructions", "[transpiler]"
 
 TEST_CASE("Transpiler transpile void fun instruction", "[transpiler]") {
     [[maybe_unused]] auto unused = fs::remove_all(fs::path(VANDIOR_BUILDFOLDER));
-    vnd::Transpiler transpiler{"fun a() {", "input.vn"};
+    vnd::Transpiler transpiler{"fun a() {\n}", "input.vn"};
     const auto code = transpiler.transpile();
-    REQUIRE(code == "auto a() -> void {\n");
+    REQUIRE(code == "auto a() -> void {\n}\n");
 }
 
 TEST_CASE("Transpiler transpile single return value fun instruction", "[transpiler]") {
     [[maybe_unused]] auto unused = fs::remove_all(fs::path(VANDIOR_BUILDFOLDER));
-    vnd::Transpiler transpiler{"fun a(num1: i8, num2: type) i8 {", "input.vn"};
+    vnd::Transpiler transpiler{"fun a(num1: i8, num2: type) i8 {\n}", "input.vn"};
     const auto code = transpiler.transpile();
-    REQUIRE(code == "auto a(int8_t num1, type num2) -> int8_t {\n");
+    REQUIRE(code == "auto a(int8_t num1, type num2) -> int8_t {\n}\n");
 }
 
 TEST_CASE("Transpiler transpile multiple return value fun instruction", "[transpiler]") {
     [[maybe_unused]] auto unused = fs::remove_all(fs::path(VANDIOR_BUILDFOLDER));
-    vnd::Transpiler transpiler{"fun a() type, i8 {", "input.vn"};
+    vnd::Transpiler transpiler{"fun a() type, i8 {\n}", "input.vn"};
     const auto code = transpiler.transpile();
-    REQUIRE(code == "auto a() -> std::tuple< type , int8_t> {\n");
+    REQUIRE(code == "auto a() -> std::tuple< type , int8_t> {\n}\n");
 }
 
 TEST_CASE("Transpiler transpile return instructions", "[transpiler]") {
