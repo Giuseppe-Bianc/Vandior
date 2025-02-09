@@ -6,7 +6,7 @@
 #include "Vandior/transpiler/ProjectBuilder.hpp"
 namespace vnd {
     // Costruttore che prende il nome del file come parametro
-    ProjectBuilder::ProjectBuilder(const std::string_view &filename, bool createCmakeListsFile) noexcept
+    ProjectBuilder::ProjectBuilder(const std::string_view &filename,const bool createCmakeListsFile) noexcept
       : _createCmakeListsFile(createCmakeListsFile), _filename(filename) {}
 
     // Metodo pubblico per avviare la costruzione del progetto

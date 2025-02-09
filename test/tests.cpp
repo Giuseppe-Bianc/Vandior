@@ -1552,7 +1552,7 @@ TEST_CASE("tokenizer edge cases for comments", "[tokenizer]") {
     const std::string input = "/* Comment with ** inside */";
     vnd::Tokenizer tokenizer(input, "testFile");
 
-    auto token = tokenizer.tokenize().front().front();
+    const auto token = tokenizer.tokenize().front().front();
     REQUIRE(token.getType() == vnd::TokenType::COMMENT);
     REQUIRE(token.getValue() == "/* Comment with ** inside */");
 }
@@ -2079,12 +2079,12 @@ TEST_CASE("unary node swap", "[parser]") {
 
 TEST_CASE("binary node swap", "[parser]") {
     using enum vnd::TokenType;
-    auto token1 = vnd::Token{MINUS, "-", vnd::CodeSourceLocation{filename, t_line, t_colum5}};
-    auto token2 = vnd::Token{IDENTIFIER, "d", vnd::CodeSourceLocation{filename, t_line, t_colum6}};
-    auto token3 = vnd::Token{IDENTIFIER, "a", vnd::CodeSourceLocation{filename, t_line, t_colum4}};
-    auto token4 = vnd::Token{STAR, "*", vnd::CodeSourceLocation{filename, t_line, t_colum5}};
-    auto token5 = vnd::Token{IDENTIFIER, "s", vnd::CodeSourceLocation{filename, t_line, t_colum6}};
-    auto token6 = vnd::Token{IDENTIFIER, "b", vnd::CodeSourceLocation{filename, t_line, t_colum5}};
+    const auto token1 = vnd::Token{MINUS, "-", vnd::CodeSourceLocation{filename, t_line, t_colum5}};
+    const auto token2 = vnd::Token{IDENTIFIER, "d", vnd::CodeSourceLocation{filename, t_line, t_colum6}};
+    const auto token3 = vnd::Token{IDENTIFIER, "a", vnd::CodeSourceLocation{filename, t_line, t_colum4}};
+    const auto token4 = vnd::Token{STAR, "*", vnd::CodeSourceLocation{filename, t_line, t_colum5}};
+    const auto token5 = vnd::Token{IDENTIFIER, "s", vnd::CodeSourceLocation{filename, t_line, t_colum6}};
+    const auto token6 = vnd::Token{IDENTIFIER, "b", vnd::CodeSourceLocation{filename, t_line, t_colum5}};
     vnd::BinaryExpressionNode unara{"-", token1, MAKE_UNIQUE(vnd::VariableNode, "d", token2), MAKE_UNIQUE(vnd::VariableNode, "a", token3)};
     vnd::BinaryExpressionNode unarb{"*", token4, MAKE_UNIQUE(vnd::VariableNode, "s", token5), MAKE_UNIQUE(vnd::VariableNode, "b", token6)};
     REQUIRE(unara.getOp() == "-");

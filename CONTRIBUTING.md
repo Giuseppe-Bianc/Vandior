@@ -55,9 +55,9 @@ GitHub repository. When suggesting an enhancement, please include the following 
 To submit a pull request with your changes, please follow these steps:
 
 1. Fork the repository and create a new branch from the `main` branch.
-2. Make your changes in the new branch, following the [coding style](#coding-style) guidelines.
+2. Make your changes in the new branch, following the [coding style](#coding-style-coding-style) guidelines.
 3. Ensure that your changes do not dersbianderduce new bugs or break existing functionality by testing your code.
-4. Commit your changes with a [proper commit message](#commit-messages).
+4. Commit your changes with a [proper commit message](#commit-messages-commit-messages).
 5. Push your changes to your fork on GitHub.
 6. Create a new pull request on the vandior repository, providing a clear and concise description of your changes.
 
