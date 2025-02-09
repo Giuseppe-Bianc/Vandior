@@ -18,14 +18,14 @@ namespace vnd {
         return position != inputSpan.size() && inputSpan[position] == slashcr &&
                (inputSpan[nextpos] == slashcr || inputSpan[nextpos] == starcr);
     }
-    bool TokenizerUtility::isalnumUnderscore(const char cha) noexcept { return C_BOOL(std::isalnum(C_UC(cha))) || cha == underore; }
+    bool TokenizerUtility::isalnumUnderscore(const char cha) noexcept { return C_BOOL(std::isalnum(C_UC(cha))) || cha == underscore; }
     bool TokenizerUtility::isOctalDigit(const char cha) noexcept {
         return C_BOOL(std::isdigit(C_UC(cha))) && cha >= zerocr && cha <= sevencr;
     }
     bool TokenizerUtility::isHasterisc(const char cha) noexcept { return cha == '#'; }
-    bool TokenizerUtility::isUnderscore(const char cha) noexcept { return cha == underore; }
+    bool TokenizerUtility::isUnderscore(const char cha) noexcept { return cha == underscore; }
     bool TokenizerUtility::isCommaColon(const char cha) noexcept { return cha == commacr || cha == coloncr; }
-    TokenType TokenizerUtility::CommaOrColonType(const char cha) {
+    TokenType TokenizerUtility::CommaOrColonType(const char cha) noexcept {
         using enum TokenType;
         if(cha == commacr) {
             return COMMA;
@@ -34,7 +34,7 @@ namespace vnd {
         }
         return UNKNOWN;
     }
-    std::string_view TokenizerUtility::CommaOrColonValue(const char cha) {
+    std::string_view TokenizerUtility::CommaOrColonValue(const char cha) noexcept {
         if(cha == commacr) {
             return comma;
         } else if(cha == coloncr) {

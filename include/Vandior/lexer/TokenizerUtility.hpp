@@ -87,8 +87,8 @@ namespace vnd {
          */
         [[nodiscard]] static bool isUnderscore(const char cha) noexcept;
         [[nodiscard]] static bool isCommaColon(const char cha) noexcept;
-        [[nodiscard]] static TokenType CommaOrColonType(const char cha);
-        [[nodiscard]] static std::string_view CommaOrColonValue(const char cha);
+        [[nodiscard]] static TokenType CommaOrColonType(const char cha) noexcept;
+        [[nodiscard]] static std::string_view CommaOrColonValue(const char cha) noexcept;
     };
 
 }  // namespace vnd

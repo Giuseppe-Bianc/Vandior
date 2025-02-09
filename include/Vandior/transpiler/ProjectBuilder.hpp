@@ -9,8 +9,7 @@ namespace vnd {
     class ProjectBuilder {
     public:
         // Costruttore che prende il nome del file come parametro
-        explicit ProjectBuilder(const std::string_view &filename, bool createCmakeListsFile = false) noexcept;
-
+        explicit ProjectBuilder(const std::string_view &filename, const bool createCmakeListsFile = false) noexcept;
         // Metodo pubblico per avviare la costruzione del progetto
         void buildProject();
 

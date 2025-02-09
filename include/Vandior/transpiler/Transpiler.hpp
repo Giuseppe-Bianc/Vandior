@@ -103,7 +103,7 @@ namespace vnd {
          * @return The string representation of the transpiled literal node.
          */
         template <typename T> auto transpileLiteralNode(const LiteralNode<T> *literalNode) -> std::string;
-        template <typename T> auto getValueOrLog(const std::optional<T> &opt, std::string_view errorMsg) -> T;
+        template <typename T> static auto getValueOrLog(const std::optional<T> &opt, std::string_view errorMsg) -> T;
         /**
          * Transpiles the given TypeNode into a string representation.
          *
