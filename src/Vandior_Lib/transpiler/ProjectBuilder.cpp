@@ -83,7 +83,7 @@ namespace vnd {
         return false;
     }
 
-    bool ProjectBuilder::createCMakeListsFile() {
+    bool ProjectBuilder::createCMakeListsFile() const {
         if(_vnBuildFolder.has_value()) {
 #ifdef INDEPT
             const vnd::AutoTimer timer("CMakeLists.txt file creation");

@@ -30,7 +30,7 @@ namespace vnd {
         _vnBuildSrcFolder = getValueOrLog(_projectBuilder.getSrcFolderPath(), "Failed to get src folder path.");
         _mainOutputFilePath = getValueOrLog(_projectBuilder.getMainOutputFilePath(), "Failed to get main output file path.");
     }
-    void Transpiler::createMockfile() {
+    void Transpiler::createMockfile() const {
         const auto generatorName = GENERATOR_FULLNAME;
 
         std::stringstream fileContents;
@@ -273,28 +273,29 @@ namespace vnd {
         }
     }
 
-    auto Transpiler::mapType(const std::string_view type) -> std::string_view {
-        static const std::unordered_map<std::string_view, std::string_view> typeMap = {
-            {"i8"sv, "int8_t"sv},
-            {"i16"sv, "int16_t"sv},
-            {"i32"sv, "int32_t"sv},
-            {"i64"sv, "int64_t"sv},
-            {"u8"sv, "uint8_t"sv},
-            {"u16"sv, "uint16_t"sv},
-            {"u32"sv, "uint32_t"sv},
-            {"u64"sv, "uint64_t"sv},
-            {"f32"sv, "float"sv},
-            {"f64"sv, "double"sv},
-            {"c32"sv, "std::complex<float>"sv},
-            {"c64"sv, "std::complex<double>"sv},
-            {"bool"sv, "bool"sv},
-            {"char"sv, "char"sv},
-            {"string"sv, "std::string_view"sv},
+    auto Transpiler::mapType(const std::string_view type) -> std::string {
+        static const std::unordered_map<std::string_view, std::string> typeMap = {
+            {"i8"sv, "int8_t"},
+            {"i16"sv, "int16_t"},
+            {"i32"sv, "int32_t"},
+            {"i64"sv, "int64_t"},
+            {"u8"sv, "uint8_t"},
+            {"u16"sv, "uint16_t"},
+            {"u32"sv, "uint32_t"},
+            {"u64"sv, "uint64_t"},
+            {"f32"sv, "float"},
+            {"f64"sv, "double"},
+            {"c32"sv, "std::complex<float>"},
+            {"c64"sv, "std::complex<double>"},
+            {"bool"sv, "bool"},
+            {"char"sv, "char"},
+            {"string"sv, "std::string_view"},
         };
 
-        if(typeMap.contains(type)) { return typeMap.at(type); }
-        return type;  // Default case if type is not found
+        if(const auto it = typeMap.find(type); it != typeMap.end()) { return it->second; }
+        return std::string(type);  // Default case to return a copy as a std::string
     }
+
     // Helper function to transpile code for TypeNode
     auto Transpiler::transpileTypeNode(const TypeNode *typeNode) -> std::string {
         if(typeNode == nullptr) [[unlikely]] { return ""; }
