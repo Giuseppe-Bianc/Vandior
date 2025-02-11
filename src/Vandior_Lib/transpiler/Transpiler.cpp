@@ -108,9 +108,8 @@ namespace vnd {
     DISABLE_WARNINGS_PUSH(26429)
     std::string Transpiler::parseDeclaration(std::string input) {
         std::ostringstream out;
-        std::vector<std::string> identifiers;
-        std::vector<std::string> values;
-        std::vector<std::string> *current = &identifiers;
+        std::array<std::vector<std::string>, 2> data;
+        uint8_t index = 0;
         std::string currentToken;
         const std::map<char, char> delimiters = {{'{', '}'}, {'(', ')'}, {'<', '>'}, {'[', ']'}, {'"', '"'}};
         char currentDelimiter = '\0';
@@ -119,12 +118,12 @@ namespace vnd {
         input = input.substr(start);
         for(const auto i : input) {
             if(i == ',' && currentDelimiter == '\0') {
-                current->emplace_back(currentToken);
+                data.at(index).emplace_back(currentToken);
                 currentToken.clear();
             } else if(i == '=') {
-                current->emplace_back(currentToken);
+                data.at(index).emplace_back(currentToken);
                 currentToken.clear();
-                current = &values;
+                index++;
             } else {
                 if(delimiters.contains(i) && currentDelimiter == '\0') {
                     currentDelimiter = delimiters.at(i);
@@ -134,17 +133,18 @@ namespace vnd {
                 currentToken += i;
             }
         }
-        if(!currentToken.empty()) { current->emplace_back(currentToken); }
-        auto it = values.begin();
+        if(!currentToken.empty()) { data.at(index).emplace_back(currentToken); }
+        auto it = data.at(1).begin();
+        auto end = data.at(1).end();
         bool first = true;
-        for(const auto &i : identifiers) {
+        for(const auto &i : data.at(0)) {
             if(!first) {
                 out << ",";
             } else {
                 first = false;
             }
             out << i;
-            if(it != values.end()) {
+            if(it != end) {
                 out << FORMAT(" ={}", *it);
                 ++it;
             }
