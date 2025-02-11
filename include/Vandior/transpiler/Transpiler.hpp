@@ -17,26 +17,26 @@ namespace vnd {
          * @param type The type to be mapped.
          * @return The corresponding string view.
          */
-        static auto mapType(const std::string_view type) -> std::string_view;
+        static auto mapType(const std::string_view type) -> std::string;
 
     private:
         /**
          * Creates a mock file.
          */
-        void createMockfile();
+        void createMockfile() const;
 
         /**
-         * Transpiles the given Token keyword into a string representatio.
+         * Transpiles the given Token keyword into a string representation.
          *
-         * @param keyword the Token to tranpile.
+         * @param keyword the Token to transpile.
          * @return The transpiled string representation of the keyword.
          */
-        auto transpileKeyword(const Token &keyword) -> std::string;
+        static auto transpileKeyword(const Token &keyword) -> std::string;
 
         /**
          * Parses a declaration statement.
          *
-         * @param input the the string to parse.
+         * @param input the string to parse.
          * @return The parsed string.
          */
         static std::string parseDeclaration(std::string input);
@@ -135,7 +135,7 @@ namespace vnd {
 
     struct TranspileContext {
         std::ostringstream code;  // Holds the transpiled code.
-        std::string index;        // Holds the current index used in transpilation.
+        std::string index;        // Holds the current index used in transpiling.
         std::string arr;          // Holds the array or collection name.
 
         // Method to set both index and array using std::pair, using std::move for efficiency

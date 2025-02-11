@@ -38,7 +38,7 @@ namespace vnd {
         // Metodo per creare il file principale .cpp all'interno della cartella 'src'
         [[nodiscard]] bool createMainFile();
 
-        [[nodiscard]] bool createCMakeListsFile();
+        [[nodiscard]] bool createCMakeListsFile() const;
     };
 
 }  // namespace vnd
