@@ -40,7 +40,7 @@ namespace vnd {
          * @brief Sets the pointer to the statment nodes.
          * @param node The the pointer to the statment nodes.
          */
-        void set_root(std::unique_ptr<ASTNode> root) { _root = std::move(root); }
+        void set_root(std::unique_ptr<ASTNode> root) noexcept { _root = std::move(root); }
 
         /**
          * @brief Returns the vector of the function return types.

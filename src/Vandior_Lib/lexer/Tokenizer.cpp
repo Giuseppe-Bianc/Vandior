@@ -228,25 +228,27 @@ namespace vnd {
     }
 
     Token Tokenizer::handleBrackets() {
+        using enum TokenType;
         const auto start = position;
         incPosAndColumn();
         const auto value = _input.substr(start, position - start);
         const auto type = getBracketsType(value);
         switch(type) {
-        case TokenType::OPEN_PARENTESIS:
-        case TokenType::OPEN_SQ_PARENTESIS:
+        case OPEN_PARENTESIS:
+        case OPEN_SQ_PARENTESIS:
             if(bracketNum == 0) { bracketNum = brackets.size() + 1; }
-        case TokenType::OPEN_CUR_PARENTESIS:
+            [[fallthrough]];
+        case OPEN_CUR_PARENTESIS:
             brackets.push_back(type);
             break;
-        case TokenType::CLOSE_PARENTESIS:
-            removeBrackets(TokenType::OPEN_PARENTESIS);
+        case CLOSE_PARENTESIS:
+            removeBrackets(OPEN_PARENTESIS);
             break;
-        case TokenType::CLOSE_SQ_PARENTESIS:
-            removeBrackets(TokenType::OPEN_SQ_PARENTESIS);
+        case CLOSE_SQ_PARENTESIS:
+            removeBrackets(OPEN_SQ_PARENTESIS);
             break;
-        case TokenType::CLOSE_CUR_PARENTESIS:
-            removeBrackets(TokenType::OPEN_CUR_PARENTESIS);
+        case CLOSE_CUR_PARENTESIS:
+            removeBrackets(OPEN_CUR_PARENTESIS);
             break;
         default:
             break;
@@ -256,7 +258,7 @@ namespace vnd {
 
     void Tokenizer::removeBrackets(const TokenType &type) {
         if(type != TokenType::OPEN_CUR_PARENTESIS && brackets.size() == bracketNum) { bracketNum = 0; }
-        if(brackets.empty() || brackets.back() != type) { throw std::runtime_error("Mismatch bracket"); }
+        if(brackets.empty() || brackets.back() != type) { handleError("", "Mismatch bracket"); }
         brackets.pop_back();
     }
 
