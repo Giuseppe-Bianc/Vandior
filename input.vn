@@ -1,8 +1,10 @@
 fun a(num1: i8, num2: type) i8 {
 }
 main {
-	var a: i8 = 1
-	if a == 1 {
+	var arr: i8[] = i8[]{1, 2, 3}
+	var a, b: i8 = (1
+	+ 4 + (12 + 3) * 3), 12
+	if a == 1 + (1 + 2) {
 		break
 	}
 	{

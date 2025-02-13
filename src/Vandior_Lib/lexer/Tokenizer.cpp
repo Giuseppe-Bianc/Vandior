@@ -41,6 +41,7 @@ namespace vnd {
             }
         }
         tokens.emplace_back(TokenType::EOFT, CodeSourceLocation{_filename, line, column});
+        if(!brackets.empty()) { throw std::runtime_error("Mismatch bracket"); }
         result.emplace_back(tokens);
         return result;
     }
@@ -195,8 +196,10 @@ namespace vnd {
     }
 
     void Tokenizer::incrementLine() noexcept {
-        result.push_back(tokens);
-        tokens = {};
+        if(bracketNum == 0) {
+            result.push_back(tokens);
+            tokens = {};
+        }
         ++line;
         column = 0;
     }
@@ -229,7 +232,32 @@ namespace vnd {
         incPosAndColumn();
         const auto value = _input.substr(start, position - start);
         const auto type = getBracketsType(value);
+        switch(type) {
+        case TokenType::OPEN_PARENTESIS:
+        case TokenType::OPEN_SQ_PARENTESIS:
+            if(bracketNum == 0) { bracketNum = brackets.size() + 1; }
+        case TokenType::OPEN_CUR_PARENTESIS:
+            brackets.push_back(type);
+            break;
+        case TokenType::CLOSE_PARENTESIS:
+            removeBrackets(TokenType::OPEN_PARENTESIS);
+            break;
+        case TokenType::CLOSE_SQ_PARENTESIS:
+            removeBrackets(TokenType::OPEN_SQ_PARENTESIS);
+            break;
+        case TokenType::CLOSE_CUR_PARENTESIS:
+            removeBrackets(TokenType::OPEN_CUR_PARENTESIS);
+            break;
+        default:
+            break;
+        }
         return {type, value, {_filename, line, column - value.size()}};
+    }
+
+    void Tokenizer::removeBrackets(const TokenType &type) {
+        if(type != TokenType::OPEN_CUR_PARENTESIS && brackets.size() == bracketNum) { bracketNum = 0; }
+        if(brackets.empty() || brackets.back() != type) { throw std::runtime_error("Mismatch bracket"); }
+        brackets.pop_back();
     }
 
     Token Tokenizer::handleChar() {

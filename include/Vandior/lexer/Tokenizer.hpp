@@ -35,6 +35,8 @@ namespace vnd {
         std::size_t position = 0;    ///< Current position in the input string.
         std::size_t line = 1;        ///< Current line number.
         std::size_t column = 1;      ///< Current column number.
+        std::vector<TokenType> brackets;
+        size_t bracketNum = 0;
         // ArenaAllocator<CodeSourceLocation> _locationAllocator;  ///< Allocator for CodeSourceLocation objects.
 
         /**
@@ -208,6 +210,12 @@ namespace vnd {
          * @return Token representing brackets.
          */
         [[nodiscard]] Token handleBrackets();
+
+        /**
+         * @brief Removes a bracket.
+         * @param type the bracket token type to close.
+         */
+        void removeBrackets(const TokenType &type);
 
         /**
          * @brief Handles characters.

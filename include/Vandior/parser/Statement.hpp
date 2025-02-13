@@ -31,10 +31,16 @@ namespace vnd {
         [[nodiscard]] std::string comp_print() const override { return ""; }
 
         /**
-         * @brief Returns the vector of the statment nodes.
-         * @return The vector of the statment nodes.
+         * @brief Returns the pointer to the statment nodes.
+         * @return The the pointer to the statment nodes.
          */
-        [[nodiscard]] const std::vector<std::unique_ptr<ASTNode>> &get_nodes() const noexcept { return std::move(nodes); }
+        [[nodiscard]] const std::unique_ptr<ASTNode> &get_root() const noexcept { return _root; }
+
+        /**
+         * @brief Sets the pointer to the statment nodes.
+         * @param node The the pointer to the statment nodes.
+         */
+        void set_root(std::unique_ptr<ASTNode> root) { _root = std::move(root); }
 
         /**
          * @brief Returns the vector of the function return types.
@@ -45,13 +51,12 @@ namespace vnd {
         friend void swap(Statement &lhs, Statement &rhs) noexcept {
             using std::swap;
             swap(static_cast<ASTNode &>(lhs), static_cast<ASTNode &>(rhs));
-            swap(lhs.nodes, rhs.nodes);
+            std::swap(lhs._root, rhs._root);
+            std::swap(lhs.funData, rhs.funData);
         }
 
-        void addNode(std::unique_ptr<ASTNode> node) { nodes.emplace_back(std::move(node)); }
-
     private:
-        std::vector<std::unique_ptr<ASTNode>> nodes;
+        std::unique_ptr<ASTNode> _root;
         std::vector<std::string> funData;
     };
 
