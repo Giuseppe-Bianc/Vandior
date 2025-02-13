@@ -55,7 +55,6 @@ namespace vnd {
             std::swap(lhs.funData, rhs.funData);
         }
 
-
     private:
         std::unique_ptr<ASTNode> _root;
         std::vector<std::string> funData;

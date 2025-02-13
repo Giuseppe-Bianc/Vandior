@@ -212,9 +212,9 @@ namespace vnd {
         [[nodiscard]] Token handleBrackets();
 
         /**
-        * @brief Removes a bracket.
-        * @param type the bracket token type to close.
-        */
+         * @brief Removes a bracket.
+         * @param type the bracket token type to close.
+         */
         void removeBrackets(const TokenType &type);
 
         /**
