@@ -44,7 +44,7 @@ namespace vnd {
         std::stringstream out;
         using enum TokenType;
         for(const auto ast = _parser.parse(); const auto &i : ast) {
-            const auto &node = i.get_nodes().at(0);
+            const auto &node = i.get_root();
             out << transpileKeyword(i.get_token());
             if(node) {
                 auto code = transpileNode(*node);

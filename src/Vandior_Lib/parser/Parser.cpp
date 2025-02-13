@@ -20,7 +20,7 @@ namespace vnd {
             tokenSize = currentStatement->size();
             position = 0;
             emplaceStatement(statements);
-            statements.back().addNode(position < tokenSize ? parseExpression() : nullptr);
+            statements.back().set_root(position < tokenSize ? parseExpression() : nullptr);
         }
         return statements;
     }
