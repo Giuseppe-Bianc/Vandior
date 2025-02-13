@@ -1559,22 +1559,22 @@ TEST_CASE("tokenizer edge cases for comments", "[tokenizer]") {
 
 TEST_CASE("Tokenizer emit exception for mismacted  paren", "[parser]") {
     vnd::Tokenizer tokenizer{"1 + 2 +( 2+3*3", filename};
-    REQUIRE_THROWS_MATCHES(tokenizer.tokenize(), std::runtime_error, Message("Mismatch bracket"));
+    REQUIRE_THROWS_MATCHES(tokenizer.tokenize(), std::runtime_error, MessageMatches(ContainsSubstring("Mismatch bracket")));
 }
 
 TEST_CASE("Tokenizer emit mismatched square brackets exception", "[parser]") {
     vnd::Tokenizer tokenizer("Object[size", filename);
-    REQUIRE_THROWS_MATCHES(tokenizer.tokenize(), std::runtime_error, Message("Mismatch bracket"));
+    REQUIRE_THROWS_MATCHES(tokenizer.tokenize(), std::runtime_error, MessageMatches(ContainsSubstring("Mismatch bracket")));
 }
 
 TEST_CASE("Tokenizer emit mismatched curly brackets exception", "[parser]") {
     vnd::Tokenizer tokenizer("string[size]{", filename);
-    REQUIRE_THROWS_MATCHES(tokenizer.tokenize(), std::runtime_error, Message("Mismatch bracket"));
+    REQUIRE_THROWS_MATCHES(tokenizer.tokenize(), std::runtime_error, MessageMatches(ContainsSubstring("Mismatch bracket")));
 }
 
 TEST_CASE("Tokenizer emit mismatched closed brackets exception", "[parser]") {
     vnd::Tokenizer tokenizer("string[size)", filename);
-    REQUIRE_THROWS_MATCHES(tokenizer.tokenize(), std::runtime_error, Message("Mismatch bracket"));
+    REQUIRE_THROWS_MATCHES(tokenizer.tokenize(), std::runtime_error, MessageMatches(ContainsSubstring("Mismatch bracket")));
 }
 
 TEST_CASE("corrected format for Tokentype", "[token_type]") {

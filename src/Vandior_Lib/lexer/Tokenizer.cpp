@@ -339,6 +339,7 @@ namespace vnd {
         const auto &lineEnd = findLineEnd();
 
         const auto contextLine = getContextLine(lineStart, lineEnd);
+        // NOLINTNEXTLINE(*-pro-bounds-array-to-pointer-decay,*-no-array-decay)
         const auto highlighting = getHighlighting(lineStart, lineEnd, value);
         const auto errorMessage = getErrorMessage(value, errorMsg, contextLine, highlighting);
 
