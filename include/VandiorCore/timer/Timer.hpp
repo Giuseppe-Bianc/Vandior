@@ -25,10 +25,7 @@ namespace vnd {
      */
     class Timer {
     protected:
-        using clock = ch::high_resolution_clock;
-        using time_point = ch::time_point<clock>;
         using time_print_t = std::function<std::string(std::string, std::size_t, ValueLabel)>;
-        using nanolld = ch::duration<long double, std::nano>;
 
         std::string title_;
         std::size_t title_lenpadd;

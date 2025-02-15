@@ -19,4 +19,10 @@ namespace vnd {
     static inline constexpr auto minimalFormat = "{} - {}";
     static inline constexpr auto timeItFormat = "{} for {} tries";
     static inline constexpr std::size_t TILEPADDING = 10;
+    using clock = ch::high_resolution_clock;
+    using time_point = ch::time_point<clock>;
+    using nanolld = ch::duration<long double, std::nano>;
+    using microlld = ch::duration<long double, std::micro>;
+    using millilld = ch::duration<long double, std::milli>;
+    using seclld = ch::duration<long double>;
 }  // namespace vnd

@@ -48,7 +48,7 @@ namespace vnd {
         [[nodiscard]] std::string transformTimeMicro(const long double inputTimeMicro) const noexcept {
             using namespace std::chrono;
 
-            const auto durationmicros = duration<long double, std::micro>(inputTimeMicro);
+            const auto durationmicros = microlld(inputTimeMicro);
 
             const auto durationUs = duration_cast<microseconds>(durationmicros);
             const auto durationNs = round<nanoseconds>(durationmicros - durationUs);
@@ -59,7 +59,7 @@ namespace vnd {
         [[nodiscard]] std::string transformTimeMilli(const long double inputTimeMilli) const noexcept {
             using namespace std::chrono;
 
-            const auto durationmils = duration<long double, std::milli>(inputTimeMilli);
+            const auto durationmils = millilld(inputTimeMilli);
 
             const auto durationMs = duration_cast<milliseconds>(durationmils);
             const auto durationUs = round<microseconds>(durationmils - durationMs);
@@ -71,7 +71,7 @@ namespace vnd {
         [[nodiscard]] std::string transformTimeSeconds(const long double inputTimeSeconds) const noexcept {
             using namespace std::chrono;
 
-            const auto durationSecs = duration<long double>(inputTimeSeconds);
+            const auto durationSecs = seclld(inputTimeSeconds);
 
             const auto durationSec = duration_cast<seconds>(durationSecs);
             const auto durationMs = round<milliseconds>(durationSecs - durationSec);
