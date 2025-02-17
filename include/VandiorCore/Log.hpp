@@ -44,6 +44,7 @@ DISABLE_WARNINGS_PUSH(
     4005 4201 4459 4514 4625 4626 4820 6244 6285 6385 6386 26409 26415 26418 26429 26432 26437 26438 26440 26446 26447 26450 26451 26455 26457 26459 26460 26461 26467 26472 26473 26474 26475 26481 26482 26485 26490 26491 26493 26494 26495 26496 26497 26498 26800 26814 26818 26826)
 /** \endcond */
 
+#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_TRACE
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/spdlog.h>
 
@@ -155,6 +156,30 @@ inline void my_error_handler(const std::string &msg) {
 }
 // clang-format on
 
+inline void setup_logger() {
+    std::vector<spdlog::sink_ptr> sinks;
+
+    // Console sink (colored, for trace to info levels)
+    auto stdout_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
+    stdout_sink->set_level(spdlog::level::trace);  // Log info and below (trace, debug, info)
+
+    // Stderr sink (colored, for warn to critical levels)
+    auto stderr_sink = std::make_shared<spdlog::sinks::stderr_color_sink_mt>();
+    stderr_sink->set_level(spdlog::level::warn);  // Log warn and above (warn, error, critical)
+
+    // Add sinks to the logger, ensuring no duplicate output for same log level
+    sinks.push_back(stdout_sink);
+    // sinks.push_back(stderr_sink);
+
+    // Create logger with the defined sinks
+    auto logger = std::make_shared<spdlog::logger>("main", sinks.begin(), sinks.end());
+    logger->set_pattern(R"(%^[%T %l] %v%$)");  // Log pattern
+    logger->set_level(spdlog::level::trace);   // Minimum log level (trace)
+
+    // Set this logger as the default logger
+    spdlog::set_default_logger(logger);
+}
+
 /**
  * @brief Initialize the logging system with default configurations.
  * @details This macro initializes the logging system with a default pattern and creates a console logger.
@@ -171,9 +196,7 @@ inline void my_error_handler(const std::string &msg) {
 #define INIT_LOG()                                                                                                                         \
     spdlog::set_error_handler(my_error_handler);                                                                                           \
     try {                                                                                                                                  \
-        spdlog::set_pattern(R"(%^[%T %l] %v%$)");                                                                                          \
-        const auto console = spdlog::stdout_color_mt(R"(console)");                                                                        \
-        spdlog::set_default_logger(console);                                                                                               \
+        setup_logger();                                                                                                                    \
     } catch(const spdlog::spdlog_ex &ex) {                                                                                                 \
         std::cerr << "Logger initialization failed: " << ex.what() << '\n';                                                                \
     } catch(const std::exception &e) { std::cerr << "Unhandled exception: " << e.what() << '\n'; } catch(...) {                            \
