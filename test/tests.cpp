@@ -25,6 +25,15 @@ using Catch::Matchers::StartsWith;
 #define REQ_FORMAT_COMPTOK(type, string) REQUIRE(FORMAT("{}", comp_tokType(type)) == (string));
 #define MSG_FORMAT(...) Message(FORMAT(__VA_ARGS__))
 
+TEST_CASE("Logger setup", "[setup_logger]") {
+    SECTION("Default setup") { REQUIRE_NOTHROW(setup_logger()); }
+    SECTION("Logger sinks") {
+        setup_logger();
+        auto logger = spdlog::default_logger();
+        REQUIRE(logger->sinks().size() == 1);
+    }
+}
+
 TEST_CASE("extractTabs basic functionality", "[extractTabs]") {
     SECTION("String with only tabs") {
         const auto result = extractTabs(inputTabs);
