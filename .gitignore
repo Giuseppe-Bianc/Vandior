@@ -42,3 +42,4 @@ Thumbs.db
 /.cache
 /vnbuild/
 !/out/
+/.github/update-dependabot.ps1
