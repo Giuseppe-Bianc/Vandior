@@ -96,6 +96,10 @@ macro(Vandior_setup_options)
 endmacro()
 
 macro(Vandior_global_options)
+    include(cmake/Simd.cmake)
+    check_all_simd_features()
+    print_simd_support()
+    
     if (Vandior_ENABLE_IPO)
         include(cmake/InterproceduralOptimization.cmake)
         Vandior_enable_ipo()
