@@ -1,9 +1,10 @@
 #pragma once
 // NOLINTBEGIN(*-include-cleaner)
 
-#include "Vandior/lexer/Token.hpp"
-#include "Vandior/lexer/TokenizerConstants.hpp"
-#include "Vandior/lexer/TokenizerUtility.hpp"
+#include "ErrorHandler.hpp"
+#include "Token.hpp"
+#include "TokenizerConstants.hpp"
+#include "TokenizerUtility.hpp"
 #include <string>
 
 namespace vnd {
@@ -119,20 +120,20 @@ namespace vnd {
          * @brief Finds the start of the current line.
          * @return Position of the start of the current line.
          */
-        [[nodiscard]] std::size_t findLineStart() const noexcept;
+        /*[[nodiscard]] std::size_t findLineStart() const noexcept;*/
 
         /**
          * @brief Finds the end of the current line.
          * @return Position of the end of the current line.
          */
-        [[nodiscard]] std::size_t findLineEnd() const noexcept;
+        /*[[nodiscard]] std::size_t findLineEnd() const noexcept;*/
 
         /**
          * @brief Handles errors.
          * @param value The error value.
          * @param errorMsg Error message.
          */
-        template <StringOrStringView T> [[noreturn]] void handleError(const T &value, const std::string_view &errorMsg);
+        template <StringOrStringView T> [[noreturn]] void error(const T &value, const std::string_view &errorMsg);
 
         /**
          * @brief Retrieves the context.
@@ -140,7 +141,7 @@ namespace vnd {
          * @param lineEnd Position of the end of the context.
          * @return Context.
          */
-        [[nodiscard]] std::string extract_context(const std::size_t &lineStart, const std::size_t &lineEnd) const;
+        /*[[nodiscard]] std::string extract_context(const std::size_t &lineStart, const std::size_t &lineEnd) const;*/
 
         /**
          * @brief Retrieves the context line.
@@ -148,7 +149,7 @@ namespace vnd {
          * @param lineEnd Position of the end of the line.
          * @return Context line.
          */
-        [[nodiscard]] std::string getContextLine(const std::size_t &lineStart, const std::size_t &lineEnd) const;
+        /*[[nodiscard]] std::string getContextLine(const std::size_t &lineStart, const std::size_t &lineEnd) const;*/
 
         /**
          * @brief Retrieves the highlighting for error messages.
@@ -157,8 +158,8 @@ namespace vnd {
          * @param value The value to highlight.
          * @return Highlighted string.
          */
-        [[nodiscard]] std::string getHighlighting(const std::size_t &lineStart, const std::size_t &lineEnd,
-                                                  const std::string_view value) const;
+        /*[[nodiscard]] std::string getHighlighting(const std::size_t &lineStart, const std::size_t &lineEnd,
+                                                  const std::string_view value) const;*/
 
         /**
          * @brief Generates an error message.
@@ -168,9 +169,9 @@ namespace vnd {
          * @param highlighting Highlighted string.
          * @return Error message.
          */
-        template <StringOrStringView T>
+        /*template <StringOrStringView T>
         [[nodiscard]] std::string getErrorMessage(const T &value, const std::string_view &errMsg, const std::string &contextLine,
-                                                  const std::string &highlighting);
+                                                  const std::string &highlighting);*/
 
         /**
          * @brief Extracts digits from the input.

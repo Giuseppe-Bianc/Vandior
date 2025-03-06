@@ -37,7 +37,7 @@ namespace vnd {
                 tokens.emplace_back(TokenizerUtility::CommaOrColonType(currentChar), TokenizerUtility::CommaOrColonValue(currentChar),
                                     CodeSourceLocation{_filename, line, column - 1});
             } else [[unlikely]] {
-                handleError(std::string(1, currentChar), "Unknown Character");
+                error(std::string(1, currentChar), "Unknown Character");
             }
         }
         tokens.emplace_back(TokenType::EOFT, CodeSourceLocation{_filename, line, column});
@@ -258,7 +258,7 @@ namespace vnd {
 
     void Tokenizer::removeBrackets(const TokenType &type) {
         if(type != TokenType::OPEN_CUR_PARENTESIS && brackets.size() == bracketNum) { bracketNum = 0; }
-        if(brackets.empty() || brackets.back() != type) { handleError("", "Mismatch bracket"); }
+        if(brackets.empty() || brackets.back() != type) { error("", "Mismatch bracket"); }
         brackets.pop_back();
     }
 
@@ -334,63 +334,11 @@ namespace vnd {
         return code;
     }
 
-    template <StringOrStringView T> void Tokenizer::handleError(const T &value, const std::string_view &errorMsg) {
-        const auto &lineStart = findLineStart();
-        const auto &lineEnd = findLineEnd();
-
-        const auto contextLine = getContextLine(lineStart, lineEnd);
-        // NOLINTNEXTLINE(*-pro-bounds-array-to-pointer-decay,*-no-array-decay)
-        const auto highlighting = getHighlighting(lineStart, lineEnd, value);
-        const auto errorMessage = getErrorMessage(value, errorMsg, contextLine, highlighting);
-
-        throw std::runtime_error(errorMessage);
+    template <StringOrStringView T> void Tokenizer::error(const T &value, const std::string_view &errorMsg) {
+        ErrorHandler errorHandler(_input, _filename, line, column);
+        errorHandler.setCurrentPosition(position);
+        errorHandler.handleError(value, errorMsg);
     }
-
-    std::size_t Tokenizer::findLineStart() const noexcept {
-        auto lineStart = position;
-        while(lineStart > 0 && _input[lineStart - 1] != NL) { --lineStart; }
-        return lineStart;
-    }
-
-    std::size_t Tokenizer::findLineEnd() const noexcept {
-        auto lineEnd = position;
-        while(lineEnd < _inputSize && _input[lineEnd] != NL) { ++lineEnd; }
-        return lineEnd;
-    }
-
-    std::string Tokenizer::extract_context(const std::size_t &lineStart, const std::size_t &lineEnd) const {
-        return std::string(_input.substr(lineStart, (lineEnd - lineStart)));
-    }
-
-    std::string Tokenizer::getContextLine(const std::size_t &lineStart, const std::size_t &lineEnd) const {
-        return extract_context(lineStart, lineEnd).append(NEWL);
-    }
-
-    std::string Tokenizer::getHighlighting(const std::size_t &lineStart, const std::size_t &lineEnd, const std::string_view value) const {
-        const auto temtp_val = extract_context(lineStart, lineEnd);
-        auto tabs_section = extractTabs(temtp_val);
-        if(const auto pos = temtp_val.find(value); pos != std::string::npos) {
-            const auto val_len = value.length();
-            if(pos == 0) [[unlikely]] {
-                return FORMAT("{}{: ^{}}{:^{}}{}", tabs_section, "", pos, "^", val_len, NEWL);
-            } else {
-                return FORMAT("{}{: ^{}}{:^{}}{}", tabs_section, "", pos - 1, "^", val_len, NEWL);
-            }
-        }
-        return FORMAT("{:^{}}{}", "^", (lineEnd - lineStart), NEWL);
-    }
-
-    template <StringOrStringView T>
-    std::string Tokenizer::getErrorMessage(const T &value, const std::string_view &errMsg, const std::string &contextLine,
-                                           const std::string &highlighting) {
-        std::ostringstream errorMessageStream;
-        errorMessageStream << FORMAT("{} '{}' (line {}, column {}):{}", errMsg, value, line, column, NEWL);
-        errorMessageStream << FORMAT("Context: {}", NEWL);
-        errorMessageStream << contextLine;
-        errorMessageStream << highlighting;
-        return errorMessageStream.str();
-    }
-
     Token Tokenizer::handleHexadecimalOrOctal() {
         const auto start = position;
         incPosAndColumn();
@@ -403,7 +351,7 @@ namespace vnd {
             while(positionIsInText() && C_BOOL(std::isxdigit(getUnsignedCharAt(position)))) { incPosAndColumn(); }
         } else [[unlikely]] {
             const auto error_value = _input.substr(start, position);
-            handleError(error_value, "malformed exadecimal number or octal number");
+            error(error_value, "malformed exadecimal number or octal number");
         }
 
         const auto value = _input.substr(start, position - start);

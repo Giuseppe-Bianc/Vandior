@@ -2,6 +2,7 @@
 
 function(Vandior_package_project)
     cmake_policy(SET CMP0103 NEW) # disallow multiple calls with the same NAME
+    cmake_policy(SET CMP0169 OLD) # fetch content  use FetchContent_Populate
 
     set(_options ARCH_INDEPENDENT # default to false
     )

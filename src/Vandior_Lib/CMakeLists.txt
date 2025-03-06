@@ -18,6 +18,7 @@ add_library(vandior_lib vandior.cpp
         transpiler/Transpiler.cpp
         transpiler/ProjectBuilder.cpp
         parser/AST.cpp
+        lexer/ErrorHandler.cpp
 )
 
 add_library(Vandior::vandior_lib ALIAS vandior_lib)

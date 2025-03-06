@@ -1,4 +1,4 @@
-set(CPM_DOWNLOAD_VERSION 0.40.5 CACHE STRING "Version of CPM.cmake to download")
+set(CPM_DOWNLOAD_VERSION 0.40.7 CACHE STRING "Version of CPM.cmake to download")
 
 if (CPM_SOURCE_CACHE)
     set(CPM_DOWNLOAD_LOCATION "${CPM_SOURCE_CACHE}/cpm/CPM_${CPM_DOWNLOAD_VERSION}.cmake")
