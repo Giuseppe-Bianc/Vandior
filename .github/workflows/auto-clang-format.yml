@@ -22,7 +22,7 @@ jobs:
           ref: ${{ github.head_ref || github.ref }} # For pull_request and other events
 
       - name: Run clang-format
-        uses: DoozyX/clang-format-lint-action@v0.18
+        uses: DoozyX/clang-format-lint-action@v0.20
         with:
           source: '.'
           exclude: './third_party ./external'
