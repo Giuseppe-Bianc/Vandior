@@ -25,4 +25,8 @@ updates:
     interval: "daily"
     commit-message:
       prefix: "[github]"
-      
+  - package-ecosystem: "git"
+    directory: "/" # or the directory containing your CMakeLists.txt
+    interval: "daily"
+    commit-message:
+      prefix: "[github]"
