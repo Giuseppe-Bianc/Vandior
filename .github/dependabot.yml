@@ -10,19 +10,19 @@ updates:
     schedule:
       interval: "daily"
     commit-message:
-      prefix: "[github] "
+      prefix: "[github] u"
 
   - package-ecosystem: "github-actions"
     directory: "/.github/actions/setup_cache"  # Tracks the .github/actions/setup_cache directory
     schedule:
       interval: "daily"
     commit-message:
-      prefix: "[github] "
+      prefix: "[github] u"
 
   - package-ecosystem: "docker"
     directory: ".devcontainer"
     schedule:
     interval: "daily"
     commit-message:
-      prefix: "[github] "
+      prefix: "[github] u"
       
