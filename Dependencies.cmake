@@ -3,7 +3,7 @@ include(cmake/CPM.cmake)
 function(AddSpdlogPackage WcharSupport WcharFilenames)
     CPMAddPackage(
             NAME spdlog
-            VERSION 1.15.1
+            VERSION 1.15.3
             GITHUB_REPOSITORY "gabime/spdlog"
             OPTIONS
             "SPDLOG_FMT_EXTERNAL ON"
@@ -37,7 +37,7 @@ function(Vandior_setup_dependencies)
     # already been provided to us by a parent project
 
     if (NOT TARGET fmtlib::fmtlib)
-        CPMAddPackage("gh:fmtlib/fmt#11.1.3")
+        CPMAddPackage("gh:fmtlib/fmt#11.2.0")
     endif ()
 
     if (NOT TARGET spdlog::spdlog)
@@ -49,11 +49,11 @@ function(Vandior_setup_dependencies)
     endif ()
 
     if (NOT TARGET Catch2::Catch2WithMain)
-        CPMAddPackage("gh:catchorg/Catch2@3.8.0")
+        CPMAddPackage("gh:catchorg/Catch2@3.8.1")
     endif ()
 
     if (NOT TARGET CLI11::CLI11)
-        CPMAddPackage("gh:CLIUtils/CLI11@2.4.2")
+        CPMAddPackage("gh:CLIUtils/CLI11@2.5.0")
     endif ()
     #    if (NOT TARGET nlohmann_json::nlohmann_json)
     #        CPMAddPackage(
