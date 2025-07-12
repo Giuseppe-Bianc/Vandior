@@ -22,7 +22,7 @@ updates:
   - package-ecosystem: "docker"
     directory: ".devcontainer"
     schedule:
-    interval: "daily"
+      interval: "daily"
     commit-message:
       prefix: "[github]"
 
